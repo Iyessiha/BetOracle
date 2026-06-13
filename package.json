@@ -1,0 +1,39 @@
+{
+  "name": "betoracle-pro",
+  "version": "1.0.0",
+  "description": "Betoracle Pro — L'oracle des paris foot · Produit de MonWe Infinity LLC",
+  "main": "public/index.html",
+  "scripts": {
+    "start": "npx serve public -p 3000",
+    "dev": "npx live-server public --port=3000 --open=/index.html",
+    "lint": "echo 'No linter configured yet'",
+    "deploy:netlify": "npx netlify deploy --prod --dir=public",
+    "deploy:vercel": "npx vercel --prod public",
+    "deploy:pages": "git subtree push --prefix public origin gh-pages",
+    "zip": "zip -r betoracle-pro-$(date +%Y%m%d).zip public assets README.md"
+  },
+  "keywords": [
+    "football",
+    "paris sportifs",
+    "betting",
+    "IA",
+    "oracle",
+    "afrique",
+    "FCFA",
+    "bankroll"
+  ],
+  "author": "MonWe Infinity LLC <monweci@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/TON_USERNAME/betoracle-pro",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TON_USERNAME/betoracle-pro.git"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2",
+    "serve": "^14.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

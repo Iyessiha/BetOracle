@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bienvenue — Betoracle Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --gp:#1a5c2a;--gb:#22c55e;--gl:#4ade80;--gn:#16ff6e;
+  --gold:#F5C842;--bg:#060a06;--bg2:#0a0f0a;
+  --s1:#141b14;--s2:#1a241a;--s3:#202c20;
+  --b1:#263326;--b2:#2e3f2e;--b3:#3a503a;
+  --text:#e8f0e8;--muted:#6a8a6a;--sub:#1e2e1e;
+  --font-d:'Bebas Neue',sans-serif;--font-b:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-b);font-size:16px;line-height:1.6;min-height:100vh}
+a{text-decoration:none;color:inherit}
+
+/* NAV */
+.top-nav{height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(20px,4vw,48px);background:rgba(6,10,6,.98);border-bottom:.5px solid var(--b1)}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.logo-badge{width:34px;height:34px;border-radius:9px;background:var(--gp);border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:18px;color:var(--gold)}
+.logo-name{font-family:var(--font-d);font-size:20px;letter-spacing:.04em}
+.logo-name span{color:var(--gold)}
+.nav-step{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:8px}
+.ns-dot{width:7px;height:7px;border-radius:50%;background:var(--gb)}
+
+/* STEP BAR */
+.step-bar{display:flex;align-items:center;gap:6px;justify-content:center;padding:28px 24px 0}
+.step{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--muted)}
+.step-dot{width:26px;height:26px;border-radius:50%;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:12px;transition:all .3s}
+.step.done .step-dot{background:var(--gb);border-color:var(--gb);color:#000}
+.step.active .step-dot{background:var(--gold);border-color:var(--gold);color:#000}
+.step-line{height:1px;width:48px;background:var(--b2)}
+.step.done+.step-line{background:var(--gb)}
+
+/* HERO WELCOME */
+.welcome-hero{
+  text-align:center;padding:48px 24px 36px;position:relative;overflow:hidden;
+}
+.wh-eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.14em;color:var(--gb);padding:5px 15px;border-radius:20px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);margin-bottom:20px}
+.wh-h1{font-family:var(--font-d);font-size:clamp(42px,7vw,80px);letter-spacing:.02em;line-height:.92;margin-bottom:14px}
+.wh-h1 .name{color:var(--gb)}
+.wh-h1 .product{color:var(--gold)}
+.wh-sub{font-size:16px;color:var(--muted);max-width:520px;margin:0 auto;line-height:1.7}
+.wh-sub strong{color:var(--gb)}
+
+/* MAIN CONTENT */
+.welcome-body{max-width:680px;margin:0 auto;padding:0 24px 80px}
+
+/* ── PARRAINAGE CARD ── */
+.parrain-card{
+  background:var(--s1);border:1px solid var(--b2);border-radius:18px;
+  overflow:hidden;margin-bottom:16px;
+}
+.pc-header{
+  background:linear-gradient(135deg,rgba(34,197,94,.15) 0%,rgba(245,200,66,.08) 100%);
+  border-bottom:1px solid var(--b2);padding:20px 24px;
+  display:flex;align-items:center;gap:14px;
+}
+.pc-icon{width:44px;height:44px;border-radius:12px;background:rgba(34,197,94,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.pc-icon i{font-size:22px;color:var(--gb)}
+.pc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gb);margin-bottom:3px}
+.pc-title{font-family:var(--font-d);font-size:20px;letter-spacing:.04em;color:var(--text)}
+.pc-body{padding:20px 24px}
+.pc-desc{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px}
+.pc-desc strong{color:var(--text)}
+.pc-desc .highlight{color:var(--gold);font-weight:700}
+
+/* Paliers */
+.paliers{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:22px}
+.palier{
+  background:var(--bg2);border:1px solid var(--b1);border-radius:12px;
+  padding:14px 12px;text-align:center;position:relative;overflow:hidden;
+  transition:border-color .2s;cursor:default;
+}
+.palier:hover{border-color:var(--b3)}
+.palier.top{border-color:rgba(245,200,66,.3);background:rgba(245,200,66,.04)}
+.palier-crown{position:absolute;top:-1px;right:-1px;background:var(--gold);color:#000;font-size:9px;font-weight:800;padding:2px 8px;border-radius:0 0 0 8px;letter-spacing:.06em}
+.palier-nb{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.palier-reward{font-family:var(--font-d);font-size:clamp(14px,2vw,18px);letter-spacing:.04em;line-height:1.1}
+.palier.top .palier-reward{color:var(--gold)}
+.palier:not(.top) .palier-reward{color:var(--gb)}
+
+/* Lien parrainage */
+.reflink-wrap{background:var(--bg2);border:1px solid var(--b2);border-radius:10px;padding:4px 4px 4px 14px;display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.reflink-url{font-size:13px;color:var(--muted);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace}
+.btn-copy{
+  background:var(--gb);color:#000;border:none;cursor:pointer;
+  padding:10px 18px;border-radius:8px;font-size:13px;font-weight:800;
+  letter-spacing:.04em;display:flex;align-items:center;gap:7px;
+  font-family:var(--font-b);transition:all .2s;white-space:nowrap;flex-shrink:0;
+}
+.btn-copy:hover{background:var(--gl)}
+.btn-copy.copied{background:rgba(34,197,94,.2);color:var(--gb);border:1px solid rgba(34,197,94,.3)}
+.palier-link{font-size:13px;color:var(--gb);display:inline-flex;align-items:center;gap:5px;font-weight:600;cursor:pointer}
+.palier-link:hover{text-decoration:underline;text-underline-offset:3px}
+
+/* ── PLAN UPSELL ── */
+.upsell-card{
+  background:linear-gradient(135deg,rgba(245,200,66,.08) 0%,rgba(34,197,94,.05) 100%);
+  border:1px solid rgba(245,200,66,.25);border-radius:18px;
+  padding:24px;margin-bottom:16px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.uc-icon{width:52px;height:52px;border-radius:14px;background:rgba(245,200,66,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.uc-icon i{font-size:26px;color:var(--gold)}
+.uc-body{flex:1;min-width:0}
+.uc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--gold);margin-bottom:4px}
+.uc-title{font-family:var(--font-d);font-size:22px;letter-spacing:.04em;margin-bottom:4px}
+.uc-desc{font-size:13px;color:var(--muted);line-height:1.6}
+.uc-actions{display:flex;flex-direction:column;gap:8px;flex-shrink:0;min-width:180px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:13px 22px;border-radius:10px;font-size:14px;font-weight:700;font-family:var(--font-b);cursor:pointer;transition:all .2s;border:none;letter-spacing:.02em;white-space:nowrap}
+.btn-gold{background:var(--gold);color:#000}
+.btn-gold:hover{background:#ffe066;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--muted);border:1.5px solid var(--b2)}
+.btn-ghost:hover{border-color:var(--gb);color:var(--gb)}
+
+/* ── PROCHAINES ÉTAPES ── */
+.next-steps{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:24px;margin-bottom:16px}
+.ns-title{font-family:var(--font-d);font-size:18px;letter-spacing:.04em;margin-bottom:18px;display:flex;align-items:center;gap:10px}
+.ns-title i{color:var(--gb)}
+.step-list{display:flex;flex-direction:column;gap:0}
+.sl-item{display:flex;align-items:flex-start;gap:14px;padding:14px 0;border-bottom:1px solid var(--b1)}
+.sl-item:last-child{border-bottom:none}
+.sl-num{width:32px;height:32px;border-radius:50%;border:2px solid var(--b2);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:14px;color:var(--muted);flex-shrink:0}
+.sl-num.done{background:var(--gb);border-color:var(--gb);color:#000}
+.sl-text .sl-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.sl-text .sl-desc{font-size:12px;color:var(--muted)}
+
+/* ── CTA FINAL ── */
+.welcome-cta{
+  background:var(--gb);border-radius:14px;padding:20px 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+}
+.wc-text{font-family:var(--font-d);font-size:22px;letter-spacing:.04em;color:#000}
+.btn-dark{background:rgba(0,0,0,.2);color:#000;border:2px solid rgba(0,0,0,.2);font-size:15px;padding:13px 26px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer;font-weight:800;font-family:var(--font-b);transition:all .2s;white-space:nowrap}
+.btn-dark:hover{background:rgba(0,0,0,.3)}
+
+@media(max-width:600px){
+  .paliers{grid-template-columns:1fr}
+  .upsell-card{flex-direction:column}
+  .uc-actions{width:100%}
+  .welcome-cta{flex-direction:column;text-align:center}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <div class="nav-logo">
+    <div class="logo-badge">B</div>
+    <div class="logo-name">BET<span>ORACLE</span> PRO</div>
+  </div>
+  <div class="nav-step">
+    <span class="ns-dot"></span>
+    Compte créé · Étape 2/3
+  </div>
+</nav>
+
+<!-- Step bar -->
+<div class="step-bar">
+  <div class="step done"><div class="step-dot"><i class="ti ti-check" style="font-size:12px"></i></div><span>Compte</span></div>
+  <div class="step-line"></div>
+  <div class="step active"><div class="step-dot">2</div><span>Bienvenue</span></div>
+  <div class="step-line"></div>
+  <div class="step"><div class="step-dot">3</div><span>Analyser</span></div>
+</div>
+
+<!-- Hero welcome -->
+<div class="welcome-hero">
+  <div class="wh-eyebrow"><i class="ti ti-sparkles"></i> Bienvenue · Compte créé</div>
+  <h1 class="wh-h1">
+    SALUT <span class="name" id="user-name">TOI</span>,<br>
+    BIENVENUE SUR<br>
+    <span class="product">BETORACLE PRO.</span>
+  </h1>
+  <p class="wh-sub">
+    Ton accès à l'Oracle est prêt. Avant de lancer ta première analyse,
+    voici comment <strong>débloquer jusqu'à 500 000 FCFA</strong> en invitant des amis.
+  </p>
+</div>
+
+<div class="welcome-body">
+
+  <!-- ── PARRAINAGE ── -->
+  <div class="parrain-card">
+    <div class="pc-header">
+      <div class="pc-icon"><i class="ti ti-gift"></i></div>
+      <div>
+        <div class="pc-label">Programme Parrainage</div>
+        <div class="pc-title">Gagne 500 000 FCFA en invitant des amis</div>
+      </div>
+    </div>
+    <div class="pc-body">
+      <p class="pc-desc">
+        Chaque ami que tu invites <strong>et qui souscrit à un abonnement</strong> te rapproche d'un palier.
+        Au sommet : <span class="highlight">500 000 FCFA cash</span> + 1 an Elite offert.
+      </p>
+
+      <div class="paliers">
+        <div class="palier">
+          <div class="palier-nb">10 filleuls</div>
+          <div class="palier-reward">1 mois<br>Starter</div>
+        </div>
+        <div class="palier">
+          <div class="palier-nb">50 filleuls</div>
+          <div class="palier-reward">3 mois<br>Pro</div>
+        </div>
+        <div class="palier top">
+          <div class="palier-crown">TOP</div>
+          <div class="palier-nb">200 filleuls</div>
+          <div class="palier-reward">500 000<br>FCFA</div>
+        </div>
+      </div>
+
+      <div class="reflink-wrap">
+        <i class="ti ti-user-plus" style="color:var(--muted);font-size:16px;flex-shrink:0"></i>
+        <span class="reflink-url" id="reflink">https://betoracle.pro/register?ref=<span id="ref-code">ORACLE-XXXX</span></span>
+        <button class="btn-copy" id="copy-btn" onclick="copyRef()">
+          <i class="ti ti-copy" id="copy-icon"></i>
+          <span id="copy-txt">COPIER</span>
+        </button>
+      </div>
+
+      <div style="display:flex;gap:16px;flex-wrap:wrap">
+        <span class="palier-link" onclick="shareWA()"><i class="ti ti-brand-whatsapp"></i> Partager WhatsApp</span>
+        <span class="palier-link" onclick="shareTG()"><i class="ti ti-brand-telegram"></i> Partager Telegram</span>
+        <span class="palier-link"><i class="ti ti-list-details"></i> Voir tous les paliers →</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── UPSELL PLAN PRO ── -->
+  <div class="upsell-card" id="upsell-block">
+    <div class="uc-icon"><i class="ti ti-bolt"></i></div>
+    <div class="uc-body">
+      <div class="uc-label">Offre de lancement</div>
+      <div class="uc-title">Débloque encore plus avec Pro</div>
+      <div class="uc-desc">Value Bet · Kelly · H2H · Alertes live · Comparateur de cotes<br><strong style="color:var(--gold)">1 000 FCFA/semaine</strong> · Sans engagement · -25% au mois</div>
+    </div>
+    <div class="uc-actions">
+      <button class="btn btn-gold" onclick="window.location.href='analyse.html'">
+        <i class="ti ti-bolt"></i> Passer à Pro
+      </button>
+      <button class="btn btn-ghost" onclick="document.getElementById('upsell-block').style.display='none'">
+        Rester en Free
+      </button>
+    </div>
+  </div>
+
+  <!-- ── PROCHAINES ÉTAPES ── -->
+  <div class="next-steps">
+    <div class="ns-title"><i class="ti ti-list-check"></i> Tes prochaines étapes</div>
+    <div class="step-list">
+      <div class="sl-item">
+        <div class="sl-num done"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div class="sl-text">
+          <div class="sl-name">Compte créé ✓</div>
+          <div class="sl-desc">Tu es inscrit sur Betoracle Pro</div>
+        </div>
+      </div>
+      <div class="sl-item">
+        <div class="sl-num done"><i class="ti ti-check" style="font-size:12px"></i></div>
+        <div class="sl-text">
+          <div class="sl-name">Lien de parrainage prêt ✓</div>
+          <div class="sl-desc">Partage-le pour débloquer des récompenses</div>
+        </div>
+      </div>
+      <div class="sl-item">
+        <div class="sl-num" style="border-color:var(--gold);color:var(--gold)">3</div>
+        <div class="sl-text">
+          <div class="sl-name" style="color:var(--gold)">Lancer ta première analyse</div>
+          <div class="sl-desc">Choisis un match, l'Oracle s'occupe du reste</div>
+        </div>
+      </div>
+      <div class="sl-item">
+        <div class="sl-num">4</div>
+        <div class="sl-text">
+          <div class="sl-name">Rejoindre le canal Telegram</div>
+          <div class="sl-desc">Reçois le coupon du jour à 08h00 chaque matin</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CTA ANALYSE ── -->
+  <div class="welcome-cta">
+    <div class="wc-text">LANCER MA PREMIÈRE ANALYSE →</div>
+    <button class="btn-dark" onclick="window.location.href='analyse.html'">
+      <i class="ti ti-search"></i> Analyser un match
+    </button>
+  </div>
+
+</div>
+
+<script>
+// Afficher le prénom
+const prenom = sessionStorage.getItem('bp_prenom') || 'TOI'
+document.getElementById('user-name').textContent = prenom.toUpperCase()
+
+// Générer un code ref aléatoire
+const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'
+let code = 'ORCl-'
+for(let i=0;i<6;i++) code += chars[Math.floor(Math.random()*chars.length)]
+document.getElementById('ref-code').textContent = code
+sessionStorage.setItem('bp_refcode', code)
+
+function copyRef(){
+  const url = document.getElementById('reflink').textContent
+  navigator.clipboard.writeText(url.trim()).then(()=>{
+    const btn = document.getElementById('copy-btn')
+    const ico = document.getElementById('copy-icon')
+    const txt = document.getElementById('copy-txt')
+    btn.classList.add('copied')
+    ico.className = 'ti ti-check'
+    txt.textContent = 'COPIÉ !'
+    setTimeout(()=>{
+      btn.classList.remove('copied')
+      ico.className = 'ti ti-copy'
+      txt.textContent = 'COPIER'
+    }, 2500)
+  }).catch(()=>{
+    // Fallback
+    const el = document.createElement('textarea')
+    el.value = document.getElementById('reflink').textContent.trim()
+    document.body.appendChild(el)
+    el.select()
+    document.execCommand('copy')
+    document.body.removeChild(el)
+    document.getElementById('copy-txt').textContent = 'COPIÉ !'
+    setTimeout(()=> document.getElementById('copy-txt').textContent = 'COPIER', 2000)
+  })
+}
+
+function shareWA(){
+  const url = document.getElementById('reflink').textContent.trim()
+  const msg = encodeURIComponent(`🔮 Je viens de rejoindre Betoracle Pro — l'Oracle des paris foot. Crée ton compte gratuitement ici : ${url}`)
+  window.open(`https://wa.me/?text=${msg}`, '_blank')
+}
+
+function shareTG(){
+  const url = document.getElementById('reflink').textContent.trim()
+  const msg = encodeURIComponent(`🔮 Betoracle Pro — L'Oracle des paris foot. Rejoins-moi ici : ${url}`)
+  window.open(`https://t.me/share/url?url=${encodeURIComponent(url)}&text=${msg}`, '_blank')
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conditions Générales d'Utilisation — Betoracle Pro</title>
+<meta name="description" content="Conditions Générales d'Utilisation de Betoracle Pro, produit de MonWe Infinity LLC.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --green-pitch:#1a5c2a;
+  --green-bright:#22c55e;
+  --green-light:#4ade80;
+  --gold:#F5C842;
+  --white:#f8faf8;
+  --bg:#080c08;
+  --bg2:#0d120d;
+  --s1:#161e16;
+  --s2:#1c271c;
+  --b1:#2a3a2a;
+  --b2:#344834;
+  --text:#e8f0e8;
+  --muted:#7a9a7a;
+  --sub:#3a5a3a;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:var(--font-body);font-size:16px;line-height:1.7;
+  overflow-x:hidden;
+}
+a{text-decoration:none;color:inherit}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 max(24px,calc((100vw - 1100px)/2));
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(8,12,8,.96);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--b1);
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.logo-badge{
+  width:36px;height:36px;border-radius:9px;
+  background:var(--green-pitch);border:1.5px solid var(--green-bright);
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-size:19px;color:var(--gold);
+}
+.logo-name{font-family:var(--font-display);font-size:20px;letter-spacing:.04em}
+.logo-name span{color:var(--gold)}
+.nav-back{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  padding:8px 18px;border-radius:8px;border:1px solid var(--b1);
+  transition:all .2s;
+}
+.nav-back:hover{border-color:var(--green-bright);color:var(--green-bright)}
+
+/* ── HERO DOC ── */
+.doc-hero{
+  padding:110px 0 60px;
+  text-align:center;
+  border-bottom:1px solid var(--b1);
+  position:relative;overflow:hidden;
+}
+.doc-hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(34,197,94,.03) 80px);
+  pointer-events:none;
+}
+.doc-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  color:var(--green-bright);padding:5px 16px;border-radius:30px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:20px;
+}
+.doc-hero h1{
+  font-family:var(--font-display);
+  font-size:clamp(36px,5vw,64px);
+  letter-spacing:.03em;line-height:1.05;margin-bottom:14px;
+}
+.doc-hero h1 span{color:var(--green-bright)}
+.doc-meta{
+  display:flex;align-items:center;justify-content:center;gap:24px;
+  flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:18px;
+}
+.doc-meta span{display:inline-flex;align-items:center;gap:6px}
+
+/* ── LAYOUT ── */
+.wrap{max-width:1100px;margin:0 auto;padding:0 max(24px,calc((100vw - 1100px)/2))}
+.doc-layout{
+  display:grid;
+  grid-template-columns:240px 1fr;
+  gap:48px;align-items:start;
+  padding:60px 0 100px;
+}
+
+/* ── SOMMAIRE ── */
+.toc{
+  position:sticky;top:90px;
+  background:var(--s1);border:1px solid var(--b1);
+  border-radius:14px;padding:22px;
+}
+.toc-title{
+  font-family:var(--font-display);font-size:13px;
+  letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:16px;
+  display:flex;align-items:center;gap:7px;
+}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:2px}
+.toc ul li a{
+  display:flex;align-items:center;gap:9px;
+  font-size:13px;color:var(--muted);padding:7px 10px;
+  border-radius:8px;transition:all .15s;
+}
+.toc ul li a:hover{background:var(--s2);color:var(--green-bright)}
+.toc ul li a .art-num{
+  font-family:var(--font-display);font-size:11px;
+  color:var(--sub);min-width:22px;
+}
+.toc-footer{
+  margin-top:18px;padding-top:14px;border-top:1px solid var(--b1);
+  font-size:11px;color:var(--sub);line-height:1.6;
+}
+
+/* ── CONTENU ── */
+.doc-content{display:flex;flex-direction:column;gap:0}
+.article{
+  padding:36px 0;
+  border-bottom:1px solid var(--b1);
+}
+.article:last-child{border-bottom:none}
+.art-header{
+  display:flex;align-items:baseline;gap:14px;margin-bottom:18px;
+}
+.art-num-big{
+  font-family:var(--font-display);
+  font-size:13px;letter-spacing:.12em;
+  color:var(--green-bright);text-transform:uppercase;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  padding:3px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+.article h2{
+  font-family:var(--font-display);
+  font-size:clamp(20px,2.5vw,28px);
+  letter-spacing:.03em;line-height:1.1;
+}
+.article p{
+  font-size:15px;color:var(--muted);
+  line-height:1.8;margin-bottom:14px;
+}
+.article p:last-child{margin-bottom:0}
+.article p strong{color:var(--text)}
+.article ul,.article ol{
+  margin:12px 0 14px 0;
+  padding-left:20px;
+  display:flex;flex-direction:column;gap:8px;
+}
+.article ul li,.article ol li{
+  font-size:15px;color:var(--muted);line-height:1.7;
+}
+.article ul li::marker{color:var(--green-bright)}
+.article ol li::marker{color:var(--green-bright);font-weight:700}
+.article ul li strong,.article ol li strong{color:var(--text)}
+
+/* tableau */
+.art-table{
+  width:100%;border-collapse:collapse;margin:16px 0;font-size:14px;
+}
+.art-table th{
+  background:var(--s1);color:var(--text);font-weight:700;
+  padding:10px 16px;text-align:left;border:1px solid var(--b1);
+  font-family:var(--font-display);letter-spacing:.04em;font-size:13px;
+}
+.art-table td{
+  padding:10px 16px;border:1px solid var(--b1);
+  color:var(--muted);vertical-align:top;
+}
+.art-table tr:hover td{background:var(--s1)}
+
+/* callout */
+.callout{
+  border-radius:10px;padding:16px 20px;
+  margin:18px 0;font-size:14px;line-height:1.75;
+  display:flex;gap:12px;align-items:flex-start;
+}
+.callout i{font-size:18px;flex-shrink:0;margin-top:2px}
+.callout.warn{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);color:var(--muted)}
+.callout.warn i{color:var(--gold)}
+.callout.info{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);color:var(--muted)}
+.callout.info i{color:var(--green-bright)}
+.callout.danger{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:var(--muted)}
+.callout.danger i{color:#ef4444}
+.callout div strong{color:var(--text)}
+
+/* ── SIGNATURE ── */
+.sign-block{
+  background:var(--s1);border:1px solid var(--b2);
+  border-radius:14px;padding:28px 32px;margin-top:20px;
+}
+.sign-title{
+  font-family:var(--font-display);font-size:18px;
+  letter-spacing:.04em;margin-bottom:16px;color:var(--text);
+}
+.sign-line{font-size:14px;color:var(--muted);padding:5px 0;display:flex;gap:10px}
+.sign-line strong{color:var(--text);min-width:180px;flex-shrink:0}
+
+/* ── FOOTER ── */
+footer{
+  background:var(--bg2);border-top:1px solid var(--b1);
+  padding:36px 0;text-align:center;
+  font-size:13px;color:var(--sub);
+}
+footer a{color:var(--sub);text-decoration:underline;text-underline-offset:3px}
+footer a:hover{color:var(--green-bright)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:860px){
+  .doc-layout{grid-template-columns:1fr}
+  .toc{display:none}
+}
+@media(max-width:560px){
+  .doc-meta{gap:14px}
+  .art-header{flex-direction:column;gap:6px}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-badge">B</div>
+    <div class="logo-name">BET<span>ORACLE</span> PRO</div>
+  </div>
+  <a href="betoracle-pro.html" class="nav-back">
+    <i class="ti ti-arrow-left"></i> Retour à l'accueil
+  </a>
+</nav>
+
+<!-- HERO -->
+<div class="doc-hero">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="doc-eyebrow"><i class="ti ti-file-description"></i> Document légal</div>
+    <h1>Conditions Générales<br><span>d'Utilisation</span></h1>
+    <p style="font-size:15px;color:var(--muted);max-width:540px;margin:0 auto">
+      Ces conditions régissent l'accès et l'utilisation de <strong style="color:var(--text)">Betoracle Pro</strong>,
+      produit de MonWe Infinity LLC.
+    </p>
+    <div class="doc-meta">
+      <span><i class="ti ti-calendar"></i> Version du 13 juin 2026</span>
+      <span><i class="ti ti-building"></i> MonWe Infinity LLC</span>
+      <span><i class="ti ti-flag"></i> Applicable mondialement</span>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENU -->
+<div class="wrap">
+  <div class="doc-layout">
+
+    <!-- SOMMAIRE -->
+    <aside class="toc">
+      <div class="toc-title"><i class="ti ti-list"></i> Sommaire</div>
+      <ul>
+        <li><a href="#art1"><span class="art-num">01</span>Présentation</a></li>
+        <li><a href="#art2"><span class="art-num">02</span>Acceptation</a></li>
+        <li><a href="#art3"><span class="art-num">03</span>Accès au service</a></li>
+        <li><a href="#art4"><span class="art-num">04</span>Comptes utilisateurs</a></li>
+        <li><a href="#art5"><span class="art-num">05</span>Abonnements & tarifs</a></li>
+        <li><a href="#art6"><span class="art-num">06</span>Paiement & remboursement</a></li>
+        <li><a href="#art7"><span class="art-num">07</span>Nature du service</a></li>
+        <li><a href="#art8"><span class="art-num">08</span>Jeu responsable</a></li>
+        <li><a href="#art9"><span class="art-num">09</span>Propriété intellectuelle</a></li>
+        <li><a href="#art10"><span class="art-num">10</span>Données personnelles</a></li>
+        <li><a href="#art11"><span class="art-num">11</span>Comportements interdits</a></li>
+        <li><a href="#art12"><span class="art-num">12</span>Limitation de responsabilité</a></li>
+        <li><a href="#art13"><span class="art-num">13</span>Suspension & résiliation</a></li>
+        <li><a href="#art14"><span class="art-num">14</span>Modifications des CGU</a></li>
+        <li><a href="#art15"><span class="art-num">15</span>Droit applicable</a></li>
+        <li><a href="#art16"><span class="art-num">16</span>Contact & réclamations</a></li>
+      </ul>
+      <div class="toc-footer">
+        Betoracle Pro est un produit de<br>
+        <strong style="color:var(--muted)">MonWe Infinity LLC</strong><br>
+        Albuquerque, NM — USA
+      </div>
+    </aside>
+
+    <!-- ARTICLES -->
+    <main class="doc-content">
+
+      <!-- Article 1 -->
+      <div class="article" id="art1">
+        <div class="art-header">
+          <span class="art-num-big">Article 01</span>
+          <h2>Présentation de l'éditeur et du service</h2>
+        </div>
+        <p>
+          <strong>Betoracle Pro</strong> (ci-après « le Service ») est une plateforme numérique d'aide à la décision pour les paris sportifs, éditée par :
+        </p>
+        <div class="sign-block" style="margin:16px 0 20px">
+          <div class="sign-line"><strong>Raison sociale</strong> MonWe Infinity LLC</div>
+          <div class="sign-line"><strong>Forme juridique</strong> Limited Liability Company (LLC), droit de l'État du Nouveau-Mexique, États-Unis</div>
+          <div class="sign-line"><strong>N° de dépôt SOS</strong> 3213688</div>
+          <div class="sign-line"><strong>Siège social</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, USA</div>
+          <div class="sign-line"><strong>Gérante</strong> Yessiha Ilboudo</div>
+          <div class="sign-line"><strong>Contact</strong> monweci@gmail.com · +225 05 00 44 64 64</div>
+        </div>
+        <p>
+          Le Service propose notamment : la génération automatique de coupons de paris foot, des outils d'analyse statistique (probabilités 1X2, BTTS, Over/Under, Value Bet, calcul Kelly, Head-to-Head), un moteur de prédiction par intelligence artificielle (« l'Oracle »), un suivi de bankroll, des alertes live et une intégration avec la messagerie Telegram.
+        </p>
+        <div class="callout info">
+          <i class="ti ti-info-circle"></i>
+          <div><strong>Outil d'aide à la décision</strong> — Betoracle Pro ne prend aucun pari en son nom. L'utilisateur place ses paris directement auprès des bookmakers de son choix, sous sa propre responsabilité.</div>
+        </div>
+      </div>
+
+      <!-- Article 2 -->
+      <div class="article" id="art2">
+        <div class="art-header">
+          <span class="art-num-big">Article 02</span>
+          <h2>Acceptation des conditions</h2>
+        </div>
+        <p>
+          L'accès au Service, qu'il soit gratuit ou payant, implique l'acceptation pleine et entière des présentes Conditions Générales d'Utilisation (ci-après « CGU »). Si l'utilisateur n'accepte pas ces CGU, il doit cesser immédiatement toute utilisation du Service.
+        </p>
+        <p>
+          En créant un compte, en s'abonnant à un plan payant ou en utilisant l'une des fonctionnalités du Service, l'utilisateur reconnaît avoir lu, compris et accepté sans réserve les présentes CGU dans leur version en vigueur au moment de l'utilisation.
+        </p>
+        <p>
+          Les présentes CGU s'appliquent à tout utilisateur, quel que soit son pays de résidence, dès lors qu'il accède au Service.
+        </p>
+      </div>
+
+      <!-- Article 3 -->
+      <div class="article" id="art3">
+        <div class="art-header">
+          <span class="art-num-big">Article 03</span>
+          <h2>Accès au service</h2>
+        </div>
+        <p>
+          Le Service est accessible via une application web, mobile ou un bot Telegram, sous réserve de disponibilité technique. MonWe Infinity LLC s'efforce de maintenir une accessibilité continue mais ne saurait garantir une disponibilité ininterrompue du Service.
+        </p>
+        <p>
+          L'accès au Service est réservé aux personnes physiques majeures (18 ans ou plus) ou à l'âge légal de jeu applicable dans leur pays de résidence si celui-ci est supérieur à 18 ans. En accédant au Service, l'utilisateur déclare remplir cette condition.
+        </p>
+        <div class="callout danger">
+          <i class="ti ti-alert-triangle"></i>
+          <div><strong>Accès interdit aux mineurs.</strong> L'utilisation de Betoracle Pro et le jeu d'argent sont strictement interdits aux personnes mineures. MonWe Infinity LLC se réserve le droit de suspendre tout compte dont le titulaire serait mineur.</div>
+        </div>
+        <p>
+          MonWe Infinity LLC se réserve le droit de restreindre l'accès au Service dans certains pays ou territoires où les paris sportifs ou les services associés seraient illicites, sans préavis.
+        </p>
+      </div>
+
+      <!-- Article 4 -->
+      <div class="article" id="art4">
+        <div class="art-header">
+          <span class="art-num-big">Article 04</span>
+          <h2>Comptes utilisateurs</h2>
+        </div>
+        <p>
+          L'utilisation de la plupart des fonctionnalités du Service nécessite la création d'un compte personnel. L'utilisateur s'engage à fournir des informations exactes, complètes et à jour lors de son inscription, et à les maintenir à jour tout au long de l'utilisation du Service.
+        </p>
+        <p>
+          Chaque utilisateur ne peut détenir qu'un seul compte actif. La création de comptes multiples par une même personne est interdite.
+        </p>
+        <p>
+          L'utilisateur est responsable de la confidentialité de ses identifiants de connexion (e-mail, mot de passe, accès Telegram). Toute activité réalisée depuis son compte est réputée effectuée par l'utilisateur lui-même. En cas de perte, vol ou utilisation non autorisée, l'utilisateur doit en informer MonWe Infinity LLC sans délai à l'adresse <strong>monweci@gmail.com</strong>.
+        </p>
+        <p>
+          MonWe Infinity LLC ne pourra être tenue responsable des dommages résultant d'un accès non autorisé au compte de l'utilisateur lorsque celui-ci n'a pas pris les précautions nécessaires pour protéger ses identifiants.
+        </p>
+      </div>
+
+      <!-- Article 5 -->
+      <div class="article" id="art5">
+        <div class="art-header">
+          <span class="art-num-big">Article 05</span>
+          <h2>Abonnements et tarifs</h2>
+        </div>
+        <p>Le Service est disponible sous quatre formules :</p>
+        <table class="art-table">
+          <thead>
+            <tr>
+              <th>Plan</th>
+              <th>Tarif semaine</th>
+              <th>Tarif mois</th>
+              <th>Accès principal</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Free</strong></td>
+              <td>Gratuit</td>
+              <td>Gratuit</td>
+              <td>1 sélection/jour, bankroll basique, historique 5 paris</td>
+            </tr>
+            <tr>
+              <td><strong>Starter</strong></td>
+              <td>500 FCFA</td>
+              <td>1 500 FCFA</td>
+              <td>Coupon complet (4 matchs), stats 1X2, suivi bankroll</td>
+            </tr>
+            <tr>
+              <td><strong>Pro</strong></td>
+              <td>1 000 FCFA</td>
+              <td>3 000 FCFA</td>
+              <td>Starter + Value Bet, Kelly, H2H, alertes live, comparateur</td>
+            </tr>
+            <tr>
+              <td><strong>Elite</strong></td>
+              <td>2 000 FCFA</td>
+              <td>6 000 FCFA</td>
+              <td>Pro + L'Oracle IA, coaching personnalisé, support prioritaire</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          Les prix sont indiqués en Francs CFA (XOF) toutes taxes comprises pour les utilisateurs en zone UEMOA. MonWe Infinity LLC se réserve le droit de modifier les tarifs à tout moment, moyennant un préavis de <strong>7 jours</strong> notifié par e-mail ou via l'application. Toute modification de tarif ne s'applique pas aux périodes d'abonnement déjà payées.
+        </p>
+        <p>
+          Le plan mensuel bénéficie d'une réduction de 25 % par rapport au tarif hebdomadaire cumulé. Les plans hebdomadaires sont renouvelés chaque semaine, les plans mensuels chaque mois, sauf résiliation avant la date de renouvellement.
+        </p>
+      </div>
+
+      <!-- Article 6 -->
+      <div class="article" id="art6">
+        <div class="art-header">
+          <span class="art-num-big">Article 06</span>
+          <h2>Paiement et politique de remboursement</h2>
+        </div>
+        <p>
+          Le paiement des abonnements s'effectue via les moyens acceptés par MonWe Infinity LLC : <strong>Mobile Money</strong> (Orange Money, MTN, Moov, Wave) et <strong>carte bancaire</strong>. L'utilisateur garantit être titulaire ou habilité à utiliser le moyen de paiement fourni.
+        </p>
+        <p>
+          Le paiement est effectué en totalité et d'avance, avant l'activation de la période d'abonnement. En cas d'échec du paiement, l'accès aux fonctionnalités payantes est suspendu jusqu'à régularisation.
+        </p>
+        <div class="callout warn">
+          <i class="ti ti-receipt-refund"></i>
+          <div>
+            <strong>Politique de remboursement.</strong> En raison de la nature numérique et immédiatement accessible du Service, <strong>aucun remboursement n'est accordé</strong> une fois l'abonnement activé et le contenu accessible, sauf en cas de défaillance technique avérée et documentée imputable à MonWe Infinity LLC. Toute demande de remboursement doit être adressée à <strong>monweci@gmail.com</strong> dans les 48 heures suivant le paiement.
+          </div>
+        </div>
+        <p>
+          L'abonnement se renouvelle automatiquement à chaque échéance. L'utilisateur peut résilier à tout moment depuis son espace personnel ou en contactant le support, et conserve l'accès jusqu'à la fin de la période déjà payée.
+        </p>
+      </div>
+
+      <!-- Article 7 -->
+      <div class="article" id="art7">
+        <div class="art-header">
+          <span class="art-num-big">Article 07</span>
+          <h2>Nature du service — Outil d'aide à la décision</h2>
+        </div>
+        <div class="callout danger">
+          <i class="ti ti-alert-circle"></i>
+          <div>
+            <strong>Betoracle Pro n'est pas un service de paris.</strong> Le Service ne collecte pas de mises, ne garantit aucun gain et n'est pas un opérateur de jeux d'argent. Les analyses, coupons, probabilités et recommandations fournis sont des outils d'aide à la décision fondés sur des données statistiques et des modèles algorithmiques.
+          </div>
+        </div>
+        <p>
+          Les prédictions, cotes, statistiques et conseils fournis par Betoracle Pro, y compris ceux générés par le moteur d'intelligence artificielle « l'Oracle », sont donnés à titre <strong>purement indicatif</strong>. Ils ne constituent en aucun cas une garantie de résultat ou une promesse de gains.
+        </p>
+        <p>
+          Les résultats passés — notamment les taux de réussite historiques affichés — ne préjugent en rien des performances futures. Les événements sportifs sont par nature imprévisibles.
+        </p>
+        <p>
+          L'utilisateur demeure <strong>seul décisionnaire</strong> de ses paris et assume l'entière responsabilité de ses décisions financières. MonWe Infinity LLC ne peut être tenue responsable des pertes financières résultant de l'utilisation des informations fournies par le Service.
+        </p>
+      </div>
+
+      <!-- Article 8 -->
+      <div class="article" id="art8">
+        <div class="art-header">
+          <span class="art-num-big">Article 08</span>
+          <h2>Jeu responsable</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC promeut le jeu responsable. Les paris sportifs peuvent créer une dépendance. L'utilisateur est encouragé à :
+        </p>
+        <ul>
+          <li>Fixer un budget maximum de jeu qu'il peut se permettre de perdre ;</li>
+          <li>Ne jamais parier avec de l'argent destiné à ses dépenses essentielles ;</li>
+          <li>Utiliser les outils de gestion de bankroll fournis par Betoracle Pro ;</li>
+          <li>Faire des pauses régulières et ne pas chercher à « récupérer » des pertes ;</li>
+          <li>Contacter un professionnel en cas de sentiment de perte de contrôle.</li>
+        </ul>
+        <p>
+          Si l'utilisateur pense avoir un problème de jeu, il peut contacter des organismes d'aide tels que <strong>Joueurs Info Service</strong> (France : 09 74 75 13 13) ou tout service équivalent dans son pays de résidence.
+        </p>
+        <div class="callout warn">
+          <i class="ti ti-heart"></i>
+          <div>MonWe Infinity LLC se réserve le droit de suspendre ou de limiter l'accès au Service pour tout utilisateur manifestant des signes de comportement de jeu problématique, dans le but de le protéger.</div>
+        </div>
+      </div>
+
+      <!-- Article 9 -->
+      <div class="article" id="art9">
+        <div class="art-header">
+          <span class="art-num-big">Article 09</span>
+          <h2>Propriété intellectuelle</h2>
+        </div>
+        <p>
+          Betoracle Pro et l'ensemble de ses composants — marque, logo, nom de domaine, interface, algorithmes, modèles d'intelligence artificielle, base de données, textes, graphiques, coupons générés, méthodes d'analyse et tout autre contenu — sont la propriété exclusive de <strong>MonWe Infinity LLC</strong> ou de ses concédants de licence, et sont protégés par le droit de la propriété intellectuelle applicable.
+        </p>
+        <p>
+          MonWe Infinity LLC concède à l'utilisateur une licence personnelle, non exclusive, non transférable et révocable d'utilisation du Service, dans le cadre strictement défini par les présentes CGU.
+        </p>
+        <p>Il est notamment interdit à l'utilisateur de :</p>
+        <ul>
+          <li>Reproduire, copier, redistribuer ou revendre tout ou partie du contenu du Service ;</li>
+          <li>Décompiler, désassembler ou tenter d'extraire le code source de l'application ;</li>
+          <li>Créer des œuvres dérivées fondées sur le Service ou son contenu ;</li>
+          <li>Utiliser les coupons ou analyses générés à des fins commerciales sans autorisation écrite préalable de MonWe Infinity LLC ;</li>
+          <li>Publier ou partager les contenus payants du Service avec des tiers non abonnés.</li>
+        </ul>
+      </div>
+
+      <!-- Article 10 -->
+      <div class="article" id="art10">
+        <div class="art-header">
+          <span class="art-num-big">Article 10</span>
+          <h2>Données personnelles</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC collecte et traite des données personnelles dans le cadre de la fourniture du Service, conformément à sa <strong>Politique de Confidentialité</strong> disponible sur le Site.
+        </p>
+        <p>Les données collectées comprennent notamment :</p>
+        <ul>
+          <li>Les données d'identification (nom, e-mail, identifiant Telegram) ;</li>
+          <li>Les données de paiement (traitées et sécurisées par les prestataires de paiement, non stockées par MonWe Infinity LLC) ;</li>
+          <li>Les données d'utilisation du Service (paris enregistrés, bankroll, historique) ;</li>
+          <li>Les données techniques (adresse IP, type d'appareil, logs de connexion).</li>
+        </ul>
+        <p>
+          Ces données sont utilisées exclusivement pour la fourniture et l'amélioration du Service, la gestion des abonnements et la prévention de la fraude. Elles ne sont pas vendues à des tiers.
+        </p>
+        <p>
+          L'utilisateur dispose d'un droit d'accès, de rectification, de suppression et de portabilité de ses données, qu'il peut exercer en contactant <strong>monweci@gmail.com</strong>.
+        </p>
+      </div>
+
+      <!-- Article 11 -->
+      <div class="article" id="art11">
+        <div class="art-header">
+          <span class="art-num-big">Article 11</span>
+          <h2>Comportements interdits</h2>
+        </div>
+        <p>Il est strictement interdit à l'utilisateur d'utiliser le Service pour :</p>
+        <ul>
+          <li>Contourner les mécanismes de sécurité ou d'authentification du Service ;</li>
+          <li>Partager ses identifiants de connexion ou accorder l'accès à son compte à des tiers ;</li>
+          <li>Automatiser l'accès au Service (scraping, bots, scripts) sans autorisation préalable ;</li>
+          <li>Perturber le bon fonctionnement du Service ou de ses infrastructures ;</li>
+          <li>Diffuser des contenus illicites, diffamatoires ou portant atteinte à des droits de tiers ;</li>
+          <li>Utiliser le Service à des fins frauduleuses, notamment le blanchiment d'argent ;</li>
+          <li>Créer de faux comptes ou usurper l'identité d'un tiers ;</li>
+          <li>Revendre l'accès au Service ou monétiser les contenus générés sans autorisation.</li>
+        </ul>
+        <p>
+          Tout manquement à ces interdictions peut entraîner la suspension immédiate et définitive du compte, sans remboursement, et pourra faire l'objet de poursuites judiciaires.
+        </p>
+      </div>
+
+      <!-- Article 12 -->
+      <div class="article" id="art12">
+        <div class="art-header">
+          <span class="art-num-big">Article 12</span>
+          <h2>Limitation de responsabilité</h2>
+        </div>
+        <div class="callout warn">
+          <i class="ti ti-shield-off"></i>
+          <div>
+            <strong>Aucune garantie de gain.</strong> Betoracle Pro est un outil statistique. MonWe Infinity LLC ne garantit pas que l'utilisation du Service génèrera des bénéfices et ne saurait être tenue responsable des pertes financières de l'utilisateur liées à ses activités de paris.
+          </div>
+        </div>
+        <p>
+          Dans les limites permises par le droit applicable, MonWe Infinity LLC ne pourra être tenue responsable des dommages directs ou indirects, pertes de profits, pertes de données ou préjudices de toute nature résultant de :
+        </p>
+        <ul>
+          <li>L'utilisation ou l'impossibilité d'utiliser le Service ;</li>
+          <li>Des erreurs, inexactitudes ou omissions dans les données ou analyses fournies ;</li>
+          <li>Des interruptions, pannes ou bugs du Service ;</li>
+          <li>Des décisions de paris prises sur la base des contenus du Service ;</li>
+          <li>Des actes de tiers (bookmakers, prestataires de paiement, etc.).</li>
+        </ul>
+        <p>
+          La responsabilité totale de MonWe Infinity LLC envers l'utilisateur, toutes causes confondues, ne saurait excéder le montant des abonnements effectivement payés par l'utilisateur au cours des <strong>30 jours précédant le fait générateur</strong>.
+        </p>
+      </div>
+
+      <!-- Article 13 -->
+      <div class="article" id="art13">
+        <div class="art-header">
+          <span class="art-num-big">Article 13</span>
+          <h2>Suspension et résiliation</h2>
+        </div>
+        <p>
+          <strong>Résiliation par l'utilisateur :</strong> L'utilisateur peut résilier son abonnement à tout moment, depuis son espace personnel ou en contactant le support. L'accès aux fonctionnalités payantes est maintenu jusqu'à la fin de la période déjà réglée. Aucun remboursement au prorata n'est accordé.
+        </p>
+        <p>
+          <strong>Résiliation ou suspension par MonWe Infinity LLC :</strong> MonWe Infinity LLC se réserve le droit de suspendre ou de résilier un compte, avec ou sans préavis, en cas de :
+        </p>
+        <ul>
+          <li>Violation des présentes CGU ;</li>
+          <li>Comportement frauduleux ou abusif ;</li>
+          <li>Non-paiement ;</li>
+          <li>Utilisation du Service à des fins illicites ;</li>
+          <li>Décision de cessation du Service.</li>
+        </ul>
+        <p>
+          En cas de résiliation pour faute de l'utilisateur, aucun remboursement ne sera effectué. En cas de cessation définitive du Service à l'initiative de MonWe Infinity LLC, un préavis de <strong>30 jours</strong> sera notifié et les sommes éventuellement prépayées pour des périodes non échues seront remboursées au prorata.
+        </p>
+      </div>
+
+      <!-- Article 14 -->
+      <div class="article" id="art14">
+        <div class="art-header">
+          <span class="art-num-big">Article 14</span>
+          <h2>Modifications des CGU</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC se réserve le droit de modifier les présentes CGU à tout moment. Les modifications prennent effet <strong>7 jours</strong> après leur publication sur le Site, sauf modifications imposées par une obligation légale ou réglementaire, qui prennent effet immédiatement.
+        </p>
+        <p>
+          L'utilisateur sera informé de toute modification substantielle par e-mail ou notification dans l'application. La poursuite de l'utilisation du Service après la date d'entrée en vigueur vaut acceptation des CGU modifiées.
+        </p>
+        <p>
+          L'utilisateur qui n'accepte pas les modifications doit cesser d'utiliser le Service et peut résilier son compte sans frais avant l'entrée en vigueur des nouvelles CGU.
+        </p>
+      </div>
+
+      <!-- Article 15 -->
+      <div class="article" id="art15">
+        <div class="art-header">
+          <span class="art-num-big">Article 15</span>
+          <h2>Droit applicable et règlement des litiges</h2>
+        </div>
+        <p>
+          Les présentes CGU sont régies par le droit de l'État du <strong>Nouveau-Mexique (New Mexico), États-Unis d'Amérique</strong>, sans préjudice des dispositions impératives du droit applicable dans le pays de résidence de l'utilisateur consommateur.
+        </p>
+        <p>
+          En cas de litige, l'utilisateur est invité à contacter en premier lieu MonWe Infinity LLC à l'adresse <strong>monweci@gmail.com</strong> afin de rechercher une solution amiable. En l'absence de résolution amiable dans un délai de <strong>30 jours</strong>, tout litige sera soumis à la compétence exclusive des juridictions compétentes de l'État du Nouveau-Mexique, États-Unis.
+        </p>
+        <div class="callout info">
+          <i class="ti ti-scale"></i>
+          <div>Pour les utilisateurs résidant dans l'Union Européenne, les droits légaux impératifs conférés par la législation européenne de protection des consommateurs demeurent applicables nonobstant la clause de loi applicable ci-dessus.</div>
+        </div>
+      </div>
+
+      <!-- Article 16 -->
+      <div class="article" id="art16">
+        <div class="art-header">
+          <span class="art-num-big">Article 16</span>
+          <h2>Contact et réclamations</h2>
+        </div>
+        <p>
+          Pour toute question relative aux présentes CGU, pour exercer vos droits ou pour soumettre une réclamation, vous pouvez contacter MonWe Infinity LLC par les moyens suivants :
+        </p>
+        <div class="sign-block">
+          <div class="sign-title">MonWe Infinity LLC — Betoracle Pro</div>
+          <div class="sign-line"><strong>E-mail</strong> monweci@gmail.com</div>
+          <div class="sign-line"><strong>Téléphone</strong> +225 05 00 44 64 64</div>
+          <div class="sign-line"><strong>Courrier</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, USA</div>
+          <div class="sign-line"><strong>Gérante</strong> Yessiha Ilboudo</div>
+        </div>
+        <p style="margin-top:20px">
+          MonWe Infinity LLC s'engage à répondre à toute réclamation dans un délai de <strong>5 jours ouvrés</strong> suivant sa réception.
+        </p>
+
+        <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--b1)">
+          <p style="font-size:13px;color:var(--sub);line-height:1.8">
+            <strong style="color:var(--muted)">Document rédigé par :</strong> MonWe Infinity LLC, représentée par Yessiha Ilboudo, Gérante.<br>
+            <strong style="color:var(--muted)">Date de mise en vigueur :</strong> 13 juin 2026.<br>
+            <strong style="color:var(--muted)">Version :</strong> 1.0<br>
+            <strong style="color:var(--muted)">Langue de référence :</strong> Français. En cas de traduction, la version française prévaut.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="wrap">
+    <p>© 2026 MonWe Infinity LLC · Betoracle Pro. Tous droits réservés.</p>
+    <p style="margin-top:8px">
+      MonWe Infinity LLC — 1209 Mountain Road PL NE, STE R, Albuquerque, NM 87110, USA — N° 3213688<br>
+      <a href="betoracle-pro.html">Accueil</a> ·
+      <a href="#">Politique de confidentialité</a> ·
+      <a href="mailto:monweci@gmail.com">monweci@gmail.com</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+// Mise en surbrillance de l'article actif dans le sommaire
+const articles = document.querySelectorAll('.article');
+const tocLinks = document.querySelectorAll('.toc a');
+
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      tocLinks.forEach(l => l.style.background = '');
+      tocLinks.forEach(l => l.style.color = '');
+      const active = document.querySelector('.toc a[href="#'+entry.target.id+'"]');
+      if(active){
+        active.style.background = 'rgba(34,197,94,.1)';
+        active.style.color = 'var(--green-bright)';
+      }
+    }
+  });
+}, {rootMargin:'-20% 0px -70% 0px'});
+
+articles.forEach(a => obs.observe(a));
+</script>
+
+</body>
+</html>

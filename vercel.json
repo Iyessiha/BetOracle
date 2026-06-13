@@ -1,0 +1,19 @@
+{
+  "version": 2,
+  "outputDirectory": "public",
+  "routes": [
+    { "src": "/signup",  "dest": "/signup.html"  },
+    { "src": "/welcome", "dest": "/welcome.html" },
+    { "src": "/analyse", "dest": "/analyse.html" },
+    { "src": "/cgu",     "dest": "/cgu.html"     },
+    { "src": "/(.*)",    "dest": "/$1"            }
+  ],
+  "headers": [
+    {
+      "source": "/assets/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+      ]
+    }
+  ]
+}
