@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Connexion sécurisée</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gl:#4ade80;--gold:#F5C842;--bg:#060a06;--s1:#0d140d;--b2:#1e2e1e;--text:#e8f0e8;--muted:#5a7a5a;--red:#ef4444;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  background:var(--bg);color:var(--text);font-family:var(--fb);
+  display:flex;align-items:center;justify-content:center;
+  min-height:100vh;padding:24px;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(34,197,94,.04) 0%,transparent 50%),
+    radial-gradient(circle at 80% 70%,rgba(245,200,66,.03) 0%,transparent 50%),
+    repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(34,197,94,.02) 80px);
+}
+
+.wrap{width:100%;max-width:400px}
+
+/* Logo centré */
+.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:40px}
+.logo-orb{font-size:28px}
+.logo-name{font-family:var(--fd);font-size:24px;letter-spacing:.06em;color:var(--text)}
+.logo-name span{color:var(--gold)}
+
+/* Card */
+.card{
+  background:var(--s1);
+  border:1px solid var(--b2);
+  border-radius:18px;
+  overflow:hidden;
+  position:relative;
+}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--gb),var(--gold))}
+
+.card-head{
+  padding:28px 32px 0;
+  text-align:center;
+}
+.card-head h1{
+  font-family:var(--fd);font-size:28px;letter-spacing:.06em;
+  margin-bottom:4px;
+}
+.card-head p{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+/* Icône shield */
+.shield-wrap{
+  width:56px;height:56px;border-radius:14px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.18);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 20px;
+}
+.shield-wrap i{font-size:26px;color:var(--gb)}
+
+.card-body{padding:0 32px 32px}
+
+/* Champs */
+.field{margin-bottom:14px}
+.field label{
+  display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:6px;
+}
+.field input{
+  width:100%;background:rgba(0,0,0,.25);
+  border:1.5px solid var(--b2);border-radius:10px;
+  padding:12px 16px;font-size:15px;color:var(--text);
+  font-family:var(--fb);outline:none;transition:border .2s;
+}
+.field input:focus{border-color:var(--gb)}
+.field input::placeholder{color:var(--muted)}
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:46px}
+.pwd-eye{
+  position:absolute;right:14px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:17px;padding:4px;
+  transition:color .15s;
+}
+.pwd-eye:hover{color:var(--text)}
+
+/* Erreur */
+.err{
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);
+  color:#fca5a5;border-radius:10px;
+  padding:11px 16px;font-size:13px;
+  display:none;align-items:center;gap:8px;
+  margin-bottom:14px;line-height:1.4;
+}
+.err i{flex-shrink:0;font-size:16px}
+
+/* Bouton */
+.btn-login{
+  width:100%;padding:14px;border-radius:11px;border:none;
+  background:var(--gb);color:#000;
+  font-size:15px;font-weight:800;font-family:var(--fb);
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  letter-spacing:.02em;margin-top:4px;
+}
+.btn-login:hover{background:var(--gl);transform:translateY(-1px)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Footer card */
+.card-foot{
+  padding:14px 32px;
+  border-top:1px solid var(--b2);
+  background:rgba(0,0,0,.15);
+  display:flex;align-items:center;gap:8px;
+  font-size:12px;color:var(--muted);
+}
+.card-foot i{font-size:14px;color:var(--gb)}
+
+/* Lien retour */
+.back-link{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:20px;font-size:13px;color:var(--muted);
+  text-decoration:none;transition:color .15s;
+}
+.back-link:hover{color:var(--text)}
+
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite;display:inline-block}
+@keyframes shake{0%,100%{transform:translateX(0)}20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.shake{animation:shake .4s ease}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+
+  <!-- Logo -->
+  <div class="logo">
+    <span class="logo-orb">🔮</span>
+    <div class="logo-name">BET<span>ORACLE</span> <span style="color:var(--muted);font-size:16px;letter-spacing:.04em">ADMIN</span></div>
+  </div>
+
+  <!-- Card -->
+  <div class="card" id="card">
+    <div class="card-head">
+      <div class="shield-wrap"><i class="ti ti-shield-lock"></i></div>
+      <h1>ACCÈS RESTREINT</h1>
+      <p>Espace réservé aux administrateurs MonWe Infinity LLC</p>
+    </div>
+
+    <div class="card-body">
+      <div class="err" id="err">
+        <i class="ti ti-alert-circle"></i>
+        <span id="err-msg">Identifiants incorrects.</span>
+      </div>
+
+      <div class="field">
+        <label>Email administrateur</label>
+        <input type="email" id="email" placeholder="admin@monweinfinity.com"
+               autocomplete="email" oninput="clearErr()" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+
+      <div class="field">
+        <label>Mot de passe</label>
+        <div class="pwd-wrap">
+          <input type="password" id="pwd" placeholder="••••••••••"
+                 autocomplete="current-password" oninput="clearErr()" onkeydown="if(event.key==='Enter')doLogin()">
+          <button type="button" class="pwd-eye" onclick="togglePwd()">
+            <i class="ti ti-eye" id="eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-login" id="btn" onclick="doLogin()">
+        <i class="ti ti-lock"></i> Accéder au panel
+      </button>
+    </div>
+
+    <div class="card-foot">
+      <i class="ti ti-shield-check"></i>
+      Accès sécurisé · MonWe Infinity LLC · Betoracle Pro
+    </div>
+  </div>
+
+  <!-- Retour site -->
+  <a href="index.html" class="back-link">
+    <i class="ti ti-arrow-left"></i> Retour au site
+  </a>
+
+</div>
+
+<script>
+// ── Config Supabase ──
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+// Email admin autorisé (liste blanche)
+const ADMIN_EMAILS = ['yessiha@monweinfinity.com', 'monweci@gmail.com']
+
+// Vérifier session existante
+;(async () => {
+  const token = localStorage.getItem('admin_token')
+  if (!token) return
+  try {
+    const r = await fetch(`${SUPA_URL}/auth/v1/user`, {
+      headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
+    })
+    const d = await r.json()
+    if (d.id && ADMIN_EMAILS.includes(d.email)) {
+      window.location.replace('admin.html')
+    }
+  } catch {}
+})()
+
+function clearErr() {
+  document.getElementById('err').style.display = 'none'
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err')
+  document.getElementById('err-msg').textContent = msg
+  el.style.display = 'flex'
+  document.getElementById('card').classList.add('shake')
+  setTimeout(() => document.getElementById('card').classList.remove('shake'), 400)
+}
+
+function togglePwd() {
+  const inp = document.getElementById('pwd')
+  const ico = document.getElementById('eye')
+  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'ti ti-eye-off' }
+  else { inp.type = 'password'; ico.className = 'ti ti-eye' }
+}
+
+function setBtn(loading) {
+  const btn = document.getElementById('btn')
+  btn.disabled = loading
+  btn.innerHTML = loading
+    ? '<i class="ti ti-loader-2 spin"></i> Vérification…'
+    : '<i class="ti ti-lock"></i> Accéder au panel'
+}
+
+async function doLogin() {
+  clearErr()
+  const email = document.getElementById('email').value.trim()
+  const pwd   = document.getElementById('pwd').value
+
+  if (!email) return showErr('Entre ton adresse email.')
+  if (!pwd)   return showErr('Entre ton mot de passe.')
+
+  // Vérification email admin avant même d'appeler Supabase
+  if (!ADMIN_EMAILS.includes(email.toLowerCase())) {
+    return showErr('Accès non autorisé pour cet email.')
+  }
+
+  setBtn(true)
+
+  try {
+    // Connexion via Supabase REST
+    const r = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_ANON, 'Authorization': `Bearer ${SUPA_ANON}` },
+      body: JSON.stringify({ email, password: pwd })
+    })
+    const d = await r.json()
+
+    if (d.error || !d.access_token) {
+      setBtn(false)
+      const msg = (d.error_description || d.error || '')
+      if (msg.toLowerCase().includes('invalid') || msg.toLowerCase().includes('credentials')) {
+        showErr('Email ou mot de passe incorrect.')
+      } else {
+        showErr(msg || 'Erreur de connexion.')
+      }
+      return
+    }
+
+    // Double vérification email admin côté serveur
+    if (!ADMIN_EMAILS.includes(d.user?.email?.toLowerCase())) {
+      setBtn(false)
+      showErr('Accès non autorisé pour ce compte.')
+      return
+    }
+
+    // Stocker le token admin
+    localStorage.setItem('admin_token', d.access_token)
+    localStorage.setItem('admin_refresh', d.refresh_token || '')
+    localStorage.setItem('admin_email', d.user.email)
+    localStorage.setItem('sb_access_token', d.access_token)
+    sessionStorage.setItem('bp_token', d.access_token)
+    sessionStorage.setItem('bp_prenom', d.user.email.split('@')[0])
+
+    // Rediriger vers admin
+    document.getElementById('btn').innerHTML = '<i class="ti ti-check"></i> Accès autorisé !'
+    setTimeout(() => window.location.replace('admin.html'), 500)
+
+  } catch (e) {
+    setBtn(false)
+    showErr('Erreur réseau. Vérifie ta connexion.')
+  }
+}
+
+// Focus auto
+window.addEventListener('load', () => document.getElementById('email').focus())
+</script>
+</body>
+</html>
