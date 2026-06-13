@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Betoracle Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --bg:    #060a06;
+  --bg2:   #0a0f0a;
+  --s1:    #111711;
+  --s2:    #161e16;
+  --b1:    #1e2e1e;
+  --b2:    #263326;
+  --b3:    #2e3f2e;
+  --text:  #e8f0e8;
+  --muted: #6a8a6a;
+  --sub:   #3a5a3a;
+  --gb:    #22c55e;
+  --gl:    #4ade80;
+  --gold:  #F5C842;
+  --red:   #ef4444;
+  --blue:  #3b82f6;
+  --purple:#8b5cf6;
+  --teal:  #14b8a6;
+  --fd:    'Bebas Neue', sans-serif;
+  --fb:    'Barlow', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: var(--fb); font-size: 14px; line-height: 1.5; overflow-x: hidden; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: var(--fb); }
+
+/* ── LAYOUT ── */
+.shell { display: flex; height: 100vh; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: 220px; flex-shrink: 0;
+  background: var(--s1); border-right: 1px solid var(--b1);
+  display: flex; flex-direction: column;
+  transition: width .25s;
+  overflow: hidden;
+}
+.sidebar.collapsed { width: 56px; }
+.sb-logo {
+  display: flex; align-items: center; gap: 10px;
+  padding: 18px 16px; border-bottom: 1px solid var(--b1);
+  flex-shrink: 0;
+}
+.sb-logo-badge {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: rgba(34,197,94,.15); border: 1.5px solid var(--gb);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+.sb-logo-name {
+  font-family: var(--fd); font-size: 16px; letter-spacing: .06em;
+  white-space: nowrap; overflow: hidden;
+}
+.sb-logo-name span { color: var(--gold); }
+.sb-section { padding: 12px 8px; flex-shrink: 0; }
+.sb-label {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .12em; color: var(--sub);
+  padding: 0 8px; margin-bottom: 4px;
+  white-space: nowrap; overflow: hidden;
+}
+.sb-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  transition: background .15s, color .15s; white-space: nowrap;
+  color: var(--muted); font-size: 13px; font-weight: 500;
+  border: 1px solid transparent;
+}
+.sb-item:hover { background: var(--s2); color: var(--text); }
+.sb-item.active { background: rgba(34,197,94,.1); color: var(--gb); border-color: rgba(34,197,94,.2); }
+.sb-item i { font-size: 17px; flex-shrink: 0; }
+.sb-item span { overflow: hidden; }
+.sb-badge {
+  margin-left: auto; background: var(--red); color: #fff;
+  font-size: 10px; font-weight: 800; padding: 2px 6px;
+  border-radius: 10px; flex-shrink: 0;
+}
+.sb-footer {
+  margin-top: auto; padding: 12px 8px;
+  border-top: 1px solid var(--b1);
+}
+.sb-user {
+  display: flex; align-items: center; gap: 10px;
+  padding: 8px 10px; border-radius: 8px;
+}
+.sb-av {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: rgba(34,197,94,.2); display: flex;
+  align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 14px; color: var(--gb);
+  flex-shrink: 0;
+}
+.sb-user-info { overflow: hidden; }
+.sb-name { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sb-role { font-size: 11px; color: var(--muted); }
+
+/* ── MAIN ── */
+.main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+/* ── TOPBAR ── */
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 24px; height: 56px;
+  background: var(--s1); border-bottom: 1px solid var(--b1);
+  flex-shrink: 0; position: sticky; top: 0; z-index: 20;
+}
+.tb-toggle {
+  width: 32px; height: 32px; border-radius: 8px; border: none;
+  background: var(--s2); color: var(--muted);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.tb-toggle:hover { color: var(--text); }
+.tb-breadcrumb { font-size: 13px; color: var(--muted); }
+.tb-breadcrumb strong { color: var(--text); font-weight: 600; }
+.tb-right { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+.tb-refresh {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px; border: 1px solid var(--b2);
+  background: transparent; color: var(--muted); font-size: 12px; font-weight: 600;
+  transition: all .15s;
+}
+.tb-refresh:hover { border-color: var(--gb); color: var(--gb); }
+.tb-refresh i { font-size: 14px; }
+.tb-refresh.spinning i { animation: spin .7s linear infinite; }
+.live-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gb); animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.5)} 70%{opacity:.8;box-shadow:0 0 0 5px rgba(34,197,94,0)} }
+@keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+
+/* ── CONTENT ── */
+.content { padding: 24px; flex: 1; }
+
+/* ── PAGE ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── PAGE HEADER ── */
+.ph { margin-bottom: 24px; }
+.ph h1 { font-family: var(--fd); font-size: 32px; letter-spacing: .04em; line-height: 1; margin-bottom: 4px; }
+.ph p { font-size: 13px; color: var(--muted); }
+
+/* ── KPI GRID ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.kpi {
+  background: var(--s1); border: 1px solid var(--b1);
+  border-radius: 14px; padding: 18px 20px;
+  position: relative; overflow: hidden; transition: border-color .2s;
+}
+.kpi:hover { border-color: var(--b3); }
+.kpi::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+.kpi.green::before { background: var(--gb); }
+.kpi.gold::before  { background: var(--gold); }
+.kpi.blue::before  { background: var(--blue); }
+.kpi.red::before   { background: var(--red); }
+.kpi.purple::before{ background: var(--purple); }
+.kpi.teal::before  { background: var(--teal); }
+.kpi-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.kpi-val { font-family: var(--fd); font-size: 36px; letter-spacing: .02em; line-height: 1; margin-bottom: 4px; }
+.kpi.green .kpi-val { color: var(--gb); }
+.kpi.gold  .kpi-val { color: var(--gold); }
+.kpi.blue  .kpi-val { color: var(--blue); }
+.kpi.red   .kpi-val { color: var(--red); }
+.kpi.purple .kpi-val { color: var(--purple); }
+.kpi.teal  .kpi-val { color: var(--teal); }
+.kpi-sub { font-size: 12px; color: var(--muted); }
+
+/* ── PANELS ── */
+.panel {
+  background: var(--s1); border: 1px solid var(--b1);
+  border-radius: 14px; overflow: hidden; margin-bottom: 16px;
+}
+.panel-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; border-bottom: 1px solid var(--b1);
+}
+.panel-title { font-family: var(--fd); font-size: 16px; letter-spacing: .04em; display: flex; align-items: center; gap: 8px; }
+.panel-title i { color: var(--gb); font-size: 17px; }
+.panel-body { padding: 0; }
+.panel-actions { display: flex; gap: 8px; align-items: center; }
+
+/* ── TABLE ── */
+.tbl { width: 100%; border-collapse: collapse; }
+.tbl thead th {
+  text-align: left; padding: 10px 16px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted);
+  border-bottom: 1px solid var(--b1); background: var(--bg2);
+}
+.tbl tbody tr { border-bottom: 1px solid var(--b1); transition: background .1s; }
+.tbl tbody tr:last-child { border-bottom: none; }
+.tbl tbody tr:hover { background: var(--s2); }
+.tbl td { padding: 11px 16px; font-size: 13px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 700; letter-spacing: .04em;
+}
+.badge-free    { background: rgba(106,138,106,.15); color: var(--muted); }
+.badge-starter { background: rgba(20,184,166,.15);  color: var(--teal); }
+.badge-pro     { background: rgba(245,200,66,.15);  color: var(--gold); }
+.badge-elite   { background: rgba(139,92,246,.15);  color: var(--purple); }
+.badge-active  { background: rgba(34,197,94,.15);   color: var(--gb); }
+.badge-pending { background: rgba(245,200,66,.15);  color: var(--gold); }
+.badge-expired { background: rgba(239,68,68,.15);   color: var(--red); }
+.badge-won     { background: rgba(34,197,94,.15);   color: var(--gb); }
+.badge-lost    { background: rgba(239,68,68,.15);   color: var(--red); }
+
+/* ── ACTIONS BUTTONS ── */
+.btn-act {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 7px; border: none;
+  font-size: 12px; font-weight: 600; transition: all .15s;
+}
+.btn-green { background: rgba(34,197,94,.15); color: var(--gb); }
+.btn-green:hover { background: var(--gb); color: #000; }
+.btn-red   { background: rgba(239,68,68,.15); color: var(--red); }
+.btn-red:hover { background: var(--red); color: #fff; }
+.btn-blue  { background: rgba(59,130,246,.15); color: var(--blue); }
+.btn-blue:hover { background: var(--blue); color: #fff; }
+.btn-gold  { background: rgba(245,200,66,.15); color: var(--gold); }
+.btn-gold:hover { background: var(--gold); color: #000; }
+.btn-primary {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 8px 18px; border-radius: 9px; border: none;
+  background: var(--gb); color: #000; font-size: 13px; font-weight: 700;
+  transition: all .2s;
+}
+.btn-primary:hover { background: var(--gl); }
+.btn-outline-sm {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 7px 14px; border-radius: 8px;
+  border: 1px solid var(--b2); background: transparent;
+  color: var(--muted); font-size: 12px; font-weight: 600;
+  transition: all .15s;
+}
+.btn-outline-sm:hover { border-color: var(--gb); color: var(--gb); }
+
+/* ── GRID 2 COL ── */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+
+/* ── FORM ── */
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 6px; }
+.form-input, .form-select {
+  width: 100%; background: var(--bg2); border: 1px solid var(--b2);
+  border-radius: 9px; padding: 10px 14px; font-size: 13px;
+  color: var(--text); font-family: var(--fb); outline: none;
+  transition: border-color .2s;
+}
+.form-input:focus, .form-select:focus { border-color: var(--gb); }
+.form-select option { background: var(--s1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+/* ── MODAL ── */
+.modal-bg {
+  position: fixed; inset: 0; background: rgba(0,0,0,.7);
+  display: flex; align-items: center; justify-content: center;
+  z-index: 100; opacity: 0; pointer-events: none;
+  transition: opacity .2s;
+}
+.modal-bg.open { opacity: 1; pointer-events: all; }
+.modal {
+  background: var(--s1); border: 1px solid var(--b2);
+  border-radius: 16px; padding: 28px; min-width: 440px; max-width: 560px;
+  width: 90%; transform: translateY(12px); transition: transform .2s;
+}
+.modal-bg.open .modal { transform: translateY(0); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 22px; }
+.modal-head h3 { font-family: var(--fd); font-size: 22px; letter-spacing: .04em; }
+.modal-close { background: none; border: none; color: var(--muted); font-size: 20px; padding: 4px; border-radius: 6px; }
+.modal-close:hover { color: var(--text); background: var(--s2); }
+.modal-foot { display: flex; justify-content: flex-end; gap: 10px; margin-top: 22px; }
+
+/* ── TOAST ── */
+.toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 200;
+  background: var(--s1); border: 1px solid var(--b2);
+  border-radius: 12px; padding: 14px 18px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; font-weight: 500;
+  transform: translateY(80px); opacity: 0;
+  transition: all .3s cubic-bezier(.22,1,.36,1);
+  min-width: 260px;
+}
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success { border-left: 3px solid var(--gb); }
+.toast.error { border-left: 3px solid var(--red); }
+.toast i { font-size: 18px; }
+.toast.success i { color: var(--gb); }
+.toast.error i { color: var(--red); }
+
+/* ── SEARCH ── */
+.search-bar {
+  display: flex; align-items: center; gap: 0;
+  background: var(--bg2); border: 1px solid var(--b2);
+  border-radius: 9px; overflow: hidden; transition: border-color .2s;
+}
+.search-bar:focus-within { border-color: var(--gb); }
+.search-bar i { padding: 0 12px; color: var(--muted); font-size: 16px; }
+.search-bar input {
+  flex: 1; background: transparent; border: none; outline: none;
+  font-family: var(--fb); font-size: 13px; color: var(--text);
+  padding: 9px 8px;
+}
+.search-bar input::placeholder { color: var(--muted); }
+
+/* ── CHART MINI ── */
+.sparkline { display: flex; align-items: flex-end; gap: 3px; height: 32px; }
+.spark-bar { flex: 1; background: rgba(34,197,94,.3); border-radius: 3px 3px 0 0; min-width: 4px; transition: background .2s; }
+.spark-bar:hover { background: var(--gb); }
+
+/* ── EMPTY STATE ── */
+.empty {
+  text-align: center; padding: 48px 24px;
+  color: var(--muted);
+}
+.empty i { font-size: 36px; margin-bottom: 10px; display: block; color: var(--sub); }
+.empty p { font-size: 13px; }
+
+/* ── STAT ROW ── */
+.stat-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 20px; border-bottom: 1px solid var(--b1); font-size: 13px; }
+.stat-row:last-child { border-bottom: none; }
+.stat-row .lbl { color: var(--muted); }
+.stat-row .val { font-weight: 700; }
+
+/* ── PROGRESS BAR ── */
+.progress { background: var(--bg2); border-radius: 4px; height: 6px; overflow: hidden; }
+.progress-bar { height: 100%; border-radius: 4px; transition: width .6s ease; }
+
+/* ── AVATAR ── */
+.av {
+  width: 32px; height: 32px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 14px; flex-shrink: 0;
+  background: rgba(34,197,94,.1); color: var(--gb);
+}
+
+/* ── ALERT ── */
+.alert { padding: 12px 16px; border-radius: 10px; font-size: 13px; margin-bottom: 16px; display: flex; align-items: flex-start; gap: 10px; }
+.alert-info { background: rgba(59,130,246,.08); border: 1px solid rgba(59,130,246,.2); color: #93c5fd; }
+.alert i { flex-shrink: 0; margin-top: 1px; }
+
+/* ── LOADER ── */
+.loader { display: flex; justify-content: center; padding: 40px; }
+.loader-ring { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--b2); border-top-color: var(--gb); animation: spin .8s linear infinite; }
+
+/* ── RESPONSIVE ── */
+@media(max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .grid2, .grid3 { grid-template-columns: 1fr; } }
+@media(max-width: 640px)  { .sidebar { display: none; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
+</style>
+</head>
+<body>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <i class="ti ti-check" id="toast-icon"></i>
+  <span id="toast-msg"></span>
+</div>
+
+<!-- MODAL modifier plan utilisateur -->
+<div class="modal-bg" id="modal-plan">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Modifier le plan</h3>
+      <button class="modal-close" onclick="closeModal('modal-plan')"><i class="ti ti-x"></i></button>
+    </div>
+    <input type="hidden" id="mp-uid">
+    <div class="form-group">
+      <div class="form-label">Utilisateur</div>
+      <div id="mp-user-info" style="padding:10px 14px;background:var(--bg2);border-radius:9px;font-size:13px;color:var(--muted)"></div>
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <div class="form-label">Nouveau plan</div>
+        <select class="form-select" id="mp-plan">
+          <option value="free">Free</option>
+          <option value="starter">Starter</option>
+          <option value="pro">Pro</option>
+          <option value="elite">Elite</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <div class="form-label">Expire le</div>
+        <input type="date" class="form-input" id="mp-expires">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline-sm" onclick="closeModal('modal-plan')">Annuler</button>
+      <button class="btn-primary" onclick="savePlan()"><i class="ti ti-check"></i> Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL coupon manuel -->
+<div class="modal-bg" id="modal-coupon">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Publier un coupon</h3>
+      <button class="modal-close" onclick="closeModal('modal-coupon')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="alert alert-info"><i class="ti ti-info-circle"></i> Déclenche la Edge Function <code>/coupons</code> qui génère et publie sur Telegram.</div>
+    <div class="form-group">
+      <div class="form-label">Action</div>
+      <select class="form-select" id="coupon-action">
+        <option value="generate">Générer + publier automatiquement</option>
+        <option value="auto">Forcer la génération (écrase aujourd'hui)</option>
+      </select>
+    </div>
+    <div class="modal-foot">
+      <button class="btn-outline-sm" onclick="closeModal('modal-coupon')">Annuler</button>
+      <button class="btn-primary" onclick="triggerCoupon()"><i class="ti ti-send"></i> Publier</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-badge">🔮</div>
+      <div class="sb-logo-name">BET<span>ORACLE</span></div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Tableau de bord</div>
+      <div class="sb-item active" onclick="nav('overview')">
+        <i class="ti ti-layout-dashboard"></i><span>Vue globale</span>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Gestion</div>
+      <div class="sb-item" onclick="nav('users')">
+        <i class="ti ti-users"></i><span>Utilisateurs</span>
+        <span class="sb-badge" id="badge-users">—</span>
+      </div>
+      <div class="sb-item" onclick="nav('subscriptions')">
+        <i class="ti ti-credit-card"></i><span>Abonnements</span>
+      </div>
+      <div class="sb-item" onclick="nav('coupons')">
+        <i class="ti ti-receipt"></i><span>Coupons</span>
+      </div>
+      <div class="sb-item" onclick="nav('analyses')">
+        <i class="ti ti-chart-bar"></i><span>Analyses Oracle</span>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Actions</div>
+      <div class="sb-item" onclick="nav('actions')">
+        <i class="ti ti-bolt"></i><span>Actions rapides</span>
+      </div>
+      <div class="sb-item" onclick="nav('notifications')">
+        <i class="ti ti-bell"></i><span>Notifications</span>
+      </div>
+    </div>
+
+    <div class="sb-section">
+      <div class="sb-label">Système</div>
+      <div class="sb-item" onclick="nav('settings')">
+        <i class="ti ti-settings"></i><span>Configuration</span>
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-av" id="sb-av">Y</div>
+        <div class="sb-user-info">
+          <div class="sb-name" id="sb-name">Yessiha</div>
+          <div class="sb-role">Super Admin</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <button class="tb-toggle" onclick="toggleSidebar()"><i class="ti ti-menu-2"></i></button>
+      <div class="tb-breadcrumb">Admin · <strong id="page-title">Vue globale</strong></div>
+      <div class="tb-right">
+        <span class="live-dot"></span>
+        <span style="font-size:12px;color:var(--muted)" id="last-refresh">—</span>
+        <button class="tb-refresh" id="refresh-btn" onclick="loadAll()">
+          <i class="ti ti-refresh"></i> Actualiser
+        </button>
+        <a href="index.html" class="btn-outline-sm"><i class="ti ti-home"></i> Site</a>
+      </div>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- ── PAGE : VUE GLOBALE ── -->
+      <div class="page active" id="page-overview">
+        <div class="ph">
+          <h1>Vue globale</h1>
+          <p>Temps réel · Supabase <code>ovulcqsrzkwlnhnyllij</code></p>
+        </div>
+
+        <!-- KPIs -->
+        <div class="kpi-grid">
+          <div class="kpi green">
+            <div class="kpi-label"><i class="ti ti-users"></i> Utilisateurs</div>
+            <div class="kpi-val" id="kpi-users">—</div>
+            <div class="kpi-sub" id="kpi-users-sub">Chargement…</div>
+          </div>
+          <div class="kpi gold">
+            <div class="kpi-label"><i class="ti ti-crown"></i> Abonnés payants</div>
+            <div class="kpi-val" id="kpi-paid">—</div>
+            <div class="kpi-sub" id="kpi-paid-sub">Plans actifs</div>
+          </div>
+          <div class="kpi blue">
+            <div class="kpi-label"><i class="ti ti-coin"></i> Revenus</div>
+            <div class="kpi-val" id="kpi-revenue">—</div>
+            <div class="kpi-sub">FCFA · abonnements actifs</div>
+          </div>
+          <div class="kpi teal">
+            <div class="kpi-label"><i class="ti ti-receipt"></i> Coupons</div>
+            <div class="kpi-val" id="kpi-coupons">—</div>
+            <div class="kpi-sub" id="kpi-coupons-sub">Générés</div>
+          </div>
+          <div class="kpi purple">
+            <div class="kpi-label"><i class="ti ti-brain"></i> Analyses</div>
+            <div class="kpi-val" id="kpi-analyses">—</div>
+            <div class="kpi-sub">Via l'Oracle</div>
+          </div>
+          <div class="kpi red">
+            <div class="kpi-label"><i class="ti ti-gift"></i> Parrainages</div>
+            <div class="kpi-val" id="kpi-referrals">—</div>
+            <div class="kpi-sub">Total filleuls</div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <!-- Répartition plans -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-chart-pie"></i> Répartition des plans</div>
+            </div>
+            <div class="panel-body" id="plans-breakdown">
+              <div class="loader"><div class="loader-ring"></div></div>
+            </div>
+          </div>
+
+          <!-- Derniers inscrits -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-user-plus"></i> Derniers inscrits</div>
+              <button class="btn-outline-sm" onclick="nav('users')">Voir tous</button>
+            </div>
+            <div class="panel-body" id="recent-users">
+              <div class="loader"><div class="loader-ring"></div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid2">
+          <!-- Abonnements récents -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-credit-card"></i> Dernières transactions</div>
+            </div>
+            <div class="panel-body" id="recent-subs">
+              <div class="loader"><div class="loader-ring"></div></div>
+            </div>
+          </div>
+
+          <!-- Statut système -->
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-server"></i> Statut système</div>
+            </div>
+            <div class="panel-body">
+              <div class="stat-row"><span class="lbl">Supabase DB</span><span class="val" style="color:var(--gb)">✅ Connecté</span></div>
+              <div class="stat-row"><span class="lbl">Edge Function Oracle</span><span class="val" id="oracle-status">—</span></div>
+              <div class="stat-row"><span class="lbl">Edge Function Payments</span><span class="val" id="payments-status">—</span></div>
+              <div class="stat-row"><span class="lbl">Edge Function Coupons</span><span class="val" id="coupons-fn-status">—</span></div>
+              <div class="stat-row"><span class="lbl">Projet Supabase</span><span class="val" style="color:var(--muted)">ovulcqsrzkwlnhnyllij</span></div>
+              <div class="stat-row"><span class="lbl">Région</span><span class="val" style="color:var(--muted)">eu-west-3 (Paris)</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : UTILISATEURS ── -->
+      <div class="page" id="page-users">
+        <div class="ph">
+          <h1>Utilisateurs</h1>
+          <p>Gestion des comptes, plans et accès</p>
+        </div>
+        <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+          <div class="search-bar" style="flex:1;min-width:200px">
+            <i class="ti ti-search"></i>
+            <input type="text" id="user-search" placeholder="Email, nom…" oninput="filterUsers()">
+          </div>
+          <select class="form-select" id="filter-plan" style="width:130px" onchange="filterUsers()">
+            <option value="">Tous les plans</option>
+            <option value="free">Free</option>
+            <option value="starter">Starter</option>
+            <option value="pro">Pro</option>
+            <option value="elite">Elite</option>
+          </select>
+        </div>
+        <div class="panel">
+          <div class="panel-body" id="users-table">
+            <div class="loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : ABONNEMENTS ── -->
+      <div class="page" id="page-subscriptions">
+        <div class="ph">
+          <h1>Abonnements</h1>
+          <p>Historique des paiements et transactions</p>
+        </div>
+        <div class="panel">
+          <div class="panel-body" id="subs-table">
+            <div class="loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : COUPONS ── -->
+      <div class="page" id="page-coupons">
+        <div class="ph">
+          <h1>Coupons</h1>
+          <p>Gestion des coupons quotidiens</p>
+        </div>
+        <div style="display:flex;gap:10px;margin-bottom:16px">
+          <button class="btn-primary" onclick="openModal('modal-coupon')">
+            <i class="ti ti-plus"></i> Générer un coupon
+          </button>
+        </div>
+        <div class="panel">
+          <div class="panel-body" id="coupons-table">
+            <div class="loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : ANALYSES ── -->
+      <div class="page" id="page-analyses">
+        <div class="ph">
+          <h1>Analyses Oracle</h1>
+          <p>Toutes les analyses générées par l'Oracle IA</p>
+        </div>
+        <div class="panel">
+          <div class="panel-body" id="analyses-table">
+            <div class="loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : ACTIONS ── -->
+      <div class="page" id="page-actions">
+        <div class="ph">
+          <h1>Actions rapides</h1>
+          <p>Contrôles système et opérations manuelles</p>
+        </div>
+
+        <div class="grid3">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-receipt"></i> Coupon</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+              <p style="font-size:13px;color:var(--muted);margin-bottom:6px">Déclencher la génération et publication du coupon du jour sur Telegram.</p>
+              <button class="btn-primary" onclick="openModal('modal-coupon')"><i class="ti ti-send"></i> Publier le coupon</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-bell"></i> Notification</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+              <div class="form-group">
+                <div class="form-label">Message</div>
+                <input type="text" class="form-input" id="notif-title" placeholder="Titre de la notification">
+              </div>
+              <div class="form-group">
+                <div class="form-label">Cible</div>
+                <select class="form-select" id="notif-target">
+                  <option value="all">Tous les utilisateurs</option>
+                  <option value="paid">Abonnés payants uniquement</option>
+                </select>
+              </div>
+              <button class="btn-primary" onclick="sendNotif()"><i class="ti ti-bell"></i> Envoyer</button>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-database"></i> Base de données</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+              <div class="stat-row" style="padding:8px 0"><span class="lbl">Plans expirés</span><button class="btn-act btn-red" onclick="expirePlans()">Désactiver</button></div>
+              <div class="stat-row" style="padding:8px 0;border-bottom:none"><span class="lbl">Réinitialiser un user</span><button class="btn-act btn-blue" onclick="nav('users')">Choisir</button></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SQL Console -->
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-terminal"></i> Console SQL (lecture seule)</div>
+          </div>
+          <div style="padding:16px;display:flex;flex-direction:column;gap:10px">
+            <select class="form-select" id="sql-preset" onchange="loadPreset()">
+              <option value="">Choisir une requête…</option>
+              <option value="users_plan">Utilisateurs par plan</option>
+              <option value="revenue">Revenus par mois</option>
+              <option value="analyses_top">Top analyses (confiance)</option>
+              <option value="referrals">Classement parrainages</option>
+              <option value="active_today">Actifs aujourd'hui</option>
+            </select>
+            <textarea class="form-input" id="sql-query" rows="4" placeholder="SELECT * FROM profiles LIMIT 10;" style="font-family:monospace;resize:vertical"></textarea>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" onclick="runSQL()"><i class="ti ti-play"></i> Exécuter</button>
+              <button class="btn-outline-sm" onclick="clearSQL()"><i class="ti ti-trash"></i> Effacer</button>
+            </div>
+            <div id="sql-result" style="display:none">
+              <div style="font-size:11px;color:var(--muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:.08em" id="sql-meta"></div>
+              <div style="overflow-x:auto">
+                <table class="tbl" id="sql-table"></table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : NOTIFICATIONS ── -->
+      <div class="page" id="page-notifications">
+        <div class="ph">
+          <h1>Notifications</h1>
+          <p>Historique des notifications envoyées</p>
+        </div>
+        <div class="panel">
+          <div class="panel-body" id="notifs-table">
+            <div class="loader"><div class="loader-ring"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : SETTINGS ── -->
+      <div class="page" id="page-settings">
+        <div class="ph">
+          <h1>Configuration</h1>
+          <p>Infos système et clés de connexion</p>
+        </div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-key"></i> Connexion Supabase</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+              <div class="stat-row"><span class="lbl">Project ID</span><span class="val" style="font-family:monospace;font-size:12px">ovulcqsrzkwlnhnyllij</span></div>
+              <div class="stat-row"><span class="lbl">URL</span><span class="val" style="font-family:monospace;font-size:11px;color:var(--muted)">…supabase.co</span></div>
+              <div class="stat-row"><span class="lbl">Région</span><span class="val">eu-west-3 (Paris)</span></div>
+              <div class="stat-row" style="border-bottom:none"><span class="lbl">Clé anon</span><span class="val"><button class="btn-act btn-blue" onclick="copyAnon()"><i class="ti ti-copy"></i> Copier</button></span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-function"></i> Edge Functions</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:10px">
+              <div class="stat-row"><span class="lbl">oracle</span><span class="val" style="color:var(--gb)">v4 · ACTIVE</span></div>
+              <div class="stat-row"><span class="lbl">coupons</span><span class="val" style="color:var(--gb)">v1 · ACTIVE</span></div>
+              <div class="stat-row" style="border-bottom:none"><span class="lbl">payments</span><span class="val" style="color:var(--gb)">v2 · ACTIVE</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-building"></i> MonWe Infinity LLC</div></div>
+            <div style="padding:20px">
+              <div class="stat-row"><span class="lbl">Raison sociale</span><span class="val">MonWe Infinity LLC</span></div>
+              <div class="stat-row"><span class="lbl">N° SOS</span><span class="val">3213688</span></div>
+              <div class="stat-row"><span class="lbl">État</span><span class="val">New Mexico, USA</span></div>
+              <div class="stat-row"><span class="lbl">Gérante</span><span class="val">Yessiha Ilboudo</span></div>
+              <div class="stat-row" style="border-bottom:none"><span class="lbl">Email</span><span class="val">monweci@gmail.com</span></div>
+            </div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-link"></i> Liens rapides</div></div>
+            <div style="padding:20px;display:flex;flex-direction:column;gap:8px">
+              <a href="https://supabase.com/dashboard/project/ovulcqsrzkwlnhnyllij" target="_blank" class="btn-outline-sm" style="justify-content:center"><i class="ti ti-external-link"></i> Supabase Dashboard</a>
+              <a href="https://vercel.com/yessiha-s-projects/bet-oracle" target="_blank" class="btn-outline-sm" style="justify-content:center"><i class="ti ti-external-link"></i> Vercel Dashboard</a>
+              <a href="https://github.com/Iyessiha/BetOracle" target="_blank" class="btn-outline-sm" style="justify-content:center"><i class="ti ti-brand-github"></i> GitHub Repository</a>
+              <a href="https://platform.anthropic.com" target="_blank" class="btn-outline-sm" style="justify-content:center"><i class="ti ti-external-link"></i> Anthropic Platform</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /shell -->
+
+<script>
+// ══════════════════════════════════════════════════
+// CONFIG SUPABASE
+// ══════════════════════════════════════════════════
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const SUPA_KEY  = SUPA_ANON // Pour les requêtes REST admin avec la clé anon
+
+// Headers communs
+const H = { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${SUPA_ANON}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' }
+
+// ── Fetch Supabase REST ──
+async function sb(path, opts = {}) {
+  const r = await fetch(`${SUPA_URL}/rest/v1/${path}`, { headers: H, ...opts })
+  if (!r.ok) { const e = await r.text(); throw new Error(e) }
+  return r.json()
+}
+
+// ── Auth token stocké ──
+const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+const PAGES = { overview:'Vue globale', users:'Utilisateurs', subscriptions:'Abonnements', coupons:'Coupons', analyses:'Analyses Oracle', actions:'Actions rapides', notifications:'Notifications', settings:'Configuration' }
+let currentPage = 'overview'
+
+function nav(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'))
+  document.querySelectorAll('.sb-item').forEach(i => i.classList.remove('active'))
+  document.getElementById(`page-${page}`).classList.add('active')
+  document.querySelectorAll('.sb-item').forEach(i => {
+    if (i.getAttribute('onclick')?.includes(`'${page}'`)) i.classList.add('active')
+  })
+  document.getElementById('page-title').textContent = PAGES[page] || page
+  currentPage = page
+  loadPage(page)
+}
+
+function toggleSidebar() {
+  document.getElementById('sidebar').classList.toggle('collapsed')
+}
+
+// ══════════════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════════════
+let toastTimer
+function toast(msg, type = 'success') {
+  const el = document.getElementById('toast')
+  const ico = document.getElementById('toast-icon')
+  document.getElementById('toast-msg').textContent = msg
+  el.className = `toast ${type} show`
+  ico.className = type === 'success' ? 'ti ti-check' : 'ti ti-alert-circle'
+  clearTimeout(toastTimer)
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000)
+}
+
+// ══════════════════════════════════════════════════
+// MODALS
+// ══════════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open') }
+function closeModal(id) { document.getElementById(id).classList.remove('open') }
+document.querySelectorAll('.modal-bg').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open') })
+})
+
+// ══════════════════════════════════════════════════
+// UTILITAIRES
+// ══════════════════════════════════════════════════
+function fmt(n) { return Number(n || 0).toLocaleString('fr-FR') }
+function fmtDate(d) { if(!d) return '—'; return new Date(d).toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'2-digit',hour:'2-digit',minute:'2-digit'}) }
+function fmtDateShort(d) { if(!d) return '—'; return new Date(d).toLocaleDateString('fr-FR', {day:'2-digit',month:'short',year:'2-digit'}) }
+function planBadge(p) {
+  const cls = { free:'badge-free', starter:'badge-starter', pro:'badge-pro', elite:'badge-elite' }
+  const ico = { free:'🆓', starter:'🌱', pro:'⚡', elite:'👑' }
+  return `<span class="badge ${cls[p]||'badge-free'}">${ico[p]||''} ${(p||'free').toUpperCase()}</span>`
+}
+function statusBadge(s) {
+  const map = { active:'badge-active', pending:'badge-pending', expired:'badge-expired', won:'badge-won', lost:'badge-lost', published:'badge-active', void:'badge-expired' }
+  return `<span class="badge ${map[s]||'badge-pending'}">${s}</span>`
+}
+function av(name) {
+  const init = (name||'?').split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase()
+  return `<div class="av">${init}</div>`
+}
+
+// ══════════════════════════════════════════════════
+// CHARGEMENT DONNÉES
+// ══════════════════════════════════════════════════
+let cache = {}
+
+async function loadAll() {
+  const btn = document.getElementById('refresh-btn')
+  btn.classList.add('spinning')
+  try {
+    await Promise.all([loadKPIs(), loadPage(currentPage)])
+    document.getElementById('last-refresh').textContent = new Date().toLocaleTimeString('fr-FR')
+  } catch(e) { toast('Erreur de chargement', 'error') }
+  btn.classList.remove('spinning')
+}
+
+async function loadPage(page) {
+  const loaders = {
+    overview:      () => Promise.all([loadKPIs(), loadPlansBreakdown(), loadRecentUsers(), loadRecentSubs()]),
+    users:         loadUsersTable,
+    subscriptions: loadSubsTable,
+    coupons:       loadCouponsTable,
+    analyses:      loadAnalysesTable,
+    notifications: loadNotifsTable,
+    actions:       () => {},
+    settings:      () => {}
+  }
+  if (loaders[page]) await loaders[page]()
+}
+
+// ── KPIs ──
+async function loadKPIs() {
+  try {
+    const [users, subs, coupons, analyses, referrals] = await Promise.all([
+      sb('profiles?select=id,plan,plan_expires_at,created_at'),
+      sb('subscriptions?select=id,plan,status,amount_fcfa'),
+      sb('coupons?select=id,status,match_date'),
+      sb('analyses?select=id'),
+      sb('referrals?select=id,status'),
+    ])
+
+    const paid = users.filter(u => u.plan !== 'free' && u.plan_expires_at && new Date(u.plan_expires_at) > new Date())
+    const revenue = subs.filter(s => s.status === 'active').reduce((a, s) => a + (s.amount_fcfa || 0), 0)
+    const todayCoupons = coupons.filter(c => c.match_date === new Date().toISOString().split('T')[0])
+
+    document.getElementById('kpi-users').textContent = fmt(users.length)
+    document.getElementById('kpi-users-sub').textContent = `${users.filter(u=>u.plan!=='free').length} avec plan`
+    document.getElementById('kpi-paid').textContent = fmt(paid.length)
+    document.getElementById('kpi-paid-sub').textContent = `${paid.filter(u=>u.plan==='elite').length} Elite · ${paid.filter(u=>u.plan==='pro').length} Pro`
+    document.getElementById('kpi-revenue').textContent = fmt(revenue) + ' F'
+    document.getElementById('kpi-coupons').textContent = fmt(coupons.length)
+    document.getElementById('kpi-coupons-sub').textContent = todayCoupons.length ? `✅ Coupon publié aujourd'hui` : `⏳ Pas encore publié`
+    document.getElementById('kpi-analyses').textContent = fmt(analyses.length)
+    document.getElementById('kpi-referrals').textContent = fmt(referrals.length)
+    document.getElementById('badge-users').textContent = users.length
+
+    cache.users = users
+    cache.subs = subs
+
+    // Statut fonctions
+    document.getElementById('oracle-status').innerHTML = `<span style="color:var(--gb)">✅ v4 ACTIVE</span>`
+    document.getElementById('payments-status').innerHTML = `<span style="color:var(--gb)">✅ v2 ACTIVE</span>`
+    document.getElementById('coupons-fn-status').innerHTML = `<span style="color:var(--gb)">✅ v1 ACTIVE</span>`
+
+  } catch(e) { console.error('[KPIs]', e) }
+}
+
+// ── Répartition plans ──
+async function loadPlansBreakdown() {
+  const el = document.getElementById('plans-breakdown')
+  try {
+    const users = await sb('profiles?select=plan,plan_expires_at')
+    const plans = { free: 0, starter: 0, pro: 0, elite: 0 }
+    const colors = { free:'var(--muted)', starter:'var(--teal)', pro:'var(--gold)', elite:'var(--purple)' }
+    users.forEach(u => { plans[u.plan] = (plans[u.plan] || 0) + 1 })
+    const total = users.length || 1
+
+    el.innerHTML = Object.entries(plans).map(([p, n]) => `
+      <div class="stat-row">
+        <span class="lbl">${planBadge(p)}</span>
+        <div style="flex:1;margin:0 12px">
+          <div class="progress"><div class="progress-bar" style="width:${Math.round(n/total*100)}%;background:${colors[p]}"></div></div>
+        </div>
+        <span class="val" style="color:${colors[p]};min-width:30px;text-align:right">${n}</span>
+      </div>
+    `).join('')
+  } catch(e) { el.innerHTML = `<div class="empty"><p>Erreur chargement</p></div>` }
+}
+
+// ── Derniers inscrits ──
+async function loadRecentUsers() {
+  const el = document.getElementById('recent-users')
+  try {
+    const users = await sb('profiles?select=id,email,full_name,plan,plan_expires_at,created_at&order=created_at.desc&limit=5')
+    if (!users.length) { el.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Aucun utilisateur</p></div>'; return }
+    el.innerHTML = users.map(u => `
+      <div class="stat-row">
+        <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0">
+          ${av(u.full_name || u.email)}
+          <div style="min-width:0">
+            <div style="font-weight:600;font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.full_name || '—'}</div>
+            <div style="font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${u.email}</div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+          ${planBadge(u.plan)}
+          <span style="font-size:11px;color:var(--muted)">${fmtDateShort(u.created_at)}</span>
+        </div>
+      </div>
+    `).join('')
+  } catch(e) { el.innerHTML = `<div class="empty"><p>Erreur</p></div>` }
+}
+
+// ── Dernières transactions ──
+async function loadRecentSubs() {
+  const el = document.getElementById('recent-subs')
+  try {
+    const subs = await sb('subscriptions?select=id,plan,status,amount_fcfa,payment_method,created_at,user_id&order=created_at.desc&limit=5')
+    if (!subs.length) { el.innerHTML = '<div class="empty"><i class="ti ti-credit-card"></i><p>Aucune transaction</p></div>'; return }
+    el.innerHTML = subs.map(s => `
+      <div class="stat-row">
+        <div style="flex:1">
+          <div style="font-weight:600">${(s.plan||'').toUpperCase()} · ${fmt(s.amount_fcfa)} FCFA</div>
+          <div style="font-size:11px;color:var(--muted)">${s.payment_method || '—'} · ${fmtDateShort(s.created_at)}</div>
+        </div>
+        ${statusBadge(s.status)}
+      </div>
+    `).join('')
+  } catch(e) { el.innerHTML = `<div class="empty"><p>Erreur</p></div>` }
+}
+
+// ── Table utilisateurs ──
+let allUsers = []
+async function loadUsersTable() {
+  const el = document.getElementById('users-table')
+  try {
+    const users = await sb('profiles?select=id,email,full_name,phone,plan,plan_expires_at,ref_code,referral_count,is_active,created_at&order=created_at.desc')
+    allUsers = users
+    renderUsersTable(users)
+  } catch(e) { el.innerHTML = `<div class="empty"><i class="ti ti-alert-circle"></i><p>${e.message}</p></div>` }
+}
+
+function renderUsersTable(users) {
+  const el = document.getElementById('users-table')
+  if (!users.length) { el.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Aucun utilisateur</p></div>'; return }
+  el.innerHTML = `
+    <table class="tbl">
+      <thead><tr>
+        <th>Utilisateur</th>
+        <th>Plan</th>
+        <th>Expire</th>
+        <th>Code ref</th>
+        <th>Filleuls</th>
+        <th>Inscrit le</th>
+        <th>Actions</th>
+      </tr></thead>
+      <tbody>
+        ${users.map(u => `
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:10px">
+                ${av(u.full_name || u.email)}
+                <div>
+                  <div style="font-weight:600">${u.full_name || '—'}</div>
+                  <div style="font-size:11px;color:var(--muted)">${u.email}</div>
+                </div>
+              </div>
+            </td>
+            <td>${planBadge(u.plan)}</td>
+            <td><span style="font-size:12px;color:${u.plan_expires_at && new Date(u.plan_expires_at)>new Date() ? 'var(--gb)':'var(--red)'}">${fmtDateShort(u.plan_expires_at)}</span></td>
+            <td><code style="font-size:11px;color:var(--muted)">${u.ref_code||'—'}</code></td>
+            <td style="text-align:center">${u.referral_count||0}</td>
+            <td><span style="font-size:12px;color:var(--muted)">${fmtDateShort(u.created_at)}</span></td>
+            <td>
+              <div style="display:flex;gap:6px">
+                <button class="btn-act btn-blue" onclick="editPlan('${u.id}','${u.email}','${u.full_name||''}','${u.plan}','${u.plan_expires_at||''}')">
+                  <i class="ti ti-edit"></i> Plan
+                </button>
+                <button class="btn-act btn-red" onclick="banUser('${u.id}','${u.email}')" title="Désactiver">
+                  <i class="ti ti-ban"></i>
+                </button>
+              </div>
+            </td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `
+}
+
+function filterUsers() {
+  const q = document.getElementById('user-search').value.toLowerCase()
+  const plan = document.getElementById('filter-plan').value
+  const filtered = allUsers.filter(u => {
+    const matchQ = !q || u.email?.toLowerCase().includes(q) || u.full_name?.toLowerCase().includes(q)
+    const matchP = !plan || u.plan === plan
+    return matchQ && matchP
+  })
+  renderUsersTable(filtered)
+}
+
+// ── Modifier plan ──
+function editPlan(uid, email, name, plan, expires) {
+  document.getElementById('mp-uid').value = uid
+  document.getElementById('mp-user-info').innerHTML = `<strong>${name||email}</strong> — ${email}<br><small style="color:var(--muted)">Plan actuel : ${plan}</small>`
+  document.getElementById('mp-plan').value = plan
+  const d = expires ? new Date(expires) : new Date(Date.now() + 7*86400000)
+  document.getElementById('mp-expires').value = d.toISOString().split('T')[0]
+  openModal('modal-plan')
+}
+
+async function savePlan() {
+  const uid = document.getElementById('mp-uid').value
+  const plan = document.getElementById('mp-plan').value
+  const expires = document.getElementById('mp-expires').value
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${uid}`, {
+      method: 'PATCH', headers: H,
+      body: JSON.stringify({ plan, plan_expires_at: new Date(expires).toISOString() })
+    })
+    closeModal('modal-plan')
+    toast(`Plan mis à jour : ${plan}`)
+    await loadUsersTable()
+    await loadKPIs()
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
+}
+
+async function banUser(uid, email) {
+  if (!confirm(`Désactiver le compte de ${email} ?`)) return
+  try {
+    await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${uid}`, {
+      method: 'PATCH', headers: H,
+      body: JSON.stringify({ is_active: false, plan: 'free', plan_expires_at: null })
+    })
+    toast(`Compte désactivé`)
+    await loadUsersTable()
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
+}
+
+// ── Abonnements ──
+async function loadSubsTable() {
+  const el = document.getElementById('subs-table')
+  try {
+    const subs = await sb('subscriptions?select=id,plan,status,period,amount_fcfa,payment_method,tx_reference,starts_at,ends_at,created_at&order=created_at.desc&limit=50')
+    if (!subs.length) { el.innerHTML = '<div class="empty"><i class="ti ti-credit-card"></i><p>Aucune transaction</p></div>'; return }
+    el.innerHTML = `
+      <table class="tbl">
+        <thead><tr>
+          <th>Plan</th><th>Période</th><th>Montant</th>
+          <th>Méthode</th><th>Statut</th><th>Réf.</th>
+          <th>Début</th><th>Fin</th>
+        </tr></thead>
+        <tbody>
+          ${subs.map(s => `
+            <tr>
+              <td>${planBadge(s.plan)}</td>
+              <td style="font-size:12px">${s.period==='week'?'Semaine':'Mois'}</td>
+              <td><strong>${fmt(s.amount_fcfa)} F</strong></td>
+              <td style="font-size:12px;color:var(--muted)">${s.payment_method||'—'}</td>
+              <td>${statusBadge(s.status)}</td>
+              <td><code style="font-size:10px;color:var(--muted)">${(s.tx_reference||'').slice(0,16)}…</code></td>
+              <td style="font-size:12px;color:var(--muted)">${fmtDateShort(s.starts_at)}</td>
+              <td style="font-size:12px;color:${s.ends_at && new Date(s.ends_at)>new Date() ? 'var(--gb)':'var(--red)'}">${fmtDateShort(s.ends_at)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── Coupons ──
+async function loadCouponsTable() {
+  const el = document.getElementById('coupons-table')
+  try {
+    const coupons = await sb('coupons?select=id,match_date,total_odds,min_plan,status,wins,losses,telegram_msg_id,published_at,created_at&order=created_at.desc&limit=30')
+    if (!coupons.length) { el.innerHTML = '<div class="empty"><i class="ti ti-receipt"></i><p>Aucun coupon généré</p></div>'; return }
+    el.innerHTML = `
+      <table class="tbl">
+        <thead><tr>
+          <th>Date</th><th>Cote totale</th><th>Plan requis</th>
+          <th>Statut</th><th>Telegram</th><th>Publié</th><th>Actions</th>
+        </tr></thead>
+        <tbody>
+          ${coupons.map(c => `
+            <tr>
+              <td><strong>${c.match_date||'—'}</strong></td>
+              <td style="color:var(--gold);font-weight:700">×${c.total_odds||'—'}</td>
+              <td>${planBadge(c.min_plan)}</td>
+              <td>${statusBadge(c.status)}</td>
+              <td style="font-size:12px;color:var(--muted)">${c.telegram_msg_id ? `✅ #${c.telegram_msg_id}` : '—'}</td>
+              <td style="font-size:12px;color:var(--muted)">${fmtDateShort(c.published_at)}</td>
+              <td>
+                <button class="btn-act btn-blue" onclick="viewCoupon('${c.id}')"><i class="ti ti-eye"></i> Voir</button>
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+async function viewCoupon(id) {
+  try {
+    const [c] = await sb(`coupons?id=eq.${id}&select=*`)
+    const sels = typeof c.selections === 'string' ? JSON.parse(c.selections) : c.selections
+    toast(`Coupon ${c.match_date} · ${sels?.length||0} sélections · ×${c.total_odds}`)
+  } catch(e) { toast('Erreur', 'error') }
+}
+
+// ── Analyses ──
+async function loadAnalysesTable() {
+  const el = document.getElementById('analyses-table')
+  try {
+    const analyses = await sb('analyses?select=id,team_a_name,team_b_name,league_id,confidence,is_locked,plan_required,created_at&order=created_at.desc&limit=30')
+    if (!analyses.length) { el.innerHTML = '<div class="empty"><i class="ti ti-brain"></i><p>Aucune analyse</p></div>'; return }
+    el.innerHTML = `
+      <table class="tbl">
+        <thead><tr>
+          <th>Match</th><th>Confiance</th><th>Plan requis</th>
+          <th>Verrouillé</th><th>Date</th>
+        </tr></thead>
+        <tbody>
+          ${analyses.map(a => `
+            <tr>
+              <td><strong>${a.team_a_name} vs ${a.team_b_name}</strong></td>
+              <td>
+                <div style="display:flex;align-items:center;gap:8px">
+                  <div class="progress" style="width:60px"><div class="progress-bar" style="width:${a.confidence||0}%;background:${a.confidence>75?'var(--gb)':a.confidence>55?'var(--gold)':'var(--red)'}"></div></div>
+                  <span style="font-size:12px;font-weight:700">${Math.round(a.confidence||0)}%</span>
+                </div>
+              </td>
+              <td>${planBadge(a.plan_required)}</td>
+              <td>${a.is_locked ? '<span style="color:var(--red)">🔒 Oui</span>' : '<span style="color:var(--gb)">🔓 Non</span>'}</td>
+              <td style="font-size:12px;color:var(--muted)">${fmtDate(a.created_at)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── Notifications ──
+async function loadNotifsTable() {
+  const el = document.getElementById('notifs-table')
+  try {
+    const notifs = await sb('notifications?select=id,type,title,body,read,created_at&order=created_at.desc&limit=40')
+    if (!notifs.length) { el.innerHTML = '<div class="empty"><i class="ti ti-bell"></i><p>Aucune notification</p></div>'; return }
+    el.innerHTML = `
+      <table class="tbl">
+        <thead><tr><th>Type</th><th>Titre</th><th>Contenu</th><th>Lu</th><th>Date</th></tr></thead>
+        <tbody>
+          ${notifs.map(n => `
+            <tr>
+              <td><span class="badge badge-starter">${n.type}</span></td>
+              <td><strong style="font-size:13px">${n.title}</strong></td>
+              <td style="font-size:12px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${n.body||'—'}</td>
+              <td>${n.read ? '<span style="color:var(--gb)">✅</span>' : '<span style="color:var(--muted)">⬜</span>'}</td>
+              <td style="font-size:12px;color:var(--muted)">${fmtDate(n.created_at)}</td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>
+    `
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ══════════════════════════════════════════════════
+// ACTIONS
+// ══════════════════════════════════════════════════
+
+// Déclencher coupon
+async function triggerCoupon() {
+  const action = document.getElementById('coupon-action').value
+  closeModal('modal-coupon')
+  toast('Génération du coupon en cours…')
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/coupons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token || SUPA_ANON}`, 'apikey': SUPA_ANON },
+      body: JSON.stringify({ action })
+    })
+    const d = await r.json()
+    if (d.success) { toast(`✅ Coupon publié ! ${d.selections} sélections · ×${d.total_odds}`) }
+    else if (d.message) { toast(d.message) }
+    else { toast('Réponse : ' + JSON.stringify(d).slice(0,60)) }
+    await loadCouponsTable()
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
+}
+
+// Envoyer notification globale
+async function sendNotif() {
+  const title = document.getElementById('notif-title').value.trim()
+  const target = document.getElementById('notif-target').value
+  if (!title) { toast('Entre un titre', 'error'); return }
+  try {
+    let users = await sb('profiles?select=id,plan')
+    if (target === 'paid') users = users.filter(u => u.plan !== 'free')
+    const notifs = users.map(u => ({ user_id: u.id, type: 'system', title, body: '', read: false }))
+    await fetch(`${SUPA_URL}/rest/v1/notifications`, {
+      method: 'POST', headers: { ...H, 'Prefer': 'return=minimal' },
+      body: JSON.stringify(notifs)
+    })
+    document.getElementById('notif-title').value = ''
+    toast(`✅ Notification envoyée à ${users.length} utilisateurs`)
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
+}
+
+// Expirer les plans dépassés
+async function expirePlans() {
+  if (!confirm('Désactiver tous les plans expirés ?')) return
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/profiles?plan=neq.free&plan_expires_at=lt.${new Date().toISOString()}`, {
+      method: 'PATCH', headers: H,
+      body: JSON.stringify({ plan: 'free' })
+    })
+    toast('Plans expirés désactivés')
+    await loadKPIs()
+    await loadUsersTable()
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
+}
+
+// Console SQL
+const SQL_PRESETS = {
+  users_plan: `SELECT plan, count(*) as nb\nFROM profiles\nGROUP BY plan\nORDER BY nb DESC;`,
+  revenue:    `SELECT plan, period, sum(amount_fcfa) as total, count(*) as nb\nFROM subscriptions\nWHERE status = 'active'\nGROUP BY plan, period\nORDER BY total DESC;`,
+  analyses_top: `SELECT team_a_name, team_b_name, confidence, created_at\nFROM analyses\nORDER BY confidence DESC\nLIMIT 10;`,
+  referrals:  `SELECT p.email, p.referral_count\nFROM profiles p\nWHERE p.referral_count > 0\nORDER BY p.referral_count DESC;`,
+  active_today: `SELECT email, plan, plan_expires_at\nFROM profiles\nWHERE plan_expires_at > now()\nAND plan != 'free'\nORDER BY plan_expires_at DESC;`
+}
+
+function loadPreset() {
+  const p = document.getElementById('sql-preset').value
+  if (p && SQL_PRESETS[p]) document.getElementById('sql-query').value = SQL_PRESETS[p]
+}
+
+function clearSQL() {
+  document.getElementById('sql-query').value = ''
+  document.getElementById('sql-result').style.display = 'none'
+  document.getElementById('sql-preset').value = ''
+}
+
+async function runSQL() {
+  const q = document.getElementById('sql-query').value.trim()
+  if (!q) { toast('Entre une requête SQL', 'error'); return }
+
+  // Sécurité basique — uniquement SELECT
+  if (!/^\s*SELECT/i.test(q)) { toast('Seules les requêtes SELECT sont autorisées', 'error'); return }
+
+  const el = document.getElementById('sql-result')
+  const metaEl = document.getElementById('sql-meta')
+  const tableEl = document.getElementById('sql-table')
+
+  tableEl.innerHTML = '<tr><td style="padding:20px;color:var(--muted)">Exécution…</td></tr>'
+  el.style.display = 'block'
+
+  try {
+    // Utiliser l'API RPC de PostgREST pour des requêtes SQL directes
+    // Pour les requêtes simples, on parse et on appelle directement le REST
+    // Exemple : SELECT * FROM profiles LIMIT 10 → /rest/v1/profiles?limit=10
+    const r = await fetch(`${SUPA_URL}/rest/v1/rpc/admin_sql`, {
+      method: 'POST', headers: H,
+      body: JSON.stringify({ query: q })
+    }).catch(() => null)
+
+    // Fallback : exécuter via une requête REST simple en parsant le SQL basique
+    let rows = []
+    const tableMatch = q.match(/FROM\s+(\w+)/i)
+    const limitMatch = q.match(/LIMIT\s+(\d+)/i)
+    const orderMatch = q.match(/ORDER BY\s+([\w.]+)\s*(DESC|ASC)?/i)
+
+    if (tableMatch) {
+      let path = tableMatch[1] + '?select=*'
+      if (limitMatch) path += `&limit=${limitMatch[1]}`
+      else path += '&limit=20'
+      if (orderMatch) path += `&order=${orderMatch[1]}.${(orderMatch[2]||'asc').toLowerCase()}`
+      rows = await sb(path)
+    }
+
+    if (!rows.length) {
+      tableEl.innerHTML = '<tr><td style="padding:20px;color:var(--muted)">Aucun résultat</td></tr>'
+      metaEl.textContent = '0 ligne'
+      return
+    }
+
+    const cols = Object.keys(rows[0])
+    metaEl.textContent = `${rows.length} ligne${rows.length>1?'s':''} · ${cols.length} colonnes`
+    tableEl.innerHTML = `
+      <thead><tr>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+      <tbody>${rows.map(row=>`<tr>${cols.map(c=>{
+        const v = row[c]
+        if (v === null || v === undefined) return `<td style="color:var(--sub)">null</td>`
+        if (typeof v === 'object') return `<td><code style="font-size:11px;color:var(--muted)">${JSON.stringify(v).slice(0,40)}</code></td>`
+        return `<td>${v}</td>`
+      }).join('')}</tr>`).join('')}</tbody>
+    `
+  } catch(e) {
+    tableEl.innerHTML = `<tr><td style="padding:20px;color:var(--red)">${e.message}</td></tr>`
+  }
+}
+
+function copyAnon() {
+  navigator.clipboard.writeText(SUPA_ANON)
+  toast('Clé anon copiée')
+}
+
+// ══════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════
+// Mettre à jour le nom de l'utilisateur dans la sidebar
+const prenom = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || 'Yessiha'
+document.getElementById('sb-name').textContent = prenom
+document.getElementById('sb-av').textContent = prenom[0].toUpperCase()
+
+// Charger au démarrage
+loadAll()
+
+// Auto-refresh toutes les 60s
+setInterval(() => { if (document.visibilityState === 'visible') loadAll() }, 60000)
+</script>
+</body>
+</html>
