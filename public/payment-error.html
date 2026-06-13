@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement échoué — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gold:#F5C842;--red:#ef4444;--bg:#060a06;--s1:#111711;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background-image:radial-gradient(circle at 50% 0%,rgba(239,68,68,.06) 0%,transparent 60%)}
+.card{width:100%;max-width:440px;background:var(--s1);border:1px solid rgba(239,68,68,.25);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
+.orb{width:80px;height:80px;border-radius:50%;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
+.orb i{font-size:36px;color:var(--red)}
+h1{font-family:var(--fd);font-size:38px;letter-spacing:.04em;margin-bottom:8px;color:var(--red)}
+.sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:var(--fb);cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:10px}
+.btn-green{background:var(--gb);color:#000}
+.btn-green:hover{background:#4ade80}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--b2)}
+.btn-ghost:hover{border-color:var(--gb);color:var(--gb)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="orb"><i class="ti ti-x"></i></div>
+  <h1>PAIEMENT ANNULÉ</h1>
+  <p class="sub">Le paiement n'a pas abouti ou a été annulé.<br>Aucun montant n'a été débité.<br>Tu peux réessayer à tout moment.</p>
+  <a href="index.html#plans" class="btn btn-green"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
+  <a href="welcome.html" class="btn btn-ghost"><i class="ti ti-home"></i> Retour à l'accueil</a>
+</div>
+</body>
+</html>

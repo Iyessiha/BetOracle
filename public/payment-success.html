@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement réussi — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gold:#F5C842;--bg:#060a06;--s1:#111711;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background-image:radial-gradient(circle at 50% 0%,rgba(34,197,94,.08) 0%,transparent 60%)}
+.card{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gb),var(--gold))}
+.orb{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:pop .5s cubic-bezier(.22,1,.36,1) both}
+@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
+.orb i{font-size:36px;color:var(--gb)}
+h1{font-family:var(--fd);font-size:38px;letter-spacing:.04em;margin-bottom:8px}
+.sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px}
+.sub strong{color:var(--text)}
+.plan-badge{display:inline-block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:var(--gb);font-family:var(--fd);font-size:22px;letter-spacing:.06em;padding:8px 22px;border-radius:12px;margin-bottom:28px}
+.info-box{background:rgba(0,0,0,.2);border-radius:12px;padding:16px;margin-bottom:28px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
+.info-row{display:flex;justify-content:space-between}
+.info-row strong{color:var(--text)}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:var(--fb);cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:10px}
+.btn-green{background:var(--gb);color:#000}
+.btn-green:hover{background:#4ade80}
+.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--b2)}
+.btn-ghost:hover{border-color:var(--gb);color:var(--gb)}
+.checking{color:var(--muted);font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite;display:inline-block}
+#status-area{min-height:20px}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="orb"><i class="ti ti-check"></i></div>
+  <h1>PAIEMENT REÇU !</h1>
+  <p class="sub">GeniusPay a confirmé ton paiement.<br>Ton abonnement est en cours d'activation…</p>
+
+  <div class="plan-badge" id="plan-badge">— PLAN —</div>
+
+  <div class="info-box">
+    <div class="info-row"><span>Référence</span><strong id="ref-display">—</strong></div>
+    <div class="info-row"><span>Montant</span><strong id="amount-display">—</strong></div>
+    <div class="info-row"><span>Statut</span><strong id="status-display" style="color:var(--gold)">Vérification…</strong></div>
+  </div>
+
+  <div id="status-area">
+    <div class="checking"><i class="ti ti-loader-2 spin"></i> Activation en cours…</div>
+  </div>
+
+  <a href="analyse.html" class="btn btn-green"><i class="ti ti-brain"></i> Lancer une analyse</a>
+  <a href="welcome.html" class="btn btn-ghost"><i class="ti ti-home"></i> Tableau de bord</a>
+</div>
+
+<script>
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+const params = new URLSearchParams(location.search)
+const ref    = params.get('ref') || ''
+const subId  = params.get('sub') || ''
+const token  = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+
+// Afficher la référence
+document.getElementById('ref-display').textContent = ref.slice(0,20) || '—'
+
+// Récupérer le plan depuis sessionStorage
+const plan = sessionStorage.getItem('bp_plan_choice') || sessionStorage.getItem('bp_plan') || ''
+if (plan) {
+  const labels = { starter:'STARTER', pro:'PRO', elite:'ELITE' }
+  const amounts = { starter:500, pro:1000, elite:2000 }
+  document.getElementById('plan-badge').textContent = labels[plan] || plan.toUpperCase()
+  document.getElementById('amount-display').textContent = (amounts[plan] || '—') + ' FCFA'
+}
+
+// Vérifier le paiement côté serveur
+async function verify() {
+  if (!ref || !token) {
+    document.getElementById('status-area').innerHTML = '<div style="color:#22c55e;font-weight:700">✅ En attente de confirmation webhook GeniusPay</div>'
+    document.getElementById('status-display').textContent = 'En attente'
+    return
+  }
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/payments`, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPA_ANON },
+      body: JSON.stringify({ action:'verify', tx_reference: ref })
+    })
+    const d = await r.json()
+
+    if (d.status === 'success' || d.status === 'already_active') {
+      document.getElementById('status-display').textContent = '✅ Activé'
+      document.getElementById('status-display').style.color = 'var(--gb)'
+      document.getElementById('status-area').innerHTML = `
+        <div style="color:var(--gb);font-weight:700;margin-bottom:12px">✅ Plan ${d.plan||'—'} activé jusqu'au ${d.ends_at ? new Date(d.ends_at).toLocaleDateString('fr-FR') : '—'} !</div>
+      `
+      // Mettre à jour le sessionStorage
+      if (d.plan) {
+        sessionStorage.setItem('bp_plan', d.plan)
+        localStorage.setItem('bp_plan', d.plan)
+      }
+    } else if (d.status === 'pending') {
+      document.getElementById('status-display').textContent = '⏳ En attente'
+      document.getElementById('status-area').innerHTML = '<div style="color:var(--gold);font-size:13px">⏳ Confirmation en attente. Rafraîchis dans quelques secondes.</div>'
+      // Réessayer dans 5s
+      setTimeout(verify, 5000)
+    } else {
+      document.getElementById('status-area').innerHTML = '<div style="color:var(--muted);font-size:13px">Statut : ' + (d.status||'inconnu') + '</div>'
+    }
+  } catch(e) {
+    document.getElementById('status-area').innerHTML = '<div style="color:var(--muted);font-size:13px">Erreur de vérification. Le paiement sera activé automatiquement via webhook.</div>'
+  }
+}
+
+// Lancer la vérification après 2s (laisser le temps au webhook)
+setTimeout(verify, 2000)
+</script>
+</body>
+</html>

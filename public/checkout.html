@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paiement — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gl:#4ade80;--gold:#F5C842;--bg:#060a06;--s1:#111711;--s2:#161e16;--b1:#1e2e1e;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--red:#ef4444;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
+  background-image:radial-gradient(circle at 30% 50%,rgba(34,197,94,.05) 0%,transparent 60%)}
+.card{width:100%;max-width:480px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.5)}
+.card-header{background:linear-gradient(135deg,#1a5c2a 0%,rgba(34,197,94,.15) 100%);padding:28px 32px;border-bottom:1px solid var(--b2);position:relative;overflow:hidden}
+.card-header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 14px,rgba(255,255,255,.03) 15px)}
+.logo{display:flex;align-items:center;gap:10px;position:relative;z-index:1;margin-bottom:16px}
+.logo-badge{width:36px;height:36px;border-radius:9px;background:rgba(34,197,94,.2);border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:20px}
+.logo-name{font-family:var(--fd);font-size:20px;letter-spacing:.05em}
+.logo-name span{color:var(--gold)}
+.amount-display{position:relative;z-index:1}
+.amount-label{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+.amount-val{font-family:var(--fd);font-size:48px;letter-spacing:.02em;color:var(--gold);line-height:1}
+.amount-desc{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px}
+.card-body{padding:28px 32px}
+.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px}
+/* Plan selector */
+.plan-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px}
+.plan-item{background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 10px;cursor:pointer;transition:all .15s;text-align:center}
+.plan-item:hover{border-color:var(--b2);background:var(--s1)}
+.plan-item.selected{border-color:var(--gb);background:rgba(34,197,94,.06)}
+.plan-item.selected.gold-plan{border-color:var(--gold);background:rgba(245,200,66,.06)}
+.plan-name{font-family:var(--fd);font-size:15px;letter-spacing:.05em;margin-bottom:3px}
+.plan-price{font-family:var(--fd);font-size:20px;letter-spacing:.03em}
+.plan-period{font-size:10px;color:var(--muted);margin-top:2px}
+/* Period toggle */
+.period-toggle{display:flex;background:rgba(0,0,0,.2);border-radius:30px;padding:3px;margin-bottom:22px;border:1px solid var(--b1)}
+.period-btn{flex:1;padding:8px;border-radius:26px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+.period-btn.active{background:var(--s1);color:var(--text)}
+.save-pill{background:rgba(34,197,94,.15);color:var(--gb);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px}
+/* Moyens de paiement */
+.methods-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
+.method-item{background:var(--s2);border:1.5px solid var(--b2);border-radius:11px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
+.method-item:hover{border-color:var(--b2);background:var(--s1)}
+.method-item.selected{border-color:var(--gb);background:rgba(34,197,94,.06)}
+.method-item.checkout-all{grid-column:span 2;justify-content:center;border-color:var(--gb);background:rgba(34,197,94,.05)}
+.method-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.method-name{font-size:13px;font-weight:600}
+.method-sub{font-size:11px;color:var(--muted)}
+/* Téléphone */
+.phone-field{margin-bottom:22px;display:none}
+.phone-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
+.phone-input-wrap{display:flex;background:rgba(0,0,0,.2);border:1.5px solid var(--b2);border-radius:10px;overflow:hidden;transition:border .2s}
+.phone-input-wrap:focus-within{border-color:var(--gb)}
+.phone-prefix{padding:0 14px;font-size:15px;color:var(--muted);display:flex;align-items:center;border-right:1px solid var(--b2);background:rgba(255,255,255,.03)}
+.phone-input-wrap input{flex:1;background:transparent;border:none;outline:none;font-family:var(--fb);font-size:15px;color:var(--text);padding:13px 14px}
+/* Bouton payer */
+.pay-btn{width:100%;padding:16px;border-radius:12px;border:none;background:var(--gb);color:#000;font-size:16px;font-weight:800;font-family:var(--fb);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.02em}
+.pay-btn:hover{background:var(--gl);transform:translateY(-1px)}
+.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+/* Sécurité */
+.security{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:12px;color:var(--muted)}
+/* Erreur */
+.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px;display:none;align-items:center;gap:8px}
+/* Recap */
+.recap{background:rgba(0,0,0,.15);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px}
+.recap-row{display:flex;justify-content:space-between;padding:4px 0}
+.recap-row.total{border-top:1px solid var(--b2);margin-top:8px;padding-top:10px;font-weight:700;font-size:15px}
+.recap-row strong{color:var(--text)}
+.recap-row.total strong{color:var(--gold);font-family:var(--fd);font-size:18px;letter-spacing:.03em}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+.spin{animation:spin .8s linear infinite;display:inline-block}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <!-- Header -->
+  <div class="card-header">
+    <div class="logo">
+      <div class="logo-badge">🔮</div>
+      <div class="logo-name">BET<span>ORACLE</span> PRO</div>
+    </div>
+    <div class="amount-display">
+      <div class="amount-label">Total à payer</div>
+      <div class="amount-val" id="total-amount">1 000 FCFA</div>
+      <div class="amount-desc" id="total-desc">Plan Pro · 1 semaine</div>
+    </div>
+  </div>
+
+  <!-- Body -->
+  <div class="card-body">
+
+    <!-- Erreur -->
+    <div class="err-box" id="err"><i class="ti ti-alert-circle"></i><span id="err-msg"></span></div>
+
+    <!-- 1. Plan -->
+    <div class="section-label"><i class="ti ti-crown"></i> Choisir ton plan</div>
+    <div class="plan-grid">
+      <div class="plan-item" onclick="selectPlan('starter',this)">
+        <div class="plan-name" style="color:#14b8a6">Starter</div>
+        <div class="plan-price" style="color:#14b8a6" id="price-starter">500</div>
+        <div class="plan-period" id="period-starter">F/semaine</div>
+      </div>
+      <div class="plan-item gold-plan selected" onclick="selectPlan('pro',this)">
+        <div class="plan-name" style="color:var(--gold)">Pro ⚡</div>
+        <div class="plan-price" style="color:var(--gold)" id="price-pro">1 000</div>
+        <div class="plan-period" id="period-pro">F/semaine</div>
+      </div>
+      <div class="plan-item" onclick="selectPlan('elite',this)">
+        <div class="plan-name" style="color:#8b5cf6">Elite</div>
+        <div class="plan-price" style="color:#8b5cf6" id="price-elite">2 000</div>
+        <div class="plan-period" id="period-elite">F/semaine</div>
+      </div>
+    </div>
+
+    <!-- 2. Période -->
+    <div class="section-label"><i class="ti ti-calendar"></i> Période</div>
+    <div class="period-toggle">
+      <button class="period-btn active" onclick="selectPeriod('week',this)"><i class="ti ti-calendar-week"></i> Semaine</button>
+      <button class="period-btn" onclick="selectPeriod('month',this)"><i class="ti ti-calendar-month"></i> Mois <span class="save-pill">-25%</span></button>
+    </div>
+
+    <!-- 3. Méthode de paiement -->
+    <div class="section-label"><i class="ti ti-wallet"></i> Méthode de paiement</div>
+    <div class="methods-grid">
+      <div class="method-item checkout-all selected" onclick="selectMethod('checkout',this)">
+        <div class="method-icon" style="background:rgba(34,197,94,.15)">💳</div>
+        <div>
+          <div class="method-name">Page GeniusPay</div>
+          <div class="method-sub">Wave · Orange · MTN · Moov · Carte</div>
+        </div>
+      </div>
+      <div class="method-item" onclick="selectMethod('wave',this)">
+        <div class="method-icon" style="background:#3B5DC922">
+          <img src="https://pay.genius.ci/assets/logo/wave.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🌊</span>
+        </div>
+        <div>
+          <div class="method-name">Wave</div>
+          <div class="method-sub">Paiement direct</div>
+        </div>
+      </div>
+      <div class="method-item" onclick="selectMethod('orange_money',this)">
+        <div class="method-icon" style="background:#FF680022">
+          <img src="https://pay.genius.ci/assets/logo/orange.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🟠</span>
+        </div>
+        <div>
+          <div class="method-name">Orange Money</div>
+          <div class="method-sub">+225 07…</div>
+        </div>
+      </div>
+      <div class="method-item" onclick="selectMethod('mtn_money',this)">
+        <div class="method-icon" style="background:#FFCC0022">
+          <img src="https://pay.genius.ci/assets/logo/mtn.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🟡</span>
+        </div>
+        <div>
+          <div class="method-name">MTN MoMo</div>
+          <div class="method-sub">+225 05…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Numéro de téléphone (si méthode directe) -->
+    <div class="phone-field" id="phone-field">
+      <div class="phone-label">Numéro Mobile Money</div>
+      <div class="phone-input-wrap">
+        <div class="phone-prefix">🇨🇮 +225</div>
+        <input type="tel" id="phone-input" placeholder="07 00 00 00 00" maxlength="12"
+          oninput="this.value=this.value.replace(/\D/g,'')">
+      </div>
+    </div>
+
+    <!-- Récap -->
+    <div class="recap" id="recap">
+      <div class="recap-row"><span>Plan</span><strong id="recap-plan">Pro</strong></div>
+      <div class="recap-row"><span>Période</span><strong id="recap-period">1 semaine</strong></div>
+      <div class="recap-row"><span>Via</span><strong id="recap-method">GeniusPay Checkout</strong></div>
+      <div class="recap-row total"><span>Total</span><strong id="recap-total">1 000 FCFA</strong></div>
+    </div>
+
+    <!-- Payer -->
+    <button class="pay-btn" id="pay-btn" onclick="pay()">
+      <i class="ti ti-lock"></i> Payer maintenant
+    </button>
+
+    <div class="security">
+      <i class="ti ti-shield-check"></i>
+      Paiement sécurisé par <strong style="color:var(--gb);margin-left:4px">GeniusPay</strong>
+      &nbsp;·&nbsp; Sans engagement
+    </div>
+
+  </div>
+</div>
+
+<script>
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+
+const PRICES = {
+  starter: { week: 500,  month: 1500 },
+  pro:     { week: 1000, month: 3000 },
+  elite:   { week: 2000, month: 6000 },
+}
+const METHOD_LABELS = {
+  checkout: 'GeniusPay Checkout', wave: 'Wave', orange_money: 'Orange Money',
+  mtn_money: 'MTN MoMo', card: 'Carte bancaire',
+}
+
+let plan   = 'pro'
+let period = 'week'
+let method = 'checkout'
+
+function selectPlan(p, el) {
+  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'))
+  el.classList.add('selected')
+  plan = p
+  updateUI()
+}
+
+function selectPeriod(p, el) {
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'))
+  el.classList.add('active')
+  period = p
+  updateUI()
+}
+
+function selectMethod(m, el) {
+  document.querySelectorAll('.method-item').forEach(i => i.classList.remove('selected'))
+  el.classList.add('selected')
+  method = m
+  const needPhone = m !== 'checkout'
+  document.getElementById('phone-field').style.display = needPhone ? 'block' : 'none'
+  updateUI()
+}
+
+function updateUI() {
+  const amount = PRICES[plan]?.[period] || 0
+  const labels = { starter:'Starter', pro:'Pro', elite:'Elite' }
+  const periodLabel = period === 'week' ? '1 semaine' : '1 mois'
+  const amountStr = amount.toLocaleString('fr-FR') + ' FCFA'
+
+  // Mettre à jour les prix dans la grid plans
+  ;['starter','pro','elite'].forEach(p => {
+    const prices = PRICES[p]
+    document.getElementById(`price-${p}`).textContent = period === 'week'
+      ? prices.week.toLocaleString('fr-FR')
+      : prices.month.toLocaleString('fr-FR')
+    document.getElementById(`period-${p}`).textContent = period === 'week' ? 'F/semaine' : 'F/mois'
+  })
+
+  document.getElementById('total-amount').textContent = amountStr
+  document.getElementById('total-desc').textContent = `Plan ${labels[plan]} · ${periodLabel}`
+  document.getElementById('recap-plan').textContent = labels[plan]
+  document.getElementById('recap-period').textContent = periodLabel
+  document.getElementById('recap-method').textContent = METHOD_LABELS[method] || method
+  document.getElementById('recap-total').textContent = amountStr
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err')
+  document.getElementById('err-msg').textContent = msg
+  el.style.display = 'flex'
+}
+
+async function pay() {
+  document.getElementById('err').style.display = 'none'
+  if (!token) {
+    showErr('Tu dois être connecté pour payer. Connecte-toi d\'abord.')
+    setTimeout(() => location.href = 'login.html?next=checkout.html', 1500)
+    return
+  }
+
+  const phone = document.getElementById('phone-input').value.trim()
+  if (method !== 'checkout' && !phone) {
+    showErr('Entre ton numéro de téléphone Mobile Money.')
+    return
+  }
+
+  const btn = document.getElementById('pay-btn')
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Création du paiement…'
+
+  const body = {
+    action: 'initiate',
+    plan,
+    period,
+    phone: phone ? `+225${phone}` : undefined,
+  }
+
+  try {
+    const r = await fetch(`${SUPA_URL}/functions/v1/payments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type':  'application/json',
+        'Authorization': `Bearer ${token}`,
+        'apikey':        SUPA_ANON,
+      },
+      body: JSON.stringify(body),
+    })
+    const d = await r.json()
+
+    if (d.error) {
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
+      showErr(d.error)
+      return
+    }
+
+    // Stocker le choix du plan pour la page success
+    sessionStorage.setItem('bp_plan_choice', plan)
+
+    if (d.checkout_url) {
+      // Rediriger vers GeniusPay
+      btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Redirection vers GeniusPay…'
+      setTimeout(() => { window.location.href = d.checkout_url }, 500)
+    } else {
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
+      showErr('Aucune URL de paiement reçue. Vérifie ta connexion.')
+    }
+  } catch(e) {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
+    showErr('Erreur réseau : ' + e.message)
+  }
+}
+
+// Pré-remplir depuis l'URL
+const params = new URLSearchParams(location.search)
+if (params.get('plan') && PRICES[params.get('plan')]) {
+  plan = params.get('plan')
+  document.querySelectorAll('.plan-item').forEach((el, i) => {
+    const plans = ['starter','pro','elite']
+    if (plans[i] === plan) el.classList.add('selected')
+    else el.classList.remove('selected')
+  })
+}
+if (params.get('period')) {
+  period = params.get('period')
+  document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'))
+  document.querySelector(`.period-btn:${period==='month'?'last-child':'first-child'}`).classList.add('active')
+}
+
+updateUI()
+</script>
+</body>
+</html>
