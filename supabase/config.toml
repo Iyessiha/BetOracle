@@ -1,0 +1,93 @@
+[project]
+id = "TON_PROJECT_ID"
+org_id = "TON_ORG_ID"
+
+[api]
+port = 54321
+schemas = ["public", "graphql_public"]
+extra_search_path = ["public", "extensions"]
+max_rows = 1000
+
+[db]
+port = 54322
+shadow_port = 54320
+major_version = 15
+
+[studio]
+port = 54323
+
+[inbucket]
+port = 54324
+
+[storage]
+enabled = true
+
+[auth]
+enabled = true
+site_url = "https://betoracle.pro"
+additional_redirect_urls = [
+  "https://betoracle.pro/welcome.html",
+  "http://localhost:3000/welcome.html"
+]
+jwt_expiry = 3600
+enable_signup = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = false
+enable_confirmations = false
+
+[auth.external.google]
+enabled = true
+client_id = "env(GOOGLE_CLIENT_ID)"
+secret = "env(GOOGLE_CLIENT_SECRET)"
+
+[edge_runtime]
+enabled = true
+policy = "per_worker"
+
+# ── CRON JOBS (pg_cron) ──
+# À exécuter dans l'éditeur SQL Supabase après migration :
+#
+# -- Générer le coupon chaque matin à 07h00 UTC (= 08h00 WAT)
+# SELECT cron.schedule(
+#   'betoracle-daily-coupon',
+#   '0 7 * * *',
+#   $$
+#     SELECT net.http_post(
+#       url := current_setting('app.supabase_url') || '/functions/v1/coupons',
+#       headers := jsonb_build_object(
+#         'Content-Type', 'application/json',
+#         'Authorization', 'Bearer ' || current_setting('app.service_role_key')
+#       ),
+#       body := '{"action":"auto"}'::jsonb
+#     )
+#   $$
+# );
+#
+# -- Désactiver les abonnements expirés chaque heure
+# SELECT cron.schedule(
+#   'betoracle-expire-plans',
+#   '0 * * * *',
+#   $$
+#     UPDATE public.profiles
+#     SET plan = 'free'
+#     WHERE plan != 'free'
+#       AND plan_expires_at < now();
+#   $$
+# );
+
+[functions.oracle]
+verify_jwt = true
+
+[functions.payments]
+verify_jwt = true
+
+[functions.coupons]
+verify_jwt = false
+
+[functions.telegram]
+verify_jwt = false
+
+[functions.webhook-payment]
+verify_jwt = false
