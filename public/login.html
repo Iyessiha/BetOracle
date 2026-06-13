@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Connexion — Betoracle Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<style>
+:root{
+  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;
+  --bg:#060a06;--s1:#111711;--b1:#1c271c;--b2:#2a3a2a;
+  --text:#e8f0e8;--muted:#7a9a7a;
+  --red:#ef4444;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.card{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;padding:40px 36px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gb),var(--gold))}
+.logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center}
+.logo-badge{width:40px;height:40px;border-radius:10px;background:var(--gb);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:22px;color:#000}
+.logo-name{font-family:var(--fd);font-size:24px;letter-spacing:.04em}
+.logo-name span{color:var(--gold)}
+h1{font-family:var(--fd);font-size:32px;letter-spacing:.04em;margin-bottom:6px;text-align:center}
+.sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:28px}
+.field{margin-bottom:16px}
+.field label{display:block;font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
+.field input{width:100%;background:var(--bg);border:1.5px solid var(--b2);border-radius:10px;padding:12px 16px;font-size:15px;color:var(--text);font-family:var(--ff);outline:none;transition:border .2s}
+.field input:focus{border-color:var(--gb)}
+.field.has-error input{border-color:var(--red)}
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:44px}
+.pwd-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:17px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:var(--ff);cursor:pointer;transition:all .2s;margin-top:8px}
+.btn-green{background:var(--gb);color:#000}
+.btn-green:hover{background:var(--gl);transform:translateY(-1px)}
+.btn-green:disabled{opacity:.6;cursor:not-allowed;transform:none}
+.error-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px;display:none;align-items:center;gap:8px}
+.bottom-link{text-align:center;margin-top:22px;font-size:14px;color:var(--muted)}
+.bottom-link a{color:var(--gb);font-weight:600;text-decoration:none}
+.divider{text-align:center;font-size:12px;color:var(--b2);margin:20px 0;position:relative}
+.divider::before{content:'';position:absolute;left:0;top:50%;right:0;height:1px;background:var(--b1)}
+.divider span{background:var(--s1);padding:0 12px;position:relative;color:var(--muted)}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="logo">
+    <div class="logo-badge">🔮</div>
+    <div class="logo-name">BET<span>ORACLE</span> PRO</div>
+  </div>
+  <h1>CONNEXION</h1>
+  <p class="sub">Accède à tes analyses et à ton coupon du jour</p>
+
+  <div class="error-box" id="err"><i class="ti ti-alert-circle"></i> <span id="err-msg"></span></div>
+
+  <form onsubmit="login(event)">
+    <div class="field" id="f-email">
+      <label>Email</label>
+      <input type="email" id="email" placeholder="ton@email.com" autocomplete="email" required>
+    </div>
+    <div class="field" id="f-pwd">
+      <label>Mot de passe</label>
+      <div class="pwd-wrap">
+        <input type="password" id="pwd" placeholder="••••••••" autocomplete="current-password" required>
+        <button type="button" class="pwd-eye" onclick="togglePwd()"><i class="ti ti-eye" id="eye-ico"></i></button>
+      </div>
+    </div>
+    <button type="submit" class="btn btn-green" id="btn">
+      <i class="ti ti-login"></i> Se connecter
+    </button>
+  </form>
+
+  <div class="bottom-link" style="margin-top:14px">
+    <a href="#" onclick="resetPwd();return false">Mot de passe oublié ?</a>
+  </div>
+
+  <div class="divider"><span>ou</span></div>
+
+  <div class="bottom-link">
+    Pas encore de compte ? <a href="signup.html">Créer mon compte gratuitement</a>
+  </div>
+</div>
+
+<script>
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const sb = supabase.createClient(SUPA_URL, SUPA_ANON)
+
+// Vérifier si déjà connecté
+sb.auth.getSession().then(({ data }) => {
+  if (data.session) window.location.href = 'welcome.html'
+})
+
+function showErr(msg) {
+  document.getElementById('err-msg').innerHTML = msg
+  document.getElementById('err').style.display = 'flex'
+}
+
+function togglePwd() {
+  const inp = document.getElementById('pwd')
+  const ico = document.getElementById('eye-ico')
+  inp.type = inp.type === 'password' ? 'text' : 'password'
+  ico.className = inp.type === 'password' ? 'ti ti-eye' : 'ti ti-eye-off'
+}
+
+async function login(e) {
+  e.preventDefault()
+  document.getElementById('err').style.display = 'none'
+
+  const email = document.getElementById('email').value.trim()
+  const pwd   = document.getElementById('pwd').value
+  const btn   = document.getElementById('btn')
+
+  if (!email || !pwd) return showErr('Remplis tous les champs.')
+
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Connexion en cours…'
+
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd })
+
+  if (error) {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-login"></i> Se connecter'
+    const msg = (error.message.includes('Invalid') || error.message.includes('invalid_credentials') || error.message.includes('credentials'))
+      ? 'Email ou mot de passe incorrect.'
+      : error.message
+    return showErr(msg)
+  }
+
+  // Récupérer le profil
+  const { data: profile } = await sb.from('profiles').select('full_name, plan').eq('id', data.user.id).single()
+  const prenom = profile?.full_name?.split(' ')[0] || email.split('@')[0]
+
+  sessionStorage.setItem('bp_prenom', prenom)
+  sessionStorage.setItem('bp_plan',   profile?.plan || 'free')
+  sessionStorage.setItem('bp_token',  data.session.access_token)
+
+  // Rediriger
+  const redirect = new URLSearchParams(window.location.search).get('next') || 'welcome.html'
+  window.location.href = redirect
+}
+
+async function resetPwd() {
+  const email = document.getElementById('email').value.trim()
+  if (!email) return showErr('Entre ton email d\'abord pour réinitialiser le mot de passe.')
+  const { error } = await sb.auth.resetPasswordForEmail(email, { redirectTo: window.location.origin + '/login.html' })
+  if (error) return showErr(error.message)
+  document.getElementById('err-msg').textContent = 'Email de réinitialisation envoyé ! Vérifie ta boîte mail.'
+  document.getElementById('err').style.background = 'rgba(34,197,94,.1)'
+  document.getElementById('err').style.borderColor = 'rgba(34,197,94,.3)'
+  document.getElementById('err').style.color = 'var(--gb)'
+  document.getElementById('err').style.display = 'flex'
+}
+</script>
+</body>
+</html>

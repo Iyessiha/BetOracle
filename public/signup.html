@@ -8,6 +8,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <style>
 :root{
   --gp:#1a5c2a;--gb:#22c55e;--gl:#4ade80;--gn:#16ff6e;
@@ -170,7 +171,7 @@ a{text-decoration:none;color:inherit}
     <div class="logo-badge">B</div>
     <div class="logo-name">BET<span>ORACLE</span> PRO</div>
   </div>
-  <div class="nav-login">Déjà un compte ? <a href="#">Se connecter</a></div>
+  <div class="nav-login">Déjà un compte ? <a href="login.html">Se connecter</a></div>
 </nav>
 
 <div class="page-body">
@@ -347,10 +348,52 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
+// ── Supabase client ──
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const sb = supabase.createClient(SUPA_URL, SUPA_ANON)
+
+// ── Afficher une erreur ──
+function showError(msg) {
+  let el = document.getElementById('auth-error')
+  if (!el) {
+    el = document.createElement('div')
+    el.id = 'auth-error'
+    el.style.cssText = 'background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.35);color:#f87171;border-radius:10px;padding:12px 16px;font-size:14px;margin-bottom:16px;display:flex;align-items:center;gap:8px'
+    document.getElementById('signup-form').prepend(el)
+  }
+  el.innerHTML = `<i class="ti ti-alert-circle"></i> ${msg}`
+  el.style.display = 'flex'
+}
+function hideError() {
+  const el = document.getElementById('auth-error')
+  if (el) el.style.display = 'none'
+}
+
+// ── Mode : signup / login ──
+let mode = 'signup'
+function switchMode(m) {
+  mode = m
+  hideError()
+  const loginFields  = document.getElementById('login-only-fields')
+  const signupFields = document.getElementById('signup-only-fields')
+  const submitBtn    = document.getElementById('submit-btn')
+  const switchLink   = document.getElementById('switch-link')
+  if (m === 'login') {
+    if (loginFields)  loginFields.style.display  = 'none'
+    if (signupFields) signupFields.style.display = 'none'
+    submitBtn.innerHTML = '<i class="ti ti-login"></i> Se connecter'
+    if (switchLink) switchLink.innerHTML = 'Pas encore de compte ? <a href="#" onclick="switchMode(\'signup\');return false">Créer mon compte</a>'
+  } else {
+    if (signupFields) signupFields.style.display = ''
+    submitBtn.innerHTML = '<i class="ti ti-rocket"></i> Créer mon compte'
+    if (switchLink) switchLink.innerHTML = 'Déjà un compte ? <a href="#" onclick="switchMode(\'login\');return false">Se connecter</a>'
+  }
+}
+
 function selectPlan(el, plan){
   document.querySelectorAll('.ps-item').forEach(i=>i.classList.remove('selected'))
   el.classList.add('selected')
-  el.dataset.plan = plan
 }
 
 function togglePwd(){
@@ -360,47 +403,99 @@ function togglePwd(){
   else{inp.type='password';ico.className='ti ti-eye'}
 }
 
-function handleSignup(e){
+async function handleSignup(e){
   e.preventDefault()
-  let ok = true
+  hideError()
 
-  const checks = [
-    {id:'prenom', field:'field-prenom', test: v => v.trim().length > 0},
-    {id:'nom',    field:'field-nom',    test: v => v.trim().length > 0},
-    {id:'email',  field:'field-email',  test: v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v)},
-    {id:'tel',    field:'field-tel',    test: v => v.trim().length >= 8},
-    {id:'mdp',    field:'field-mdp',    test: v => v.length >= 8},
-  ]
+  const email  = document.getElementById('email').value.trim()
+  const mdp    = document.getElementById('mdp').value
+  const btn    = document.getElementById('submit-btn')
 
-  checks.forEach(c => {
-    const inp = document.getElementById(c.id)
-    const field = document.getElementById(c.field)
-    if(!c.test(inp.value)){
-      field.classList.add('has-error'); ok = false
-    } else {
-      field.classList.remove('has-error')
-    }
-  })
+  // Validation basique
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return showError('Email invalide.')
+  }
+  if (!mdp || mdp.length < 8) {
+    return showError('Le mot de passe doit faire au moins 8 caractères.')
+  }
 
-  if(!ok) return
-
-  // Stocker prénom pour page welcome
-  const prenom = document.getElementById('prenom').value.trim()
-  sessionStorage.setItem('bp_prenom', prenom)
-  sessionStorage.setItem('bp_plan', document.querySelector('.ps-item.selected')?.dataset.plan || 'free')
-
-  // Simuler chargement → redirect
-  const btn = e.target.querySelector('button[type=submit]')
-  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Création en cours…'
   btn.disabled = true
-  setTimeout(()=> window.location.href = 'welcome.html', 1200)
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> ' + (mode === 'login' ? 'Connexion…' : 'Création…')
+
+  if (mode === 'login') {
+    // ── CONNEXION ──
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: mdp })
+    if (error) {
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-login"></i> Se connecter'
+      const msg = error.message.includes('Invalid login') || error.message.includes('invalid_credentials')
+        ? 'Email ou mot de passe incorrect.'
+        : error.message
+      return showError(msg)
+    }
+    // Récupérer le profil
+    const { data: profile } = await sb.from('profiles').select('full_name, plan').eq('id', data.user.id).single()
+    const prenom = profile?.full_name?.split(' ')[0] || email.split('@')[0]
+    sessionStorage.setItem('bp_prenom', prenom)
+    sessionStorage.setItem('bp_plan',   profile?.plan || 'free')
+    sessionStorage.setItem('bp_token',  data.session.access_token)
+    window.location.href = 'welcome.html'
+
+  } else {
+    // ── INSCRIPTION ──
+    const prenom   = document.getElementById('prenom')?.value.trim() || ''
+    const nom      = document.getElementById('nom')?.value.trim()    || ''
+    const tel      = document.getElementById('tel')?.value.trim()    || ''
+    const refCode  = document.getElementById('ref')?.value.trim()    || ''
+    const fullName = `${prenom} ${nom}`.trim()
+    const plan     = document.querySelector('.ps-item.selected')?.dataset?.plan || 'free'
+
+    const { data, error } = await sb.auth.signUp({
+      email,
+      password: mdp,
+      options: { data: { full_name: fullName, phone: tel } }
+    })
+    if (error) {
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-rocket"></i> Créer mon compte'
+      const msg = error.message.includes('already registered') || error.message.includes('already been registered')
+        ? 'Cet email est déjà utilisé. <a href="#" onclick="switchMode(\'login\');return false" style="color:var(--gb)">Se connecter ?</a>'
+        : error.message
+      return showError(msg)
+    }
+
+    // Mettre à jour le profil avec téléphone + code parrainage
+    if (data.user) {
+      if (tel) await sb.from('profiles').update({ phone: tel }).eq('id', data.user.id)
+
+      // Parrainage
+      if (refCode) {
+        const { data: referrer } = await sb.from('profiles').select('id').eq('ref_code', refCode.toUpperCase()).maybeSingle()
+        if (referrer) {
+          await sb.from('referrals').insert({ referrer_id: referrer.id, referred_id: data.user.id, status: 'pending' })
+          await sb.from('profiles').update({ referred_by: referrer.id }).eq('id', data.user.id)
+        }
+      }
+    }
+
+    sessionStorage.setItem('bp_prenom', prenom || email.split('@')[0])
+    sessionStorage.setItem('bp_plan',   plan)
+    if (data.session) sessionStorage.setItem('bp_token', data.session.access_token)
+    window.location.href = 'welcome.html'
+  }
 }
 
 // Supprimer erreur au focus
-document.querySelectorAll('.field input').forEach(inp => {
-  inp.addEventListener('input', () => {
-    inp.closest('.field')?.classList.remove('has-error')
+document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.field input').forEach(inp => {
+    inp.addEventListener('input', () => inp.closest('.field')?.classList.remove('has-error'))
   })
+
+  // Ajouter lien switch mode dans la nav si absent
+  const navLogin = document.querySelector('.nav-login')
+  if (navLogin) {
+    navLogin.innerHTML = 'Déjà un compte ? <a href="#" id="switch-link-nav" onclick="switchMode(\'login\');document.getElementById(\'email\').focus();return false">Se connecter</a>'
+  }
 })
 </script>
 <style>
