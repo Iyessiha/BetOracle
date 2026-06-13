@@ -766,11 +766,15 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       </div>
       <div class="lock-card reveal rd2">
         <div class="lc-header">
-          <div>
+          <div style="position:relative;z-index:1">
             <div class="lc-league">🏆 Champions League · Demi-finale</div>
-            <div class="lc-match">Real Madrid vs PSG</div>
+            <div class="lc-match" style="display:flex;align-items:center;gap:10px;margin-top:6px">
+              <span id="lock-logo-a" style="display:flex;align-items:center;flex-shrink:0"></span>
+              <span>Real Madrid vs PSG</span>
+              <span id="lock-logo-b" style="display:flex;align-items:center;flex-shrink:0"></span>
+            </div>
           </div>
-          <div class="lc-date">Mercredi 21:00</div>
+          <div class="lc-date" style="position:relative;z-index:1">Mercredi 21:00</div>
         </div>
         <!-- Forme visible -->
         <div class="lc-form">
@@ -1409,67 +1413,7 @@ function setBill(t,btn){
 }
 </script>
 
-<script src="../assets/js/logos.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const L = window.BetOracle;
-  if(!L) return;
-
-  // Logos section lock (Real Madrid vs PSG)
-  const la = document.getElementById('lock-logo-a');
-  const lb = document.getElementById('lock-logo-b');
-  if(la){
-    const img = L.makeLogoImg(L.LOGOS.clubLogo(541), 'Real Madrid', 'RM', 'lc-logo');
-    la.appendChild(img);
-  }
-  if(lb){
-    const img = L.makeLogoImg(L.LOGOS.clubLogo(85), 'PSG', 'PSG', 'lc-logo');
-    lb.appendChild(img);
-  }
-
-  // Fond stade hero
-  const hero = document.getElementById('hero');
-  if(hero){
-    const bg = L.getStadiumBg(0);
-    const stadium = hero.querySelector('.hero-stadium');
-    if(stadium){
-      stadium.style.backgroundImage =
-        `radial-gradient(ellipse 80% 60% at 50% 100%,rgba(26,92,42,.45) 0%,transparent 70%),
-         radial-gradient(ellipse 60% 40% at 50% 60%,rgba(34,197,94,.06) 0%,transparent 60%),
-         linear-gradient(180deg,rgba(6,10,6,.3) 0%,rgba(6,10,6,.7) 60%,#060a06 100%),
-         url(${bg})`;
-      stadium.style.backgroundSize = 'cover';
-      stadium.style.backgroundPosition = 'center 30%';
-    }
-  }
-
-  // Logos mini dans la strip matchs
-  const matchData = [
-    {teamA:'PSG', teamB:'Marseille'},
-    {teamA:'Dortmund', teamB:'Bayern Munich'},
-    {teamA:'Arsenal', teamB:'Chelsea'},
-    {teamA:'Real Madrid', teamB:'PSG'},
-    {teamA:'Inter Milan', teamB:'Juventus'},
-    {teamA:'Barcelona', teamB:'Atletico Madrid'},
-  ];
-  document.querySelectorAll('.match-pill').forEach((pill, i) => {
-    if(!matchData[i]) return;
-    const {teamA, teamB} = matchData[i];
-    const dA = L.LOGOS.clubs[teamA];
-    const dB = L.LOGOS.clubs[teamB];
-    const logoRow = document.createElement('div');
-    logoRow.style.cssText = 'display:flex;align-items:center;gap:4px;margin-bottom:3px';
-
-    const imgA = L.makeLogoImg(dA ? L.LOGOS.clubLogo(dA.id) : null, teamA, teamA, 'mp-logo');
-    const imgB = L.makeLogoImg(dB ? L.LOGOS.clubLogo(dB.id) : null, teamB, teamB, 'mp-logo');
-
-    logoRow.appendChild(imgA);
-    logoRow.appendChild(imgB);
-    const textDiv = pill.querySelector('.mp-teams');
-    if(textDiv) textDiv.before(logoRow);
-  });
-});
-</script>
+<script src="../assets/js/betoracle-ui.js"></script>
 
 </body>
 </html>

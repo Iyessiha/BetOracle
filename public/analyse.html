@@ -531,33 +531,62 @@ function setMatch(name, league, time, flag){
 </script>
 <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
 
-<script src="../assets/js/logos.js"></script>
+<script src="../assets/js/betoracle-ui.js"></script>
 <script>
-// Injecter les logos au chargement
 document.addEventListener('DOMContentLoaded', () => {
-  const ta = document.getElementById('team-a')?.textContent.trim() || 'Real Madrid';
-  const tb = document.getElementById('team-b')?.textContent.trim() || 'PSG';
-  BetOracle.injectMatchLogos(document.body, ta, tb);
+  const UI = window.BetOracleUI;
+  if (!UI) return;
 
-  // Fond stade sur le hero de la nav (optionnel — subtil)
-  const bg = BetOracle.getStadiumBg(0);
+  // Fond stade sur le header match
   const hero = document.querySelector('.mh-top');
-  if(hero){
-    hero.style.backgroundImage = `linear-gradient(135deg,rgba(26,92,42,.85) 0%,rgba(34,197,94,.2) 100%), url(${bg})`;
+  if (hero) {
+    hero.style.backgroundImage = [
+      'linear-gradient(135deg,rgba(26,92,42,.88) 0%,rgba(34,197,94,.22) 100%)',
+      `url(${UI.stadiumUrl(2, 800, 60)})`
+    ].join(',');
     hero.style.backgroundSize = 'cover';
     hero.style.backgroundPosition = 'center';
   }
+
+  // Logos dans la form section
+  injectAnalyseLogos();
 });
 
-// Patch setMatch pour re-injecter les logos
+function injectAnalyseLogos() {
+  const UI = window.BetOracleUI;
+  if (!UI) return;
+  const ta = document.getElementById('team-a')?.textContent.trim() || 'Real Madrid';
+  const tb = document.getElementById('team-b')?.textContent.trim() || 'PSG';
+
+  // Ajouter logos à côté des noms dans form-name
+  document.querySelectorAll('.fr-name, .form-name').forEach(el => {
+    const name = el.textContent.trim();
+    if ((name === ta || name === tb) && !el.querySelector('img')) {
+      const logo = UI.clubLogoImg(name, 'mp-logo');
+      logo.style.verticalAlign = 'middle';
+      logo.style.marginRight = '6px';
+      el.prepend(logo);
+    }
+  });
+
+  // Ajouter logos à côté des sp-team-a / sp-team-b
+  ['sp-team-a','sp-team-b'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) {
+      const name = i === 0 ? ta : tb;
+      const logo = UI.clubLogoImg(name, 'mp-logo');
+      logo.style.verticalAlign = 'middle';
+      logo.style.marginRight = '4px';
+      el.prepend(logo);
+    }
+  });
+}
+
+// Re-injecter les logos après changement de match
 const _origSetMatch = setMatch;
-window.setMatch = function(name, league, time, flag){
+window.setMatch = function(name, league, time, flag) {
   _origSetMatch(name, league, time, flag);
-  setTimeout(() => {
-    const ta = document.getElementById('team-a')?.textContent.trim();
-    const tb = document.getElementById('team-b')?.textContent.trim();
-    if(ta && tb) BetOracle.injectMatchLogos(document.body, ta, tb);
-  }, 2200);
+  setTimeout(() => injectAnalyseLogos(), 2300);
 };
 </script>
 
