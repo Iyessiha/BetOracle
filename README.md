@@ -93,7 +93,7 @@ Landing (index.html)
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/TON_USERNAME/betoracle-pro.git
+git clone https://github.com/Iyessiha/betoracle-pro.git
 cd betoracle-pro
 
 # Lancer un serveur local (Python)

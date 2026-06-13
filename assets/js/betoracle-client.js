@@ -10,8 +10,8 @@
 
 (function () {
   // ── CONFIG (remplacer par tes vraies clés Supabase) ──
-  const SUPABASE_URL    = "https://TON_PROJECT_ID.supabase.co";
-  const SUPABASE_ANON   = "TA_ANON_KEY_ICI";
+  const SUPABASE_URL    = "https://ovulcqsrzkwlnhnyllij.supabase.co";
+  const SUPABASE_ANON   = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw";
 
   // Init client Supabase
   const { createClient } = window.supabase ?? {};
