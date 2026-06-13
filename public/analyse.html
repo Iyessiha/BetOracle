@@ -317,7 +317,10 @@ a{text-decoration:none;color:inherit}
 
   <!-- Match header -->
   <div class="match-header">
-    <div class="mh-top">
+    <div class="mh-top" style="background-image:
+  linear-gradient(135deg,rgba(26,92,42,.92) 0%,rgba(34,197,94,.25) 100%),
+  url('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=900&q=60');
+  background-size:cover;background-position:center">
       <div>
         <div class="mh-league" id="match-league">🏆 Champions League · Demi-finale</div>
         <div class="mh-teams">
@@ -337,7 +340,11 @@ a{text-decoration:none;color:inherit}
       <div class="fs-title"><i class="ti ti-activity"></i> Forme récente — 5 derniers matchs</div>
       <div class="form-rows">
         <div class="fr">
-          <span class="fr-name" id="fr-team-a">Real Madrid</span>
+          <span class="fr-name" id="fr-team-a" style="display:flex;align-items:center;gap:6px">
+              <img src="https://media.api-sports.io/football/teams/541.png" 
+                   style="width:22px;height:22px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);padding:2px" 
+                   alt="RM" loading="lazy" onerror="this.style.display='none'">
+              Real Madrid</span>
           <div class="fr-dots">
             <span class="fd fd-v">V</span><span class="fd fd-v">V</span>
             <span class="fd fd-n">N</span><span class="fd fd-v">V</span>
@@ -346,7 +353,11 @@ a{text-decoration:none;color:inherit}
           <span class="fr-badge fb-good">🔥 Grande forme</span>
         </div>
         <div class="fr">
-          <span class="fr-name" id="fr-team-b">PSG</span>
+          <span class="fr-name" id="fr-team-b" style="display:flex;align-items:center;gap:6px">
+              <img src="https://media.api-sports.io/football/teams/85.png" 
+                   style="width:22px;height:22px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);padding:2px" 
+                   alt="PSG" loading="lazy" onerror="this.style.display='none'">
+              PSG</span>
           <div class="fr-dots">
             <span class="fd fd-v">V</span><span class="fd fd-l">D</span>
             <span class="fd fd-v">V</span><span class="fd fd-n">N</span>
@@ -531,64 +542,7 @@ function setMatch(name, league, time, flag){
 </script>
 <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
 
-<script src="./assets/js/betoracle-ui.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', () => {
-  const UI = window.BetOracleUI;
-  if (!UI) return;
 
-  // Fond stade sur le header match
-  const hero = document.querySelector('.mh-top');
-  if (hero) {
-    hero.style.backgroundImage = [
-      'linear-gradient(135deg,rgba(26,92,42,.88) 0%,rgba(34,197,94,.22) 100%)',
-      `url(${UI.stadiumUrl(2, 800, 60)})`
-    ].join(',');
-    hero.style.backgroundSize = 'cover';
-    hero.style.backgroundPosition = 'center';
-  }
-
-  // Logos dans la form section
-  injectAnalyseLogos();
-});
-
-function injectAnalyseLogos() {
-  const UI = window.BetOracleUI;
-  if (!UI) return;
-  const ta = document.getElementById('team-a')?.textContent.trim() || 'Real Madrid';
-  const tb = document.getElementById('team-b')?.textContent.trim() || 'PSG';
-
-  // Ajouter logos à côté des noms dans form-name
-  document.querySelectorAll('.fr-name, .form-name').forEach(el => {
-    const name = el.textContent.trim();
-    if ((name === ta || name === tb) && !el.querySelector('img')) {
-      const logo = UI.clubLogoImg(name, 'mp-logo');
-      logo.style.verticalAlign = 'middle';
-      logo.style.marginRight = '6px';
-      el.prepend(logo);
-    }
-  });
-
-  // Ajouter logos à côté des sp-team-a / sp-team-b
-  ['sp-team-a','sp-team-b'].forEach((id, i) => {
-    const el = document.getElementById(id);
-    if (el) {
-      const name = i === 0 ? ta : tb;
-      const logo = UI.clubLogoImg(name, 'mp-logo');
-      logo.style.verticalAlign = 'middle';
-      logo.style.marginRight = '4px';
-      el.prepend(logo);
-    }
-  });
-}
-
-// Re-injecter les logos après changement de match
-const _origSetMatch = setMatch;
-window.setMatch = function(name, league, time, flag) {
-  _origSetMatch(name, league, time, flag);
-  setTimeout(() => injectAnalyseLogos(), 2300);
-};
-</script>
 
 </body>
 </html>

@@ -653,6 +653,14 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   .hero-h1{font-size:clamp(56px,14vw,80px)}
   .match-pill{min-width:170px;padding:12px 16px}
 }
+
+
+.lc-logo { width:38px; height:38px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); padding:4px; flex-shrink:0; }
+.lc-logo-init { width:38px; height:38px; border-radius:50%; align-items:center; justify-content:center; font-family:"Bebas Neue",sans-serif; font-size:13px; letter-spacing:.04em; border:1px solid; flex-shrink:0; }
+/* Logos match pills */
+.mp-logos { display:flex; align-items:center; gap:3px; flex-shrink:0; }
+.mp-logo { width:22px; height:22px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); padding:2px; }
+.mp-init { width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; font-family:"Bebas Neue",sans-serif; font-size:8px; letter-spacing:.02em; border:1px solid; flex-shrink:0; }
 </style>
 </head>
 <body>
@@ -677,7 +685,12 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 
 <!-- ═══ HERO ═══ -->
 <section id="hero">
-  <div class="hero-stadium"></div>
+  <div class="hero-stadium" style="background-image:
+  radial-gradient(ellipse 80% 60% at 50% 100%,rgba(26,92,42,.5) 0%,transparent 70%),
+  radial-gradient(ellipse 60% 40% at 50% 60%,rgba(34,197,94,.07) 0%,transparent 60%),
+  linear-gradient(180deg,rgba(6,10,6,.25) 0%,rgba(6,10,6,.65) 55%,#060a06 100%),
+  url('https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=1920&q=65');
+  background-size:cover;background-position:center 35%"></div>
   <div class="hero-pitch"></div>
   <div class="hero-inner">
     <div class="hero-live reveal">
@@ -711,13 +724,62 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   <!-- Strip matchs -->
   <div class="match-strip">
     <div class="match-strip-inner">
-      <div class="match-pill"><div><div class="mp-teams">🏆 PSG vs Marseille</div><div class="mp-time">20:45 · Ligue 1</div></div><span class="mp-ia">82% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🇩🇪 Dortmund vs Bayern</div><div class="mp-time">19:45 · Bundesliga</div></div><span class="mp-ia">78% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🏴󠁧󠁢󠁥󠁮󠁧󠁿 Arsenal vs Chelsea</div><div class="mp-time">20:30 · Premier League</div></div><span class="mp-ia">65% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🏆 Real Madrid vs PSG</div><div class="mp-time">21:00 · UCL</div></div><span class="mp-ia">71% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🇮🇹 Inter vs Juventus</div><div class="mp-time">20:45 · Serie A</div></div><span class="mp-ia">60% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🇪🇸 Barça vs Atlético</div><div class="mp-time">21:00 · La Liga</div></div><span class="mp-ia">67% IA</span></div>
-      <div class="match-pill"><div><div class="mp-teams">🇨🇮 ASEC vs Africa Sports</div><div class="mp-time">18:00 · Ligue 1 CI</div></div><span class="mp-ia">74% IA</span></div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/85.png" class="mp-logo" alt="PSG" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#00308722;color:#003087;border-color:#00308744">PSG</span><img src="https://media.api-sports.io/football/teams/81.png" class="mp-logo" alt="OM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#009FC722;color:#009FC7;border-color:#009FC744">OM</span></div>
+        <div>
+          <div class="mp-teams">PSG vs Marseille</div>
+          <div class="mp-time">20:45 · Ligue 1</div>
+        </div>
+        <span class="mp-ia">82% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/165.png" class="mp-logo" alt="BVB" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#FDE10022;color:#FDE100;border-color:#FDE10044">BVB</span><img src="https://media.api-sports.io/football/teams/157.png" class="mp-logo" alt="FCB" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#DC052D22;color:#DC052D;border-color:#DC052D44">FCB</span></div>
+        <div>
+          <div class="mp-teams">Dortmund vs Bayern</div>
+          <div class="mp-time">19:45 · Bundesliga</div>
+        </div>
+        <span class="mp-ia">78% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/42.png" class="mp-logo" alt="ARS" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#EF010722;color:#EF0107;border-color:#EF010744">ARS</span><img src="https://media.api-sports.io/football/teams/49.png" class="mp-logo" alt="CHE" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#03469422;color:#034694;border-color:#03469444">CHE</span></div>
+        <div>
+          <div class="mp-teams">Arsenal vs Chelsea</div>
+          <div class="mp-time">20:30 · Premier League</div>
+        </div>
+        <span class="mp-ia">65% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/541.png" class="mp-logo" alt="RM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#FEBE1022;color:#FEBE10;border-color:#FEBE1044">RM</span><img src="https://media.api-sports.io/football/teams/85.png" class="mp-logo" alt="PSG" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#00308722;color:#003087;border-color:#00308744">PSG</span></div>
+        <div>
+          <div class="mp-teams">Real Madrid vs PSG</div>
+          <div class="mp-time">21:00 · UCL</div>
+        </div>
+        <span class="mp-ia">71% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/505.png" class="mp-logo" alt="INT" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#010E8022;color:#010E80;border-color:#010E8044">INT</span><img src="https://media.api-sports.io/football/teams/496.png" class="mp-logo" alt="JUV" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#88822;color:#888;border-color:#88844">JUV</span></div>
+        <div>
+          <div class="mp-teams">Inter vs Juventus</div>
+          <div class="mp-time">20:45 · Serie A</div>
+        </div>
+        <span class="mp-ia">60% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/529.png" class="mp-logo" alt="FCB" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#A5004422;color:#A50044;border-color:#A5004444">FCB</span><img src="https://media.api-sports.io/football/teams/530.png" class="mp-logo" alt="ATM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#CB352422;color:#CB3524;border-color:#CB352444">ATM</span></div>
+        <div>
+          <div class="mp-teams">Barça vs Atlético</div>
+          <div class="mp-time">21:00 · La Liga</div>
+        </div>
+        <span class="mp-ia">67% IA</span>
+      </div>
+      <div class="match-pill">
+        <div class="mp-logos"><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">ASC</span><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">AFS</span></div>
+        <div>
+          <div class="mp-teams">ASEC vs Africa Sports</div>
+          <div class="mp-time">18:00 · Ligue 1 CI</div>
+        </div>
+        <span class="mp-ia">74% IA</span>
+      </div>
     </div>
   </div>
 
@@ -768,10 +830,22 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         <div class="lc-header">
           <div style="position:relative;z-index:1">
             <div class="lc-league">🏆 Champions League · Demi-finale</div>
-            <div class="lc-match" style="display:flex;align-items:center;gap:10px;margin-top:6px">
-              <span id="lock-logo-a" style="display:flex;align-items:center;flex-shrink:0"></span>
-              <span>Real Madrid vs PSG</span>
-              <span id="lock-logo-b" style="display:flex;align-items:center;flex-shrink:0"></span>
+            <div class="lc-match" style="display:flex;align-items:center;gap:12px;margin-top:8px;font-family:var(--font-d);font-size:clamp(16px,2vw,22px);letter-spacing:.04em">
+              <span style="display:flex;align-items:center;gap:7px">
+                <img src="https://media.api-sports.io/football/teams/541.png" 
+                     class="lc-logo" alt="Real Madrid" loading="lazy"
+                     onerror="this.onerror=null;this.style.display='none';document.getElementById('rm-init').style.display='flex'">
+                <span id="rm-init" class="lc-logo lc-logo-init" style="display:none;background:#FEBE1022;color:#FEBE10;border-color:#FEBE1044">RM</span>
+                Real Madrid
+              </span>
+              <span style="font-size:14px;color:rgba(255,255,255,.4);font-weight:400">VS</span>
+              <span style="display:flex;align-items:center;gap:7px">
+                PSG
+                <img src="https://media.api-sports.io/football/teams/85.png" 
+                     class="lc-logo" alt="PSG" loading="lazy"
+                     onerror="this.onerror=null;this.style.display='none';document.getElementById('psg-init').style.display='flex'">
+                <span id="psg-init" class="lc-logo lc-logo-init" style="display:none;background:#00308722;color:#003087;border-color:#00308744">PSG</span>
+              </span>
             </div>
           </div>
           <div class="lc-date" style="position:relative;z-index:1">Mercredi 21:00</div>
@@ -989,20 +1063,30 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       <p>Parie nos coupons sur les meilleures plateformes — liens directs inclus.</p>
     </div>
     <div class="bk-row reveal rd1">
-      <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="bk-c">
-        <div class="bk-name">1XBET</div><div class="bk-bonus">Bonus 100%</div><div class="bk-link">S'inscrire →</div>
+      <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="bk-c" style="border-top:3px solid #FF6B00">
+        <div class="bk-logo" style="background:#FF6B00;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;padding:6px 12px;border-radius:8px;margin-bottom:4px">1X<span style="color:#fff;opacity:.7">BET</span></div>
+        <div class="bk-bonus" style="color:#FF6B00">Bonus 100%</div>
+        <div class="bk-link">S'inscrire →</div>
       </a>
-      <a href="https://bwredir.com/2gdj" target="_blank" class="bk-c">
-        <div class="bk-name">BETWINNER</div><div class="bk-bonus">Bonus 130%</div><div class="bk-link">S'inscrire →</div>
+      <a href="https://bwredir.com/2gdj" target="_blank" class="bk-c" style="border-top:3px solid #FFD700">
+        <div class="bk-logo" style="background:#1a2a5e;color:#FFD700;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;padding:6px 10px;border-radius:8px;margin-bottom:4px">BET<span style="color:#fff">WINNER</span></div>
+        <div class="bk-bonus" style="color:#FFD700">Bonus 130%</div>
+        <div class="bk-link">S'inscrire →</div>
       </a>
-      <a href="https://refpaiozdg.top/L?" target="_blank" class="bk-c">
-        <div class="bk-name">MEGAPARI</div><div class="bk-bonus">100% + Freebets</div><div class="bk-link">S'inscrire →</div>
+      <a href="https://refpaiozdg.top/L?" target="_blank" class="bk-c" style="border-top:3px solid #E53935">
+        <div class="bk-logo" style="background:#1a0000;color:#E53935;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;padding:6px 10px;border-radius:8px;margin-bottom:4px">MEGA<span style="color:#fff">PARI</span></div>
+        <div class="bk-bonus" style="color:#E53935">100% + Freebets</div>
+        <div class="bk-link">S'inscrire →</div>
       </a>
-      <a href="https://1wync.com/?p=3qq3" target="_blank" class="bk-c">
-        <div class="bk-name">1Win</div><div class="bk-bonus">500% × 4 dépôts</div><div class="bk-link">S'inscrire →</div>
+      <a href="https://1wync.com/?p=3qq3" target="_blank" class="bk-c" style="border-top:3px solid #4FC3F7">
+        <div class="bk-logo" style="background:#0d1b2a;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.08em;padding:6px 12px;border-radius:8px;margin-bottom:4px"><span style="color:#4FC3F7">1</span>WIN</div>
+        <div class="bk-bonus" style="color:#4FC3F7">500% × 4 dépôts</div>
+        <div class="bk-link">S'inscrire →</div>
       </a>
-      <a href="https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159" target="_blank" class="bk-c">
-        <div class="bk-name">888starz</div><div class="bk-bonus">Bonus 100%</div><div class="bk-link">S'inscrire →</div>
+      <a href="https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159" target="_blank" class="bk-c" style="border-top:3px solid #FFD700">
+        <div class="bk-logo" style="background:#111;color:#FFD700;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.05em;padding:6px 10px;border-radius:8px;margin-bottom:4px">888<span style="color:#fff">STARZ</span></div>
+        <div class="bk-bonus" style="color:#FFD700">Bonus 100%</div>
+        <div class="bk-link">S'inscrire →</div>
       </a>
     </div>
   </div>
@@ -1413,7 +1497,6 @@ function setBill(t,btn){
 }
 </script>
 
-<script src="./assets/js/betoracle-ui.js"></script>
 
 </body>
 </html>
