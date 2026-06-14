@@ -2,283 +2,328 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Connexion — Betoracle Pro</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="./assets/css/mobile.css">
 <style>
 :root{
   --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;
-  --bg:#060a06;--s1:#111711;--b1:#1c271c;--b2:#2a3a2a;
-  --text:#e8f0e8;--muted:#7a9a7a;--red:#ef4444;
+  --bg:#060a06;--s1:#0e140e;--b1:#1a2a1a;--b2:#243424;
+  --text:#e8f0e8;--muted:#6a8a6a;--red:#ef4444;
   --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+  --safe-t:env(safe-area-inset-top,0px);
+  --safe-b:env(safe-area-inset-bottom,0px);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{height:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--ff);
-  display:flex;align-items:center;justify-content:center;padding:24px;
-  background-image:radial-gradient(circle at 20% 50%,rgba(34,197,94,.06) 0%,transparent 60%),
-                   radial-gradient(circle at 80% 20%,rgba(245,200,66,.04) 0%,transparent 50%)}
-.card{width:100%;max-width:420px;background:var(--s1);border:1px solid var(--b2);
-  border-radius:20px;padding:42px 36px;position:relative;overflow:hidden;
-  box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--gb),var(--gold))}
-.logo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px}
-.logo-badge{width:44px;height:44px;border-radius:12px;background:rgba(34,197,94,.15);
-  border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:24px}
-.logo-name{font-family:var(--fd);font-size:26px;letter-spacing:.05em}
-.logo-name span{color:var(--gold)}
-h1{font-family:var(--fd);font-size:34px;letter-spacing:.04em;text-align:center;margin-bottom:6px}
-.sub{font-size:14px;color:var(--muted);text-align:center;margin-bottom:28px}
-.field{margin-bottom:18px}
-.field label{display:block;font-size:12px;font-weight:700;color:var(--muted);
-  text-transform:uppercase;letter-spacing:.07em;margin-bottom:7px}
-.field input{width:100%;background:rgba(0,0,0,.3);border:1.5px solid var(--b2);
-  border-radius:10px;padding:13px 16px;font-size:15px;color:var(--text);
-  font-family:var(--ff);outline:none;transition:border .2s,background .2s}
-.field input:focus{border-color:var(--gb);background:rgba(34,197,94,.04)}
-.pwd-wrap{position:relative}
-.pwd-wrap input{padding-right:48px}
-.pwd-eye{position:absolute;right:14px;top:50%;transform:translateY(-50%);
-  background:none;border:none;cursor:pointer;color:var(--muted);font-size:18px;padding:4px}
-.btn{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;
-  padding:15px;border-radius:10px;border:none;font-size:16px;font-weight:700;
-  font-family:var(--ff);cursor:pointer;transition:all .2s;letter-spacing:.02em}
-.btn-green{background:var(--gb);color:#000;margin-top:6px}
-.btn-green:hover{background:var(--gl);transform:translateY(-1px);box-shadow:0 8px 24px rgba(34,197,94,.3)}
-.btn-green:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none}
-.err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;
-  border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:18px;
-  display:none;align-items:center;gap:8px;line-height:1.5}
-.ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);color:var(--gb)}
-.links{text-align:center;margin-top:20px;font-size:13px;color:var(--muted);
-  display:flex;flex-direction:column;gap:10px}
-.links a{color:var(--gb);font-weight:600;text-decoration:none;cursor:pointer}
-.links a:hover{color:var(--gl)}
-.divider{display:flex;align-items:center;gap:12px;margin:20px 0;color:var(--b2)}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1)}
-.divider span{font-size:12px;color:var(--muted)}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@media(max-width:480px){
-  body{padding:16px;align-items:flex-start;padding-top:40px}
-  .card{padding:32px 24px}
-  h1{font-size:28px}
-  .sub{font-size:13px;margin-bottom:22px}
-  .field input{padding:11px 14px;font-size:14px}
-  .btn{padding:13px;font-size:15px}
-  .bottom-link{font-size:13px}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--ff);
+  min-height:100%;
+  background-image:
+    radial-gradient(ellipse at 20% 20%,rgba(34,197,94,.06) 0%,transparent 55%),
+    radial-gradient(ellipse at 80% 80%,rgba(245,200,66,.04) 0%,transparent 55%);
 }
 
+/* PAGE WRAPPER */
+.page{
+  min-height:100vh;
+  min-height:100dvh; /* dynamic viewport */
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  padding-top:max(24px, calc(var(--safe-t) + 24px));
+  padding-bottom:max(24px, calc(var(--safe-b) + 24px));
+}
+
+/* CARD */
+.card{
+  width:100%;
+  max-width:400px;
+  background:var(--s1);
+  border:1px solid var(--b2);
+  border-radius:20px;
+  overflow:hidden;
+  position:relative;
+  box-shadow:0 20px 60px rgba(0,0,0,.5);
+}
+.card::before{
+  content:'';
+  position:absolute;top:0;left:0;right:0;height:3px;
+  background:linear-gradient(90deg,var(--gb),var(--gold));
+}
+
+/* CARD INNER */
+.card-inner{ padding:36px 32px 32px; }
+
+/* LOGO */
+.logo{
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  margin-bottom:32px;
+}
+.logo-orb{
+  width:42px;height:42px;border-radius:11px;
+  background:rgba(34,197,94,.12);border:1.5px solid var(--gb);
+  display:flex;align-items:center;justify-content:center;font-size:22px;
+}
+.logo-name{font-family:var(--fd);font-size:22px;letter-spacing:.05em}
+.logo-name span{color:var(--gold)}
+
+h1{
+  font-family:var(--fd);font-size:30px;letter-spacing:.04em;
+  text-align:center;margin-bottom:5px;
+}
+.sub{
+  font-size:13px;color:var(--muted);text-align:center;
+  margin-bottom:26px;line-height:1.5;
+}
+
+/* CHAMPS */
+.field{margin-bottom:15px}
+.field label{
+  display:block;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:6px;
+}
+.field input{
+  width:100%;
+  background:rgba(0,0,0,.2);
+  border:1.5px solid var(--b2);
+  border-radius:10px;
+  padding:13px 15px;
+  font-size:15px;color:var(--text);
+  font-family:var(--ff);outline:none;
+  transition:border-color .2s;
+  -webkit-appearance:none;
+}
+.field input:focus{border-color:var(--gb)}
+.field input::placeholder{color:var(--muted)}
+.pwd-wrap{position:relative}
+.pwd-wrap input{padding-right:48px}
+.pwd-eye{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;
+  color:var(--muted);font-size:18px;padding:4px;
+}
+
+/* ERREUR */
+.err{
+  background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);
+  color:#fca5a5;border-radius:10px;
+  padding:11px 15px;font-size:13px;
+  display:none;align-items:center;gap:8px;
+  margin-bottom:14px;line-height:1.4;
+}
+
+/* BOUTON */
+.btn-login{
+  width:100%;padding:14px;border-radius:11px;border:none;
+  background:var(--gb);color:#000;
+  font-size:15px;font-weight:800;font-family:var(--ff);
+  cursor:pointer;transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  -webkit-tap-highlight-color:transparent;
+  margin-top:4px;
+}
+.btn-login:active{background:var(--gl);transform:scale(.98)}
+.btn-login:disabled{opacity:.5;cursor:not-allowed}
+
+/* LIENS */
+.links{
+  display:flex;flex-direction:column;gap:10px;
+  text-align:center;margin-top:20px;
+  font-size:13px;color:var(--muted);
+}
+.links a{color:var(--gb);font-weight:600;text-decoration:none}
+
+/* DIVIDER */
+.divider{
+  display:flex;align-items:center;gap:12px;
+  margin:18px 0;color:var(--b2);
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1)}
+.divider span{font-size:12px;color:var(--muted)}
+
+/* LIEN RETOUR */
+.back{
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  margin-top:20px;font-size:13px;color:var(--muted);
+  text-decoration:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.back:hover{color:var(--text)}
+
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .spin{animation:spin .8s linear infinite;display:inline-block}
+
+/* MOBILE OVERRIDES */
+@media(max-width:480px){
+  .page{padding:16px;padding-top:max(20px,calc(var(--safe-t) + 20px));padding-bottom:max(16px,calc(var(--safe-b) + 16px));justify-content:flex-start;padding-top:max(40px,calc(var(--safe-t) + 40px))}
+  .card{border-radius:16px}
+  .card-inner{padding:28px 22px 24px}
+  .logo{margin-bottom:24px}
+  h1{font-size:26px}
+  .sub{font-size:12px;margin-bottom:20px}
+  .field input{padding:12px 14px;font-size:16px} /* 16px évite le zoom iOS */
+  .btn-login{padding:15px;font-size:16px}
+}
 </style>
 </head>
 <body data-page="login">
 
-<div class="card">
-  <div class="logo">
-    <div class="logo-badge">🔮</div>
-    <div class="logo-name">BET<span>ORACLE</span> PRO</div>
-  </div>
+<div class="page">
+  <div class="card">
+    <div class="card-inner">
 
-  <h1>CONNEXION</h1>
-  <p class="sub">Accède à tes analyses et ton coupon du jour</p>
+      <div class="logo">
+        <div class="logo-orb">🔮</div>
+        <div class="logo-name">BET<span>ORACLE</span></div>
+      </div>
 
-  <div class="err" id="msg"></div>
+      <h1>CONNEXION</h1>
+      <p class="sub">Accède à tes analyses et ton coupon du jour</p>
 
-  <div class="field">
-    <label>Adresse email</label>
-    <input type="email" id="email" placeholder="ton@email.com"
-           autocomplete="email" oninput="clearMsg()">
-  </div>
+      <div class="err" id="msg"><i class="ti ti-alert-circle"></i><span id="msg-txt"></span></div>
 
-  <div class="field">
-    <label>Mot de passe</label>
-    <div class="pwd-wrap">
-      <input type="password" id="pwd" placeholder="••••••••"
-             autocomplete="current-password" oninput="clearMsg()"
-             onkeydown="if(event.key==='Enter')doLogin()">
-      <button type="button" class="pwd-eye" onclick="togglePwd()">
-        <i class="ti ti-eye" id="eye"></i>
+      <div class="field">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="ton@email.com"
+               autocomplete="email" inputmode="email"
+               oninput="clearMsg()" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+
+      <div class="field">
+        <label>Mot de passe</label>
+        <div class="pwd-wrap">
+          <input type="password" id="pwd" placeholder="••••••••"
+                 autocomplete="current-password"
+                 oninput="clearMsg()" onkeydown="if(event.key==='Enter')doLogin()">
+          <button type="button" class="pwd-eye" onclick="togglePwd()">
+            <i class="ti ti-eye" id="eye"></i>
+          </button>
+        </div>
+      </div>
+
+      <button class="btn-login" id="btn" onclick="doLogin()">
+        <i class="ti ti-login"></i> Se connecter
       </button>
+
+      <div class="links">
+        <a onclick="resetPwd()" style="cursor:pointer">Mot de passe oublié ?</a>
+      </div>
+
+      <div class="divider"><span>ou</span></div>
+
+      <div class="links">
+        <span>Pas de compte ? <a href="signup.html">Créer mon compte gratuit →</a></span>
+      </div>
+
     </div>
   </div>
 
-  <button class="btn btn-green" id="btn" onclick="doLogin()">
-    <i class="ti ti-login"></i> Se connecter
-  </button>
-
-  <div class="links">
-    <a onclick="resetPwd()">Mot de passe oublié ?</a>
-  </div>
-
-  <div class="divider"><span>ou</span></div>
-
-  <div class="links">
-    <span>Pas encore de compte ? <a href="signup.html">Créer mon compte gratuitement →</a></span>
-  </div>
+  <a href="index.html" class="back">
+    <i class="ti ti-arrow-left"></i> Retour à l'accueil
+  </a>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════
-// SUPABASE — chargé depuis CDN jsdelivr
-// ═══════════════════════════════════════════════
 const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 
-// Init Supabase via fetch direct (pas de SDK requis)
-async function supabaseSignIn(email, password) {
-  const res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': SUPA_ANON,
-      'Authorization': `Bearer ${SUPA_ANON}`
-    },
-    body: JSON.stringify({ email, password })
-  })
-  return res.json()
+// Vérifier session existante
+;(async()=>{
+  const t=localStorage.getItem('sb_access_token')
+  if(!t)return
+  try{
+    const r=await fetch(`${SUPA_URL}/auth/v1/user`,{headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${t}`}})
+    const d=await r.json()
+    if(d.id) window.location.replace('welcome.html')
+  }catch{}
+})()
+
+function clearMsg(){document.getElementById('msg').style.display='none'}
+
+function showMsg(txt,ok=false){
+  const el=document.getElementById('msg')
+  document.getElementById('msg-txt').textContent=txt
+  el.style.cssText=ok
+    ?'display:flex;background:rgba(34,197,94,.08);border-color:rgba(34,197,94,.25);color:var(--gb)'
+    :'display:flex;background:rgba(239,68,68,.08);border-color:rgba(239,68,68,.25);color:#fca5a5'
 }
 
-async function supabaseGetProfile(userId, token) {
-  const res = await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${userId}&select=full_name,plan`, {
-    headers: {
-      'apikey': SUPA_ANON,
-      'Authorization': `Bearer ${token}`
-    }
-  })
-  const data = await res.json()
-  return data?.[0] || null
+function togglePwd(){
+  const i=document.getElementById('pwd'),e=document.getElementById('eye')
+  i.type=i.type==='password'?'text':'password'
+  e.className=i.type==='password'?'ti ti-eye':'ti ti-eye-off'
 }
 
-// ═══════════════════════════════════════════════
-// UI HELPERS
-// ═══════════════════════════════════════════════
-function showMsg(text, isError = true) {
-  const el = document.getElementById('msg')
-  el.innerHTML = `<i class="ti ti-${isError ? 'alert-circle' : 'check'}"></i> <span>${text}</span>`
-  el.className = 'err' + (isError ? '' : ' ok')
-  el.style.display = 'flex'
-}
-function clearMsg() { document.getElementById('msg').style.display = 'none' }
-
-function togglePwd() {
-  const inp = document.getElementById('pwd')
-  const ico = document.getElementById('eye')
-  if (inp.type === 'password') { inp.type = 'text'; ico.className = 'ti ti-eye-off' }
-  else { inp.type = 'password'; ico.className = 'ti ti-eye' }
+function setBtn(loading){
+  const b=document.getElementById('btn')
+  b.disabled=loading
+  b.innerHTML=loading
+    ?'<i class="ti ti-loader-2 spin"></i> Connexion…'
+    :'<i class="ti ti-login"></i> Se connecter'
 }
 
-function setBtn(loading) {
-  const btn = document.getElementById('btn')
-  btn.disabled = loading
-  btn.innerHTML = loading
-    ? '<i class="ti ti-loader-2 spin"></i> Connexion en cours…'
-    : '<i class="ti ti-login"></i> Se connecter'
-}
-
-// ═══════════════════════════════════════════════
-// CONNEXION PRINCIPALE
-// ═══════════════════════════════════════════════
-async function doLogin() {
+async function doLogin(){
   clearMsg()
-
-  const email = document.getElementById('email').value.trim()
-  const pwd   = document.getElementById('pwd').value
-
-  if (!email) return showMsg('Entre ton adresse email.')
-  if (!pwd)   return showMsg('Entre ton mot de passe.')
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return showMsg('Email invalide.')
-
+  const email=document.getElementById('email').value.trim()
+  const pwd=document.getElementById('pwd').value
+  if(!email)return showMsg('Entre ton adresse email.')
+  if(!pwd)return showMsg('Entre ton mot de passe.')
   setBtn(true)
-
-  try {
-    const data = await supabaseSignIn(email, pwd)
-
-    // Vérifier erreur Supabase
-    if (data.error || data.error_description || !data.access_token) {
-      setBtn(false)
-      const err = data.error_description || data.error || data.msg || 'Erreur de connexion'
-      if (err.toLowerCase().includes('invalid') || err.toLowerCase().includes('credentials')) {
-        return showMsg('Email ou mot de passe incorrect.')
-      }
-      if (err.toLowerCase().includes('confirmed') || err.toLowerCase().includes('confirm')) {
-        return showMsg('Vérifie ta boîte mail et confirme ton adresse email.')
-      }
-      return showMsg(err)
-    }
-
-    // Succès — récupérer le profil
-    const token   = data.access_token
-    const userId  = data.user?.id
-    const profile = await supabaseGetProfile(userId, token)
-
-    const prenom = profile?.full_name?.split(' ')[0] || email.split('@')[0]
-    const plan   = profile?.plan || 'free'
-
-    // Stocker la session
-    sessionStorage.setItem('bp_token',  token)
-    sessionStorage.setItem('bp_uid',    userId)
-    sessionStorage.setItem('bp_prenom', prenom)
-    sessionStorage.setItem('bp_plan',   plan)
-    sessionStorage.setItem('bp_email',  email)
-
-    // Aussi dans localStorage pour persistance
-    localStorage.setItem('sb_access_token',  token)
-    localStorage.setItem('sb_refresh_token', data.refresh_token || '')
-    localStorage.setItem('sb_user_id',       userId)
-    localStorage.setItem('bp_plan',          plan)
-
-    showMsg(`Bienvenue ${prenom} ! Redirection…`, false)
-
-    // Rediriger vers welcome ou la page demandée
-    const next = new URLSearchParams(window.location.search).get('next') || 'welcome.html'
-    setTimeout(() => window.location.href = next, 800)
-
-  } catch (err) {
-    setBtn(false)
-    console.error('[Login]', err)
-    showMsg('Erreur réseau. Vérifie ta connexion internet.')
-  }
-}
-
-// ═══════════════════════════════════════════════
-// MOT DE PASSE OUBLIÉ
-// ═══════════════════════════════════════════════
-async function resetPwd() {
-  const email = document.getElementById('email').value.trim()
-  if (!email) return showMsg('Entre ton email ci-dessus d\'abord.')
-
-  try {
-    const res = await fetch(`${SUPA_URL}/auth/v1/recover`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_ANON },
-      body: JSON.stringify({ email })
+  try{
+    const r=await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`},
+      body:JSON.stringify({email,password:pwd})
     })
-    showMsg('Email de réinitialisation envoyé ! Vérifie ta boîte mail.', false)
-  } catch {
-    showMsg('Erreur lors de l\'envoi. Réessaie.')
-  }
+    const d=await r.json()
+    if(!d.access_token){
+      setBtn(false)
+      const e=d.error_description||d.error||''
+      return showMsg(e.includes('invalid')||e.includes('Invalid')?'Email ou mot de passe incorrect.':e||'Erreur de connexion.')
+    }
+    // Récupérer profil
+    const pr=await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${d.user.id}&select=full_name,plan`,{
+      headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${d.access_token}`}
+    })
+    const profiles=await pr.json()
+    const profile=profiles?.[0]
+    const prenom=profile?.full_name?.split(' ')[0]||email.split('@')[0]
+    localStorage.setItem('sb_access_token',d.access_token)
+    localStorage.setItem('sb_refresh_token',d.refresh_token||'')
+    localStorage.setItem('sb_user_id',d.user.id)
+    localStorage.setItem('bp_plan',profile?.plan||'free')
+    sessionStorage.setItem('bp_token',d.access_token)
+    sessionStorage.setItem('bp_prenom',prenom)
+    sessionStorage.setItem('bp_plan',profile?.plan||'free')
+    showMsg(`Bienvenue ${prenom} !`,true)
+    setTimeout(()=>{
+      const next=new URLSearchParams(location.search).get('next')||'welcome.html'
+      window.location.href=next
+    },700)
+  }catch(e){setBtn(false);showMsg('Erreur réseau. Vérifie ta connexion.')}
 }
 
-// ═══════════════════════════════════════════════
-// AUTO-REDIRECT si déjà connecté
-// ═══════════════════════════════════════════════
-const existingToken = localStorage.getItem('sb_access_token')
-if (existingToken) {
-  // Vérifier si le token est encore valide
-  fetch(`${SUPA_URL}/auth/v1/user`, {
-    headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${existingToken}` }
-  }).then(r => r.json()).then(d => {
-    if (d.id) window.location.href = 'welcome.html'
-  }).catch(() => {})
+async function resetPwd(){
+  const email=document.getElementById('email').value.trim()
+  if(!email)return showMsg('Entre ton email d\'abord.')
+  try{
+    await fetch(`${SUPA_URL}/auth/v1/recover`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json','apikey':SUPA_ANON},
+      body:JSON.stringify({email})
+    })
+    showMsg('Email de réinitialisation envoyé !',true)
+  }catch{showMsg('Erreur réseau.')}
 }
 
-// Focus auto sur l'email
-window.addEventListener('load', () => document.getElementById('email').focus())
+window.addEventListener('load',()=>document.getElementById('email').focus())
 </script>
-<script src="./assets/js/mobile-nav.js"></script>
 </body>
 </html>

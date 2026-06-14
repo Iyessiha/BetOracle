@@ -771,3 +771,66 @@
   .step-dot { width: 22px !important; height: 22px !important; font-size: 10px !important; }
   .step-line { width: 20px !important; }
 }
+
+/* ─────────────────────────────────────────
+   PAGES FULL-SCREEN — pas de padding bottom nav
+───────────────────────────────────────── */
+@media (max-width: 640px) {
+  body[data-page="login"],
+  body[data-page="signup"],
+  body[data-page="admin"],
+  body[data-page="admin-login"] {
+    padding-bottom: 0 !important;
+  }
+  
+  /* Login — centrage propre sur mobile */
+  body[data-page="login"] .page {
+    min-height: 100vh;
+    min-height: 100dvh;
+    justify-content: center;
+    padding: 20px 18px !important;
+  }
+  body[data-page="login"] .card {
+    border-radius: 16px !important;
+  }
+  body[data-page="login"] .card-inner {
+    padding: 28px 22px 24px !important;
+  }
+  body[data-page="login"] .field input {
+    font-size: 16px !important; /* Empêche zoom iOS */
+    padding: 13px 14px !important;
+  }
+  body[data-page="login"] .btn-login {
+    padding: 15px !important;
+    font-size: 16px !important;
+  }
+  
+  /* Signup — garder le layout 2 colonnes caché proprement */
+  body[data-page="signup"] .page-body {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="signup"] .left-panel {
+    display: none !important;
+  }
+  body[data-page="signup"] .right-panel {
+    padding: 20px 18px !important;
+    border-left: none !important;
+    overflow-y: auto;
+  }
+  body[data-page="signup"] .field input,
+  body[data-page="signup"] .field select {
+    font-size: 16px !important; /* Empêche zoom iOS */
+  }
+  body[data-page="signup"] .rp-title {
+    font-size: 26px !important;
+  }
+  body[data-page="signup"] .field-row {
+    grid-template-columns: 1fr !important;
+  }
+  body[data-page="signup"] .plan-selector {
+    grid-template-columns: 1fr 1fr !important;
+  }
+  body[data-page="signup"] .btn {
+    font-size: 15px !important;
+  }
+}
