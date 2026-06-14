@@ -61,6 +61,16 @@ h1{font-family:var(--fd);font-size:34px;letter-spacing:.04em;text-align:center;m
 .divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--b1)}
 .divider span{font-size:12px;color:var(--muted)}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@media(max-width:480px){
+  body{padding:16px;align-items:flex-start;padding-top:40px}
+  .card{padding:32px 24px}
+  h1{font-size:28px}
+  .sub{font-size:13px;margin-bottom:22px}
+  .field input{padding:11px 14px;font-size:14px}
+  .btn{padding:13px;font-size:15px}
+  .bottom-link{font-size:13px}
+}
+
 .spin{animation:spin .8s linear infinite;display:inline-block}
 </style>
 </head>

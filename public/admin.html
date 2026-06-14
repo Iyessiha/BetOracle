@@ -359,8 +359,41 @@ button { cursor: pointer; font-family: var(--fb); }
 .loader-ring { width: 32px; height: 32px; border-radius: 50%; border: 3px solid var(--b2); border-top-color: var(--gb); animation: spin .8s linear infinite; }
 
 /* ── RESPONSIVE ── */
-@media(max-width: 1024px) { .kpi-grid { grid-template-columns: repeat(2,1fr); } .grid2, .grid3 { grid-template-columns: 1fr; } }
-@media(max-width: 640px)  { .sidebar { display: none; } .kpi-grid { grid-template-columns: 1fr 1fr; } }
+@media(max-width:1024px){
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .grid2,.grid3{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sidebar{width:0;overflow:hidden;border:none}
+  .sidebar.collapsed{width:0}
+  .shell{flex-direction:column}
+  .main{width:100%}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .topbar{padding:0 16px}
+  .content{padding:16px}
+  .tbl thead th,.tbl td{padding:8px 12px;font-size:12px}
+  .form-row{grid-template-columns:1fr}
+  .modal{min-width:auto;width:95%;padding:22px 20px}
+}
+@media(max-width:480px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi{padding:14px 16px}
+  .kpi-val{font-size:28px}
+  .kpi-label{font-size:10px}
+  .topbar{height:50px}
+  .tb-breadcrumb{font-size:12px}
+  #last-refresh{display:none}
+  .ph h1{font-size:26px}
+  .panel-title{font-size:14px}
+  .tbl{font-size:12px}
+  .tbl thead th,.tbl td{padding:7px 10px}
+  .badge{font-size:10px;padding:2px 7px}
+  .btn-act{padding:4px 8px;font-size:11px}
+  .grid2,.grid3{grid-template-columns:1fr}
+  .search-bar input{font-size:13px}
+  #filter-plan{width:100%;margin-top:8px}
+  .sb-footer{display:none}
+}
 </style>
 </head>
 <body>
@@ -879,8 +912,37 @@ function nav(page) {
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('collapsed')
+  const sb = document.getElementById('sidebar')
+  if (window.innerWidth <= 768) {
+    // Mobile : afficher/cacher en overlay
+    if (sb.style.position === 'fixed') {
+      sb.style.position = ''
+      sb.style.zIndex = ''
+      sb.style.height = ''
+      sb.style.width = '0'
+      sb.style.overflow = 'hidden'
+    } else {
+      sb.style.position = 'fixed'
+      sb.style.zIndex = '200'
+      sb.style.height = '100vh'
+      sb.style.width = '220px'
+      sb.style.overflow = 'auto'
+    }
+  } else {
+    sb.classList.toggle('collapsed')
+  }
 }
+// Fermer sidebar mobile en cliquant ailleurs
+document.addEventListener('click', e => {
+  const sb = document.getElementById('sidebar')
+  if (window.innerWidth <= 768 && sb.style.position === 'fixed') {
+    if (!sb.contains(e.target) && !e.target.closest('.tb-toggle')) {
+      sb.style.position = ''
+      sb.style.width = '0'
+      sb.style.overflow = 'hidden'
+    }
+  }
+})
 
 // ══════════════════════════════════════════════════
 // TOAST
