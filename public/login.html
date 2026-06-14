@@ -75,7 +75,7 @@ h1{font-family:var(--fd);font-size:34px;letter-spacing:.04em;text-align:center;m
 .spin{animation:spin .8s linear infinite;display:inline-block}
 </style>
 </head>
-<body>
+<body data-page="login">
 
 <div class="card">
   <div class="logo">
@@ -279,5 +279,6 @@ if (existingToken) {
 // Focus auto sur l'email
 window.addEventListener('load', () => document.getElementById('email').focus())
 </script>
+<script src="./assets/js/mobile-nav.js"></script>
 </body>
 </html>

@@ -34,7 +34,7 @@ h1{font-family:var(--fd);font-size:38px;letter-spacing:.04em;margin-bottom:8px}
 #status-area{min-height:20px}
 </style>
 </head>
-<body>
+<body data-page="checkout">
 <div class="card">
   <div class="orb"><i class="ti ti-check"></i></div>
   <h1>PAIEMENT REÇU !</h1>
@@ -119,5 +119,6 @@ async function verify() {
 // Lancer la vérification après 2s (laisser le temps au webhook)
 setTimeout(verify, 2000)
 </script>
+<script src="./assets/js/mobile-nav.js"></script>
 </body>
 </html>

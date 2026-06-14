@@ -744,26 +744,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 .mp-init { width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; font-family:"Bebas Neue",sans-serif; font-size:8px; letter-spacing:.02em; border:1px solid; flex-shrink:0; }
 </style>
 </head>
-<body>
-
-<!-- ═══ BOTTOM NAV MOBILE ═══ -->
-<nav class="mobile-nav">
-  <a href="#oracle-lock" class="mn-item">
-    <i class="ti ti-brain"></i>Oracle
-  </a>
-  <a href="#plans" class="mn-item">
-    <i class="ti ti-crown"></i>Plans
-  </a>
-  <a href="checkout.html" class="mn-item cta-btn">
-    <i class="ti ti-bolt"></i>Payer
-  </a>
-  <a href="login.html" class="mn-item">
-    <i class="ti ti-user"></i>Compte
-  </a>
-  <a href="#faq" class="mn-item">
-    <i class="ti ti-help-circle"></i>FAQ
-  </a>
-</nav>
+<body data-page="home">
 
 <!-- ═══ NAV ═══ -->
 <nav id="nav">
@@ -923,7 +904,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
           <div class="lr-item"><div class="lr-val" style="color:var(--gold)">64<span style="color:var(--gb)">%</span></div><div class="lr-lbl">Win rate moyen</div></div>
           <div class="lr-item"><div class="lr-val">55<span style="color:var(--gold)">+</span></div><div class="lr-lbl">Championnats</div></div>
         </div>
-        <a href="#plans" class="btn btn-green btn-lg">
+        <a href="checkout.html" class="btn btn-green btn-lg">
           <i class="ti ti-lock-open"></i> Débloquer l'Oracle
         </a>
       </div>
@@ -997,7 +978,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
               <strong>Probabilités exactes, score IA, 3 scénarios complets,
               matchs pièges, niveau de risque.</strong>
             </div>
-            <a href="#plans" class="btn btn-gold" style="margin-top:4px">
+            <a href="checkout.html" class="btn btn-gold" style="margin-top:4px">
               Débloquer l'analyse complète <i class="ti ti-arrow-right"></i>
             </a>
           </div>
@@ -1040,7 +1021,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       </div>
       <div class="machine-right reveal rd1">
         <p>Notre moteur ingère, recoupe et pondère chaque signal football mondial. Avant que le match commence, l'Oracle a déjà analysé plus d'éléments que toi en une saison entière.</p>
-        <a href="#plans" class="btn btn-outline">Essayer l'Oracle gratuitement</a>
+        <a href="signup.html" class="btn btn-outline">Commencer gratuitement</a>
       </div>
     </div>
     <div class="machine-grid reveal rd1">
@@ -1088,7 +1069,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         <div class="mcb-label">Test gratuit</div>
         <div class="mcb-text">Lance ta première analyse maintenant.</div>
       </div>
-      <a href="signup.html" class="btn btn-green btn-lg">Analyser un match <i class="ti ti-arrow-right"></i></a>
+      <a href="analyse.html" class="btn btn-green btn-lg">Analyser un match <i class="ti ti-arrow-right"></i></a>
     </div>
   </div>
 </section>
@@ -1470,10 +1451,10 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       Lance ta première analyse — c'est maintenant.
     </p>
     <div class="reveal rd3" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-      <a href="signup.html" id="signup" class="btn btn-green btn-lg" style="font-size:16px;padding:17px 38px">
+      <a href="analyse.html" id="signup" class="btn btn-green btn-lg" style="font-size:16px;padding:17px 38px">
         <i class="ti ti-search"></i> Analyser un match
       </a>
-      <a href="#plans" class="btn btn-outline btn-lg" style="font-size:16px;padding:17px 38px">
+      <a href="checkout.html" class="btn btn-outline btn-lg" style="font-size:16px;padding:17px 38px">
         Voir les offres
       </a>
     </div>
@@ -1631,5 +1612,6 @@ function setBill(t,btn){
 </script>
 
 
+<script src="./assets/js/mobile-nav.js"></script>
 </body>
 </html>
