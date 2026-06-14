@@ -11,6 +11,7 @@
 
   // Pages "full-screen" : pas de bottom nav
   const FULLSCREEN_PAGES = ['login', 'signup', 'admin', 'admin-login']
+  const DASHBOARD_PAGE = 'dashboard' // page avec topbar intégrée
 
   let user = null
   let userName = ''
@@ -117,6 +118,7 @@
   ${logged ? `
   <div style="padding:6px 10px">
     <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#2a422a;padding:0 8px 5px">Mon compte</div>
+    ${drItem('dashboard.html','ti-layout-dashboard','Mon espace',page==='dashboard')}
     ${drItem('welcome.html','ti-gift','Parrainage',page==='welcome')}
     ${drItem('checkout.html','ti-bolt','Passer Premium')}
   </div>
@@ -158,9 +160,9 @@
 
   function injectBottomNav(page) {
     const logged = !!user
-    const accountHref = logged ? 'welcome.html' : 'login.html'
+    const accountHref = logged ? 'dashboard.html' : 'login.html'
     const accountIcon = logged ? 'ti-user-check' : 'ti-login'
-    const accountLabel = logged ? userName.slice(0,8) : 'Connexion'
+    const accountLabel = logged ? (userName.slice(0,8)||'Compte') : 'Connexion'
 
     const nav = document.createElement('nav')
     nav.id = 'mobile-bnav'

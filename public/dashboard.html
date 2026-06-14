@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Mon Espace — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="./assets/css/mobile.css">
+<style>
+:root{
+  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;
+  --bg:#060a06;--s1:#0e140e;--b1:#1a2a1a;--b2:#243424;
+  --text:#e8f0e8;--muted:#6a8a6a;--ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+  --safe-t:env(safe-area-inset-top,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ff)}
+
+/* HEADER */
+.dash-header{
+  background:rgba(6,10,6,.96);backdrop-filter:blur(20px);
+  border-bottom:1px solid var(--b1);
+  padding:calc(var(--safe-t) + 14px) 20px 14px;
+  position:sticky;top:0;z-index:50;
+}
+.dh-inner{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto}
+.dh-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
+.dh-logo-orb{width:32px;height:32px;border-radius:8px;background:rgba(34,197,94,.12);border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:17px}
+.dh-logo-name{font-family:var(--fd);font-size:18px;letter-spacing:.05em;color:var(--text)}
+.dh-logo-name span{color:var(--gold)}
+.dh-right{display:flex;align-items:center;gap:10px}
+.dh-plan{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gb)}
+.dh-menu{width:34px;height:34px;border-radius:8px;background:var(--s1);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;font-size:17px}
+
+/* CDM BANNER */
+.cdm-bar{background:linear-gradient(90deg,rgba(245,200,66,.1),rgba(34,197,94,.08));border-bottom:1px solid rgba(245,200,66,.15);padding:10px 20px;text-align:center;font-size:13px;font-weight:700;color:var(--gold)}
+.cdm-bar span{color:#fff;font-weight:400;margin-left:8px}
+
+/* BODY */
+.dash-body{max-width:900px;margin:0 auto;padding:20px 20px 100px}
+
+/* SECTION TITLES */
+.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--b1)}
+
+/* PROFIL CARD */
+.profil-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden}
+.profil-card::before{content:'🏆';position:absolute;right:16px;top:16px;font-size:32px;opacity:.2}
+.pc-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.pc-av{width:52px;height:52px;border-radius:14px;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:22px;color:var(--gb);flex-shrink:0}
+.pc-info{}
+.pc-name{font-size:18px;font-weight:700;letter-spacing:.01em}
+.pc-email{font-size:12px;color:var(--muted);margin-top:2px}
+.pc-plan{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gb);margin-top:5px}
+
+.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.pcs-item{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:12px;padding:14px 10px;text-align:center}
+.pcs-val{font-family:var(--fd);font-size:24px;letter-spacing:.03em;line-height:1}
+.pcs-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
+.pcs-item.streak .pcs-val{color:var(--gold)}
+.pcs-item.analyses .pcs-val{color:var(--gb)}
+
+/* ACTIONS GRID */
+.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.action-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:18px 16px;text-decoration:none;transition:border-color .2s,transform .1s;-webkit-tap-highlight-color:transparent;cursor:pointer;display:block}
+.action-card:active{transform:scale(.97);border-color:var(--gb)}
+.action-card.primary{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
+.action-card.gold{border-color:rgba(245,200,66,.25);background:rgba(245,200,66,.04)}
+.ac-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
+.action-card.primary .ac-icon{background:rgba(34,197,94,.12);color:var(--gb)}
+.action-card.gold .ac-icon{background:rgba(245,200,66,.1);color:var(--gold)}
+.action-card .ac-icon{background:rgba(255,255,255,.05);color:var(--muted)}
+.ac-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.ac-desc{font-size:11px;color:var(--muted);line-height:1.4}
+.ac-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(34,197,94,.12);color:var(--gb);margin-top:6px}
+.ac-badge.gold{background:rgba(245,200,66,.12);color:var(--gold)}
+
+/* COUPON DU JOUR */
+.coupon-section{background:var(--s1);border:1px solid var(--b2);border-radius:18px;overflow:hidden;margin-bottom:20px}
+.coupon-header{padding:16px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.coupon-title{font-family:var(--fd);font-size:18px;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.coupon-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,.12);color:var(--gb);border:1px solid rgba(34,197,94,.2)}
+.coupon-body{padding:16px 18px}
+.coupon-sel{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.cs-match{font-size:13px;font-weight:600;flex:1}
+.cs-pick{font-size:12px;color:var(--gb);font-weight:700;text-align:right;flex-shrink:0}
+.cs-cote{font-size:11px;color:var(--muted);text-align:right;white-space:nowrap}
+.coupon-total{margin-top:12px;padding:12px 14px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:12px;display:flex;align-items:center;justify-content:space-between}
+.ct-label{font-size:12px;color:var(--muted)}
+.ct-cote{font-family:var(--fd);font-size:22px;color:var(--gb)}
+
+/* STREAKS */
+.streak-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:18px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
+.streak-icon{font-size:36px;flex-shrink:0}
+.streak-info{flex:1}
+.streak-title{font-size:14px;font-weight:700;margin-bottom:3px}
+.streak-desc{font-size:12px;color:var(--muted);line-height:1.45}
+.streak-count{font-family:var(--fd);font-size:28px;color:var(--gold);flex-shrink:0}
+
+/* PARRAINAGE */
+.referral-card{background:linear-gradient(135deg,var(--s1),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.15);border-radius:18px;padding:18px;margin-bottom:20px}
+.ref-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.ref-icon{width:40px;height:40px;border-radius:11px;background:rgba(245,200,66,.1);display:flex;align-items:center;justify-content:center;font-size:20px}
+.ref-title{font-size:16px;font-weight:700}
+.ref-sub{font-size:12px;color:var(--muted)}
+.ref-link-wrap{background:rgba(0,0,0,.3);border:1px solid rgba(245,200,66,.15);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.ref-url{font-size:12px;color:var(--gold);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ref-copy{background:rgba(245,200,66,.1);border:none;color:var(--gold);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.rs-item{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:10px;padding:12px;text-align:center}
+.rs-val{font-family:var(--fd);font-size:22px;color:var(--gold)}
+.rs-lbl{font-size:10px;color:var(--muted);margin-top:3px}
+
+/* LOGOUT */
+.logout-btn{width:100%;padding:13px;border-radius:12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#f87171;font-size:14px;font-weight:700;font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;-webkit-tap-highlight-color:transparent;margin-top:4px}
+
+/* SKELETON */
+.skel{background:linear-gradient(90deg,var(--b1) 25%,var(--b2) 50%,var(--b1) 75%);background-size:200% 100%;animation:skel 1.4s ease infinite;border-radius:8px}
+@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+@media(max-width:640px){
+  .pc-stats{grid-template-columns:1fr 1fr}
+  .actions-grid{grid-template-columns:1fr 1fr}
+  .dash-body{padding:16px 16px 100px}
+  .profil-card,.coupon-section,.referral-card,.streak-card{border-radius:16px}
+  .pcs-val{font-size:20px}
+}
+</style>
+</head>
+<body data-page="dashboard">
+
+<!-- HEADER -->
+<div class="dash-header">
+  <div class="dh-inner">
+    <a href="index.html" class="dh-logo">
+      <div class="dh-logo-orb">🔮</div>
+      <div class="dh-logo-name">BET<span>ORACLE</span></div>
+    </a>
+    <div class="dh-right">
+      <div class="dh-plan" id="plan-badge">⏳ Chargement…</div>
+      <div class="dh-menu" onclick="openDr ? openDr() : null"><i class="ti ti-menu-2"></i></div>
+    </div>
+  </div>
+</div>
+
+<!-- BANNER CdM -->
+<div class="cdm-bar">
+  🏆 COUPE DU MONDE 2026 <span>Accès Pro offert jusqu'au 19 juillet</span>
+</div>
+
+<!-- BODY -->
+<div class="dash-body">
+
+  <!-- PROFIL -->
+  <div class="sec-title"><i class="ti ti-user"></i> Mon profil</div>
+  <div class="profil-card">
+    <div class="pc-top">
+      <div class="pc-av" id="av">…</div>
+      <div class="pc-info">
+        <div class="pc-name" id="pc-name">Chargement…</div>
+        <div class="pc-email" id="pc-email"></div>
+        <div class="pc-plan" id="pc-plan">⏳ Vérification…</div>
+      </div>
+    </div>
+    <div class="pc-stats">
+      <div class="pcs-item streak">
+        <div class="pcs-val" id="stat-streak">0</div>
+        <div class="pcs-lbl">🔥 Streak</div>
+      </div>
+      <div class="pcs-item analyses">
+        <div class="pcs-val" id="stat-analyses">0</div>
+        <div class="pcs-lbl">Analyses</div>
+      </div>
+      <div class="pcs-item">
+        <div class="pcs-val" id="stat-refs">0</div>
+        <div class="pcs-lbl">Parrainages</div>
+      </div>
+      <div class="pcs-item">
+        <div class="pcs-val" id="stat-logins">0</div>
+        <div class="pcs-lbl">Connexions</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIONS RAPIDES -->
+  <div class="sec-title"><i class="ti ti-bolt"></i> Actions rapides</div>
+  <div class="actions-grid">
+    <a href="analyse.html" class="action-card primary">
+      <div class="ac-icon"><i class="ti ti-brain"></i></div>
+      <div class="ac-title">Analyser un match</div>
+      <div class="ac-desc">Oracle IA — Coupe du Monde</div>
+      <div class="ac-badge">🏆 CdM 2026</div>
+    </a>
+    <a href="analyse.html#coupon" class="action-card gold">
+      <div class="ac-icon"><i class="ti ti-ticket"></i></div>
+      <div class="ac-title">Coupon du jour</div>
+      <div class="ac-desc">Sélections validées par l'IA</div>
+      <div class="ac-badge gold">Gratuit</div>
+    </a>
+    <a href="welcome.html" class="action-card">
+      <div class="ac-icon"><i class="ti ti-gift"></i></div>
+      <div class="ac-title">Parrainer</div>
+      <div class="ac-desc">Gagne des avantages exclusifs</div>
+    </a>
+    <a href="checkout.html" class="action-card">
+      <div class="ac-icon"><i class="ti ti-crown"></i></div>
+      <div class="ac-title">Plans Premium</div>
+      <div class="ac-desc">Après la Coupe du Monde</div>
+    </a>
+  </div>
+
+  <!-- COUPON DU JOUR -->
+  <div class="sec-title"><i class="ti ti-ticket"></i> Coupon du jour</div>
+  <div class="coupon-section" id="coupon-section">
+    <div class="coupon-header">
+      <div class="coupon-title"><i class="ti ti-bolt" style="color:var(--gold)"></i> Sélections Oracle</div>
+      <div class="coupon-badge" id="coupon-date">Aujourd'hui</div>
+    </div>
+    <div class="coupon-body" id="coupon-body">
+      <div style="text-align:center;padding:20px;color:var(--muted)">
+        <div class="skel" style="height:48px;margin-bottom:8px"></div>
+        <div class="skel" style="height:48px;margin-bottom:8px"></div>
+        <div class="skel" style="height:48px"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STREAK -->
+  <div id="streak-section" style="display:none">
+    <div class="sec-title"><i class="ti ti-flame"></i> Ma série</div>
+    <div class="streak-card">
+      <div class="streak-icon">🔥</div>
+      <div class="streak-info">
+        <div class="streak-title" id="streak-title">Série en cours !</div>
+        <div class="streak-desc" id="streak-desc">Continue à te connecter chaque jour pour maintenir ta série.</div>
+      </div>
+      <div class="streak-count" id="streak-count">0</div>
+    </div>
+  </div>
+
+  <!-- PARRAINAGE -->
+  <div class="sec-title"><i class="ti ti-users"></i> Mon code parrainage</div>
+  <div class="referral-card">
+    <div class="ref-header">
+      <div class="ref-icon">🎁</div>
+      <div>
+        <div class="ref-title">Invite tes amis</div>
+        <div class="ref-sub">Partage l'accès Pro gratuit Coupe du Monde</div>
+      </div>
+    </div>
+    <div class="ref-link-wrap">
+      <div class="ref-url" id="ref-url">Chargement…</div>
+      <button class="ref-copy" onclick="copyRef()">
+        <i class="ti ti-copy"></i> Copier
+      </button>
+    </div>
+    <div class="ref-stats">
+      <div class="rs-item">
+        <div class="rs-val" id="ref-count">0</div>
+        <div class="rs-lbl">Filleuls inscrits</div>
+      </div>
+      <div class="rs-item">
+        <div class="rs-val" id="ref-bonus">0</div>
+        <div class="rs-lbl">Jours offerts</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÉCONNEXION -->
+  <button class="logout-btn" onclick="doLogout()">
+    <i class="ti ti-logout"></i> Se déconnecter
+  </button>
+
+</div>
+
+<script>
+const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const EDGE = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/auth-secure'
+
+const PLAN_LABELS = {
+  free:{label:'🆓 Free',color:'#6a8a6a'},
+  starter:{label:'🌱 Starter',color:'#14b8a6'},
+  pro:{label:'⚡ Pro',color:'#F5C842'},
+  elite:{label:'👑 Elite',color:'#8b5cf6'}
+}
+
+let userData = null
+let refCode = ''
+
+async function init() {
+  const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (!token) { window.location.href = 'login.html?next=dashboard.html'; return }
+  
+  // Vérifier token via Edge Function
+  try {
+    const r = await fetch(EDGE + '?action=verify', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ token })
+    })
+    const d = await r.json()
+    
+    if (!d.valid) { window.location.href = 'login.html?next=dashboard.html'; return }
+    
+    userData = d
+    
+    // Mettre à jour l'UI
+    const firstName = d.first_name || 'Parieur'
+    const initial = firstName[0].toUpperCase()
+    
+    document.getElementById('av').textContent = initial
+    document.getElementById('pc-name').textContent = firstName
+    document.getElementById('pc-email').textContent = d.email || ''
+    document.getElementById('stat-streak').textContent = d.streak_days || 0
+    document.getElementById('stat-analyses').textContent = d.analyses_today || 0
+    document.getElementById('stat-refs').textContent = d.referral_count || 0
+    document.getElementById('stat-logins').textContent = '—'
+    
+    // Plan badge
+    const plan = d.effective_plan || 'free'
+    const planInfo = PLAN_LABELS[plan] || PLAN_LABELS.free
+    document.getElementById('plan-badge').innerHTML = `<span style="color:${planInfo.color}">${planInfo.label}</span>${d.worldcup ? ' · 🏆 CdM' : ''}`
+    const pcPlan = document.getElementById('pc-plan')
+    pcPlan.innerHTML = planInfo.label + (d.worldcup ? ' <span style="color:var(--gold)">· CdM</span>' : '')
+    pcPlan.style.color = planInfo.color
+    
+    // Streak
+    if ((d.streak_days || 0) >= 2) {
+      document.getElementById('streak-section').style.display = 'block'
+      document.getElementById('streak-count').textContent = d.streak_days
+      const s = d.streak_days
+      document.getElementById('streak-title').textContent = s >= 7 ? '🔥 Série légendaire !' : s >= 3 ? '🔥 Série en feu !' : '🔥 Série en cours !'
+      document.getElementById('streak-desc').textContent = `Tu te connectes depuis ${s} jours de suite. Continue !`
+    }
+    
+    // Récupérer ref code
+    loadRefCode(d.user_id, token)
+    
+    // Charger coupon
+    loadCoupon(token)
+    
+  } catch(e) {
+    console.error(e)
+  }
+}
+
+async function loadRefCode(userId, token) {
+  try {
+    const r = await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${userId}&select=ref_code,referral_count`, {
+      headers: {'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}`}
+    })
+    const d = await r.json()
+    if (d?.[0]) {
+      refCode = d[0].ref_code || ''
+      const refUrl = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
+      document.getElementById('ref-url').textContent = refUrl
+      document.getElementById('ref-count').textContent = d[0].referral_count || 0
+      document.getElementById('ref-bonus').textContent = (d[0].referral_count || 0) * 7
+    }
+  } catch {}
+}
+
+async function loadCoupon(token) {
+  try {
+    const today = new Date().toISOString().split('T')[0]
+    const r = await fetch(`${SUPA_URL}/rest/v1/coupons?match_date=eq.${today}&status=eq.published&select=selections,min_plan&limit=1`, {
+      headers: {'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}`}
+    })
+    const d = await r.json()
+    
+    const date = new Date().toLocaleDateString('fr-FR', {weekday:'short',day:'numeric',month:'long'})
+    document.getElementById('coupon-date').textContent = date
+    
+    if (!d?.[0]?.selections?.length) {
+      document.getElementById('coupon-body').innerHTML = `
+        <div style="text-align:center;padding:24px;color:var(--muted)">
+          <div style="font-size:28px;margin-bottom:8px">⏳</div>
+          <div style="font-size:14px;font-weight:600">Coupon en préparation</div>
+          <div style="font-size:12px;margin-top:4px">Disponible avant 12h · Reviens plus tard</div>
+        </div>`
+      return
+    }
+    
+    const sels = d[0].selections
+    let html = ''
+    let totalCote = 1
+    
+    sels.forEach(s => {
+      const cote = parseFloat(s.cote) || 1.5
+      totalCote *= cote
+      html += `
+        <div class="coupon-sel">
+          <div class="cs-match">${s.match || s.equipes || 'Match'}</div>
+          <div>
+            <div class="cs-pick">${s.prediction || s.pick || '1X2'}</div>
+            <div class="cs-cote">@${cote.toFixed(2)}</div>
+          </div>
+        </div>`
+    })
+    
+    html += `
+      <div class="coupon-total">
+        <div>
+          <div class="ct-label">Cote totale</div>
+          <div style="font-size:11px;color:var(--muted)">${sels.length} sélection${sels.length>1?'s':''}</div>
+        </div>
+        <div class="ct-cote">${totalCote.toFixed(2)}</div>
+      </div>`
+    
+    document.getElementById('coupon-body').innerHTML = html
+  } catch {
+    document.getElementById('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Coupon bientôt disponible</div>`
+  }
+}
+
+function copyRef() {
+  const url = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
+  navigator.clipboard.writeText(url).then(() => {
+    const btn = document.querySelector('.ref-copy')
+    const orig = btn.innerHTML
+    btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
+    btn.style.background = 'rgba(34,197,94,.15)'
+    btn.style.color = 'var(--gb)'
+    setTimeout(() => { btn.innerHTML = orig; btn.style.background = ''; btn.style.color = '' }, 2000)
+  })
+}
+
+function doLogout() {
+  localStorage.removeItem('sb_access_token')
+  localStorage.removeItem('sb_refresh_token')
+  localStorage.removeItem('sb_user_id')
+  localStorage.removeItem('bp_plan')
+  sessionStorage.clear()
+  window.location.href = 'index.html'
+}
+
+init()
+</script>
+<script src="./assets/js/mobile-nav.js"></script>
+</body>
+</html>

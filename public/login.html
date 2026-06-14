@@ -241,7 +241,7 @@ const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
   try{
     const r=await fetch(`${SUPA_URL}/auth/v1/user`,{headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${t}`}})
     const d=await r.json()
-    if(d.id) window.location.replace('welcome.html')
+    if(d.id) window.location.replace('dashboard.html')
   }catch{}
 })()
 
@@ -304,7 +304,7 @@ async function doLogin(){
     sessionStorage.setItem('bp_plan',profile?.plan||'free')
     showMsg(`Bienvenue ${prenom} !`,true)
     setTimeout(()=>{
-      const next=new URLSearchParams(location.search).get('next')||'welcome.html'
+      const next=new URLSearchParams(location.search).get('next')||'dashboard.html'
       window.location.href=next
     },700)
   }catch(e){setBtn(false);showMsg('Erreur réseau. Vérifie ta connexion.')}
