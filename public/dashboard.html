@@ -3,316 +3,1090 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Mon Espace — Betoracle Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<title>Mon Oracle — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="./assets/css/mobile.css">
 <style>
-:root{
-  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;
-  --bg:#060a06;--s1:#0e140e;--b1:#1a2a1a;--b2:#243424;
-  --text:#e8f0e8;--muted:#6a8a6a;--ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
-  --safe-t:env(safe-area-inset-top,0px);
+/* ═══════════════════════════════════════
+   TOKENS
+═══════════════════════════════════════ */
+:root {
+  --gb: #22c55e; --gl: #4ade80; --gd: #16a34a;
+  --gold: #F5C842; --gold2: #D4A017;
+  --purple: #a78bfa; --teal: #2dd4bf; --red: #f87171;
+  --bg:  #050806; --bg2: #080d08; --bg3: #0b100b;
+  --s1:  #0f1510; --s2:  #141d14; --s3: #1a2519;
+  --b1:  #1c2a1c; --b2:  #243424; --b3: #2e4030;
+  --text: #e4ede4; --sub: #9ab89a; --muted: #5a7a5a;
+  --ff: 'Barlow', sans-serif;
+  --fd: 'Bebas Neue', sans-serif;
+  --safe-t: env(safe-area-inset-top, 0px);
+  --safe-b: env(safe-area-inset-bottom, 0px);
 }
-*{box-sizing:border-box;margin:0;padding:0}
-html{-webkit-text-size-adjust:100%}
-body{background:var(--bg);color:var(--text);font-family:var(--ff)}
-
-/* HEADER */
-.dash-header{
-  background:rgba(6,10,6,.96);backdrop-filter:blur(20px);
-  border-bottom:1px solid var(--b1);
-  padding:calc(var(--safe-t) + 14px) 20px 14px;
-  position:sticky;top:0;z-index:50;
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--ff);
+  min-height: 100dvh;
+  overflow-x: hidden;
 }
-.dh-inner{display:flex;align-items:center;justify-content:space-between;max-width:900px;margin:0 auto}
-.dh-logo{display:flex;align-items:center;gap:9px;text-decoration:none}
-.dh-logo-orb{width:32px;height:32px;border-radius:8px;background:rgba(34,197,94,.12);border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:17px}
-.dh-logo-name{font-family:var(--fd);font-size:18px;letter-spacing:.05em;color:var(--text)}
-.dh-logo-name span{color:var(--gold)}
-.dh-right{display:flex;align-items:center;gap:10px}
-.dh-plan{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:5px 12px;border-radius:20px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gb)}
-.dh-menu{width:34px;height:34px;border-radius:8px;background:var(--s1);border:1px solid var(--b2);display:flex;align-items:center;justify-content:center;color:var(--muted);cursor:pointer;font-size:17px}
+a { text-decoration: none; color: inherit; }
 
-/* CDM BANNER */
-.cdm-bar{background:linear-gradient(90deg,rgba(245,200,66,.1),rgba(34,197,94,.08));border-bottom:1px solid rgba(245,200,66,.15);padding:10px 20px;text-align:center;font-size:13px;font-weight:700;color:var(--gold)}
-.cdm-bar span{color:#fff;font-weight:400;margin-left:8px}
+/* ═══════════════════════════════════════
+   LAYOUT GLOBAL
+═══════════════════════════════════════ */
+.layout {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  grid-template-rows: auto 1fr;
+  min-height: 100dvh;
+}
 
-/* BODY */
-.dash-body{max-width:900px;margin:0 auto;padding:20px 20px 100px}
+/* ═══════════════════════════════════════
+   SIDEBAR (desktop)
+═══════════════════════════════════════ */
+.sidebar {
+  grid-row: 1 / 3;
+  background: var(--bg2);
+  border-right: 1px solid var(--b1);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 50;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 4px; }
 
-/* SECTION TITLES */
-.sec-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px}
-.sec-title::after{content:'';flex:1;height:1px;background:var(--b1)}
+/* Logo sidebar */
+.sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--b1);
+  flex-shrink: 0;
+}
+.sb-logo-orb {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(34,197,94,.2), rgba(34,197,94,.06));
+  border: 1.5px solid rgba(34,197,94,.4);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  box-shadow: 0 0 16px rgba(34,197,94,.15);
+}
+.sb-logo-text {
+  font-family: var(--fd);
+  font-size: 19px;
+  letter-spacing: .06em;
+  color: var(--text);
+  line-height: 1;
+}
+.sb-logo-text span { color: var(--gold); }
+.sb-logo-tag {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
-/* PROFIL CARD */
-.profil-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:20px;margin-bottom:20px;position:relative;overflow:hidden}
-.profil-card::before{content:'🏆';position:absolute;right:16px;top:16px;font-size:32px;opacity:.2}
-.pc-top{display:flex;align-items:center;gap:14px;margin-bottom:16px}
-.pc-av{width:52px;height:52px;border-radius:14px;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-size:22px;color:var(--gb);flex-shrink:0}
-.pc-info{}
-.pc-name{font-size:18px;font-weight:700;letter-spacing:.01em}
-.pc-email{font-size:12px;color:var(--muted);margin-top:2px}
-.pc-plan{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:var(--gb);margin-top:5px}
+/* User card in sidebar */
+.sb-user {
+  margin: 16px 12px;
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 14px;
+  padding: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.sb-user:hover { border-color: var(--gb); }
+.sb-av {
+  width: 40px; height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, rgba(34,197,94,.2), rgba(34,197,94,.05));
+  border: 1.5px solid rgba(34,197,94,.3);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd);
+  font-size: 18px;
+  color: var(--gb);
+  flex-shrink: 0;
+}
+.sb-user-name {
+  font-size: 14px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sb-user-plan {
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 2px;
+}
 
-.pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.pcs-item{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:12px;padding:14px 10px;text-align:center}
-.pcs-val{font-family:var(--fd);font-size:24px;letter-spacing:.03em;line-height:1}
-.pcs-lbl{font-size:10px;color:var(--muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:.05em}
-.pcs-item.streak .pcs-val{color:var(--gold)}
-.pcs-item.analyses .pcs-val{color:var(--gb)}
+/* CdM Badge */
+.cdm-badge-sb {
+  margin: 0 12px 14px;
+  background: linear-gradient(135deg, rgba(245,200,66,.12), rgba(34,197,94,.08));
+  border: 1px solid rgba(245,200,66,.25);
+  border-radius: 12px;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cdm-badge-sb .cdm-icon { font-size: 22px; flex-shrink: 0; }
+.cdm-badge-sb .cdm-title { font-size: 11px; font-weight: 800; color: var(--gold); letter-spacing: .04em; }
+.cdm-badge-sb .cdm-sub { font-size: 10px; color: var(--sub); margin-top: 1px; }
 
-/* ACTIONS GRID */
-.actions-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
-.action-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:18px 16px;text-decoration:none;transition:border-color .2s,transform .1s;-webkit-tap-highlight-color:transparent;cursor:pointer;display:block}
-.action-card:active{transform:scale(.97);border-color:var(--gb)}
-.action-card.primary{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.04)}
-.action-card.gold{border-color:rgba(245,200,66,.25);background:rgba(245,200,66,.04)}
-.ac-icon{width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;margin-bottom:12px}
-.action-card.primary .ac-icon{background:rgba(34,197,94,.12);color:var(--gb)}
-.action-card.gold .ac-icon{background:rgba(245,200,66,.1);color:var(--gold)}
-.action-card .ac-icon{background:rgba(255,255,255,.05);color:var(--muted)}
-.ac-title{font-size:14px;font-weight:700;margin-bottom:3px}
-.ac-desc{font-size:11px;color:var(--muted);line-height:1.4}
-.ac-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:6px;background:rgba(34,197,94,.12);color:var(--gb);margin-top:6px}
-.ac-badge.gold{background:rgba(245,200,66,.12);color:var(--gold)}
+/* Nav items */
+.sb-nav { flex: 1; padding: 6px 8px; }
+.sb-section-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 8px 12px 5px;
+}
+.sb-item {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--sub);
+  cursor: pointer;
+  transition: all .15s;
+  margin-bottom: 2px;
+}
+.sb-item:hover { background: var(--s1); color: var(--text); }
+.sb-item.active {
+  background: rgba(34,197,94,.08);
+  color: var(--gb);
+  border: 1px solid rgba(34,197,94,.12);
+}
+.sb-item i { font-size: 18px; width: 20px; text-align: center; flex-shrink: 0; }
+.sb-item .sb-badge {
+  margin-left: auto;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(34,197,94,.1);
+  color: var(--gb);
+}
+.sb-item .sb-badge.gold { background: rgba(245,200,66,.1); color: var(--gold); }
+.sb-divider { height: 1px; background: var(--b1); margin: 8px 12px; }
 
-/* COUPON DU JOUR */
-.coupon-section{background:var(--s1);border:1px solid var(--b2);border-radius:18px;overflow:hidden;margin-bottom:20px}
-.coupon-header{padding:16px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
-.coupon-title{font-family:var(--fd);font-size:18px;letter-spacing:.04em;display:flex;align-items:center;gap:8px}
-.coupon-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,.12);color:var(--gb);border:1px solid rgba(34,197,94,.2)}
-.coupon-body{padding:16px 18px}
-.coupon-sel{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:12px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;gap:8px}
-.cs-match{font-size:13px;font-weight:600;flex:1}
-.cs-pick{font-size:12px;color:var(--gb);font-weight:700;text-align:right;flex-shrink:0}
-.cs-cote{font-size:11px;color:var(--muted);text-align:right;white-space:nowrap}
-.coupon-total{margin-top:12px;padding:12px 14px;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15);border-radius:12px;display:flex;align-items:center;justify-content:space-between}
-.ct-label{font-size:12px;color:var(--muted)}
-.ct-cote{font-family:var(--fd);font-size:22px;color:var(--gb)}
+/* Sidebar footer */
+.sb-footer {
+  padding: 12px;
+  border-top: 1px solid var(--b1);
+  flex-shrink: 0;
+}
+.sb-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .15s;
+  background: none;
+  border: none;
+  width: 100%;
+  font-family: var(--ff);
+}
+.sb-logout:hover { background: rgba(248,113,113,.06); color: var(--red); }
+.sb-logout i { font-size: 18px; }
 
-/* STREAKS */
-.streak-card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:18px;margin-bottom:20px;display:flex;align-items:center;gap:16px}
-.streak-icon{font-size:36px;flex-shrink:0}
-.streak-info{flex:1}
-.streak-title{font-size:14px;font-weight:700;margin-bottom:3px}
-.streak-desc{font-size:12px;color:var(--muted);line-height:1.45}
-.streak-count{font-family:var(--fd);font-size:28px;color:var(--gold);flex-shrink:0}
+/* ═══════════════════════════════════════
+   TOPBAR (desktop)
+═══════════════════════════════════════ */
+.topbar {
+  background: rgba(5,8,6,.9);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--b1);
+  padding: 0 32px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+.tb-title {
+  font-family: var(--fd);
+  font-size: 20px;
+  letter-spacing: .04em;
+  color: var(--text);
+}
+.tb-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.tb-plan {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: rgba(34,197,94,.08);
+  border: 1px solid rgba(34,197,94,.2);
+  color: var(--gb);
+}
+.tb-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 16px;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  font-family: var(--ff);
+  transition: all .2s;
+}
+.tb-btn.primary { background: var(--gb); color: #000; }
+.tb-btn.primary:hover { background: var(--gl); }
 
-/* PARRAINAGE */
-.referral-card{background:linear-gradient(135deg,var(--s1),rgba(245,200,66,.03));border:1px solid rgba(245,200,66,.15);border-radius:18px;padding:18px;margin-bottom:20px}
-.ref-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-.ref-icon{width:40px;height:40px;border-radius:11px;background:rgba(245,200,66,.1);display:flex;align-items:center;justify-content:center;font-size:20px}
-.ref-title{font-size:16px;font-weight:700}
-.ref-sub{font-size:12px;color:var(--muted)}
-.ref-link-wrap{background:rgba(0,0,0,.3);border:1px solid rgba(245,200,66,.15);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:12px}
-.ref-url{font-size:12px;color:var(--gold);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ref-copy{background:rgba(245,200,66,.1);border:none;color:var(--gold);padding:7px 14px;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;gap:5px;flex-shrink:0;white-space:nowrap;-webkit-tap-highlight-color:transparent}
-.ref-stats{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.rs-item{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:10px;padding:12px;text-align:center}
-.rs-val{font-family:var(--fd);font-size:22px;color:var(--gold)}
-.rs-lbl{font-size:10px;color:var(--muted);margin-top:3px}
+/* ═══════════════════════════════════════
+   MAIN CONTENT
+═══════════════════════════════════════ */
+.main {
+  padding: 28px 32px 60px;
+  overflow-y: auto;
+  max-width: 900px;
+}
 
-/* LOGOUT */
-.logout-btn{width:100%;padding:13px;border-radius:12px;background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15);color:#f87171;font-size:14px;font-weight:700;font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;-webkit-tap-highlight-color:transparent;margin-top:4px}
+/* ═══════════════════════════════════════
+   HERO STATS (top band)
+═══════════════════════════════════════ */
+.hero-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.hs-item {
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 16px;
+  padding: 20px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, border-color .2s;
+}
+.hs-item:hover { transform: translateY(-2px); border-color: var(--b3); }
+.hs-item::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.hs-item.green::before { background: linear-gradient(90deg, var(--gb), transparent); }
+.hs-item.gold::before  { background: linear-gradient(90deg, var(--gold), transparent); }
+.hs-item.purple::before{ background: linear-gradient(90deg, var(--purple), transparent); }
+.hs-item.teal::before  { background: linear-gradient(90deg, var(--teal), transparent); }
+.hs-icon {
+  font-size: 24px;
+  margin-bottom: 10px;
+  display: block;
+  line-height: 1;
+}
+.hs-val {
+  font-family: var(--fd);
+  font-size: 32px;
+  letter-spacing: .02em;
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.hs-item.green .hs-val  { color: var(--gb); }
+.hs-item.gold .hs-val   { color: var(--gold); }
+.hs-item.purple .hs-val { color: var(--purple); }
+.hs-item.teal .hs-val   { color: var(--teal); }
+.hs-lbl { font-size: 12px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
 
-/* SKELETON */
-.skel{background:linear-gradient(90deg,var(--b1) 25%,var(--b2) 50%,var(--b1) 75%);background-size:200% 100%;animation:skel 1.4s ease infinite;border-radius:8px}
-@keyframes skel{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* ═══════════════════════════════════════
+   TWO-COL LAYOUT
+═══════════════════════════════════════ */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.full-col { margin-bottom: 16px; }
 
-@media(max-width:640px){
-  .pc-stats{grid-template-columns:1fr 1fr}
-  .actions-grid{grid-template-columns:1fr 1fr}
-  .dash-body{padding:16px 16px 100px}
-  .profil-card,.coupon-section,.referral-card,.streak-card{border-radius:16px}
-  .pcs-val{font-size:20px}
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 18px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-title {
+  font-family: var(--fd);
+  font-size: 16px;
+  letter-spacing: .05em;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.card-title i { font-size: 16px; }
+.card-body { padding: 16px 20px; }
+.card-badge {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+.card-badge.green { background: rgba(34,197,94,.1); color: var(--gb); border: 1px solid rgba(34,197,94,.2); }
+.card-badge.gold  { background: rgba(245,200,66,.1); color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   ACTIONS RAPIDES
+═══════════════════════════════════════ */
+.actions-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  padding: 16px 20px;
+}
+.action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all .15s;
+  text-decoration: none;
+  border: 1px solid var(--b2);
+  background: var(--s2);
+}
+.action-btn:hover { border-color: var(--gb); background: rgba(34,197,94,.04); transform: translateY(-1px); }
+.action-btn.gold-btn { border-color: rgba(245,200,66,.2); }
+.action-btn.gold-btn:hover { border-color: var(--gold); background: rgba(245,200,66,.04); }
+.ab-icon {
+  width: 38px; height: 38px;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.action-btn .ab-icon { background: rgba(34,197,94,.1); color: var(--gb); }
+.action-btn.gold-btn .ab-icon { background: rgba(245,200,66,.1); color: var(--gold); }
+.action-btn:nth-child(3) .ab-icon { background: rgba(167,139,250,.1); color: var(--purple); }
+.action-btn:nth-child(4) .ab-icon { background: rgba(45,212,191,.1); color: var(--teal); }
+.ab-title { font-size: 13px; font-weight: 700; }
+.ab-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+/* ═══════════════════════════════════════
+   COUPON DU JOUR
+═══════════════════════════════════════ */
+.coupon-match {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  margin-bottom: 8px;
+  gap: 12px;
+  transition: border-color .15s;
+}
+.coupon-match:hover { border-color: var(--b3); }
+.cm-flag { font-size: 20px; flex-shrink: 0; }
+.cm-teams { flex: 1; font-size: 13px; font-weight: 700; }
+.cm-league { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.cm-pick { font-size: 11px; color: var(--gb); font-weight: 700; text-align: right; white-space: nowrap; }
+.cm-cote {
+  font-family: var(--fd);
+  font-size: 18px;
+  color: var(--gold);
+  background: rgba(245,200,66,.08);
+  padding: 3px 10px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+.coupon-total {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  background: rgba(34,197,94,.04);
+  border: 1px solid rgba(34,197,94,.15);
+  border-radius: 12px;
+  margin-top: 12px;
+}
+.ct-label { font-size: 12px; color: var(--muted); }
+.ct-cote { font-family: var(--fd); font-size: 26px; color: var(--gb); }
+
+/* Bookmakers row */
+.bk-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.bk-pill {
+  font-size: 11px;
+  font-weight: 800;
+  padding: 5px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--b2);
+  color: var(--sub);
+  background: var(--s2);
+  text-decoration: none;
+  transition: all .15s;
+  letter-spacing: .02em;
+}
+.bk-pill:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ═══════════════════════════════════════
+   STREAK
+═══════════════════════════════════════ */
+.streak-body {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 18px 20px;
+}
+.streak-flames { font-size: 36px; line-height: 1; }
+.streak-info { flex: 1; }
+.streak-count-big {
+  font-family: var(--fd);
+  font-size: 48px;
+  color: var(--gold);
+  line-height: 1;
+}
+.streak-unit { font-size: 13px; color: var(--muted); }
+.streak-bar-wrap { margin-top: 10px; }
+.streak-bar-track { height: 6px; background: var(--b1); border-radius: 6px; overflow: hidden; }
+.streak-bar-fill { height: 100%; border-radius: 6px; background: linear-gradient(90deg, var(--gold), var(--gb)); transition: width .6s ease; }
+
+/* ═══════════════════════════════════════
+   PARRAINAGE
+═══════════════════════════════════════ */
+.ref-link-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--bg3);
+  border: 1px solid rgba(245,200,66,.15);
+  border-radius: 12px;
+  padding: 12px 16px;
+  margin: 14px 0;
+}
+.ref-url {
+  flex: 1;
+  font-size: 12px;
+  color: var(--gold);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ref-copy {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  background: rgba(245,200,66,.1);
+  border: none;
+  color: var(--gold);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: var(--ff);
+  flex-shrink: 0;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ref-copy:hover { background: rgba(245,200,66,.2); }
+.ref-paliers { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 2px; }
+.ref-palier {
+  background: var(--s2);
+  border: 1px solid var(--b1);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.rp-num { font-family: var(--fd); font-size: 22px; color: var(--gold); }
+.rp-lbl { font-size: 10px; color: var(--muted); margin-top: 2px; }
+
+/* ═══════════════════════════════════════
+   SECTION LABEL
+═══════════════════════════════════════ */
+.sec-label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.sec-label::after { content: ''; flex: 1; height: 1px; background: var(--b1); }
+
+/* ═══════════════════════════════════════
+   SKELETON LOADING
+═══════════════════════════════════════ */
+.skel {
+  background: linear-gradient(90deg, var(--s2) 0%, var(--s3) 50%, var(--s2) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s ease infinite;
+  border-radius: 8px;
+}
+@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════ */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
+.fade-up { animation: fadeUp .4s ease both; }
+.fd1 { animation-delay: .05s; } .fd2 { animation-delay: .1s; }
+.fd3 { animation-delay: .15s; } .fd4 { animation-delay: .2s; }
+
+/* Glow pulse sur le plan badge */
+@keyframes glow { 0%,100% { box-shadow: 0 0 8px rgba(34,197,94,.2); } 50% { box-shadow: 0 0 18px rgba(34,197,94,.4); } }
+.glow-green { animation: glow 3s ease infinite; }
+
+/* ═══════════════════════════════════════
+   MOBILE TOPBAR (< 768px uniquement)
+═══════════════════════════════════════ */
+.mobile-topbar { display: none; }
+.mobile-bnav   { display: none; }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — TABLET
+═══════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .layout { grid-template-columns: 200px 1fr; }
+  .main { padding: 20px 22px 60px; }
+  .hero-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — MOBILE (< 768px)
+═══════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Masquer sidebar et topbar desktop */
+  .sidebar { display: none; }
+  .topbar  { display: none; }
+
+  /* Layout mobile : colonne unique */
+  .layout { grid-template-columns: 1fr; grid-template-rows: auto auto 1fr; }
+
+  /* ── Mobile topbar ── */
+  .mobile-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: calc(var(--safe-t) + 12px) 18px 12px;
+    background: rgba(5,8,6,.97);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--b1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    grid-column: 1;
+  }
+  .mt-logo {
+    display: flex; align-items: center; gap: 9px;
+    text-decoration: none;
+  }
+  .mt-logo-orb {
+    width: 32px; height: 32px; border-radius: 8px;
+    background: rgba(34,197,94,.12);
+    border: 1.5px solid rgba(34,197,94,.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px;
+    box-shadow: 0 0 12px rgba(34,197,94,.12);
+  }
+  .mt-logo-name {
+    font-family: var(--fd);
+    font-size: 18px; letter-spacing: .06em; color: var(--text);
+  }
+  .mt-logo-name span { color: var(--gold); }
+  .mt-right { display: flex; align-items: center; gap: 9px; }
+  .mt-plan {
+    font-size: 11px; font-weight: 700;
+    padding: 5px 11px; border-radius: 20px;
+    background: rgba(34,197,94,.08);
+    border: 1px solid rgba(34,197,94,.2);
+    color: var(--gb);
+  }
+  .mt-menu-btn {
+    width: 36px; height: 36px;
+    border-radius: 9px;
+    background: var(--s1);
+    border: 1px solid var(--b2);
+    display: flex; align-items: center; justify-content: center;
+    color: var(--sub); font-size: 18px; cursor: pointer;
+  }
+
+  /* ── Bottom nav mobile ── */
+  .mobile-bnav {
+    display: flex;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 200;
+    height: calc(58px + var(--safe-b));
+    padding-bottom: var(--safe-b);
+    background: rgba(5,8,6,.97);
+    backdrop-filter: blur(24px);
+    border-top: 1px solid rgba(34,197,94,.1);
+    align-items: flex-start;
+    justify-content: space-around;
+  }
+  .mn-item {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 3px; flex: 1;
+    padding-top: 9px;
+    color: #3a5a3a;
+    font-size: 9px; font-weight: 700;
+    letter-spacing: .05em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color .15s;
+    background: none; border: none; font-family: var(--ff);
+  }
+  .mn-item i { font-size: 20px; line-height: 1; }
+  .mn-item.active { color: var(--gb); }
+  .mn-item.mn-cta {
+    background: var(--gb); color: #000;
+    border-radius: 13px; margin: 5px 3px 0;
+    font-weight: 800; flex: 1.2; padding: 7px 4px;
+  }
+  .mn-item.mn-cta i { color: #000; }
+
+  /* ── Main mobile ── */
+  .main { padding: 16px 16px calc(58px + var(--safe-b) + 16px); max-width: 100%; }
+  .hero-stats { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .hs-item { padding: 16px 14px; border-radius: 14px; }
+  .hs-val { font-size: 26px; }
+  .hs-lbl { font-size: 10px; }
+  .two-col { grid-template-columns: 1fr; gap: 12px; }
+  .actions-grid { grid-template-columns: 1fr 1fr; gap: 8px; padding: 12px 16px; }
+  .action-btn { padding: 12px; gap: 9px; border-radius: 11px; }
+  .ab-icon { width: 34px; height: 34px; font-size: 16px; border-radius: 9px; }
+  .ab-title { font-size: 12px; }
+  .ab-sub { display: none; }
+  .card { border-radius: 16px; }
+  .ref-paliers { grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .streak-count-big { font-size: 38px; }
+  .streak-flames { font-size: 28px; }
+
+  /* Drawer mobile */
+  .drawer-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 300;
+    backdrop-filter: blur(4px);
+  }
+  .drawer-overlay.open { display: block; }
+  .mobile-drawer {
+    position: fixed;
+    top: 0; left: 0;
+    width: min(88%, 310px);
+    height: 100%;
+    background: var(--bg2);
+    border-right: 1px solid var(--b1);
+    z-index: 400;
+    transform: translateX(-100%);
+    transition: transform .28s cubic-bezier(.4,0,.2,1);
+    display: flex; flex-direction: column;
+    overflow-y: auto;
+  }
+  .mobile-drawer.open { transform: translateX(0); }
+  .dr-head {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: calc(var(--safe-t) + 18px) 18px 16px;
+    border-bottom: 1px solid var(--b1);
+    flex-shrink: 0;
+  }
+  .dr-close {
+    width: 34px; height: 34px; border-radius: 8px;
+    background: var(--s1); border: none;
+    color: var(--sub); font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .dr-nav { flex: 1; padding: 8px 10px; }
+  .dr-item {
+    display: flex; align-items: center; gap: 11px;
+    padding: 11px 12px; border-radius: 10px;
+    color: var(--sub); font-size: 14px; font-weight: 600;
+    text-decoration: none; cursor: pointer;
+    transition: all .12s; margin-bottom: 2px;
+  }
+  .dr-item:hover { background: var(--s1); color: var(--text); }
+  .dr-item.active { background: rgba(34,197,94,.07); color: var(--gb); }
+  .dr-item i { font-size: 18px; width: 20px; text-align: center; }
+  .dr-divider { height: 1px; background: var(--b1); margin: 6px 14px; }
+  .dr-foot {
+    padding: 14px;
+    border-top: 1px solid var(--b1);
+    display: flex; flex-direction: column; gap: 8px;
+    flex-shrink: 0;
+  }
+  .dr-btn {
+    display: flex; align-items: center; justify-content: center;
+    gap: 8px; padding: 12px; border-radius: 10px;
+    font-size: 13px; font-weight: 700; text-decoration: none;
+    cursor: pointer; border: none; font-family: var(--ff);
+    transition: all .15s;
+  }
+  .dr-btn.primary { background: var(--gb); color: #000; }
+  .dr-btn.danger  { background: rgba(248,113,113,.06); border: 1px solid rgba(248,113,113,.18); color: var(--red); }
 }
 </style>
 </head>
 <body data-page="dashboard">
 
-<!-- HEADER -->
-<div class="dash-header">
-  <div class="dh-inner">
-    <a href="index.html" class="dh-logo">
-      <div class="dh-logo-orb">🔮</div>
-      <div class="dh-logo-name">BET<span>ORACLE</span></div>
-    </a>
-    <div class="dh-right">
-      <div class="dh-plan" id="plan-badge">⏳ Chargement…</div>
-      <div class="dh-menu" onclick="openDr ? openDr() : null"><i class="ti ti-menu-2"></i></div>
-    </div>
+<!-- ═══ MOBILE TOPBAR ═══ -->
+<div class="mobile-topbar">
+  <a href="index.html" class="mt-logo">
+    <div class="mt-logo-orb">🔮</div>
+    <div class="mt-logo-name">BET<span>ORACLE</span></div>
+  </a>
+  <div class="mt-right">
+    <div class="mt-plan" id="mt-plan">⏳</div>
+    <button class="mt-menu-btn" onclick="openDr()"><i class="ti ti-menu-2"></i></button>
   </div>
 </div>
 
-<!-- BANNER CdM -->
-<div class="cdm-bar">
-  🏆 COUPE DU MONDE 2026 <span>Accès Pro offert jusqu'au 19 juillet</span>
-</div>
-
-<!-- BODY -->
-<div class="dash-body">
-
-  <!-- PROFIL -->
-  <div class="sec-title"><i class="ti ti-user"></i> Mon profil</div>
-  <div class="profil-card">
-    <div class="pc-top">
-      <div class="pc-av" id="av">…</div>
-      <div class="pc-info">
-        <div class="pc-name" id="pc-name">Chargement…</div>
-        <div class="pc-email" id="pc-email"></div>
-        <div class="pc-plan" id="pc-plan">⏳ Vérification…</div>
-      </div>
-    </div>
-    <div class="pc-stats">
-      <div class="pcs-item streak">
-        <div class="pcs-val" id="stat-streak">0</div>
-        <div class="pcs-lbl">🔥 Streak</div>
-      </div>
-      <div class="pcs-item analyses">
-        <div class="pcs-val" id="stat-analyses">0</div>
-        <div class="pcs-lbl">Analyses</div>
-      </div>
-      <div class="pcs-item">
-        <div class="pcs-val" id="stat-refs">0</div>
-        <div class="pcs-lbl">Parrainages</div>
-      </div>
-      <div class="pcs-item">
-        <div class="pcs-val" id="stat-logins">0</div>
-        <div class="pcs-lbl">Connexions</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ACTIONS RAPIDES -->
-  <div class="sec-title"><i class="ti ti-bolt"></i> Actions rapides</div>
-  <div class="actions-grid">
-    <a href="analyse.html" class="action-card primary">
-      <div class="ac-icon"><i class="ti ti-brain"></i></div>
-      <div class="ac-title">Analyser un match</div>
-      <div class="ac-desc">Oracle IA — Coupe du Monde</div>
-      <div class="ac-badge">🏆 CdM 2026</div>
-    </a>
-    <a href="analyse.html#coupon" class="action-card gold">
-      <div class="ac-icon"><i class="ti ti-ticket"></i></div>
-      <div class="ac-title">Coupon du jour</div>
-      <div class="ac-desc">Sélections validées par l'IA</div>
-      <div class="ac-badge gold">Gratuit</div>
-    </a>
-    <a href="welcome.html" class="action-card">
-      <div class="ac-icon"><i class="ti ti-gift"></i></div>
-      <div class="ac-title">Parrainer</div>
-      <div class="ac-desc">Gagne des avantages exclusifs</div>
-    </a>
-    <a href="checkout.html" class="action-card">
-      <div class="ac-icon"><i class="ti ti-crown"></i></div>
-      <div class="ac-title">Plans Premium</div>
-      <div class="ac-desc">Après la Coupe du Monde</div>
-    </a>
-  </div>
-
-  <!-- COUPON DU JOUR -->
-  <div class="sec-title"><i class="ti ti-ticket"></i> Coupon du jour</div>
-  <div class="coupon-section" id="coupon-section">
-    <div class="coupon-header">
-      <div class="coupon-title"><i class="ti ti-bolt" style="color:var(--gold)"></i> Sélections Oracle</div>
-      <div class="coupon-badge" id="coupon-date">Aujourd'hui</div>
-    </div>
-    <div class="coupon-body" id="coupon-body">
-      <div style="text-align:center;padding:20px;color:var(--muted)">
-        <div class="skel" style="height:48px;margin-bottom:8px"></div>
-        <div class="skel" style="height:48px;margin-bottom:8px"></div>
-        <div class="skel" style="height:48px"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- STREAK -->
-  <div id="streak-section" style="display:none">
-    <div class="sec-title"><i class="ti ti-flame"></i> Ma série</div>
-    <div class="streak-card">
-      <div class="streak-icon">🔥</div>
-      <div class="streak-info">
-        <div class="streak-title" id="streak-title">Série en cours !</div>
-        <div class="streak-desc" id="streak-desc">Continue à te connecter chaque jour pour maintenir ta série.</div>
-      </div>
-      <div class="streak-count" id="streak-count">0</div>
-    </div>
-  </div>
-
-  <!-- PARRAINAGE -->
-  <div class="sec-title"><i class="ti ti-users"></i> Mon code parrainage</div>
-  <div class="referral-card">
-    <div class="ref-header">
-      <div class="ref-icon">🎁</div>
+<!-- ═══ DRAWER MOBILE ═══ -->
+<div class="drawer-overlay" id="dov" onclick="closeDr()"></div>
+<div class="mobile-drawer" id="drawer">
+  <div class="dr-head">
+    <div class="sb-logo" style="padding:0;border:none">
+      <div class="sb-logo-orb">🔮</div>
       <div>
-        <div class="ref-title">Invite tes amis</div>
-        <div class="ref-sub">Partage l'accès Pro gratuit Coupe du Monde</div>
+        <div class="sb-logo-text">BET<span>ORACLE</span></div>
+        <div class="sb-logo-tag">Paris sportifs intelligents</div>
       </div>
     </div>
-    <div class="ref-link-wrap">
-      <div class="ref-url" id="ref-url">Chargement…</div>
-      <button class="ref-copy" onclick="copyRef()">
-        <i class="ti ti-copy"></i> Copier
+    <button class="dr-close" onclick="closeDr()"><i class="ti ti-x"></i></button>
+  </div>
+
+  <div class="sb-user" style="margin:14px 12px" id="dr-user">
+    <div class="sb-av" id="dr-av">?</div>
+    <div>
+      <div class="sb-user-name" id="dr-name">Chargement…</div>
+      <div class="sb-user-plan" id="dr-plan" style="color:var(--gb)">⚡ Pro</div>
+    </div>
+  </div>
+
+  <div class="dr-nav">
+    <div class="dr-item active" href="dashboard.html"><i class="ti ti-layout-dashboard"></i> Mon espace</div>
+    <div class="dr-divider"></div>
+    <a href="analyse.html" class="dr-item"><i class="ti ti-brain"></i> Analyser un match</a>
+    <a href="analyse.html#coupon" class="dr-item"><i class="ti ti-ticket"></i> Coupon du jour</a>
+    <a href="index.html#plans" class="dr-item"><i class="ti ti-crown"></i> Plans & tarifs <span style="margin-left:auto;font-size:10px;color:var(--gold)">Dès 500F</span></a>
+    <a href="welcome.html" class="dr-item"><i class="ti ti-gift"></i> Parrainage</a>
+    <div class="dr-divider"></div>
+    <a href="index.html" class="dr-item"><i class="ti ti-home"></i> Accueil</a>
+    <a href="index.html#tools" class="dr-item"><i class="ti ti-tools"></i> Outils d'analyse</a>
+    <a href="index.html#bookmakers" class="dr-item"><i class="ti ti-building-bank"></i> Bookmakers partenaires</a>
+    <a href="cgu.html" class="dr-item"><i class="ti ti-file-description"></i> Conditions</a>
+  </div>
+
+  <div class="dr-foot">
+    <a href="checkout.html" class="dr-btn primary"><i class="ti ti-bolt"></i> Passer Premium</a>
+    <button class="dr-btn danger" onclick="doLogout()"><i class="ti ti-logout"></i> Se déconnecter</button>
+  </div>
+</div>
+
+<!-- ═══ LAYOUT PRINCIPAL ═══ -->
+<div class="layout">
+
+  <!-- ── SIDEBAR DESKTOP ── -->
+  <aside class="sidebar">
+    <a href="index.html" class="sb-logo">
+      <div class="sb-logo-orb">🔮</div>
+      <div>
+        <div class="sb-logo-text">BET<span>ORACLE</span></div>
+        <div class="sb-logo-tag">Paris sportifs intelligents</div>
+      </div>
+    </a>
+
+    <!-- User card -->
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">?</div>
+      <div style="flex:1;min-width:0">
+        <div class="sb-user-name" id="sb-name">Chargement…</div>
+        <div class="sb-user-plan" id="sb-plan" style="color:var(--gb)"><span>⚡</span> Pro</div>
+      </div>
+    </div>
+
+    <!-- CdM badge -->
+    <div class="cdm-badge-sb">
+      <div class="cdm-icon">🏆</div>
+      <div>
+        <div class="cdm-title">CdM 2026 — Accès Pro</div>
+        <div class="cdm-sub">Gratuit jusqu'au 19 juillet</div>
+      </div>
+    </div>
+
+    <!-- Nav -->
+    <nav class="sb-nav">
+      <div class="sb-section-label">Menu principal</div>
+      <a href="dashboard.html" class="sb-item active">
+        <i class="ti ti-layout-dashboard"></i> Mon espace
+      </a>
+      <a href="analyse.html" class="sb-item">
+        <i class="ti ti-brain"></i> Oracle IA
+        <span class="sb-badge">CdM</span>
+      </a>
+      <a href="analyse.html#coupon" class="sb-item">
+        <i class="ti ti-ticket"></i> Coupon du jour
+      </a>
+      <a href="welcome.html" class="sb-item">
+        <i class="ti ti-gift"></i> Parrainage
+      </a>
+
+      <div class="sb-divider"></div>
+      <div class="sb-section-label">Découvrir</div>
+      <a href="index.html#tools" class="sb-item">
+        <i class="ti ti-chart-bar"></i> Outils d'analyse
+      </a>
+      <a href="index.html#bookmakers" class="sb-item">
+        <i class="ti ti-building-bank"></i> Bookmakers
+      </a>
+      <a href="checkout.html" class="sb-item">
+        <i class="ti ti-crown"></i> Plans premium
+        <span class="sb-badge gold">Dès 500F</span>
+      </a>
+
+      <div class="sb-divider"></div>
+      <a href="index.html" class="sb-item">
+        <i class="ti ti-home"></i> Retour accueil
+      </a>
+    </nav>
+
+    <div class="sb-footer">
+      <button class="sb-logout" onclick="doLogout()">
+        <i class="ti ti-logout"></i> Se déconnecter
       </button>
     </div>
-    <div class="ref-stats">
-      <div class="rs-item">
-        <div class="rs-val" id="ref-count">0</div>
-        <div class="rs-lbl">Filleuls inscrits</div>
+  </aside>
+
+  <!-- ── TOPBAR DESKTOP ── -->
+  <header class="topbar">
+    <div class="tb-title" id="tb-title">Bonjour 👋</div>
+    <div class="tb-right">
+      <div class="tb-plan glow-green" id="tb-plan">⚡ Pro · CdM 2026</div>
+      <a href="analyse.html" class="tb-btn primary">
+        <i class="ti ti-brain"></i> Analyser un match
+      </a>
+    </div>
+  </header>
+
+  <!-- ── MAIN CONTENT ── -->
+  <main class="main">
+
+    <!-- KPIs -->
+    <div class="hero-stats fade-up">
+      <div class="hs-item green fd1">
+        <span class="hs-icon">🔮</span>
+        <div class="hs-val" id="stat-analyses">0</div>
+        <div class="hs-lbl">Analyses aujourd'hui</div>
       </div>
-      <div class="rs-item">
-        <div class="rs-val" id="ref-bonus">0</div>
-        <div class="rs-lbl">Jours offerts</div>
+      <div class="hs-item gold fd2">
+        <span class="hs-icon">🔥</span>
+        <div class="hs-val" id="stat-streak">0</div>
+        <div class="hs-lbl">Jours de streak</div>
+      </div>
+      <div class="hs-item purple fd3">
+        <span class="hs-icon">🤝</span>
+        <div class="hs-val" id="stat-refs">0</div>
+        <div class="hs-lbl">Filleuls parrainés</div>
+      </div>
+      <div class="hs-item teal fd4">
+        <span class="hs-icon">📅</span>
+        <div class="hs-val" id="stat-days">38</div>
+        <div class="hs-lbl">Jours CdM restants</div>
       </div>
     </div>
-  </div>
 
-  <!-- DÉCONNEXION -->
-  <button class="logout-btn" onclick="doLogout()">
-    <i class="ti ti-logout"></i> Se déconnecter
-  </button>
+    <!-- Actions rapides -->
+    <div class="full-col fade-up fd2">
+      <div class="sec-label"><i class="ti ti-bolt" style="color:var(--gb)"></i> Actions rapides</div>
+      <div class="card">
+        <div class="actions-grid">
+          <a href="analyse.html" class="action-btn">
+            <div class="ab-icon"><i class="ti ti-brain"></i></div>
+            <div><div class="ab-title">Analyser un match</div><div class="ab-sub">Oracle IA · CdM 2026</div></div>
+          </a>
+          <a href="analyse.html#coupon" class="action-btn gold-btn">
+            <div class="ab-icon"><i class="ti ti-ticket"></i></div>
+            <div><div class="ab-title">Coupon du jour</div><div class="ab-sub">Gratuit · Mis à jour à 8h</div></div>
+          </a>
+          <a href="welcome.html" class="action-btn">
+            <div class="ab-icon"><i class="ti ti-gift"></i></div>
+            <div><div class="ab-title">Parrainer des amis</div><div class="ab-sub">7 jours offerts par filleul</div></div>
+          </a>
+          <a href="checkout.html" class="action-btn">
+            <div class="ab-icon"><i class="ti ti-crown"></i></div>
+            <div><div class="ab-title">Plans premium</div><div class="ab-sub">Après le 19 juillet</div></div>
+          </a>
+        </div>
+      </div>
+    </div>
 
+    <!-- Coupon + Streak -->
+    <div class="two-col fade-up fd3">
+
+      <!-- Coupon du jour -->
+      <div>
+        <div class="sec-label"><i class="ti ti-ticket" style="color:var(--gold)"></i> Coupon du jour</div>
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title"><i class="ti ti-bolt" style="color:var(--gold)"></i> Sélections Oracle</div>
+            <div class="card-badge green" id="coupon-date">Aujourd'hui</div>
+          </div>
+          <div class="card-body" id="coupon-body">
+            <div class="skel" style="height:58px;margin-bottom:8px"></div>
+            <div class="skel" style="height:58px;margin-bottom:8px"></div>
+            <div class="skel" style="height:58px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Streak + Parrainage -->
+      <div style="display:flex;flex-direction:column;gap:16px">
+
+        <!-- Streak -->
+        <div>
+          <div class="sec-label"><i class="ti ti-flame" style="color:var(--gold)"></i> Ma série</div>
+          <div class="card">
+            <div class="streak-body">
+              <div class="streak-flames" id="streak-icon">🔥</div>
+              <div class="streak-info">
+                <div style="display:flex;align-items:baseline;gap:6px">
+                  <div class="streak-count-big" id="streak-num">0</div>
+                  <div class="streak-unit">jours</div>
+                </div>
+                <div style="font-size:12px;color:var(--muted);margin-top:4px" id="streak-msg">Connecte-toi chaque jour</div>
+                <div class="streak-bar-wrap">
+                  <div class="streak-bar-track">
+                    <div class="streak-bar-fill" id="streak-bar" style="width:0%"></div>
+                  </div>
+                  <div style="font-size:10px;color:var(--muted);margin-top:5px" id="streak-sub">0/7 pour débloquer un bonus</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Code parrainage -->
+        <div>
+          <div class="sec-label"><i class="ti ti-users" style="color:var(--teal)"></i> Parrainage</div>
+          <div class="card">
+            <div class="card-header">
+              <div class="card-title" style="color:var(--gold)"><i class="ti ti-gift"></i> Mon code</div>
+              <div class="card-badge gold" id="ref-code-badge">…</div>
+            </div>
+            <div class="card-body">
+              <div class="ref-link-wrap">
+                <div class="ref-url" id="ref-url">Chargement…</div>
+                <button class="ref-copy" onclick="copyRef()"><i class="ti ti-copy"></i> Copier</button>
+              </div>
+              <div class="ref-paliers">
+                <div class="ref-palier">
+                  <div class="rp-num" id="ref-count">0</div>
+                  <div class="rp-lbl">Filleuls</div>
+                </div>
+                <div class="ref-palier">
+                  <div class="rp-num" id="ref-bonus">0</div>
+                  <div class="rp-lbl">Jours offerts</div>
+                </div>
+                <div class="ref-palier">
+                  <div class="rp-num" style="color:var(--teal)">7</div>
+                  <div class="rp-lbl">Jours / filleul</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </main>
 </div>
+
+<!-- ═══ BOTTOM NAV MOBILE ═══ -->
+<nav class="mobile-bnav">
+  <a href="index.html" class="mn-item"><i class="ti ti-home"></i>Accueil</a>
+  <a href="analyse.html" class="mn-item"><i class="ti ti-brain"></i>Oracle</a>
+  <a href="checkout.html" class="mn-item mn-cta"><i class="ti ti-bolt"></i>Plans</a>
+  <a href="dashboard.html" class="mn-item active"><i class="ti ti-user-check"></i>Mon compte</a>
+  <button class="mn-item" onclick="openDr()"><i class="ti ti-menu-2"></i>Menu</button>
+</nav>
 
 <script>
 const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
-const EDGE      = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/auth-secure'
 
-const PLAN_LABELS = {
-  free:    {label:'🆓 Free',    color:'#6a8a6a'},
-  starter: {label:'🌱 Starter', color:'#14b8a6'},
-  pro:     {label:'⚡ Pro',     color:'#F5C842'},
-  elite:   {label:'👑 Elite',   color:'#8b5cf6'}
+const PLANS = {
+  free:    { label:'🆓 Free',    color:'#5a7a5a' },
+  starter: { label:'🌱 Starter', color:'#2dd4bf' },
+  pro:     { label:'⚡ Pro',     color:'#F5C842' },
+  elite:   { label:'👑 Elite',   color:'#a78bfa' }
 }
 
-let userData  = null
-let refCode   = ''
-let _initDone = false  // éviter double-init
+let refCode = ''
+let _done   = false
 
-// ── Lire le token (localStorage prioritaire) ──
-function getToken() {
-  return localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
-}
-function getRefresh() {
-  return localStorage.getItem('sb_refresh_token') || ''
-}
+/* ── Drawer mobile ── */
+window.openDr  = () => { document.getElementById('dov').classList.add('open'); document.getElementById('drawer').classList.add('open'); document.body.style.overflow='hidden' }
+window.closeDr = () => { document.getElementById('dov').classList.remove('open'); document.getElementById('drawer').classList.remove('open'); document.body.style.overflow='' }
 
-// ── Rafraîchir le token silencieusement ──
+/* ── Refresh token ── */
 async function refreshToken() {
-  const refresh = getRefresh()
-  if (!refresh) return null
+  const r = localStorage.getItem('sb_refresh_token')
+  if (!r) return null
   try {
-    const r = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_ANON },
-      body: JSON.stringify({ refresh_token: refresh })
+    const res = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method:'POST', headers:{'Content-Type':'application/json','apikey':SUPA_ANON},
+      body: JSON.stringify({refresh_token: r})
     })
-    const d = await r.json()
+    const d = await res.json()
     if (d.access_token) {
       localStorage.setItem('sb_access_token', d.access_token)
-      localStorage.setItem('sb_refresh_token', d.refresh_token || refresh)
+      localStorage.setItem('sb_refresh_token', d.refresh_token || r)
       sessionStorage.setItem('bp_token', d.access_token)
       return d.access_token
     }
@@ -320,215 +1094,193 @@ async function refreshToken() {
   return null
 }
 
-// ── Vérifier auth avec retry sur token expiré ──
-async function verifyAuth(token) {
-  try {
-    const r = await fetch(`${SUPA_URL}/auth/v1/user`, {
-      headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
-    })
-    if (r.status === 401 || r.status === 403) {
-      // Token expiré → essayer le refresh
-      const newToken = await refreshToken()
-      if (!newToken) return null
-      const r2 = await fetch(`${SUPA_URL}/auth/v1/user`, {
-        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${newToken}` }
-      })
-      if (!r2.ok) return null
-      return { token: newToken, user: await r2.json() }
-    }
-    if (!r.ok) return null
-    return { token, user: await r.json() }
-  } catch { return null }
+/* ── Auth ── */
+async function getValidToken() {
+  let t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (!t) return null
+  const res = await fetch(`${SUPA_URL}/auth/v1/user`, { headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${t}`} }).catch(()=>null)
+  if (res?.ok) return t
+  if (res?.status === 401 || res?.status === 403) {
+    const nt = await refreshToken()
+    return nt
+  }
+  return null
 }
 
-// ── INIT principal ──
-async function init() {
-  if (_initDone) return
-  _initDone = true
+/* ── Remplir l'UI ── */
+function fillUI(name, plan, email) {
+  const pi = PLANS[plan] || PLANS.free
+  const init = (name || 'P')[0].toUpperCase()
 
-  let token = getToken()
-  if (!token) {
-    window.location.replace('login.html?next=dashboard.html')
-    return
-  }
+  // Desktop
+  document.getElementById('sb-av').textContent   = init
+  document.getElementById('sb-name').textContent = name || 'Parieur'
+  const spEl = document.getElementById('sb-plan')
+  spEl.textContent = pi.label; spEl.style.color = pi.color
+  document.getElementById('tb-title').textContent = `Bonjour ${name} 👋`
+  document.getElementById('tb-plan').textContent  = pi.label + (plan==='pro'?' · 🏆 CdM':' · CdM')
 
-  // Afficher les données en cache immédiatement (UX rapide)
-  const cachedName = sessionStorage.getItem('bp_prenom') || ''
-  const cachedPlan = sessionStorage.getItem('bp_plan') || 'pro'
-  if (cachedName) {
-    document.getElementById('av').textContent = cachedName[0].toUpperCase()
-    document.getElementById('pc-name').textContent = cachedName
-    const pi = PLAN_LABELS[cachedPlan] || PLAN_LABELS.pro
-    document.getElementById('plan-badge').innerHTML = `<span style="color:${pi.color}">${pi.label}</span> · 🏆 CdM`
-    document.getElementById('pc-plan').textContent = pi.label
-    document.getElementById('pc-plan').style.color = pi.color
-  }
-
-  // Vérifier le token (avec refresh automatique si expiré)
-  const authResult = await verifyAuth(token)
-  if (!authResult) {
-    // Échec total → déconnecter proprement et rediriger
-    localStorage.removeItem('sb_access_token')
-    localStorage.removeItem('sb_refresh_token')
-    sessionStorage.clear()
-    window.location.replace('login.html?next=dashboard.html')
-    return
-  }
-
-  // Token valide (potentiellement rafraîchi)
-  token = authResult.token
-  const authUser = authResult.user
-
-  // Récupérer le profil complet depuis Supabase directement
-  try {
-    const [profileRes, streakRes] = await Promise.all([
-      fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${authUser.id}&select=full_name,plan,plan_expires_at,worldcup_access,email_verified,ref_code,referral_count,login_count,streak_days,analyses_today`, {
-        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
-      }),
-      fetch(`${SUPA_URL}/rest/v1/user_streaks?user_id=eq.${authUser.id}&select=current_streak,longest_streak,total_logins`, {
-        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
-      })
-    ])
-
-    const profiles = await profileRes.json()
-    const streaks  = await streakRes.json()
-    const profile  = profiles?.[0] || {}
-    const streak   = streaks?.[0]  || {}
-
-    // Calculer plan effectif
-    const now = new Date()
-    const cdmStart = new Date('2026-06-11'), cdmEnd = new Date('2026-07-20')
-    const isCdm = now >= cdmStart && now <= cdmEnd && profile.worldcup_access && profile.email_verified
-    const effectivePlan = isCdm ? 'pro' : (profile.plan_expires_at && new Date(profile.plan_expires_at) > now ? profile.plan : 'free')
-
-    // Mettre à jour les données en session
-    const firstName = profile.full_name?.split(' ')[0] || authUser.email.split('@')[0]
-    sessionStorage.setItem('bp_prenom', firstName)
-    sessionStorage.setItem('bp_plan', effectivePlan)
-    refCode = profile.ref_code || ''
-
-    // ── Remplir l'UI ──
-    document.getElementById('av').textContent       = firstName[0].toUpperCase()
-    document.getElementById('pc-name').textContent  = firstName
-    document.getElementById('pc-email').textContent = authUser.email || ''
-    document.getElementById('stat-streak').textContent   = profile.streak_days || 0
-    document.getElementById('stat-analyses').textContent = profile.analyses_today || 0
-    document.getElementById('stat-refs').textContent     = profile.referral_count || 0
-    document.getElementById('stat-logins').textContent   = profile.login_count || 0
-
-    const pi = PLAN_LABELS[effectivePlan] || PLAN_LABELS.free
-    document.getElementById('plan-badge').innerHTML = `<span style="color:${pi.color}">${pi.label}</span>${isCdm ? ' · 🏆 CdM' : ''}`
-    const pcPlan = document.getElementById('pc-plan')
-    pcPlan.innerHTML = pi.label + (isCdm ? ' <span style="color:var(--gold)">· CdM</span>' : '')
-    pcPlan.style.color = pi.color
-
-    // Streak (si ≥ 2 jours)
-    const s = streak.current_streak || profile.streak_days || 0
-    if (s >= 2) {
-      document.getElementById('streak-section').style.display = 'block'
-      document.getElementById('streak-count').textContent = s
-      document.getElementById('streak-title').textContent = s >= 7 ? '🔥 Série légendaire !' : s >= 3 ? '🔥 En feu !' : '🔥 Série en cours !'
-      document.getElementById('streak-desc').textContent  = `${s} jours consécutifs. Continue !`
-    }
-
-    // Parrainage
-    if (refCode) {
-      const refUrl = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
-      document.getElementById('ref-url').textContent   = refUrl
-      document.getElementById('ref-count').textContent = profile.referral_count || 0
-      document.getElementById('ref-bonus').textContent = (profile.referral_count || 0) * 7
-    }
-
-    // Charger le coupon
-    loadCoupon(token)
-
-  } catch(e) {
-    console.warn('Erreur chargement profil:', e)
-    // Ne pas rediriger si c'est juste une erreur de réseau sur le profil
-    // L'utilisateur est authentifié, on laisse le dashboard s'afficher
-  }
+  // Mobile
+  document.getElementById('mt-plan').textContent = pi.label
+  document.getElementById('dr-av').textContent   = init
+  document.getElementById('dr-name').textContent = name || 'Parieur'
+  const drPlan = document.getElementById('dr-plan')
+  drPlan.textContent = pi.label; drPlan.style.color = pi.color
 }
 
+/* ── Coupon ── */
 async function loadCoupon(token) {
+  const today = new Date().toISOString().split('T')[0]
+  const date  = new Date().toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'})
+  document.getElementById('coupon-date').textContent = date
+
   try {
-    const today = new Date().toISOString().split('T')[0]
-    const r = await fetch(`${SUPA_URL}/rest/v1/coupons?match_date=eq.${today}&status=eq.published&select=selections,min_plan&limit=1`, {
-      headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
+    const r = await fetch(`${SUPA_URL}/rest/v1/coupons?match_date=eq.${today}&status=eq.published&select=selections&limit=1`, {
+      headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${token}`}
     })
     const d = await r.json()
-    const date = new Date().toLocaleDateString('fr-FR', {weekday:'short', day:'numeric', month:'long'})
-    document.getElementById('coupon-date').textContent = date
-
     if (!d?.[0]?.selections?.length) {
       document.getElementById('coupon-body').innerHTML = `
-        <div style="text-align:center;padding:24px;color:var(--muted)">
-          <div style="font-size:28px;margin-bottom:8px">⏳</div>
-          <div style="font-size:14px;font-weight:600">Coupon en préparation</div>
-          <div style="font-size:12px;margin-top:4px">Disponible avant 12h</div>
+        <div style="text-align:center;padding:28px 16px;color:var(--muted)">
+          <div style="font-size:36px;margin-bottom:10px">⏳</div>
+          <div style="font-size:14px;font-weight:700;color:var(--sub)">Coupon en préparation</div>
+          <div style="font-size:12px;margin-top:5px">Disponible avant 12h00 · Reviens plus tard</div>
         </div>`
       return
     }
-
     const sels = d[0].selections
-    let html = '', totalCote = 1
+    let html = '', total = 1
+    const flags = { 'Champions League':'🏆','Premier League':'🏴󠁧󠁢󠁥󠁮󠁧󠁿','Ligue 1':'🇫🇷','La Liga':'🇪🇸','Bundesliga':'🇩🇪','Serie A':'🇮🇹','MLS':'🇺🇸','Coupe du Monde':'🌍' }
     sels.forEach(s => {
       const cote = parseFloat(s.cote) || 1.5
-      totalCote *= cote
-      html += `
-        <div class="coupon-sel">
-          <div class="cs-match">${s.match || s.equipes || 'Match'}</div>
-          <div>
-            <div class="cs-pick">${s.prediction || s.pick || '1X2'}</div>
-            <div class="cs-cote">@${cote.toFixed(2)}</div>
-          </div>
-        </div>`
-    })
-    html += `
-      <div class="coupon-total">
-        <div><div class="ct-label">Cote totale</div><div style="font-size:11px;color:var(--muted)">${sels.length} sélection${sels.length>1?'s':''}</div></div>
-        <div class="ct-cote">${totalCote.toFixed(2)}</div>
+      total *= cote
+      const flag = flags[s.championship] || '⚽'
+      html += `<div class="coupon-match">
+        <div class="cm-flag">${flag}</div>
+        <div style="flex:1;min-width:0">
+          <div class="cm-teams">${s.match||s.equipes||'Match'}</div>
+          <div class="cm-league">${s.championship||s.league||''} · ${s.time||''}</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="cm-pick">${s.prediction||s.pick||'1X2'}</div>
+          <div class="cm-cote">×${cote.toFixed(2)}</div>
+        </div>
       </div>`
+    })
+    html += `<div class="coupon-total">
+      <div><div class="ct-label">Cote totale combinée</div><div style="font-size:11px;color:var(--muted);margin-top:2px">${sels.length} sélections IA</div></div>
+      <div class="ct-cote">×${total.toFixed(2)}</div>
+    </div>
+    <div class="bk-row">
+      <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="bk-pill">1XBET</a>
+      <a href="https://bwredir.com/2gdj" target="_blank" class="bk-pill">BETWINNER</a>
+      <a href="https://refpaiozdg.top/L?" target="_blank" class="bk-pill">MEGAPARI</a>
+      <a href="https://1wync.com/?p=3qq3" target="_blank" class="bk-pill">1Win</a>
+    </div>`
     document.getElementById('coupon-body').innerHTML = html
   } catch {
-    document.getElementById('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--muted);font-size:13px">Coupon bientôt disponible</div>`
+    document.getElementById('coupon-body').innerHTML = `<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Coupon bientôt disponible</div>`
   }
 }
 
-function copyRef() {
-  const url = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
-  navigator.clipboard.writeText(url).then(() => {
-    const btn = document.querySelector('.ref-copy')
-    const orig = btn.innerHTML
-    btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
-    btn.style.color = 'var(--gb)'
-    setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2000)
-  }).catch(() => {
-    // Fallback pour mobile sans clipboard API
-    const ta = document.createElement('textarea')
-    ta.value = url
-    document.body.appendChild(ta)
-    ta.select()
-    document.execCommand('copy')
-    document.body.removeChild(ta)
-  })
+/* ── INIT ── */
+async function init() {
+  if (_done) return; _done = true
+
+  // Afficher cache immédiatement
+  const cName = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || ''
+  const cPlan = sessionStorage.getItem('bp_plan') || localStorage.getItem('bp_plan') || 'pro'
+  if (cName) fillUI(cName, cPlan, '')
+
+  // Jours restants CdM
+  const daysLeft = Math.max(0, Math.ceil((new Date('2026-07-19') - new Date()) / 86400000))
+  document.getElementById('stat-days').textContent = daysLeft
+
+  // Valider le token
+  const token = await getValidToken()
+  if (!token) { window.location.replace('login.html?next=dashboard.html'); return }
+
+  try {
+    const [profRes, strkRes] = await Promise.all([
+      fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${localStorage.getItem('sb_user_id')||'00000000-0000-0000-0000-000000000000'}&select=full_name,plan,plan_expires_at,worldcup_access,email_verified,ref_code,referral_count,login_count,streak_days,analyses_today`, {
+        headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${token}`}
+      }),
+      fetch(`${SUPA_URL}/auth/v1/user`, {
+        headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${token}`}
+      })
+    ])
+
+    const authUser = await strkRes.json()
+    const profiles = await profRes.json()
+    const p = profiles?.[0] || {}
+
+    // Plan effectif
+    const now = new Date(), cdmEnd = new Date('2026-07-20')
+    const isCdm = now < cdmEnd && p.worldcup_access && p.email_verified
+    const ePlan = isCdm ? 'pro' : (p.plan_expires_at && new Date(p.plan_expires_at) > now ? p.plan : 'free')
+
+    const firstName = p.full_name?.split(' ')[0] || authUser?.email?.split('@')[0] || 'Parieur'
+    sessionStorage.setItem('bp_prenom', firstName)
+    sessionStorage.setItem('bp_plan', ePlan)
+    if (authUser?.id) localStorage.setItem('sb_user_id', authUser.id)
+
+    fillUI(firstName, ePlan, authUser?.email || '')
+
+    // KPIs
+    document.getElementById('stat-analyses').textContent = p.analyses_today || 0
+    document.getElementById('stat-refs').textContent     = p.referral_count || 0
+
+    // Streak
+    const s = p.streak_days || 0
+    document.getElementById('stat-streak').textContent = s
+    document.getElementById('streak-num').textContent  = s
+    document.getElementById('streak-icon').textContent = s >= 7 ? '🔥🔥' : s >= 3 ? '🔥' : '💤'
+    document.getElementById('streak-msg').textContent  = s >= 7 ? 'Série légendaire ! 🏆' : s >= 3 ? 'En feu ! Continue !' : s >= 1 ? 'Bonne série, continue !' : 'Connecte-toi chaque jour pour ta série'
+    document.getElementById('streak-bar').style.width  = Math.min(100, (s/7)*100) + '%'
+    document.getElementById('streak-sub').textContent  = s >= 7 ? '✅ Bonus débloqué !' : `${s}/7 pour débloquer un bonus`
+
+    // Parrainage
+    refCode = p.ref_code || ''
+    const refUrl = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
+    document.getElementById('ref-url').textContent       = refUrl
+    document.getElementById('ref-code-badge').textContent = refCode || '…'
+    document.getElementById('ref-count').textContent     = p.referral_count || 0
+    document.getElementById('ref-bonus').textContent     = (p.referral_count || 0) * 7
+
+    // Coupon
+    loadCoupon(token)
+
+  } catch(e) {
+    console.warn('Dashboard error:', e)
+  }
 }
 
-function doLogout() {
-  localStorage.removeItem('sb_access_token')
-  localStorage.removeItem('sb_refresh_token')
-  localStorage.removeItem('sb_user_id')
-  localStorage.removeItem('bp_plan')
+/* ── Copier lien parrainage ── */
+window.copyRef = function() {
+  const url = `https://bet-oracle.vercel.app/signup.html?ref=${refCode}`
+  const btn = document.querySelector('.ref-copy')
+  const orig = btn.innerHTML
+  navigator.clipboard.writeText(url).then(() => {
+    btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
+    btn.style.color = 'var(--gb)'
+  }).catch(() => {
+    const ta = document.createElement('textarea')
+    ta.value = url; document.body.appendChild(ta); ta.select()
+    document.execCommand('copy'); document.body.removeChild(ta)
+    btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
+  })
+  setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2200)
+}
+
+/* ── Logout ── */
+window.doLogout = function() {
+  ['sb_access_token','sb_refresh_token','sb_user_id','bp_plan'].forEach(k => localStorage.removeItem(k))
   sessionStorage.clear()
   window.location.replace('index.html')
 }
 
-// Lancer init une seule fois au chargement
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', init)
-} else {
-  init()
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init)
+else init()
 </script>
-<script src="./assets/js/mobile-nav.js"></script>
 </body>
 </html>

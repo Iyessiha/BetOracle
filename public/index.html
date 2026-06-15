@@ -1612,23 +1612,8 @@ function setBill(t,btn){
 </script>
 
 
-<script src="./assets/js/mobile-nav.js"></script>
+<script src="./assets/js/nav.js"></script>
 
-<script>
-// Mettre à jour le bouton nav selon l'auth
-(function(){
-  const t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
-  if(t){
-    const btn = document.getElementById('nav-login-btn')
-    if(btn){
-      const prenom = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || 'Compte'
-      btn.href = 'dashboard.html'
-      btn.innerHTML = '<i class="ti ti-user-check"></i> ' + prenom.slice(0,10)
-      btn.style.color = 'var(--green-bright)'
-    }
-  }
-})()
-</script>
 
 </body>
 </html>
