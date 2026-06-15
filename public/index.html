@@ -759,7 +759,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
     <a href="#faq">FAQ</a>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
-    <a href="login.html" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
+    <a href="login.html" id="nav-login-btn" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
     <a href="signup.html" class="btn btn-green">Accès gratuit CdM 🏆</a>
 
   </div>
@@ -1613,5 +1613,22 @@ function setBill(t,btn){
 
 
 <script src="./assets/js/mobile-nav.js"></script>
+
+<script>
+// Mettre à jour le bouton nav selon l'auth
+(function(){
+  const t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if(t){
+    const btn = document.getElementById('nav-login-btn')
+    if(btn){
+      const prenom = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || 'Compte'
+      btn.href = 'dashboard.html'
+      btn.innerHTML = '<i class="ti ti-user-check"></i> ' + prenom.slice(0,10)
+      btn.style.color = 'var(--green-bright)'
+    }
+  }
+})()
+</script>
+
 </body>
 </html>
