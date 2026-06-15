@@ -854,8 +854,8 @@ a { text-decoration: none; color: inherit; }
     <div class="cdm-badge-sb">
       <div class="cdm-icon">🏆</div>
       <div>
-        <div class="cdm-title">CdM 2026 — Accès Pro</div>
-        <div class="cdm-sub">Gratuit jusqu'au 19 juillet</div>
+        <div class="cdm-title">CdM 2026 — Promo −30%</div>
+        <div class="cdm-sub">−30% sur les abonnements mois</div>
       </div>
     </div>
 
@@ -1215,9 +1215,10 @@ async function init() {
     const p = profiles?.[0] || {}
 
     // Plan effectif
-    const now = new Date(), cdmEnd = new Date('2026-07-20')
-    const isCdm = now < cdmEnd && p.worldcup_access && p.email_verified
-    const ePlan = isCdm ? 'pro' : (p.plan_expires_at && new Date(p.plan_expires_at) > now ? p.plan : 'free')
+    const now = new Date()
+    const isCdm = false  // Plus de gratuité CdM — plans payants actifs
+    const ePlan = (p.plan_expires_at && new Date(p.plan_expires_at) > now && ['starter','pro','elite'].includes(p.plan)) ? p.plan : 'free'
+
 
     const firstName = p.full_name?.split(' ')[0] || authUser?.email?.split('@')[0] || 'Parieur'
     sessionStorage.setItem('bp_prenom', firstName)

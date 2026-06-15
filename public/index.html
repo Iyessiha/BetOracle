@@ -1175,92 +1175,101 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 </section>
 
 <!-- ═══ PLANS ═══ -->
-<section id="plans">
+<section id="plans" class="sec" style="background:var(--bg2);padding:80px 0">
   <div class="wrap">
-    <div class="plans-head">
-      <div class="reveal"><div class="eyebrow" style="margin:0 auto 16px"><i class="ti ti-crown"></i> Offres</div></div>
-      <h2 class="plans-h2 reveal rd1">DÉBLOQUE L'ORACLE.<br><span>CHOISIS TON NIVEAU.</span></h2>
-      <p class="plans-sub reveal rd2">Carte bancaire ou Mobile Money. Sans engagement. Résilie en un clic.</p>
-      <div class="billing-wrap reveal rd3">
-        <button class="billing-btn on" onclick="setBill('w',this)"><i class="ti ti-calendar-week"></i> Semaine</button>
-        <button class="billing-btn" onclick="setBill('m',this)"><i class="ti ti-calendar-month"></i> Mois <span class="save-tag">-25%</span></button>
+    <div style="text-align:center;margin-bottom:48px">
+      <div class="sec-eyebrow" style="justify-content:center"><i class="ti ti-crown"></i> Tarifs</div>
+      <h2 style="margin-bottom:12px">L'IA qui gagne pour toi</h2>
+      <p class="sec-sub" style="margin:0 auto 28px;text-align:center">Moins cher qu'une mise perdue. Commence gratuitement, upgrade quand tu veux.</p>
+
+      <!-- Toggle -->
+      <div style="display:inline-flex;background:var(--s1);border:1px solid var(--b1);border-radius:30px;padding:4px;margin-bottom:0">
+        <button class="billing-btn on" id="bi-week" onclick="setBill2('week',this)" style="padding:9px 24px;border-radius:26px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .2s;display:flex;align-items:center;gap:7px">
+          <i class="ti ti-calendar-week"></i> Semaine
+        </button>
+        <button class="billing-btn" id="bi-month" onclick="setBill2('month',this)" style="padding:9px 24px;border-radius:26px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-body);transition:all .2s;display:flex;align-items:center;gap:7px">
+          <i class="ti ti-calendar-month"></i> Mois <span style="font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;background:rgba(34,197,94,.12);color:var(--green-bright)">−30%</span>
+        </button>
       </div>
     </div>
-    <div class="plans-grid reveal rd1">
+
+    <div class="plans-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+
+      <!-- FREE -->
       <div class="plan-c">
-        <div class="plan-tier" style="color:var(--muted)">Free</div>
-        <div class="plan-price">0</div>
+        <div class="plan-tier" style="color:var(--muted)">🆓 Free</div>
+        <div class="plan-price" style="font-size:28px" id="sp2-free">0 F</div>
         <div class="plan-per">Toujours gratuit</div>
         <ul class="plan-feats">
-          <li class="y"><span class="ck">✓</span> Coupon du jour (1 sélection)</li>
-          <li class="y"><span class="ck">✓</span> Bankroll basique</li>
-          <li class="y"><span class="ck">✓</span> Historique 5 paris</li>
-          <li><span class="ck">✗</span> Stats complètes</li>
-          <li><span class="ck">✗</span> Outils d'analyse</li>
-          <li><span class="ck">✗</span> L'Oracle IA</li>
+          <li class="y"><span class="ck">✓</span>1 analyse IA / jour</li>
+          <li class="y"><span class="ck">✓</span>Coupon (1 sélection)</li>
+          <li class="y"><span class="ck">✓</span>Stats de base 1X2</li>
+          <li><span class="ck">✗</span>Value Bet & Kelly</li>
+          <li><span class="ck">✗</span>Alertes live</li>
+          <li><span class="ck">✗</span>Stats H2H</li>
         </ul>
-        <a href="signup.html" class="btn btn-outline" style="width:100%;justify-content:center">Découvrir l'Oracle</a>
+        <a href="signup.html" class="btn btn-outline" style="width:100%;justify-content:center">Commencer gratuit</a>
       </div>
+
+      <!-- STARTER -->
       <div class="plan-c">
-        <div class="plan-tier" style="color:#14b8a6">Starter</div>
-        <div class="plan-price" style="color:#14b8a6" id="sp">500</div>
-        <div class="plan-per" id="sper">FCFA / semaine</div>
+        <div class="plan-tier" style="color:#2dd4bf">🌱 Starter</div>
+        <div class="plan-price" style="color:#2dd4bf" id="sp2-starter">750</div>
+        <div class="plan-per" id="pp2-starter">FCFA / semaine</div>
         <ul class="plan-feats">
-          <li class="y"><span class="ck">✓</span> Coupon complet (4 matchs)</li>
-          <li class="y"><span class="ck">✓</span> Bankroll + suivi complet</li>
-          <li class="y"><span class="ck">✓</span> Historique illimité</li>
-          <li class="y"><span class="ck">✓</span> Stats 1X2 + ROI Tracker</li>
-          <li class="y"><span class="ck">✓</span> Forme des équipes</li>
-          <li><span class="ck">✗</span> Value Bet & Kelly</li>
+          <li class="y"><span class="ck">✓</span>5 analyses IA / jour</li>
+          <li class="y"><span class="ck">✓</span>Coupon complet (3 sélections)</li>
+          <li class="y"><span class="ck">✓</span>Stats 1X2 + BTTS</li>
+          <li class="y"><span class="ck">✓</span>Forme équipes</li>
+          <li class="y"><span class="ck">✓</span>Bankroll + ROI Tracker</li>
+          <li><span class="ck">✗</span>Value Bet & Kelly</li>
         </ul>
-        <a href="checkout.html?plan=starter" class="btn" style="width:100%;justify-content:center;background:#14b8a6;color:#000">Choisir Starter</a>
-        <div class="plan-alt" id="salt">ou 1 500 F/mois (-25%)</div>
+        <a href="checkout.html?plan=starter" class="btn" style="width:100%;justify-content:center;background:#2dd4bf;color:#000">Choisir Starter</a>
+        <div class="plan-alt" id="alt2-starter">ou 2 500 F/mois (−30%)</div>
       </div>
+
+      <!-- PRO populaire -->
       <div class="plan-c hot">
-        <div class="plan-hot-tag">LE PLUS POPULAIRE</div>
-        <div class="plan-tier" style="color:var(--gold)">Pro</div>
-        <div class="plan-price" style="color:var(--gold)" id="pp">1 000</div>
-        <div class="plan-per" id="pper">FCFA / semaine</div>
+        <div class="plan-hot-tag">⭐ POPULAIRE</div>
+        <div class="plan-tier" style="color:var(--gold)">⚡ Pro</div>
+        <div class="plan-price" style="color:var(--gold)" id="sp2-pro">1 500</div>
+        <div class="plan-per" id="pp2-pro">FCFA / semaine</div>
         <ul class="plan-feats">
-          <li class="y"><span class="ck">✓</span> Coupon complet (4 matchs)</li>
-          <li class="y"><span class="ck">✓</span> Value Bet & Kelly</li>
-          <li class="y"><span class="ck">✓</span> Alertes live + H2H</li>
-          <li class="y"><span class="ck">✓</span> Comparateur de cotes</li>
-          <li class="y"><span class="ck">✓</span> Stats 1X2 + ROI Tracker</li>
-          <li class="y"><span class="ck">✓</span> Matchs sûrs du jour</li>
+          <li class="y"><span class="ck">✓</span>Analyses illimitées</li>
+          <li class="y"><span class="ck">✓</span>Coupon premium (4-5 sélections)</li>
+          <li class="y"><span class="ck">✓</span>Value Bet + Kelly auto</li>
+          <li class="y"><span class="ck">✓</span>Alertes live</li>
+          <li class="y"><span class="ck">✓</span>Stats H2H + joueurs</li>
+          <li class="y"><span class="ck">✓</span>Bot Telegram dédié</li>
         </ul>
         <a href="checkout.html?plan=pro" class="btn btn-gold" style="width:100%;justify-content:center">Choisir Pro</a>
-        <div class="plan-alt" id="palt">ou 3 000 F/mois (-25%)</div>
+        <div class="plan-alt" id="alt2-pro">ou 5 000 F/mois (−30%)</div>
       </div>
+
+      <!-- ELITE -->
       <div class="plan-c">
-        <div class="plan-tier" style="color:var(--purple)">Elite</div>
-        <div class="plan-price" style="color:var(--purple)" id="ep">2 000</div>
-        <div class="plan-per" id="eper">FCFA / semaine</div>
+        <div class="plan-tier" style="color:#a78bfa">👑 Elite</div>
+        <div class="plan-price" style="color:#a78bfa" id="sp2-elite">3 000</div>
+        <div class="plan-per" id="pp2-elite">FCFA / semaine</div>
         <ul class="plan-feats">
-          <li class="y"><span class="ck">✓</span> Tout du plan Pro</li>
-          <li class="y"><span class="ck">✓</span> L'Oracle IA complet</li>
-          <li class="y"><span class="ck">✓</span> Coaching personnalisé</li>
-          <li class="y"><span class="ck">✓</span> Support prioritaire</li>
-          <li class="y"><span class="ck">✓</span> Stats joueurs avancées</li>
-          <li class="y"><span class="ck">✓</span> Tickets IA premium</li>
+          <li class="y"><span class="ck">✓</span>Tout du plan Pro</li>
+          <li class="y"><span class="ck">✓</span>IA score exact</li>
+          <li class="y"><span class="ck">✓</span>Coaching bankroll 1h/sem</li>
+          <li class="y"><span class="ck">✓</span>Signaux live avant cotes</li>
+          <li class="y"><span class="ck">✓</span>Canal VIP Telegram</li>
+          <li class="y"><span class="ck">✓</span>Gestionnaire dédié</li>
         </ul>
-        <a href="checkout.html?plan=elite" class="btn" style="width:100%;justify-content:center;background:rgba(139,92,246,.15);color:var(--purple);border:1px solid rgba(139,92,246,.35)">Choisir Elite</a>
-        <div class="plan-alt" id="ealt">ou 6 000 F/mois (-25%)</div>
+        <a href="checkout.html?plan=elite" class="btn" style="width:100%;justify-content:center;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.35)">Choisir Elite</a>
+        <div class="plan-alt" id="alt2-elite">ou 10 000 F/mois (−30%)</div>
       </div>
     </div>
-    <div class="pay-methods reveal rd2">
-      <span class="pm-label">Paiement sécurisé via</span>
-      <span class="pm-badge">Carte bancaire</span>
-      <span class="pm-badge">Wave</span>
-      <span class="pm-badge">Orange Money</span>
-      <span class="pm-badge">MTN Money</span>
-      <span class="pm-badge">Moov Money</span>
-    </div>
-    <div class="plans-reassure reveal rd3">
-      <span><i class="ti ti-shield-check"></i> Sans engagement</span>
-      <span><i class="ti ti-hand-stop"></i> Annulation en 1 clic</span>
-      <span><i class="ti ti-lock"></i> Paiement sécurisé</span>
-      <span><i class="ti ti-gift"></i> Plan gratuit à vie</span>
+
+    <!-- Réassurance -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:32px;font-size:13px;color:var(--muted)">
+      <span>🔒 Paiement sécurisé</span>
+      <span>⚡ Accès instantané</span>
+      <span>↩️ Résiliation immédiate</span>
+      <span>📱 Wave · Orange · MTN · Moov</span>
     </div>
   </div>
 </section>
@@ -1595,6 +1604,24 @@ function updateMobileNav() {
 window.addEventListener('scroll', updateMobileNav, { passive: true })
 
 // Billing
+function setBill2(t, btn) {
+  document.querySelectorAll('#bi-week,#bi-month').forEach(b => {b.style.background='transparent';b.style.color='var(--muted)'})
+  btn.style.background = 'var(--s2)'; btn.style.color = 'var(--text)'
+  const w = t === 'week'
+  const plans = {starter:{w:750,m:2500},pro:{w:1500,m:5000},elite:{w:3000,m:10000}}
+  Object.entries(plans).forEach(([id,p]) => {
+    const price = w ? p.w : p.m
+    const el_price = document.getElementById('sp2-'+id)
+    const el_per   = document.getElementById('pp2-'+id)
+    const el_alt   = document.getElementById('alt2-'+id)
+    if (el_price) el_price.textContent = price.toLocaleString('fr-FR')
+    if (el_per)   el_per.textContent   = w ? 'FCFA / semaine' : 'FCFA / mois'
+    if (el_alt)   el_alt.textContent   = w
+      ? `ou ${p.m.toLocaleString('fr-FR')} F/mois (−30%)`
+      : `soit ${Math.round(p.m/4.3).toLocaleString('fr-FR')} F/sem en moyenne`
+  })
+}
+
 function setBill(t,btn){
   document.querySelectorAll('.billing-btn').forEach(b=>b.classList.remove('on'))
   btn.classList.add('on')

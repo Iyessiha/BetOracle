@@ -2,367 +2,691 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paiement — Betoracle Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Choisir un plan — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
-<link rel="stylesheet" href="./assets/css/mobile.css">
 <style>
-:root{--gb:#22c55e;--gl:#4ade80;--gold:#F5C842;--bg:#060a06;--s1:#111711;--s2:#161e16;--b1:#1e2e1e;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--red:#ef4444;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+:root {
+  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;--purple:#a78bfa;--teal:#2dd4bf;
+  --bg:#050806;--s1:#0f1510;--s2:#141d14;--b1:#1c2a1c;--b2:#243424;--b3:#2e4030;
+  --text:#e4ede4;--sub:#9ab89a;--muted:#5a7a5a;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  background-image:radial-gradient(circle at 30% 50%,rgba(34,197,94,.05) 0%,transparent 60%)}
-.card{width:100%;max-width:480px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.5)}
-.card-header{background:linear-gradient(135deg,#1a5c2a 0%,rgba(34,197,94,.15) 100%);padding:28px 32px;border-bottom:1px solid var(--b2);position:relative;overflow:hidden}
-.card-header::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 14px,rgba(255,255,255,.03) 15px)}
-.logo{display:flex;align-items:center;gap:10px;position:relative;z-index:1;margin-bottom:16px}
-.logo-badge{width:36px;height:36px;border-radius:9px;background:rgba(34,197,94,.2);border:1.5px solid var(--gb);display:flex;align-items:center;justify-content:center;font-size:20px}
-.logo-name{font-family:var(--fd);font-size:20px;letter-spacing:.05em}
-.logo-name span{color:var(--gold)}
-.amount-display{position:relative;z-index:1}
-.amount-label{font-size:12px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
-.amount-val{font-family:var(--fd);font-size:48px;letter-spacing:.02em;color:var(--gold);line-height:1}
-.amount-desc{font-size:13px;color:rgba(255,255,255,.5);margin-top:4px}
-.card-body{padding:28px 32px}
-.section-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:6px}
-/* Plan selector */
-.plan-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:22px}
-.plan-item{background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;padding:12px 10px;cursor:pointer;transition:all .15s;text-align:center}
-.plan-item:hover{border-color:var(--b2);background:var(--s1)}
-.plan-item.selected{border-color:var(--gb);background:rgba(34,197,94,.06)}
-.plan-item.selected.gold-plan{border-color:var(--gold);background:rgba(245,200,66,.06)}
-.plan-name{font-family:var(--fd);font-size:15px;letter-spacing:.05em;margin-bottom:3px}
-.plan-price{font-family:var(--fd);font-size:20px;letter-spacing:.03em}
-.plan-period{font-size:10px;color:var(--muted);margin-top:2px}
-/* Period toggle */
-.period-toggle{display:flex;background:rgba(0,0,0,.2);border-radius:30px;padding:3px;margin-bottom:22px;border:1px solid var(--b1)}
-.period-btn{flex:1;padding:8px;border-radius:26px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--fb);transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
-.period-btn.active{background:var(--s1);color:var(--text)}
-.save-pill{background:rgba(34,197,94,.15);color:var(--gb);font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px}
-/* Moyens de paiement */
-.methods-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:22px}
-.method-item{background:var(--s2);border:1.5px solid var(--b2);border-radius:11px;padding:12px 14px;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:10px}
-.method-item:hover{border-color:var(--b2);background:var(--s1)}
-.method-item.selected{border-color:var(--gb);background:rgba(34,197,94,.06)}
-.method-item.checkout-all{grid-column:span 2;justify-content:center;border-color:var(--gb);background:rgba(34,197,94,.05)}
-.method-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.method-name{font-size:13px;font-weight:600}
-.method-sub{font-size:11px;color:var(--muted)}
-/* Téléphone */
-.phone-field{margin-bottom:22px;display:none}
-.phone-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:6px}
-.phone-input-wrap{display:flex;background:rgba(0,0,0,.2);border:1.5px solid var(--b2);border-radius:10px;overflow:hidden;transition:border .2s}
-.phone-input-wrap:focus-within{border-color:var(--gb)}
-.phone-prefix{padding:0 14px;font-size:15px;color:var(--muted);display:flex;align-items:center;border-right:1px solid var(--b2);background:rgba(255,255,255,.03)}
-.phone-input-wrap input{flex:1;background:transparent;border:none;outline:none;font-family:var(--fb);font-size:15px;color:var(--text);padding:13px 14px}
-/* Bouton payer */
-.pay-btn{width:100%;padding:16px;border-radius:12px;border:none;background:var(--gb);color:#000;font-size:16px;font-weight:800;font-family:var(--fb);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:10px;letter-spacing:.02em}
-.pay-btn:hover{background:var(--gl);transform:translateY(-1px)}
-.pay-btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
-/* Sécurité */
-.security{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:16px;font-size:12px;color:var(--muted)}
-/* Erreur */
-.err-box{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#fca5a5;border-radius:10px;padding:12px 16px;font-size:13px;margin-bottom:16px;display:none;align-items:center;gap:8px}
-/* Recap */
-.recap{background:rgba(0,0,0,.15);border-radius:10px;padding:12px 16px;margin-bottom:20px;font-size:13px}
-.recap-row{display:flex;justify-content:space-between;padding:4px 0}
-.recap-row.total{border-top:1px solid var(--b2);margin-top:8px;padding-top:10px;font-weight:700;font-size:15px}
-.recap-row strong{color:var(--text)}
-.recap-row.total strong{color:var(--gold);font-family:var(--fd);font-size:18px;letter-spacing:.03em}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100dvh;
+  background-image:radial-gradient(ellipse at 20% 20%,rgba(34,197,94,.05) 0%,transparent 55%),
+  radial-gradient(ellipse at 80% 80%,rgba(245,200,66,.04) 0%,transparent 55%)}
+
+/* TOPBAR */
+.topbar{display:flex;align-items:center;justify-content:space-between;
+  padding:max(16px,calc(var(--safe-t)+16px)) 24px 16px;
+  border-bottom:1px solid var(--b1);
+  background:rgba(5,8,6,.95);backdrop-filter:blur(20px);
+  position:sticky;top:0;z-index:50}
+.tb-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.tb-orb{width:34px;height:34px;border-radius:9px;
+  background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.4);
+  display:flex;align-items:center;justify-content:center;font-size:18px;
+  box-shadow:0 0 12px rgba(34,197,94,.12)}
+.tb-name{font-family:var(--fd);font-size:18px;letter-spacing:.06em}
+.tb-name span{color:var(--gold)}
+.tb-back{display:flex;align-items:center;gap:6px;font-size:13px;
+  color:var(--muted);text-decoration:none;transition:color .15s}
+.tb-back:hover{color:var(--text)}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:36px 24px 80px}
+
+/* HERO */
+.hero{text-align:center;margin-bottom:48px}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:7px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  color:var(--gb);padding:5px 16px;border-radius:20px;
+  font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  margin-bottom:16px}
+.hero h1{font-family:var(--fd);font-size:clamp(36px,6vw,64px);
+  letter-spacing:.03em;line-height:.95;margin-bottom:12px}
+.hero h1 span{color:var(--gold)}
+.hero-sub{font-size:15px;color:var(--muted);max-width:480px;margin:0 auto 24px;line-height:1.6}
+
+/* PERIOD TOGGLE */
+.period-wrap{display:inline-flex;background:var(--s1);border:1px solid var(--b1);
+  border-radius:30px;padding:4px;margin-bottom:40px}
+.period-btn{padding:9px 24px;border-radius:26px;border:none;
+  background:transparent;color:var(--muted);font-size:13px;font-weight:700;
+  cursor:pointer;font-family:var(--ff);transition:all .2s;
+  display:flex;align-items:center;gap:7px}
+.period-btn.on{background:var(--s2);color:var(--text)}
+.save-tag{font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;
+  background:rgba(34,197,94,.15);color:var(--gb)}
+
+/* PLANS GRID */
+.plans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:40px}
+
+.plan-card{background:var(--s1);border:1.5px solid var(--b1);border-radius:20px;
+  padding:26px 22px;position:relative;overflow:hidden;
+  transition:transform .2s,border-color .2s,box-shadow .2s;cursor:pointer}
+.plan-card:hover{transform:translateY(-4px);border-color:var(--b3)}
+.plan-card.popular{border-color:var(--gold);
+  background:linear-gradient(160deg,rgba(245,200,66,.06) 0%,var(--s1) 60%)}
+.plan-card.popular:hover{box-shadow:0 16px 40px rgba(245,200,66,.1)}
+.plan-card.selected{border-color:var(--gb);box-shadow:0 0 0 1px var(--gb)}
+
+/* Badge populaire */
+.popular-tag{position:absolute;top:-1px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#000;font-family:var(--fd);font-size:11px;
+  font-weight:800;letter-spacing:.08em;padding:3px 16px;border-radius:0 0 12px 12px;
+  white-space:nowrap}
+
+/* Plan header */
+.plan-icon{font-size:28px;margin-bottom:12px;display:block}
+.plan-name{font-family:var(--fd);font-size:15px;letter-spacing:.1em;
+  text-transform:uppercase;margin-bottom:4px}
+.plan-tagline{font-size:12px;color:var(--muted);margin-bottom:18px;line-height:1.4}
+
+/* Prix */
+.plan-price-wrap{margin-bottom:6px}
+.plan-price{font-family:var(--fd);font-size:42px;letter-spacing:.02em;line-height:1}
+.plan-price-free{font-size:28px}
+.plan-period{font-size:12px;color:var(--muted);margin-bottom:18px}
+.plan-alt{font-size:11px;color:var(--muted);margin-bottom:20px}
+
+/* Features */
+.plan-feats{list-style:none;margin-bottom:24px;display:flex;flex-direction:column;gap:0}
+.plan-feats li{display:flex;align-items:flex-start;gap:8px;
+  font-size:12px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);
+  line-height:1.4}
+.plan-feats li:last-child{border-bottom:none}
+.plan-feats li.inc{color:var(--sub)}
+.plan-feats li.exc{color:var(--muted);opacity:.6}
+.ck{font-size:14px;flex-shrink:0;margin-top:1px}
+.inc .ck{color:var(--gb)}
+.exc .ck{color:var(--muted)}
+
+/* CTA Button */
+.plan-cta{width:100%;padding:13px;border-radius:11px;border:none;
+  font-size:14px;font-weight:800;font-family:var(--ff);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;text-decoration:none}
+.cta-free{background:transparent;color:var(--sub);border:1.5px solid var(--b2)}
+.cta-free:hover{border-color:var(--gb);color:var(--gb)}
+.cta-starter{background:#2dd4bf;color:#000}
+.cta-starter:hover{background:#5eead4}
+.cta-pro{background:var(--gold);color:#000}
+.cta-pro:hover{background:#ffe066}
+.cta-elite{background:rgba(167,139,250,.2);color:var(--purple);border:1px solid rgba(167,139,250,.35)}
+.cta-elite:hover{background:rgba(167,139,250,.3)}
+
+/* Comparaison concurrence */
+.vs-section{margin-bottom:40px}
+.vs-title{font-family:var(--fd);font-size:22px;letter-spacing:.04em;
+  text-align:center;margin-bottom:6px}
+.vs-sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:24px}
+.vs-table{width:100%;border-collapse:collapse;border-radius:16px;overflow:hidden;
+  border:1px solid var(--b1)}
+.vs-table th{background:var(--s2);padding:12px 16px;font-size:11px;font-weight:700;
+  text-transform:uppercase;letter-spacing:.08em;color:var(--muted);text-align:left}
+.vs-table th:first-child{color:var(--text)}
+.vs-table td{padding:11px 16px;border-top:1px solid var(--b1);font-size:13px}
+.vs-table tr:hover td{background:rgba(255,255,255,.02)}
+.vs-table td:first-child{font-weight:600;color:var(--sub)}
+.vs-table td.us{color:var(--gb);font-weight:700}
+.vs-table td.no{color:var(--muted)}
+.vs-table tr.highlight td{background:rgba(34,197,94,.03)}
+.vs-table tr.highlight td:first-child{color:var(--gb)}
+
+/* Méthodes de paiement */
+.pay-section{background:var(--s1);border:1px solid var(--b1);border-radius:18px;
+  padding:24px;margin-bottom:28px}
+.pay-title{font-family:var(--fd);font-size:18px;letter-spacing:.04em;margin-bottom:6px;
+  display:flex;align-items:center;gap:10px}
+.pay-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.pay-methods{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.pay-method{background:var(--s2);border:1.5px solid var(--b2);border-radius:12px;
+  padding:14px 10px;display:flex;flex-direction:column;align-items:center;gap:6px;
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent}
+.pay-method:hover,.pay-method.sel{border-color:var(--gb);background:rgba(34,197,94,.04)}
+.pay-method .pm-icon{font-size:26px;line-height:1}
+.pay-method .pm-name{font-size:11px;font-weight:700;text-align:center;line-height:1.2}
+.pay-method .pm-sub{font-size:9px;color:var(--muted);text-align:center}
+
+/* Garanties */
+.guarantees{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:28px}
+.guarantee{display:flex;align-items:flex-start;gap:12px;
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:16px}
+.g-icon{font-size:24px;flex-shrink:0}
+.g-title{font-size:13px;font-weight:700;margin-bottom:3px}
+.g-sub{font-size:12px;color:var(--muted);line-height:1.4}
+
+/* Checkout modal */
+.checkout-modal{display:none;position:fixed;inset:0;z-index:500;
+  background:rgba(0,0,0,.8);backdrop-filter:blur(8px);
+  align-items:center;justify-content:center;padding:20px}
+.checkout-modal.open{display:flex}
+.cm-box{background:var(--s1);border:1px solid var(--b2);border-radius:20px;
+  width:100%;max-width:420px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.cm-header{padding:22px 24px;border-bottom:1px solid var(--b1)}
+.cm-title{font-family:var(--fd);font-size:22px;letter-spacing:.04em;margin-bottom:4px}
+.cm-sub{font-size:13px;color:var(--muted)}
+.cm-body{padding:22px 24px}
+.cm-summary{background:rgba(34,197,94,.04);border:1px solid rgba(34,197,94,.15);
+  border-radius:12px;padding:14px 16px;margin-bottom:20px}
+.cs-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:3px 0}
+.cs-row.total{font-size:16px;font-weight:800;margin-top:6px;padding-top:10px;
+  border-top:1px solid rgba(34,197,94,.15);color:var(--gb)}
+.cm-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--muted);margin-bottom:8px}
+.cm-input{width:100%;background:rgba(0,0,0,.2);border:1.5px solid var(--b2);
+  border-radius:10px;padding:12px 14px;font-size:16px;color:var(--text);
+  font-family:var(--ff);outline:none;transition:border-color .2s;margin-bottom:14px;
+  -webkit-appearance:none}
+.cm-input:focus{border-color:var(--gb)}
+.cm-input::placeholder{color:var(--muted)}
+.cm-pay-btn{width:100%;padding:15px;border-radius:12px;border:none;
+  background:var(--gb);color:#000;font-size:16px;font-weight:800;
+  font-family:var(--ff);cursor:pointer;display:flex;align-items:center;
+  justify-content:center;gap:9px;transition:all .2s;margin-top:4px}
+.cm-pay-btn:hover{background:var(--gl)}
+.cm-pay-btn:disabled{opacity:.5;cursor:not-allowed}
+.cm-close{position:absolute;top:16px;right:16px;width:34px;height:34px;
+  border-radius:8px;background:var(--s2);border:none;color:var(--muted);
+  font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.cm-msg{display:none;padding:11px 14px;border-radius:10px;font-size:13px;
+  margin-bottom:12px;align-items:center;gap:8px;line-height:1.4}
+.cm-msg.err{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);color:#fca5a5;display:flex}
+.cm-msg.ok{background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);color:var(--gb);display:flex}
+
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .spin{animation:spin .8s linear infinite;display:inline-block}
 
-@media(max-width:480px){
-  body{padding:0;align-items:flex-start}
-  .card{border-radius:0;border-left:none;border-right:none;min-height:100vh}
-  .card-header{padding:22px 22px}
-  .amount-val{font-size:40px}
-  .card-body{padding:22px 22px}
-  .plan-grid{grid-template-columns:1fr 1fr 1fr;gap:6px}
-  .plan-item{padding:10px 6px}
-  .plan-name{font-size:13px}
-  .plan-price{font-size:16px}
-  .plan-period{font-size:9px}
-  .methods-grid{grid-template-columns:1fr 1fr}
-  .method-item.checkout-all{grid-column:span 2}
-  .method-name{font-size:12px}
-  .method-sub{font-size:10px}
-  .method-icon{width:28px;height:28px;font-size:16px}
-  .pay-btn{padding:14px;font-size:14px}
+/* RESPONSIVE */
+@media(max-width:900px){
+  .plans-grid{grid-template-columns:1fr 1fr;gap:12px}
+  .pay-methods{grid-template-columns:repeat(3,1fr)}
+  .guarantees{grid-template-columns:1fr}
+  .vs-table{font-size:12px}
+}
+@media(max-width:600px){
+  .main{padding:20px 16px 80px}
+  .hero h1{font-size:clamp(32px,9vw,52px)}
+  .plans-grid{grid-template-columns:1fr;gap:12px}
+  .plan-card{padding:20px 18px}
+  .plan-price{font-size:36px}
+  .pay-methods{grid-template-columns:1fr 1fr}
+  .pay-method:last-child{grid-column:span 2}
+  .vs-table{display:none}
+  .cm-box{border-radius:16px}
+  .cm-header,.cm-body{padding:18px}
 }
 </style>
 </head>
 <body data-page="checkout">
 
-<div class="card">
-  <!-- Header -->
-  <div class="card-header">
-    <div class="logo">
-      <div class="logo-badge">🔮</div>
-      <div class="logo-name">BET<span>ORACLE</span> PRO</div>
-    </div>
-    <div class="amount-display">
-      <div class="amount-label">Total à payer</div>
-      <div class="amount-val" id="total-amount">1 000 FCFA</div>
-      <div class="amount-desc" id="total-desc">Plan Pro · 1 semaine</div>
+<div class="topbar">
+  <a href="index.html" class="tb-logo">
+    <div class="tb-orb">🔮</div>
+    <div class="tb-name">BET<span>ORACLE</span></div>
+  </a>
+  <a href="javascript:history.back()" class="tb-back">
+    <i class="ti ti-arrow-left"></i> Retour
+  </a>
+</div>
+
+<div class="main">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-eyebrow"><i class="ti ti-crown"></i> Plans & tarifs</div>
+    <h1>L'IA qui <span>gagne</span><br>pour toi</h1>
+    <p class="hero-sub">Moins cher qu'une mise perdue. Choisis ton niveau, commence dès aujourd'hui.</p>
+
+    <!-- Toggle période -->
+    <div class="period-wrap">
+      <button class="period-btn on" id="btn-week" onclick="setPeriod('week',this)">
+        <i class="ti ti-calendar-week"></i> Semaine
+      </button>
+      <button class="period-btn" id="btn-month" onclick="setPeriod('month',this)">
+        <i class="ti ti-calendar-month"></i> Mois <span class="save-tag">−30%</span>
+      </button>
     </div>
   </div>
 
-  <!-- Body -->
-  <div class="card-body">
+  <!-- PLANS GRID -->
+  <div class="plans-grid">
 
-    <!-- Erreur -->
-    <div class="err-box" id="err"><i class="ti ti-alert-circle"></i><span id="err-msg"></span></div>
-
-    <!-- 1. Plan -->
-    <div class="section-label"><i class="ti ti-crown"></i> Choisir ton plan</div>
-    <div class="plan-grid">
-      <div class="plan-item" onclick="selectPlan('starter',this)">
-        <div class="plan-name" style="color:#14b8a6">Starter</div>
-        <div class="plan-price" style="color:#14b8a6" id="price-starter">500</div>
-        <div class="plan-period" id="period-starter">F/semaine</div>
+    <!-- FREE -->
+    <div class="plan-card" onclick="selectPlan('free')">
+      <span class="plan-icon">🆓</span>
+      <div class="plan-name" style="color:var(--muted)">Free</div>
+      <div class="plan-tagline">Découverte sans engagement</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price plan-price-free" style="color:var(--sub)">0 F</div>
       </div>
-      <div class="plan-item gold-plan selected" onclick="selectPlan('pro',this)">
-        <div class="plan-name" style="color:var(--gold)">Pro ⚡</div>
-        <div class="plan-price" style="color:var(--gold)" id="price-pro">1 000</div>
-        <div class="plan-period" id="period-pro">F/semaine</div>
-      </div>
-      <div class="plan-item" onclick="selectPlan('elite',this)">
-        <div class="plan-name" style="color:#8b5cf6">Elite</div>
-        <div class="plan-price" style="color:#8b5cf6" id="price-elite">2 000</div>
-        <div class="plan-period" id="period-elite">F/semaine</div>
-      </div>
+      <div class="plan-period">Toujours gratuit</div>
+      <ul class="plan-feats">
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>1 analyse IA / jour</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Coupon du jour (1 sélection)</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Stats de base 1X2</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Bankroll basique</li>
+        <li class="exc"><span class="ck"><i class="ti ti-x"></i></span>Value Bet & Kelly</li>
+        <li class="exc"><span class="ck"><i class="ti ti-x"></i></span>Alertes live</li>
+        <li class="exc"><span class="ck"><i class="ti ti-x"></i></span>Stats H2H & avancées</li>
+      </ul>
+      <a href="signup.html" class="plan-cta cta-free">Commencer gratuit</a>
     </div>
 
-    <!-- 2. Période -->
-    <div class="section-label"><i class="ti ti-calendar"></i> Période</div>
-    <div class="period-toggle">
-      <button class="period-btn active" onclick="selectPeriod('week',this)"><i class="ti ti-calendar-week"></i> Semaine</button>
-      <button class="period-btn" onclick="selectPeriod('month',this)"><i class="ti ti-calendar-month"></i> Mois <span class="save-pill">-25%</span></button>
+    <!-- STARTER -->
+    <div class="plan-card" id="card-starter" onclick="selectPlan('starter')">
+      <span class="plan-icon">🌱</span>
+      <div class="plan-name" style="color:#2dd4bf">Starter</div>
+      <div class="plan-tagline">Le bon départ pour parier avec méthode</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price" style="color:#2dd4bf" id="price-starter">750</div>
+      </div>
+      <div class="plan-period" id="period-starter">FCFA / semaine</div>
+      <div class="plan-alt" id="alt-starter">ou 2 500 F/mois (−30%)</div>
+      <ul class="plan-feats">
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>5 analyses IA / jour</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Coupon complet (3 sélections)</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Stats 1X2 + BTTS + Over/Under</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Forme équipes (5 matchs)</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Bankroll + ROI Tracker</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Alertes matchs importants</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Support WhatsApp</li>
+      </ul>
+      <button class="plan-cta cta-starter" onclick="event.stopPropagation();openCheckout('starter')">
+        <i class="ti ti-rocket"></i> Choisir Starter
+      </button>
     </div>
 
-    <!-- 3. Méthode de paiement -->
-    <div class="section-label"><i class="ti ti-wallet"></i> Méthode de paiement</div>
-    <div class="methods-grid">
-      <div class="method-item checkout-all selected" onclick="selectMethod('checkout',this)">
-        <div class="method-icon" style="background:rgba(34,197,94,.15)">💳</div>
-        <div>
-          <div class="method-name">Page GeniusPay</div>
-          <div class="method-sub">Wave · Orange · MTN · Moov · Carte</div>
-        </div>
+    <!-- PRO (POPULAIRE) -->
+    <div class="plan-card popular" id="card-pro" onclick="selectPlan('pro')">
+      <div class="popular-tag">⭐ POPULAIRE</div>
+      <span class="plan-icon" style="margin-top:20px">⚡</span>
+      <div class="plan-name" style="color:var(--gold)">Pro</div>
+      <div class="plan-tagline">Gagner régulièrement avec méthode</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price" style="color:var(--gold)" id="price-pro">1 500</div>
       </div>
-      <div class="method-item" onclick="selectMethod('wave',this)">
-        <div class="method-icon" style="background:#3B5DC922">
-          <img src="https://pay.genius.ci/assets/logo/wave.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🌊</span>
-        </div>
-        <div>
-          <div class="method-name">Wave</div>
-          <div class="method-sub">Paiement direct</div>
-        </div>
-      </div>
-      <div class="method-item" onclick="selectMethod('orange_money',this)">
-        <div class="method-icon" style="background:#FF680022">
-          <img src="https://pay.genius.ci/assets/logo/orange.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🟠</span>
-        </div>
-        <div>
-          <div class="method-name">Orange Money</div>
-          <div class="method-sub">+225 07…</div>
-        </div>
-      </div>
-      <div class="method-item" onclick="selectMethod('mtn_money',this)">
-        <div class="method-icon" style="background:#FFCC0022">
-          <img src="https://pay.genius.ci/assets/logo/mtn.svg" width="22" onerror="this.style.display='none';this.nextElementSibling.style.display='block'"><span style="display:none;font-size:16px">🟡</span>
-        </div>
-        <div>
-          <div class="method-name">MTN MoMo</div>
-          <div class="method-sub">+225 05…</div>
-        </div>
-      </div>
+      <div class="plan-period" id="period-pro">FCFA / semaine</div>
+      <div class="plan-alt" id="alt-pro">ou 5 000 F/mois (−30%)</div>
+      <ul class="plan-feats">
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Analyses illimitées</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Coupon premium (4-5 sélections)</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Value Bet + Calcul Kelly auto</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Stats H2H + stats joueurs</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Comparateur cotes multi-bookmakers</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Alertes live (but, rouge, blessure)</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Bot Telegram dédié</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Support prioritaire 24h</li>
+      </ul>
+      <button class="plan-cta cta-pro" onclick="event.stopPropagation();openCheckout('pro')">
+        <i class="ti ti-bolt"></i> Choisir Pro
+      </button>
     </div>
 
-    <!-- Numéro de téléphone (si méthode directe) -->
-    <div class="phone-field" id="phone-field">
-      <div class="phone-label">Numéro Mobile Money</div>
-      <div class="phone-input-wrap">
-        <div class="phone-prefix">🇨🇮 +225</div>
-        <input type="tel" id="phone-input" placeholder="07 00 00 00 00" maxlength="12"
-          oninput="this.value=this.value.replace(/\D/g,'')">
+    <!-- ELITE -->
+    <div class="plan-card" id="card-elite" onclick="selectPlan('elite')">
+      <span class="plan-icon">👑</span>
+      <div class="plan-name" style="color:var(--purple)">Elite</div>
+      <div class="plan-tagline">L'arsenal complet du parieur expert</div>
+      <div class="plan-price-wrap">
+        <div class="plan-price" style="color:var(--purple)" id="price-elite">3 000</div>
+      </div>
+      <div class="plan-period" id="period-elite">FCFA / semaine</div>
+      <div class="plan-alt" id="alt-elite">ou 10 000 F/mois (−30%)</div>
+      <ul class="plan-feats">
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Tout du plan Pro</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>IA score exact</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Coaching bankroll 1h/semaine</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Signaux live avant ouverture cotes</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Stats tactiques avancées</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Canal VIP Telegram exclusif</li>
+        <li class="inc"><span class="ck"><i class="ti ti-check"></i></span>Gestionnaire de compte dédié</li>
+      </ul>
+      <button class="plan-cta cta-elite" onclick="event.stopPropagation();openCheckout('elite')">
+        <i class="ti ti-crown"></i> Choisir Elite
+      </button>
+    </div>
+
+  </div>
+
+  <!-- MÉTHODES DE PAIEMENT -->
+  <div class="pay-section">
+    <div class="pay-title">
+      <i class="ti ti-shield-check" style="color:var(--gb)"></i>
+      Paiement sécurisé · Mobile Money & Carte
+    </div>
+    <p class="pay-sub">Paiement instantané via les méthodes locales les plus utilisées en Afrique de l'Ouest</p>
+    <div class="pay-methods">
+      <div class="pay-method sel" onclick="selMethod(this,'wave')">
+        <div class="pm-icon">🌊</div>
+        <div class="pm-name">Wave</div>
+        <div class="pm-sub">Sénégal, CI</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'orange')">
+        <div class="pm-icon">🟠</div>
+        <div class="pm-name">Orange Money</div>
+        <div class="pm-sub">CI, SN, ML, BF</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'mtn')">
+        <div class="pm-icon">💛</div>
+        <div class="pm-name">MTN MoMo</div>
+        <div class="pm-sub">CI, GH, CM</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'moov')">
+        <div class="pm-icon">🔵</div>
+        <div class="pm-name">Moov Money</div>
+        <div class="pm-sub">CI, BJ, BF, TG</div>
+      </div>
+      <div class="pay-method" onclick="selMethod(this,'card')">
+        <div class="pm-icon">💳</div>
+        <div class="pm-name">Carte bancaire</div>
+        <div class="pm-sub">Visa · Mastercard</div>
       </div>
     </div>
+  </div>
 
-    <!-- Récap -->
-    <div class="recap" id="recap">
-      <div class="recap-row"><span>Plan</span><strong id="recap-plan">Pro</strong></div>
-      <div class="recap-row"><span>Période</span><strong id="recap-period">1 semaine</strong></div>
-      <div class="recap-row"><span>Via</span><strong id="recap-method">GeniusPay Checkout</strong></div>
-      <div class="recap-row total"><span>Total</span><strong id="recap-total">1 000 FCFA</strong></div>
+  <!-- COMPARAISON CONCURRENCE -->
+  <div class="vs-section">
+    <div class="vs-title">Pourquoi Betoracle Pro ?</div>
+    <p class="vs-sub">Comparé aux tipsters et sites concurrents sur le marché africain</p>
+    <table class="vs-table">
+      <thead>
+        <tr>
+          <th>Fonctionnalité</th>
+          <th style="color:var(--gb)">🔮 Betoracle Pro</th>
+          <th>Tipsters Telegram</th>
+          <th>Sites généralistes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="highlight">
+          <td>IA prédictive (500k+ matchs)</td>
+          <td class="us">✅ Inclus</td>
+          <td class="no">❌ Non</td>
+          <td class="no">❌ Non</td>
+        </tr>
+        <tr>
+          <td>Value Bet + Calcul Kelly</td>
+          <td class="us">✅ Automatique</td>
+          <td class="no">❌ Manuel</td>
+          <td class="no">❌ Non</td>
+        </tr>
+        <tr class="highlight">
+          <td>Coupon automatique quotidien</td>
+          <td class="us">✅ 8h00 chaque jour</td>
+          <td>⚠️ Irrégulier</td>
+          <td class="no">❌ Non</td>
+        </tr>
+        <tr>
+          <td>Gestion de bankroll</td>
+          <td class="us">✅ Intégrée</td>
+          <td class="no">❌ Non</td>
+          <td>⚠️ Basique</td>
+        </tr>
+        <tr class="highlight">
+          <td>Comparateur de cotes live</td>
+          <td class="us">✅ Multi-bookmakers</td>
+          <td class="no">❌ Non</td>
+          <td class="no">❌ Non</td>
+        </tr>
+        <tr>
+          <td>Paiement Mobile Money local</td>
+          <td class="us">✅ Wave, Orange, MTN</td>
+          <td class="no">❌ Non</td>
+          <td class="no">❌ Non</td>
+        </tr>
+        <tr class="highlight">
+          <td>Prix d'entrée</td>
+          <td class="us">750 FCFA/sem</td>
+          <td>2 000–10 000 F/mois</td>
+          <td>Gratuit mais limité</td>
+        </tr>
+        <tr>
+          <td>Alertes live (but, rouge…)</td>
+          <td class="us">✅ Pro & Elite</td>
+          <td>⚠️ Parfois</td>
+          <td class="no">❌ Non</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- GARANTIES -->
+  <div class="guarantees">
+    <div class="guarantee">
+      <div class="g-icon">🔒</div>
+      <div>
+        <div class="g-title">Paiement 100% sécurisé</div>
+        <div class="g-sub">Transactions cryptées via GeniusPay. Tes données bancaires ne sont jamais stockées.</div>
+      </div>
     </div>
-
-    <!-- Payer -->
-    <button class="pay-btn" id="pay-btn" onclick="pay()">
-      <i class="ti ti-lock"></i> Payer maintenant
-    </button>
-
-    <div class="security">
-      <i class="ti ti-shield-check"></i>
-      Paiement sécurisé par <strong style="color:var(--gb);margin-left:4px">GeniusPay</strong>
-      &nbsp;·&nbsp; Sans engagement
+    <div class="guarantee">
+      <div class="g-icon">↩️</div>
+      <div>
+        <div class="g-title">Résiliation immédiate</div>
+        <div class="g-sub">Annule à tout moment depuis ton compte. Aucun engagement, aucune question.</div>
+      </div>
     </div>
+    <div class="guarantee">
+      <div class="g-icon">⚡</div>
+      <div>
+        <div class="g-title">Accès instantané</div>
+        <div class="g-sub">Ton plan s'active en moins de 60 secondes après confirmation du paiement.</div>
+      </div>
+    </div>
+  </div>
 
+</div><!-- /main -->
+
+<!-- MODAL CHECKOUT -->
+<div class="checkout-modal" id="modal">
+  <div class="cm-box" style="position:relative">
+    <button class="cm-close" onclick="closeCheckout()"><i class="ti ti-x"></i></button>
+    <div class="cm-header">
+      <div class="cm-title" id="cm-title">Passer à Pro</div>
+      <div class="cm-sub" id="cm-sub">1 500 FCFA / semaine</div>
+    </div>
+    <div class="cm-body">
+      <div class="cm-msg" id="cm-msg"><i class="ti ti-alert-circle"></i><span id="cm-msg-txt"></span></div>
+
+      <div class="cm-summary">
+        <div class="cs-row"><span>Plan</span><span id="cs-plan" style="font-weight:700">Pro</span></div>
+        <div class="cs-row"><span>Période</span><span id="cs-period">1 semaine</span></div>
+        <div class="cs-row total"><span>Total</span><span id="cs-total" style="color:var(--gb)">1 500 FCFA</span></div>
+      </div>
+
+      <div class="cm-label">Méthode de paiement</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px">
+        <button onclick="setCmMethod('wave',this)"  style="flex:1;min-width:80px;padding:10px 8px;border-radius:9px;border:1.5px solid var(--gb);background:rgba(34,197,94,.06);color:var(--gb);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;justify-content:center;gap:5px"><span>🌊</span>Wave</button>
+        <button onclick="setCmMethod('orange',this)" style="flex:1;min-width:80px;padding:10px 8px;border-radius:9px;border:1.5px solid var(--b2);background:transparent;color:var(--sub);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;justify-content:center;gap:5px"><span>🟠</span>Orange</button>
+        <button onclick="setCmMethod('mtn',this)"   style="flex:1;min-width:80px;padding:10px 8px;border-radius:9px;border:1.5px solid var(--b2);background:transparent;color:var(--sub);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;justify-content:center;gap:5px"><span>💛</span>MTN</button>
+        <button onclick="setCmMethod('card',this)"  style="flex:1;min-width:80px;padding:10px 8px;border-radius:9px;border:1.5px solid var(--b2);background:transparent;color:var(--sub);font-size:12px;font-weight:700;cursor:pointer;font-family:var(--ff);display:flex;align-items:center;justify-content:center;gap:5px"><span>💳</span>Carte</button>
+      </div>
+
+      <div id="phone-field">
+        <div class="cm-label">Numéro de téléphone</div>
+        <input type="tel" class="cm-input" id="cm-phone" placeholder="+225 07 XX XX XX" inputmode="tel">
+      </div>
+
+      <button class="cm-pay-btn" id="cm-pay-btn" onclick="doPay()">
+        <i class="ti ti-shield-check"></i> Payer maintenant
+      </button>
+
+      <div style="text-align:center;margin-top:12px;font-size:11px;color:var(--muted)">
+        🔒 Paiement sécurisé · Accès immédiat · Résiliable à tout moment
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
-const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+const PAY_EDGE  = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/payments'
+
+// Lire plan depuis URL si present
+const urlParams = new URLSearchParams(location.search)
+const urlPlan   = urlParams.get('plan')
 
 const PRICES = {
-  starter: { week: 500,  month: 1500 },
-  pro:     { week: 1000, month: 3000 },
-  elite:   { week: 2000, month: 6000 },
+  starter: { week: 750,   month: 2500  },
+  pro:     { week: 1500,  month: 5000  },
+  elite:   { week: 3000,  month: 10000 }
 }
-const METHOD_LABELS = {
-  checkout: 'GeniusPay Checkout', wave: 'Wave', orange_money: 'Orange Money',
-  mtn_money: 'MTN MoMo', card: 'Carte bancaire',
-}
+const PLAN_NAMES = { starter:'Starter', pro:'Pro', elite:'Elite' }
 
-let plan   = 'pro'
-let period = 'week'
-let method = 'checkout'
+let period    = 'week'
+let selPlan   = urlPlan || 'pro'
+let selMethod_ = 'wave'
 
-function selectPlan(p, el) {
-  document.querySelectorAll('.plan-item').forEach(i => i.classList.remove('selected'))
-  el.classList.add('selected')
-  plan = p
-  updateUI()
+// Préselect le plan depuis l'URL
+if (urlPlan && ['starter','pro','elite'].includes(urlPlan)) {
+  document.querySelector(`[id="card-${urlPlan}"]`)?.classList.add('selected')
 }
 
-function selectPeriod(p, el) {
-  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'))
-  el.classList.add('active')
+function setPeriod(p, btn) {
   period = p
-  updateUI()
-}
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('on'))
+  btn.classList.add('on')
 
-function selectMethod(m, el) {
-  document.querySelectorAll('.method-item').forEach(i => i.classList.remove('selected'))
-  el.classList.add('selected')
-  method = m
-  const needPhone = m !== 'checkout'
-  document.getElementById('phone-field').style.display = needPhone ? 'block' : 'none'
-  updateUI()
-}
-
-function updateUI() {
-  const amount = PRICES[plan]?.[period] || 0
-  const labels = { starter:'Starter', pro:'Pro', elite:'Elite' }
-  const periodLabel = period === 'week' ? '1 semaine' : '1 mois'
-  const amountStr = amount.toLocaleString('fr-FR') + ' FCFA'
-
-  // Mettre à jour les prix dans la grid plans
-  ;['starter','pro','elite'].forEach(p => {
-    const prices = PRICES[p]
-    document.getElementById(`price-${p}`).textContent = period === 'week'
-      ? prices.week.toLocaleString('fr-FR')
-      : prices.month.toLocaleString('fr-FR')
-    document.getElementById(`period-${p}`).textContent = period === 'week' ? 'F/semaine' : 'F/mois'
+  const plans = ['starter','pro','elite']
+  plans.forEach(id => {
+    const prices = PRICES[id]
+    if (p === 'week') {
+      document.getElementById(`price-${id}`).textContent  = prices.week.toLocaleString('fr-FR')
+      document.getElementById(`period-${id}`).textContent = 'FCFA / semaine'
+      document.getElementById(`alt-${id}`).textContent    = `ou ${prices.month.toLocaleString('fr-FR')} F/mois (−30%)`
+    } else {
+      document.getElementById(`price-${id}`).textContent  = prices.month.toLocaleString('fr-FR')
+      document.getElementById(`period-${id}`).textContent = 'FCFA / mois'
+      document.getElementById(`alt-${id}`).textContent    = `soit ${Math.round(prices.month/4.3).toLocaleString('fr-FR')} F/semaine en moyenne`
+    }
   })
-
-  document.getElementById('total-amount').textContent = amountStr
-  document.getElementById('total-desc').textContent = `Plan ${labels[plan]} · ${periodLabel}`
-  document.getElementById('recap-plan').textContent = labels[plan]
-  document.getElementById('recap-period').textContent = periodLabel
-  document.getElementById('recap-method').textContent = METHOD_LABELS[method] || method
-  document.getElementById('recap-total').textContent = amountStr
 }
 
-function showErr(msg) {
-  const el = document.getElementById('err')
-  document.getElementById('err-msg').textContent = msg
-  el.style.display = 'flex'
+function selectPlan(plan) {
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'))
+  document.getElementById(`card-${plan}`)?.classList.add('selected')
+  selPlan = plan
 }
 
-async function pay() {
-  document.getElementById('err').style.display = 'none'
+function selMethod(el, method) {
+  document.querySelectorAll('.pay-method').forEach(m => m.classList.remove('sel'))
+  el.classList.add('sel')
+  selMethod_ = method
+}
+
+function setCmMethod(method, btn) {
+  selMethod_ = method
+  document.querySelectorAll('.cm-body button[onclick^="setCmMethod"]').forEach(b => {
+    b.style.borderColor = 'var(--b2)'; b.style.background = 'transparent'; b.style.color = 'var(--sub)'
+  })
+  btn.style.borderColor = 'var(--gb)'; btn.style.background = 'rgba(34,197,94,.06)'; btn.style.color = 'var(--gb)'
+  document.getElementById('phone-field').style.display = method === 'card' ? 'none' : 'block'
+}
+
+function openCheckout(plan) {
+  selPlan = plan
+  const price = period === 'week' ? PRICES[plan].week : PRICES[plan].month
+  const perStr = period === 'week' ? '1 semaine' : '1 mois'
+  document.getElementById('cm-title').textContent = `Passer à ${PLAN_NAMES[plan]}`
+  document.getElementById('cm-sub').textContent   = `${price.toLocaleString('fr-FR')} FCFA / ${period === 'week' ? 'semaine' : 'mois'}`
+  document.getElementById('cs-plan').textContent  = PLAN_NAMES[plan]
+  document.getElementById('cs-period').textContent = perStr
+  document.getElementById('cs-total').textContent = `${price.toLocaleString('fr-FR')} FCFA`
+  document.getElementById('cm-msg').className = 'cm-msg'
+  document.getElementById('modal').classList.add('open')
+  document.body.style.overflow = 'hidden'
+
+  // Vérifier si connecté
+  const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
   if (!token) {
-    showErr('Tu dois être connecté pour payer. Connecte-toi d\'abord.')
-    setTimeout(() => location.href = 'login.html?next=checkout.html', 1500)
+    showCmMsg(`Connecte-toi pour payer. <a href="login.html?next=checkout.html?plan=${plan}" style="color:var(--gb);font-weight:700">Se connecter →</a>`, false)
+    document.getElementById('cm-pay-btn').disabled = true
+  }
+}
+
+function closeCheckout() {
+  document.getElementById('modal').classList.remove('open')
+  document.body.style.overflow = ''
+}
+
+function showCmMsg(txt, ok=false) {
+  const el = document.getElementById('cm-msg')
+  document.getElementById('cm-msg-txt').innerHTML = txt
+  el.className = 'cm-msg ' + (ok ? 'ok' : 'err')
+}
+
+async function doPay() {
+  const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (!token) {
+    window.location.href = `login.html?next=checkout.html?plan=${selPlan}`
     return
   }
 
-  const phone = document.getElementById('phone-input').value.trim()
-  if (method !== 'checkout' && !phone) {
-    showErr('Entre ton numéro de téléphone Mobile Money.')
+  const phone = document.getElementById('cm-phone').value.trim().replace(/\s/g,'')
+  if (selMethod_ !== 'card' && !phone) {
+    showCmMsg('Entre ton numéro de téléphone Mobile Money.')
     return
   }
 
-  const btn = document.getElementById('pay-btn')
+  const btn = document.getElementById('cm-pay-btn')
   btn.disabled = true
-  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Création du paiement…'
-
-  const body = {
-    action: 'initiate',
-    plan,
-    period,
-    phone: phone ? `+225${phone}` : undefined,
-  }
+  btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Traitement…'
 
   try {
-    const r = await fetch(`${SUPA_URL}/functions/v1/payments`, {
+    const price  = period === 'week' ? PRICES[selPlan].week : PRICES[selPlan].month
+    const userId = localStorage.getItem('sb_user_id') || ''
+
+    const r = await fetch(PAY_EDGE + '?action=initiate', {
       method: 'POST',
-      headers: {
-        'Content-Type':  'application/json',
-        'Authorization': `Bearer ${token}`,
-        'apikey':        SUPA_ANON,
-      },
-      body: JSON.stringify(body),
+      headers: { 'Content-Type':'application/json', 'apikey':SUPA_ANON, 'Authorization':`Bearer ${token}` },
+      body: JSON.stringify({
+        plan: selPlan,
+        period,
+        amount: price,
+        currency: 'XOF',
+        phone,
+        payment_method: selMethod_,
+        user_id: userId,
+        return_url: window.location.origin + '/payment-success.html',
+        cancel_url: window.location.origin + '/payment-error.html'
+      })
     })
     const d = await r.json()
 
-    if (d.error) {
+    if (d.checkout_url || d.payment_url) {
+      window.location.href = d.checkout_url || d.payment_url
+    } else if (d.error) {
+      showCmMsg(d.error)
       btn.disabled = false
-      btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
-      showErr(d.error)
-      return
-    }
-
-    // Stocker le choix du plan pour la page success
-    sessionStorage.setItem('bp_plan_choice', plan)
-
-    if (d.checkout_url) {
-      // Rediriger vers GeniusPay
-      btn.innerHTML = '<i class="ti ti-loader-2 spin"></i> Redirection vers GeniusPay…'
-      setTimeout(() => { window.location.href = d.checkout_url }, 500)
+      btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
     } else {
+      showCmMsg('Erreur lors du paiement. Réessaie ou contacte le support.')
       btn.disabled = false
-      btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
-      showErr('Aucune URL de paiement reçue. Vérifie ta connexion.')
+      btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
     }
   } catch(e) {
+    showCmMsg('Erreur réseau. Vérifie ta connexion et réessaie.')
     btn.disabled = false
-    btn.innerHTML = '<i class="ti ti-lock"></i> Payer maintenant'
-    showErr('Erreur réseau : ' + e.message)
+    btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
   }
 }
 
-// Pré-remplir depuis l'URL
-const params = new URLSearchParams(location.search)
-if (params.get('plan') && PRICES[params.get('plan')]) {
-  plan = params.get('plan')
-  document.querySelectorAll('.plan-item').forEach((el, i) => {
-    const plans = ['starter','pro','elite']
-    if (plans[i] === plan) el.classList.add('selected')
-    else el.classList.remove('selected')
-  })
-}
-if (params.get('period')) {
-  period = params.get('period')
-  document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'))
-  document.querySelector(`.period-btn:${period==='month'?'last-child':'first-child'}`).classList.add('active')
-}
+// Fermer modal en cliquant dehors
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeCheckout()
+})
 
-updateUI()
+// Auto-ouvrir si plan dans URL
+if (urlPlan && ['starter','pro','elite'].includes(urlPlan)) {
+  setTimeout(() => openCheckout(urlPlan), 400)
+}
 </script>
 <script src="./assets/js/nav.js"></script>
 </body>
