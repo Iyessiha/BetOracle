@@ -2,35 +2,56 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paiement échoué — Betoracle Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Paiement annulé — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
-:root{--gb:#22c55e;--gold:#F5C842;--red:#ef4444;--bg:#060a06;--s1:#111711;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+:root{--gb:#22c55e;--red:#f87171;--gold:#F5C842;--bg:#060906;--s1:#0f1510;--b1:#1c2a1c;--b2:#243424;--hi:#e4ede4;--ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background-image:radial-gradient(circle at 50% 0%,rgba(239,68,68,.06) 0%,transparent 60%)}
-.card{width:100%;max-width:440px;background:var(--s1);border:1px solid rgba(239,68,68,.25);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--red)}
-.orb{width:80px;height:80px;border-radius:50%;background:rgba(239,68,68,.12);border:2px solid rgba(239,68,68,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px}
-.orb i{font-size:36px;color:var(--red)}
-h1{font-family:var(--fd);font-size:38px;letter-spacing:.04em;margin-bottom:8px;color:var(--red)}
-.sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:var(--fb);cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:10px}
-.btn-green{background:var(--gb);color:#000}
-.btn-green:hover{background:#4ade80}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--b2)}
-.btn-ghost:hover{border-color:var(--gb);color:var(--gb)}
+body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;background-image:radial-gradient(ellipse at 50% 30%,rgba(248,113,113,.04) 0%,transparent 60%)}
+.card{width:100%;max-width:400px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.icon{width:60px;height:60px;border-radius:16px;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.2);display:flex;align-items:center;justify-content:center;font-size:30px;margin:0 auto 20px}
+h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;color:var(--red);margin-bottom:8px}
+p{font-size:13px;color:#6a8a6a;line-height:1.6;margin-bottom:24px}
+.ref-info{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:10px;padding:11px 14px;margin-bottom:20px;font-size:11px;color:#4a6a4a;text-align:left;display:none}
+.ref-info .ref-val{color:var(--gold);font-weight:700;margin-top:3px;word-break:break-all;font-size:12px}
+.btn-primary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:var(--gb);color:#000;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px;transition:background .15s}
+.btn-primary:hover{background:#4ade80}
+.btn-secondary{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:12px;border:1px solid var(--b2);color:#6a8a6a;font-size:13px;font-weight:700;text-decoration:none;transition:all .15s}
+.btn-secondary:hover{border-color:var(--gb);color:var(--hi)}
+.support{margin-top:18px;font-size:12px;color:#3a5a3a;line-height:1.6}
+.support a{color:#4a6a4a}
 </style>
 </head>
-<body data-page="checkout">
+<body>
 <div class="card">
-  <div class="orb"><i class="ti ti-x"></i></div>
-  <h1>PAIEMENT ANNULÉ</h1>
-  <p class="sub">Le paiement n'a pas abouti ou a été annulé.<br>Aucun montant n'a été débité.<br>Tu peux réessayer à tout moment.</p>
-  <a href="index.html#plans" class="btn btn-green"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
-  <a href="welcome.html" class="btn btn-ghost"><i class="ti ti-home"></i> Retour à l'accueil</a>
+  <div class="icon">❌</div>
+  <h1 id="title">PAIEMENT NON ABOUTI</h1>
+  <p id="msg">Le paiement n'a pas pu être confirmé. Aucune somme n'a été débitée de ton compte.</p>
+  <div class="ref-info" id="ref-box">
+    <div>Référence de ta tentative :</div>
+    <div class="ref-val" id="ref-val"></div>
+  </div>
+  <a href="checkout.html" class="btn-primary"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
+  <a href="dashboard.html" class="btn-secondary"><i class="ti ti-home"></i> Retour au tableau de bord</a>
+  <div class="support">
+    Un problème ? Contacte le support avec ta référence.<br>
+    <a href="mailto:support@betoracle.pro">support@betoracle.pro</a>
+  </div>
 </div>
-<script src="./assets/js/nav.js"></script>
+<script>
+const p = new URLSearchParams(location.search)
+const ref    = p.get('ref')    || ''
+const reason = p.get('reason') || ''
+if (ref) {
+  document.getElementById('ref-box').style.display = 'block'
+  document.getElementById('ref-val').textContent   = ref
+}
+if (reason === 'cancelled') {
+  document.getElementById('title').textContent = 'PAIEMENT ANNULÉ'
+  document.getElementById('msg').textContent   = 'Tu as annulé le paiement. Aucune somme n\'a été débitée.'
+}
+</script>
 </body>
 </html>

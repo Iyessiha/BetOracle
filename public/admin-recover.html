@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Récupération paiements — Admin Betoracle</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gold:#F5C842;--red:#f87171;--bg:#060906;--s1:#0f1510;--s2:#141d14;--b1:#1c2a1c;--b2:#243424;--hi:#e4ede4;--lo:#4a6a4a;--ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dvh;padding:24px}
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:28px;padding-bottom:18px;border-bottom:1px solid var(--b1)}
+.topbar h1{font-family:var(--fd);font-size:22px;letter-spacing:.04em}
+.topbar a{color:var(--lo);font-size:13px;text-decoration:none;margin-left:auto}
+.wrap{max-width:800px;margin:0 auto}
+.card{background:var(--s1);border:1px solid var(--b2);border-radius:16px;overflow:hidden;margin-bottom:20px}
+.card-hd{padding:14px 18px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-family:var(--fd);font-size:16px;letter-spacing:.05em;display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;padding:8px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--lo);border-bottom:1px solid var(--b1)}
+td{padding:10px 10px;border-bottom:1px solid var(--b1);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700}
+.badge.pending{background:rgba(245,200,66,.1);color:var(--gold);border:1px solid rgba(245,200,66,.2)}
+.badge.active{background:rgba(34,197,94,.1);color:var(--gb);border:1px solid rgba(34,197,94,.2)}
+.badge.cancelled{background:rgba(248,113,113,.08);color:var(--red);border:1px solid rgba(248,113,113,.2)}
+.btn-act{padding:6px 14px;border-radius:8px;background:var(--gb);color:#000;font-size:11px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff);transition:background .15s}
+.btn-act:hover{background:#4ade80}
+.btn-act:disabled{opacity:.4;cursor:not-allowed}
+.ref-txt{font-size:11px;color:var(--gold);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px;display:block}
+.toast{position:fixed;bottom:24px;right:24px;padding:12px 18px;border-radius:12px;font-size:13px;font-weight:700;z-index:999;display:none;align-items:center;gap:8px}
+.toast.ok{background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.3);color:var(--gb);display:flex}
+.toast.err{background:rgba(248,113,113,.1);border:1px solid rgba(248,113,113,.2);color:var(--red);display:flex}
+.login-form{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:28px;max-width:380px;margin:80px auto;text-align:center}
+.login-form h2{font-family:var(--fd);font-size:24px;margin-bottom:6px}
+.login-form p{font-size:13px;color:var(--lo);margin-bottom:20px}
+input{width:100%;background:rgba(0,0,0,.2);border:1.5px solid var(--b2);border-radius:9px;padding:11px 14px;font-size:14px;color:var(--hi);font-family:var(--ff);outline:none;margin-bottom:12px}
+input:focus{border-color:var(--gb)}
+.btn-login{width:100%;padding:12px;border-radius:10px;background:var(--gb);color:#000;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff)}
+.empty{text-align:center;padding:32px;color:var(--lo);font-size:13px}
+#app{display:none}
+</style>
+</head>
+<body>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-form">
+    <h2>🔐 ADMIN</h2>
+    <p>Récupération paiements Betoracle Pro</p>
+    <input type="email" id="email" placeholder="Email admin" autocomplete="email">
+    <input type="password" id="pwd" placeholder="Mot de passe" autocomplete="current-password">
+    <button class="btn-login" onclick="doLogin()">Connexion</button>
+    <div id="login-err" style="margin-top:10px;font-size:12px;color:var(--red)"></div>
+  </div>
+</div>
+
+<!-- App -->
+<div id="app">
+  <div class="wrap">
+    <div class="topbar">
+      <div>🔮</div>
+      <h1>RÉCUPÉRATION PAIEMENTS</h1>
+      <a href="admin.html">← Admin principal</a>
+    </div>
+
+    <!-- Paiements pending -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><i class="ti ti-clock" style="color:var(--gold)"></i> Paiements en attente</div>
+        <button class="btn-act" onclick="loadPending()" style="background:rgba(34,197,94,.1);color:var(--gb)"><i class="ti ti-refresh"></i> Rafraîchir</button>
+      </div>
+      <div class="card-body">
+        <div id="pending-table">
+          <div class="empty">Chargement…</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Activation manuelle -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><i class="ti ti-bolt" style="color:var(--gb)"></i> Activer manuellement</div>
+      </div>
+      <div class="card-body">
+        <p style="font-size:13px;color:var(--lo);margin-bottom:14px">
+          Utilise cette section si un client a payé mais que son plan n'est pas actif (screenshot de paiement Wave/Orange reçu).
+        </p>
+        <div style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap">
+          <div style="flex:1;min-width:200px">
+            <div style="font-size:10px;font-weight:700;color:var(--lo);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px">Référence BOP-…</div>
+            <input type="text" id="manual-ref" placeholder="BOP-1781562775813-ICWSFZ" style="margin:0">
+          </div>
+          <button class="btn-act" onclick="doManualActivate()" style="padding:11px 20px">
+            <i class="ti ti-check"></i> Activer ce paiement
+          </button>
+        </div>
+        <div id="manual-result" style="margin-top:12px;font-size:13px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- Historique toutes transactions -->
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-title"><i class="ti ti-history" style="color:var(--lo)"></i> Historique complet</div>
+      </div>
+      <div class="card-body">
+        <div id="history-table"><div class="empty">Chargement…</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const S    = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const EDGE = `${S}/functions/v1/payments`
+
+let TOKEN = ''
+
+const PLAN_LABELS = { starter:'🌱 Starter', pro:'⚡ Pro', elite:'👑 Elite' }
+const PERIOD_LABELS = { week:'Semaine', month:'Mois' }
+
+async function doLogin() {
+  const email = document.getElementById('email').value.trim()
+  const pwd   = document.getElementById('pwd').value
+  const err   = document.getElementById('login-err')
+  err.textContent = ''
+
+  const res = await fetch(`${S}/auth/v1/token?grant_type=password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'apikey': AK },
+    body: JSON.stringify({ email, password: pwd })
+  })
+  const d = await res.json()
+  if (!d.access_token) { err.textContent = 'Email ou mot de passe incorrect'; return }
+
+  // Vérifier que c'est un admin
+  const adminEmails = ['yessiha@monweinfinity.com', 'monweci@gmail.com']
+  if (!adminEmails.includes(email)) { err.textContent = 'Accès non autorisé'; return }
+
+  TOKEN = d.access_token
+  document.getElementById('login-screen').style.display = 'none'
+  document.getElementById('app').style.display = 'block'
+  loadPending()
+  loadHistory()
+}
+
+async function loadPending() {
+  const res = await fetch(`${S}/rest/v1/subscriptions?status=eq.pending&select=id,user_id,plan,period,amount_fcfa,tx_reference,tx_id,created_at,profiles(full_name,email)&order=created_at.desc`, {
+    headers: { apikey: AK, Authorization: `Bearer ${TOKEN}`, Accept: 'application/json' }
+  })
+  const data = await res.json()
+  renderTable('pending-table', data, true)
+}
+
+async function loadHistory() {
+  const res = await fetch(`${S}/rest/v1/subscriptions?select=id,user_id,plan,period,amount_fcfa,tx_reference,status,created_at,starts_at,ends_at,profiles(full_name,email)&order=created_at.desc&limit=30`, {
+    headers: { apikey: AK, Authorization: `Bearer ${TOKEN}`, Accept: 'application/json' }
+  })
+  const data = await res.json()
+  renderTable('history-table', data, false)
+}
+
+function renderTable(elId, data, withAction) {
+  const el = document.getElementById(elId)
+  if (!data?.length) { el.innerHTML = '<div class="empty">Aucune transaction</div>'; return }
+
+  let html = `<table><thead><tr>
+    <th>Utilisateur</th><th>Plan</th><th>Montant</th><th>Référence</th><th>Date</th><th>Statut</th>
+    ${withAction ? '<th>Action</th>' : ''}
+  </tr></thead><tbody>`
+
+  data.forEach(s => {
+    const profile = s.profiles || {}
+    const name = profile.full_name || profile.email || s.user_id?.slice(0,8) + '…'
+    const plan = PLAN_LABELS[s.plan] || s.plan
+    const period = PERIOD_LABELS[s.period] || s.period
+    const date = new Date(s.created_at).toLocaleDateString('fr-FR', {day:'2-digit',month:'2-digit',year:'2-digit',hour:'2-digit',minute:'2-digit'})
+    const statusClass = { pending:'pending', active:'active', cancelled:'cancelled' }[s.status] || 'pending'
+
+    html += `<tr>
+      <td><div style="font-weight:700;font-size:12px">${name}</div></td>
+      <td>${plan}<br><span style="font-size:10px;color:var(--lo)">${period}</span></td>
+      <td style="color:var(--gold);font-weight:700">${(s.amount_fcfa||0).toLocaleString('fr-FR')} F</td>
+      <td><span class="ref-txt" title="${s.tx_reference}">${s.tx_reference}</span></td>
+      <td style="font-size:11px;color:var(--lo)">${date}</td>
+      <td><span class="badge ${statusClass}">${s.status}</span></td>
+      ${withAction ? `<td><button class="btn-act" onclick="activateSub('${s.tx_reference}', this)">✅ Activer</button></td>` : ''}
+    </tr>`
+  })
+  html += '</tbody></table>'
+  el.innerHTML = html
+}
+
+async function activateSub(ref, btn) {
+  if (!confirm(`Activer manuellement le paiement ${ref} ?\n\nFais ça seulement si tu as confirmé le paiement auprès du client.`)) return
+  btn.disabled = true
+  btn.textContent = '…'
+
+  const res = await fetch(EDGE + '?action=admin_activate', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', apikey:AK, Authorization:`Bearer ${TOKEN}` },
+    body: JSON.stringify({ action:'admin_activate', tx_reference: ref })
+  })
+  const d = await res.json()
+
+  if (d.success) {
+    showToast('✅ Plan activé avec succès !', 'ok')
+    loadPending()
+    loadHistory()
+  } else {
+    showToast('❌ Erreur : ' + (d.error || 'Inconnue'), 'err')
+    btn.disabled = false
+    btn.textContent = '✅ Activer'
+  }
+}
+
+async function doManualActivate() {
+  const ref = document.getElementById('manual-ref').value.trim()
+  if (!ref) { showToast('Entre une référence BOP-…', 'err'); return }
+  const res = document.getElementById('manual-result')
+  res.style.display = 'block'
+  res.style.color = 'var(--lo)'
+  res.textContent = 'Activation en cours…'
+
+  const r = await fetch(EDGE + '?action=admin_activate', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', apikey:AK, Authorization:`Bearer ${TOKEN}` },
+    body: JSON.stringify({ action:'admin_activate', tx_reference: ref })
+  })
+  const d = await r.json()
+
+  if (d.success) {
+    res.style.color = 'var(--gb)'
+    res.textContent = `✅ ${d.message} — actif jusqu'au ${d.ends_at ? new Date(d.ends_at).toLocaleDateString('fr-FR') : '?'}`
+    showToast('✅ Activé !', 'ok')
+    loadPending(); loadHistory()
+  } else {
+    res.style.color = 'var(--red)'
+    res.textContent = '❌ Erreur : ' + (d.error || 'Transaction introuvable ou déjà active')
+    showToast('❌ Erreur', 'err')
+  }
+}
+
+function showToast(msg, type) {
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.className = 'toast ' + type
+  setTimeout(() => t.className = 'toast', 3500)
+}
+</script>
+</body>
+</html>

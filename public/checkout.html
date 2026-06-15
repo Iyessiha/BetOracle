@@ -660,17 +660,23 @@ async function doPay() {
     })
     const d = await r.json()
 
+    // Mode démo = clés GeniusPay non configurées → bloquer clairement
+    if (d.mode === 'demo') {
+      showCmMsg('⚠️ Paiement en cours de configuration. Reviens dans quelques heures ou contacte le support.')
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
+      return
+    }
+    // Succès live → rediriger vers GeniusPay
     if (d.checkout_url || d.payment_url) {
       window.location.href = d.checkout_url || d.payment_url
-    } else if (d.error) {
-      showCmMsg(d.error)
-      btn.disabled = false
-      btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
-    } else {
-      showCmMsg('Erreur lors du paiement. Réessaie ou contacte le support.')
-      btn.disabled = false
-      btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
+      return
     }
+    // Erreur explicite
+    const errMsg = d.error || 'Erreur lors du paiement. Réessaie ou contacte le support.'
+    showCmMsg(errMsg)
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-shield-check"></i> Payer maintenant'
   } catch(e) {
     showCmMsg('Erreur réseau. Vérifie ta connexion et réessaie.')
     btn.disabled = false

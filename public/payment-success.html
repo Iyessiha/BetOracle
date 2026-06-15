@@ -2,123 +2,268 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Paiement réussi — Betoracle Pro</title>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Confirmation paiement — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
-:root{--gb:#22c55e;--gold:#F5C842;--bg:#060a06;--s1:#111711;--b2:#2a3a2a;--text:#e8f0e8;--muted:#6a8a6a;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+:root{--gb:#22c55e;--gold:#F5C842;--red:#f87171;--bg:#060906;--s1:#0f1510;--b1:#1c2a1c;--b2:#243424;--hi:#e4ede4;--lo:#4a6a4a;--ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;
-  background-image:radial-gradient(circle at 50% 0%,rgba(34,197,94,.08) 0%,transparent 60%)}
-.card{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;padding:48px 36px;text-align:center;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gb),var(--gold))}
-.orb{width:80px;height:80px;border-radius:50%;background:rgba(34,197,94,.15);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;animation:pop .5s cubic-bezier(.22,1,.36,1) both}
-@keyframes pop{from{transform:scale(0);opacity:0}to{transform:scale(1);opacity:1}}
-.orb i{font-size:36px;color:var(--gb)}
-h1{font-family:var(--fd);font-size:38px;letter-spacing:.04em;margin-bottom:8px}
-.sub{font-size:15px;color:var(--muted);line-height:1.7;margin-bottom:28px}
-.sub strong{color:var(--text)}
-.plan-badge{display:inline-block;background:rgba(34,197,94,.12);border:1px solid rgba(34,197,94,.25);color:var(--gb);font-family:var(--fd);font-size:22px;letter-spacing:.06em;padding:8px 22px;border-radius:12px;margin-bottom:28px}
-.info-box{background:rgba(0,0,0,.2);border-radius:12px;padding:16px;margin-bottom:28px;font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:8px}
-.info-row{display:flex;justify-content:space-between}
-.info-row strong{color:var(--text)}
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:10px;border:none;font-size:15px;font-weight:700;font-family:var(--fb);cursor:pointer;transition:all .2s;text-decoration:none;margin-bottom:10px}
-.btn-green{background:var(--gb);color:#000}
-.btn-green:hover{background:#4ade80}
-.btn-ghost{background:transparent;color:var(--muted);border:1px solid var(--b2)}
-.btn-ghost:hover{border-color:var(--gb);color:var(--gb)}
-.checking{color:var(--muted);font-size:13px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:16px}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-.spin{animation:spin .8s linear infinite;display:inline-block}
-#status-area{min-height:20px}
+html{-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;
+  background-image:radial-gradient(ellipse at 50% 30%,rgba(34,197,94,.06) 0%,transparent 60%)}
+
+/* CARD */
+.card{width:100%;max-width:420px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.5);position:relative}
+
+/* Status states */
+.state{display:none;flex-direction:column;align-items:center;text-align:center;padding:40px 32px}
+.state.active{display:flex}
+
+/* LOADING */
+#s-loading .spinner{width:52px;height:52px;border:3px solid var(--b1);border-top-color:var(--gb);border-radius:50%;animation:spin 1s linear infinite;margin-bottom:20px}
+#s-loading h2{font-family:var(--fd);font-size:24px;letter-spacing:.04em;margin-bottom:8px}
+#s-loading p{font-size:13px;color:#6a8a6a;line-height:1.55}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* SUCCESS */
+#s-success .check{width:64px;height:64px;border-radius:18px;background:rgba(34,197,94,.12);border:2px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-size:32px;margin-bottom:20px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+@keyframes pop{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
+#s-success h1{font-family:var(--fd);font-size:32px;letter-spacing:.04em;color:var(--gb);margin-bottom:8px}
+#s-success .sub{font-size:14px;color:#6a8a6a;margin-bottom:24px;line-height:1.55}
+.plan-badge{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);font-family:var(--fd);font-size:20px;color:var(--gb);letter-spacing:.04em;margin-bottom:20px}
+.info-grid{width:100%;background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:12px;padding:14px 16px;margin-bottom:22px;text-align:left;display:flex;flex-direction:column;gap:8px}
+.info-row{display:flex;justify-content:space-between;align-items:center;font-size:13px}
+.info-row .label{color:#6a8a6a}
+.info-row .value{font-weight:700;color:var(--hi)}
+.info-row .value.green{color:var(--gb)}
+.info-row .value.gold{color:var(--gold)}
+.btn-dash{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:12px;background:var(--gb);color:#000;font-size:15px;font-weight:800;text-decoration:none;margin-bottom:10px;transition:background .15s}
+.btn-dash:hover{background:#4ade80}
+.btn-analyse{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;border:1px solid var(--b2);background:transparent;color:#6a8a6a;font-size:14px;font-weight:700;text-decoration:none;transition:all .15s}
+.btn-analyse:hover{border-color:var(--gb);color:var(--hi)}
+
+/* PENDING */
+#s-pending .icon{width:56px;height:56px;border-radius:16px;background:rgba(245,200,66,.08);border:1.5px solid rgba(245,200,66,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px}
+#s-pending h2{font-family:var(--fd);font-size:26px;letter-spacing:.04em;color:var(--gold);margin-bottom:8px}
+#s-pending p{font-size:13px;color:#6a8a6a;margin-bottom:20px;line-height:1.55}
+.ref-box{background:rgba(0,0,0,.2);border:1px solid var(--b1);border-radius:10px;padding:12px 16px;font-size:12px;color:var(--gold);font-weight:700;margin-bottom:8px;word-break:break-all;text-align:left}
+.ref-label{font-size:10px;color:#4a6a4a;font-weight:600;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;text-align:left;width:100%}
+.retry-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:10px;background:rgba(245,200,66,.08);border:1px solid rgba(245,200,66,.2);color:var(--gold);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);margin-top:12px;transition:background .15s}
+.retry-btn:hover{background:rgba(245,200,66,.14)}
+.retry-btn:disabled{opacity:.5;cursor:not-allowed}
+
+/* ERROR */
+#s-error .icon{width:56px;height:56px;border-radius:16px;background:rgba(248,113,113,.08);border:1.5px solid rgba(248,113,113,.2);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px}
+#s-error h2{font-family:var(--fd);font-size:26px;letter-spacing:.04em;color:var(--red);margin-bottom:8px}
+#s-error p{font-size:13px;color:#6a8a6a;margin-bottom:20px;line-height:1.55}
+.btn-retry{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:var(--gb);color:#000;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px}
+.btn-back{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:12px;border:1px solid var(--b2);color:#6a8a6a;font-size:13px;font-weight:700;text-decoration:none;transition:all .15s}
+.btn-back:hover{border-color:var(--gb);color:var(--hi)}
+
+/* NOT FOUND */
+#s-notfound .icon{font-size:40px;margin-bottom:16px}
+#s-notfound h2{font-family:var(--fd);font-size:24px;margin-bottom:8px}
+#s-notfound p{font-size:13px;color:#6a8a6a;margin-bottom:20px;line-height:1.55}
+
+@media(max-width:480px){
+  .state{padding:30px 20px}
+  .card{border-radius:16px}
+}
 </style>
 </head>
-<body data-page="checkout">
+<body>
+
 <div class="card">
-  <div class="orb"><i class="ti ti-check"></i></div>
-  <h1>PAIEMENT REÇU !</h1>
-  <p class="sub">GeniusPay a confirmé ton paiement.<br>Ton abonnement est en cours d'activation…</p>
 
-  <div class="plan-badge" id="plan-badge">— PLAN —</div>
-
-  <div class="info-box">
-    <div class="info-row"><span>Référence</span><strong id="ref-display">—</strong></div>
-    <div class="info-row"><span>Montant</span><strong id="amount-display">—</strong></div>
-    <div class="info-row"><span>Statut</span><strong id="status-display" style="color:var(--gold)">Vérification…</strong></div>
+  <!-- LOADING -->
+  <div class="state active" id="s-loading">
+    <div class="spinner"></div>
+    <h2>Vérification du paiement…</h2>
+    <p>On vérifie la confirmation auprès de GeniusPay.<br>Ça prend quelques secondes.</p>
   </div>
 
-  <div id="status-area">
-    <div class="checking"><i class="ti ti-loader-2 spin"></i> Activation en cours…</div>
+  <!-- SUCCESS -->
+  <div class="state" id="s-success">
+    <div class="check">✅</div>
+    <h1>PAIEMENT CONFIRMÉ !</h1>
+    <p class="sub">Ton abonnement est actif. Bonne chance sur tes paris !</p>
+    <div class="plan-badge" id="plan-badge">⚡ Pro</div>
+    <div class="info-grid">
+      <div class="info-row"><span class="label">Référence</span><span class="value" id="r-ref" style="font-size:11px">—</span></div>
+      <div class="info-row"><span class="label">Montant</span><span class="value gold" id="r-amount">—</span></div>
+      <div class="info-row"><span class="label">Actif jusqu'au</span><span class="value green" id="r-end">—</span></div>
+      <div class="info-row"><span class="label">Statut</span><span class="value green">✅ Confirmé</span></div>
+    </div>
+    <a href="dashboard.html" class="btn-dash"><i class="ti ti-layout-dashboard"></i> Accéder à mon espace</a>
+    <a href="analyse.html" class="btn-analyse"><i class="ti ti-brain"></i> Lancer une analyse</a>
   </div>
 
-  <a href="analyse.html" class="btn btn-green"><i class="ti ti-brain"></i> Lancer une analyse</a>
-  <a href="welcome.html" class="btn btn-ghost"><i class="ti ti-home"></i> Tableau de bord</a>
+  <!-- PENDING -->
+  <div class="state" id="s-pending">
+    <div class="icon">⏳</div>
+    <h2>CONFIRMATION EN ATTENTE</h2>
+    <p>GeniusPay a bien reçu ta demande de paiement. La confirmation peut prendre quelques minutes.</p>
+    <div style="width:100%;text-align:left">
+      <div class="ref-label">Référence de ta transaction</div>
+      <div class="ref-box" id="p-ref">—</div>
+      <div style="font-size:11px;color:#4a6a4a;line-height:1.5;margin-top:6px">
+        💡 Garde cette référence. Si ton plan n'est pas activé dans 15 minutes, contacte le support avec cette référence.
+      </div>
+    </div>
+    <button class="retry-btn" id="retry-btn" onclick="retryCheck()">
+      <i class="ti ti-refresh"></i> Vérifier à nouveau
+    </button>
+    <a href="dashboard.html" style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;font-size:13px;color:#4a6a4a;text-decoration:none">
+      <i class="ti ti-home"></i> Aller au tableau de bord
+    </a>
+  </div>
+
+  <!-- ERROR -->
+  <div class="state" id="s-error">
+    <div class="icon">❌</div>
+    <h2>PAIEMENT REFUSÉ</h2>
+    <p id="err-msg">Le paiement n'a pas pu être traité. Aucune somme n'a été débitée.</p>
+    <a href="checkout.html" class="btn-retry"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
+    <a href="dashboard.html" class="btn-back"><i class="ti ti-home"></i> Retour au tableau de bord</a>
+  </div>
+
+  <!-- NOT FOUND -->
+  <div class="state" id="s-notfound">
+    <div class="icon">🔍</div>
+    <h2>TRANSACTION INTROUVABLE</h2>
+    <p>Impossible de trouver cette transaction. Si tu as payé, contacte le support avec ta référence.</p>
+    <a href="dashboard.html" class="btn-dash">Aller au tableau de bord</a>
+  </div>
+
+</div>
+
+<div style="margin-top:18px;font-size:12px;color:#3a5a3a;text-align:center">
+  <a href="index.html" style="color:#3a5a3a;text-decoration:none">← Retour à l'accueil</a>
 </div>
 
 <script>
-const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
-const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+const EDGE_PAYMENTS = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/payments'
+const SUPA_ANON     = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 
-const params = new URLSearchParams(location.search)
-const ref    = params.get('ref') || ''
-const subId  = params.get('sub') || ''
-const token  = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+const PLAN_LABELS = { starter:'🌱 Starter', pro:'⚡ Pro', elite:'👑 Elite' }
+const PLAN_PRICES = { starter:{week:'750 FCFA',month:'2 500 FCFA'}, pro:{week:'1 500 FCFA',month:'5 000 FCFA'}, elite:{week:'3 000 FCFA',month:'10 000 FCFA'} }
 
-// Afficher la référence
-document.getElementById('ref-display').textContent = ref.slice(0,20) || '—'
+const params   = new URLSearchParams(location.search)
+const txRef    = params.get('ref')    || ''
+const reason   = params.get('reason') || ''
+const isDemoParam = params.get('demo') === '1'
 
-// Récupérer le plan depuis sessionStorage
-const plan = sessionStorage.getItem('bp_plan_choice') || sessionStorage.getItem('bp_plan') || ''
-if (plan) {
-  const labels = { starter:'STARTER', pro:'PRO', elite:'ELITE' }
-  const amounts = { starter:500, pro:1000, elite:2000 }
-  document.getElementById('plan-badge').textContent = labels[plan] || plan.toUpperCase()
-  document.getElementById('amount-display').textContent = (amounts[plan] || '—') + ' FCFA'
+let retryCount = 0
+const MAX_RETRIES = 8
+let autoRetryTimer: number | null = null
+
+function showState(id: string) {
+  document.querySelectorAll('.state').forEach(s => s.classList.remove('active'))
+  document.getElementById(id)?.classList.add('active')
 }
 
-// Vérifier le paiement côté serveur
-async function verify() {
-  if (!ref || !token) {
-    document.getElementById('status-area').innerHTML = '<div style="color:#22c55e;font-weight:700">✅ En attente de confirmation webhook GeniusPay</div>'
-    document.getElementById('status-display').textContent = 'En attente'
-    return
-  }
+// Paiement annulé ou refus explicite
+if (reason === 'cancelled') {
+  showState('s-error')
+  document.getElementById('err-msg')!.textContent = 'Tu as annulé le paiement. Aucune somme n\'a été débitée.'
+} else if (reason === 'failed') {
+  showState('s-error')
+} else if (!txRef) {
+  showState('s-notfound')
+} else {
+  // Vérifier le paiement
+  checkPayment()
+}
+
+async function checkPayment() {
+  showState('s-loading')
+
   try {
-    const r = await fetch(`${SUPA_URL}/functions/v1/payments`, {
-      method: 'POST',
-      headers: { 'Content-Type':'application/json','Authorization':`Bearer ${token}`,'apikey':SUPA_ANON },
-      body: JSON.stringify({ action:'verify', tx_reference: ref })
-    })
-    const d = await r.json()
+    const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+    const headers: Record<string,string> = { 'Content-Type': 'application/json', 'apikey': SUPA_ANON }
+    if (token) headers['Authorization'] = `Bearer ${token}`
 
-    if (d.status === 'success' || d.status === 'already_active') {
-      document.getElementById('status-display').textContent = '✅ Activé'
-      document.getElementById('status-display').style.color = 'var(--gb)'
-      document.getElementById('status-area').innerHTML = `
-        <div style="color:var(--gb);font-weight:700;margin-bottom:12px">✅ Plan ${d.plan||'—'} activé jusqu'au ${d.ends_at ? new Date(d.ends_at).toLocaleDateString('fr-FR') : '—'} !</div>
-      `
-      // Mettre à jour le sessionStorage
-      if (d.plan) {
-        sessionStorage.setItem('bp_plan', d.plan)
-        localStorage.setItem('bp_plan', d.plan)
-      }
-    } else if (d.status === 'pending') {
-      document.getElementById('status-display').textContent = '⏳ En attente'
-      document.getElementById('status-area').innerHTML = '<div style="color:var(--gold);font-size:13px">⏳ Confirmation en attente. Rafraîchis dans quelques secondes.</div>'
-      // Réessayer dans 5s
-      setTimeout(verify, 5000)
-    } else {
-      document.getElementById('status-area').innerHTML = '<div style="color:var(--muted);font-size:13px">Statut : ' + (d.status||'inconnu') + '</div>'
+    const res = await fetch(EDGE_PAYMENTS + '?action=check', {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ tx_reference: txRef })
+    })
+    const d = await res.json()
+
+    if (!d.found || d.status === 'not_found') {
+      showState('s-notfound')
+      return
     }
-  } catch(e) {
-    document.getElementById('status-area').innerHTML = '<div style="color:var(--muted);font-size:13px">Erreur de vérification. Le paiement sera activé automatiquement via webhook.</div>'
+
+    if (d.status === 'active') {
+      // Paiement confirmé ✅
+      if (autoRetryTimer) clearInterval(autoRetryTimer)
+
+      const planLabel = PLAN_LABELS[d.plan] || d.plan
+      document.getElementById('plan-badge')!.textContent = planLabel
+
+      const endsAt = d.ends_at ? new Date(d.ends_at).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'}) : '—'
+      document.getElementById('r-ref')!.textContent    = txRef
+      document.getElementById('r-amount')!.textContent = '—'
+      document.getElementById('r-end')!.textContent    = endsAt
+
+      // Mettre à jour le cache local
+      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+      if (token) {
+        localStorage.setItem('bp_plan', d.plan)
+        sessionStorage.setItem('bp_plan', d.plan)
+      }
+
+      showState('s-success')
+      return
+    }
+
+    if (d.status === 'cancelled' || d.status === 'failed') {
+      showState('s-error')
+      return
+    }
+
+    // Status = pending → afficher l'état pending et retry auto
+    document.getElementById('p-ref')!.textContent = txRef
+    showState('s-pending')
+    scheduleRetry()
+
+  } catch (e) {
+    console.error('check error:', e)
+    // Erreur réseau → afficher pending
+    if (txRef) {
+      document.getElementById('p-ref')!.textContent = txRef
+      showState('s-pending')
+      scheduleRetry()
+    } else {
+      showState('s-error')
+    }
   }
 }
 
-// Lancer la vérification après 2s (laisser le temps au webhook)
-setTimeout(verify, 2000)
+function scheduleRetry() {
+  if (retryCount >= MAX_RETRIES) return
+  if (autoRetryTimer) return // déjà en attente
+
+  const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000) // backoff: 5s, 7.5s, 11s...
+  retryCount++
+
+  autoRetryTimer = window.setTimeout(async () => {
+    autoRetryTimer = null
+    await checkPayment()
+  }, delay)
+}
+
+async function retryCheck() {
+  if (autoRetryTimer) { clearTimeout(autoRetryTimer); autoRetryTimer = null }
+  const btn = document.getElementById('retry-btn') as HTMLButtonElement
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Vérification…'
+  await checkPayment()
+  btn.disabled = false
+  btn.innerHTML = '<i class="ti ti-refresh"></i> Vérifier à nouveau'
+}
 </script>
-<script src="./assets/js/nav.js"></script>
 </body>
 </html>
