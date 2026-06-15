@@ -277,36 +277,31 @@ async function doLogin(){
   if(!pwd)return showMsg('Entre ton mot de passe.')
   setBtn(true)
   try{
-    const r=await fetch(`${SUPA_URL}/auth/v1/token?grant_type=password`,{
+    // Utiliser l'Edge Function sécurisée (rate limit + track event + refresh token)
+    const EDGE='https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/auth-secure'
+    const r=await fetch(EDGE+'?action=login',{
       method:'POST',
-      headers:{'Content-Type':'application/json','apikey':SUPA_ANON,'Authorization':`Bearer ${SUPA_ANON}`},
-      body:JSON.stringify({email,password:pwd})
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({email:email.toLowerCase(),password:pwd})
     })
     const d=await r.json()
-    if(!d.access_token){
+    if(!d.success||!d.access_token){
       setBtn(false)
-      const e=d.error_description||d.error||''
-      return showMsg(e.includes('invalid')||e.includes('Invalid')?'Email ou mot de passe incorrect.':e||'Erreur de connexion.')
+      return showMsg(d.error||'Email ou mot de passe incorrect.')
     }
-    // Récupérer profil
-    const pr=await fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${d.user.id}&select=full_name,plan`,{
-      headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${d.access_token}`}
-    })
-    const profiles=await pr.json()
-    const profile=profiles?.[0]
-    const prenom=profile?.full_name?.split(' ')[0]||email.split('@')[0]
-    localStorage.setItem('sb_access_token',d.access_token)
-    localStorage.setItem('sb_refresh_token',d.refresh_token||'')
-    localStorage.setItem('sb_user_id',d.user.id)
-    localStorage.setItem('bp_plan',profile?.plan||'free')
-    sessionStorage.setItem('bp_token',d.access_token)
-    sessionStorage.setItem('bp_prenom',prenom)
-    sessionStorage.setItem('bp_plan',profile?.plan||'free')
-    showMsg(`Bienvenue ${prenom} !`,true)
+    // Stocker token + refresh token
+    localStorage.setItem('sb_access_token', d.access_token)
+    localStorage.setItem('sb_refresh_token', d.refresh_token||'')
+    localStorage.setItem('sb_user_id', d.user_id||'')
+    localStorage.setItem('bp_plan', d.effective_plan||'pro')
+    sessionStorage.setItem('bp_token',  d.access_token)
+    sessionStorage.setItem('bp_prenom', d.first_name||email.split('@')[0])
+    sessionStorage.setItem('bp_plan',   d.effective_plan||'pro')
+    showMsg(`Bienvenue ${d.first_name||email.split('@')[0]} ! 🏆`, true)
     setTimeout(()=>{
       const next=new URLSearchParams(location.search).get('next')||'dashboard.html'
-      window.location.href=next
-    },700)
+      window.location.replace(next)  // replace() évite le retour arrière vers login
+    }, 600)
   }catch(e){setBtn(false);showMsg('Erreur réseau. Vérifie ta connexion.')}
 }
 

@@ -25,31 +25,36 @@
     const token = getToken()
     if (!token) return
 
+    // Utiliser le cache sessionStorage en priorité — évite les appels réseau inutiles
+    // et les boucles de redirection sur dashboard
+    const cachedName = sessionStorage.getItem('bp_prenom')
+    const cachedPlan = sessionStorage.getItem('bp_plan')
+
+    if (cachedName) {
+      // Cache valide : utiliser sans appel réseau
+      user = { id: localStorage.getItem('sb_user_id') || 'cached' }
+      userName = cachedName
+      userPlan = cachedPlan || 'pro'
+      return
+    }
+
+    // Pas de cache : vérification légère du token
     try {
       const r = await fetch(`${SUPA_URL}/auth/v1/user`, {
-        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
+        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` },
+        signal: AbortSignal.timeout(3000)  // timeout 3s pour ne pas bloquer
       })
+      if (!r.ok) return  // Ne pas rediriger depuis mobile-nav — laisser la page gérer ça
       const d = await r.json()
       if (!d.id) return
 
       user = d
-      // Profil depuis sessionStorage d'abord (évite un appel réseau)
-      userName = sessionStorage.getItem('bp_prenom') || d.email?.split('@')[0] || 'Parieur'
-      userPlan = sessionStorage.getItem('bp_plan') || 'free'
-
-      // Récupérer le vrai profil en arrière-plan
-      fetch(`${SUPA_URL}/rest/v1/profiles?id=eq.${d.id}&select=full_name,plan,plan_expires_at`, {
-        headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
-      }).then(r => r.json()).then(profiles => {
-        const p = profiles?.[0]
-        if (!p) return
-        userName = p.full_name?.split(' ')[0] || userName
-        userPlan = p.plan_expires_at && new Date(p.plan_expires_at) > new Date() ? p.plan : 'free'
-        // Mettre à jour l'UI si déjà injectée
-        const nameEl = document.querySelector('.du-name')
-        if (nameEl) nameEl.textContent = userName
-      }).catch(() => {})
-    } catch {}
+      userName = d.email?.split('@')[0] || 'Parieur'
+      userPlan = 'pro'  // par défaut CdM
+    } catch {
+      // Timeout ou erreur réseau : ignorer silencieusement
+      // La page principale (dashboard.html) gère ses propres erreurs d'auth
+    }
   }
 
   window.MobileLogout = function() {
