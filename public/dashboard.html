@@ -735,7 +735,7 @@ button { cursor: pointer; font-family: var(--ff); }
         <div class="stat-card c-purple fu fu2">
           <span class="sc-emoji">📅</span>
           <div class="sc-num" id="st-days">—</div>
-          <div class="sc-label">Jours CdM</div>
+          <div class="sc-label">Jours d'abo restants</div>
         </div>
       </div>
 
@@ -955,8 +955,8 @@ async function init() {
   const cp = sessionStorage.getItem('bp_plan')   || localStorage.getItem('bp_plan')   || 'free'
   if (cn) fillUI(cn, cp, '')
 
-  // Jours CdM restants
-  $('st-days').textContent = Math.max(0, Math.ceil((new Date('2026-07-19') - new Date()) / 86400000))
+  // Jours d'abonnement restants (calculé depuis plan_expires_at après chargement du profil)
+  $('st-days').textContent = '—'
 
   // Valider token
   const token = await getToken()
@@ -1003,6 +1003,14 @@ async function init() {
     // Stats
     $('st-analyses').textContent = profile.analyses_today || 0
     $('st-refs').textContent     = profile.referral_count || 0
+
+    // Jours d'abonnement restants
+    if (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ePlan !== 'free') {
+      const days = Math.max(0, Math.ceil((new Date(profile.plan_expires_at) - now) / 86400000))
+      $('st-days').textContent = days
+    } else {
+      $('st-days').textContent = '0'
+    }
 
     // Streak
     const s = profile.streak_days || 0

@@ -76,7 +76,7 @@
     <div style="width:40px;height:40px;border-radius:10px;background:rgba(34,197,94,.12);border:1.5px solid rgba(34,197,94,.3);display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#22c55e;flex-shrink:0">${init}</div>
     <div style="flex:1;min-width:0">
       <div style="font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#e4ede4">${name}</div>
-      <div style="font-size:11px;font-weight:700;color:${planColor};margin-top:2px">${planLabel} · 🏆 CdM</div>
+      <div style="font-size:11px;font-weight:700;color:${planColor};margin-top:2px">${planLabel}</div>
     </div>
     <a href="dashboard.html" style="font-size:11px;font-weight:700;color:#22c55e;padding:6px 11px;border:1px solid rgba(34,197,94,.3);border-radius:8px;text-decoration:none;flex-shrink:0">Mon espace</a>
   </div>` : `
@@ -84,7 +84,7 @@
     <div style="width:40px;height:40px;border-radius:10px;background:rgba(90,122,90,.08);border:1px solid #243424;display:flex;align-items:center;justify-content:center;color:#5a7a5a;font-size:20px;flex-shrink:0"><i class="ti ti-user"></i></div>
     <div style="flex:1">
       <div style="font-size:13px;color:#5a7a5a">Non connecté</div>
-      <div style="font-size:11px;color:#3a5a3a;margin-top:2px">Accès Pro CdM gratuit 🏆</div>
+      <div style="font-size:11px;color:#3a5a3a;margin-top:2px">Plan gratuit disponible</div>
     </div>
     <a href="login.html" style="font-size:12px;font-weight:700;color:#22c55e;padding:6px 12px;border:1px solid rgba(34,197,94,.3);border-radius:8px;text-decoration:none;white-space:nowrap;flex-shrink:0">Connexion</a>
   </div>`}
@@ -97,7 +97,7 @@
     <a href="index.html#plans" onclick="window.__closeDr()" style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;text-decoration:none;color:#9ab89a;font-size:14px;font-weight:600;margin-bottom:2px">
       <i class="ti ti-crown" style="font-size:17px;width:20px;text-align:center"></i>
       <span style="flex:1">Plans & tarifs</span>
-      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(245,200,66,.1);color:#F5C842">Dès 500F</span>
+      <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(245,200,66,.1);color:#F5C842">Dès 750F</span>
     </a>
     ${isLogged ? drLink('welcome.html','ti-gift','Parrainage','welcome') : ''}
     <div style="height:1px;background:#1c2a1c;margin:6px 0"></div>
@@ -108,10 +108,10 @@
 
   <div style="margin-top:auto;padding:14px;border-top:1px solid #1c2a1c;display:flex;flex-direction:column;gap:8px;flex-shrink:0">
     ${isLogged ? `
-    <a href="checkout.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:10px;background:#22c55e;color:#000;font-size:14px;font-weight:800;text-decoration:none"><i class="ti ti-bolt"></i> Passer Premium après le CdM</a>
+    <a href="checkout.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:10px;background:#22c55e;color:#000;font-size:14px;font-weight:800;text-decoration:none"><i class="ti ti-bolt"></i> Passer Premium</a>
     <button onclick="window.__navLogout()" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;background:rgba(248,113,113,.06);border:1px solid rgba(248,113,113,.18);color:#f87171;font-size:13px;font-weight:700;cursor:pointer;font-family:'Barlow',sans-serif;width:100%"><i class="ti ti-logout"></i> Se déconnecter</button>
     ` : `
-    <a href="signup.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:10px;background:#22c55e;color:#000;font-size:14px;font-weight:800;text-decoration:none"><i class="ti ti-rocket"></i> Accès Pro gratuit CdM 🏆</a>
+    <a href="signup.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:13px;border-radius:10px;background:#22c55e;color:#000;font-size:14px;font-weight:800;text-decoration:none"><i class="ti ti-rocket"></i> Commencer gratuitement</a>
     <a href="login.html" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:11px;border-radius:10px;border:1px solid #243424;color:#9ab89a;font-size:13px;font-weight:700;text-decoration:none"><i class="ti ti-login"></i> Se connecter</a>
     `}
   </div>

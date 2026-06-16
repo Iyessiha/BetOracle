@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Inscription gratuite — Betoracle Pro 🏆 CdM 2026</title>
+<title>Inscription gratuite — Betoracle Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
@@ -21,12 +21,7 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 /* PAGE */
 .page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;padding-top:max(28px,calc(var(--safe-t) + 28px));padding-bottom:max(20px,calc(var(--safe-b) + 20px))}
 
-/* BANNER CdM */
-.cdm-banner{width:100%;max-width:440px;background:linear-gradient(135deg,rgba(245,200,66,.12),rgba(34,197,94,.08));border:1px solid rgba(245,200,66,.3);border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;margin-bottom:16px}
-.cdm-icon{font-size:28px;flex-shrink:0}
-.cdm-text{}
-.cdm-title{font-size:13px;font-weight:800;color:var(--gold);letter-spacing:.02em}
-.cdm-desc{font-size:12px;color:#b0c4b0;margin-top:2px;line-height:1.4}
+
 
 /* CARD */
 .card{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5)}
@@ -120,23 +115,13 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
   .card-inner{padding:24px 18px 22px}
   .row{grid-template-columns:1fr}
   .perks{grid-template-columns:1fr}
-  .cdm-banner{padding:12px 14px;gap:10px}
-  .cdm-icon{font-size:24px}
+
 }
 </style>
 </head>
 <body data-page="signup">
 
 <div class="page">
-
-  <!-- BANNER CdM -->
-  <div class="cdm-banner">
-    <div class="cdm-icon">🏆</div>
-    <div class="cdm-text">
-      <div class="cdm-title">COUPE DU MONDE 2026 — ACCÈS PRO GRATUIT</div>
-      <div class="cdm-desc">Du 11 juin au 19 juillet · Toutes les analyses débloquées · 0 FCFA</div>
-    </div>
-  </div>
 
   <div class="card">
     <!-- FORM -->
@@ -146,8 +131,8 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
         <div class="logo-name">BET<span>ORACLE</span></div>
       </div>
 
-      <h1>ACCÈS GRATUIT</h1>
-      <p class="sub">Crée ton compte · Accès <strong>Pro offert</strong> pendant la CdM</p>
+      <h1>INSCRIPTION GRATUITE</h1>
+      <p class="sub">Crée ton compte en 30 secondes · <strong>Plan gratuit à vie</strong></p>
 
       <div class="msg" id="msg"><i class="ti ti-alert-circle"></i><span id="msg-txt"></span></div>
 
@@ -197,12 +182,12 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
 
       <!-- Avantages -->
       <div class="perks">
-        <div class="perk"><i class="ti ti-check"></i>Analyses IA illimitées</div>
-        <div class="perk"><i class="ti ti-check"></i>Coupon du jour gratuit</div>
-        <div class="perk"><i class="ti ti-check"></i>Value Bets & Kelly</div>
-        <div class="perk"><i class="ti ti-check"></i>64 matchs CdM couverts</div>
-        <div class="perk"><i class="ti ti-check"></i>Stats H2H & forme</div>
-        <div class="perk"><i class="ti ti-check"></i>Comparateur cotes</div>
+        <div class="perk"><i class="ti ti-check"></i>1 analyse IA par jour</div>
+        <div class="perk"><i class="ti ti-check"></i>Coupon du jour (1 sélection)</div>
+        <div class="perk"><i class="ti ti-check"></i>Bankroll basique</div>
+        <div class="perk"><i class="ti ti-check"></i>Tous les sports couverts</div>
+        <div class="perk"><i class="ti ti-check"></i>Historique de tes paris</div>
+        <div class="perk"><i class="ti ti-check"></i>Sans carte bancaire</div>
       </div>
 
       <!-- Consent -->
@@ -224,10 +209,10 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
 
     <!-- SUCCESS -->
     <div id="success-screen" class="success-screen">
-      <div class="success-orb">🏆</div>
-      <div class="success-title">ACCÈS ACTIVÉ !</div>
+      <div class="success-orb">🎉</div>
+      <div class="success-title">COMPTE CRÉÉ !</div>
       <div class="success-sub" id="success-msg">
-        Bienvenue ! Ton accès <strong>Pro Coupe du Monde 2026</strong> est actif jusqu'au 19 juillet.
+        Bienvenue ! Ton compte gratuit est actif. Explore l'Oracle et passe à un plan payant quand tu veux.
       </div>
       <div class="success-perks">
         <div class="sp-item"><i class="ti ti-brain"></i>Oracle IA — toutes les analyses débloquées</div>
@@ -376,7 +361,7 @@ async function doSignup(){
     const s=document.getElementById('success-screen')
     s.style.display='flex'
     const firstName=prenom||email.split('@')[0]
-    document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${firstName}</strong> ! Ton accès <strong style="color:var(--gb)">Pro Coupe du Monde 2026</strong> est actif jusqu'au 19 juillet.`
+    document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${firstName}</strong> ! Ton compte gratuit est actif. Explore l'Oracle et passe à un plan payant quand tu veux.`
     
   }catch(e){
     setBtn(false)
