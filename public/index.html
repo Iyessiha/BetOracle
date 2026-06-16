@@ -95,23 +95,7 @@ nav.scrolled{background:rgba(6,10,6,.95);backdrop-filter:blur(20px);border-color
   z-index:0;
 }
 /* Pelouse SVG en arrière plan */
-.hero-pitch{
-  position:absolute;inset:0;z-index:0;opacity:.07;
-  background-image:
-    repeating-linear-gradient(90deg,transparent,transparent 79px,rgba(34,197,94,1) 80px),
-    repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(34,197,94,1) 80px);
-}
-.hero-pitch::before{
-  content:'';position:absolute;
-  top:50%;left:50%;transform:translate(-50%,-50%);
-  width:min(600px,80vw);height:min(600px,80vw);
-  border:1.5px solid rgba(34,197,94,1);border-radius:50%;
-}
-.hero-pitch::after{
-  content:'';position:absolute;
-  top:50%;left:0;right:0;height:1.5px;
-  background:rgba(34,197,94,1);transform:translateY(-50%);
-}
+/* forme géométrique supprimée */
 .hero-inner{position:relative;z-index:1;max-width:900px;margin:0 auto}
 .hero-live{
   display:inline-flex;align-items:center;gap:8px;
@@ -805,9 +789,8 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   radial-gradient(ellipse 80% 60% at 50% 100%,rgba(26,92,42,.5) 0%,transparent 70%),
   radial-gradient(ellipse 60% 40% at 50% 60%,rgba(34,197,94,.07) 0%,transparent 60%),
   linear-gradient(180deg,rgba(6,10,6,.25) 0%,rgba(6,10,6,.65) 55%,#060a06 100%),
-  url('https://images.unsplash.com/photo-1489944440615-453fc2b6a9a9?auto=format&fit=crop&w=1920&q=65');
+  url('https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1920&q=70');
   background-size:cover;background-position:center 35%"></div>
-  <div class="hero-pitch"></div>
   <div class="hero-orbs"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
   <div class="hero-sweep"></div>
   <div class="hero-inner">
@@ -1601,9 +1584,6 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 .pf-item:hover{transform:translateY(-4px)}
 .league-pill{transition:transform .2s,border-color .2s,color .2s}
 .league-pill:hover{transform:translateY(-2px)}
-/* Glow doux qui pulse sur le hero */
-@keyframes heroGlow{0%,100%{opacity:.5}50%{opacity:.85}}
-.hero-pitch{animation:heroGlow 6s ease-in-out infinite}
 /* Apparition en cascade plus douce */
 .reveal{will-change:opacity,transform}
 @media(prefers-reduced-motion:reduce){
