@@ -464,13 +464,13 @@ a{text-decoration:none;color:inherit}
         <div class="gp-item popular" onclick="choosePlan('pro')">
           <div class="gp-popular-tag">⭐ Le plus populaire</div>
           <div class="gp-name" style="color:var(--gold)">Pro</div>
-          <div class="gp-price">1 000</div>
+          <div class="gp-price">1 500</div>
           <div class="gp-period">FCFA / semaine</div>
           <div class="gp-features">Value Bet · Kelly · H2H<br>Alertes live · Comparateur</div>
         </div>
         <div class="gp-item" onclick="choosePlan('starter')">
           <div class="gp-name" style="color:#14b8a6">Starter</div>
-          <div class="gp-price" style="color:#14b8a6">500</div>
+          <div class="gp-price" style="color:#14b8a6">750</div>
           <div class="gp-period">FCFA / semaine</div>
           <div class="gp-features">Coupon complet<br>Stats 1X2 · ROI Tracker</div>
         </div>
@@ -495,14 +495,45 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <script>
-// Afficher le plan
-const plan = sessionStorage.getItem('bp_plan') || 'free'
-document.getElementById('nav-plan-badge').innerHTML =
-  plan === 'pro'
-    ? '<i class="ti ti-bolt"></i> Plan Pro'
-    : '<i class="ti ti-lock"></i> Plan Free'
+// ════════ CONFIG ════════
+const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 
-// Steps de chargement
+// Plan courant
+const plan = sessionStorage.getItem('bp_plan') || localStorage.getItem('bp_plan') || 'free'
+const planBadge = document.getElementById('nav-plan-badge')
+if (planBadge) planBadge.innerHTML = plan === 'free'
+  ? '<i class="ti ti-lock"></i> Plan Free'
+  : `<i class="ti ti-bolt"></i> Plan ${plan.charAt(0).toUpperCase()+plan.slice(1)}`
+
+// ════════ AUTH ════════
+async function tryRefresh() {
+  const r = localStorage.getItem('sb_refresh_token')
+  if (!r) return null
+  const res = await fetch(`${S}/auth/v1/token?grant_type=refresh_token`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': AK },
+    body: JSON.stringify({ refresh_token: r })
+  }).catch(() => null)
+  if (!res?.ok) return null
+  const d = await res.json()
+  if (d.access_token) {
+    localStorage.setItem('sb_access_token', d.access_token)
+    localStorage.setItem('sb_refresh_token', d.refresh_token || r)
+    sessionStorage.setItem('bp_token', d.access_token)
+    return d.access_token
+  }
+  return null
+}
+async function getToken() {
+  let t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (!t) return null
+  const ok = await fetch(`${S}/auth/v1/user`, { headers: { apikey: AK, Authorization: `Bearer ${t}` } })
+    .then(r => r.ok).catch(() => false)
+  if (ok) return t
+  return tryRefresh()
+}
+
+// ════════ LOADER ════════
 const steps = [
   'Récupération des données de forme…',
   'Analyse des confrontations directes…',
@@ -510,67 +541,239 @@ const steps = [
   'Détection des value bets…',
   'Génération du rapport Oracle…'
 ]
-let si = 0
 const stepEl = document.getElementById('loader-step')
-const stepInt = setInterval(()=>{
-  si++
-  if(si < steps.length) stepEl.textContent = steps[si]
-  else clearInterval(stepInt)
-}, 380)
-
-setTimeout(()=>{
-  document.getElementById('loader').classList.add('hide')
-  setTimeout(()=> document.getElementById('loader').remove(), 600)
-}, 2100)
-
-function scrollToGate(){
-  document.getElementById('lock-wall').scrollIntoView({behavior:'smooth', block:'center'})
-}
-
-function choosePlan(plan){
-  sessionStorage.setItem('bp_plan_choice', plan)
-  // Redirect vers plans (simulé)
-  const overlay = document.createElement('div')
-  overlay.style.cssText = 'position:fixed;inset:0;background:rgba(6,10,6,.95);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;gap:16px'
-  overlay.innerHTML = `
-    <div style="width:60px;height:60px;border-radius:50%;border:3px solid rgba(245,200,66,.2);border-top-color:var(--gold);animation:spin .8s linear infinite"></div>
-    <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.06em">REDIRECTION VERS LES OFFRES…</div>
-  `
-  document.body.appendChild(overlay)
-  setTimeout(()=> window.location.href = 'index.html#plans', 900)
-}
-
-function relaunchAnalyse(){
-  const val = document.getElementById('search-input').value
-  if(!val.trim()) return
-  document.getElementById('loader').classList.remove('hide')
-  document.getElementById('loader-step').textContent = 'Récupération des données de forme…'
-  si = 0
-  const si2 = setInterval(()=>{
+let stepInt = null
+function showLoader() {
+  const l = document.getElementById('loader')
+  l.classList.remove('hide'); l.style.display = 'flex'
+  let si = 0
+  if (stepEl) stepEl.textContent = steps[0]
+  clearInterval(stepInt)
+  stepInt = setInterval(() => {
     si++
-    if(si < steps.length) stepEl.textContent = steps[si]
-    else clearInterval(si2)
-  }, 380)
-  setTimeout(()=>{
-    document.getElementById('loader').classList.add('hide')
-    setTimeout(()=> document.getElementById('loader').style.display='none', 600)
-  }, 2000)
+    if (si < steps.length && stepEl) stepEl.textContent = steps[si]
+    else clearInterval(stepInt)
+  }, 600)
+}
+function hideLoader() {
+  clearInterval(stepInt)
+  const l = document.getElementById('loader')
+  l.classList.add('hide')
+  setTimeout(() => l.style.display = 'none', 500)
 }
 
-function setMatch(name, league, time, flag){
+// ════════ HELPERS UI ════════
+function setText(id, val) { const e = document.getElementById(id); if (e) e.textContent = val }
+function teamLogoImg(logo, alt) {
+  return logo
+    ? `<img src="${logo}" style="width:22px;height:22px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);padding:2px" alt="${alt}" loading="lazy" onerror="this.style.display='none'"> `
+    : ''
+}
+function renderFormDots(formStr) {
+  if (!formStr) return ''
+  return formStr.split('').map(c => {
+    const cls = c === 'W' ? 'fd-v' : c === 'D' ? 'fd-n' : 'fd-l'
+    const lbl = c === 'W' ? 'V' : c === 'D' ? 'N' : 'D'
+    return `<span class="fd ${cls}">${lbl}</span>`
+  }).join('')
+}
+
+// ════════ APPEL ORACLE ════════
+async function runOracle(teamA, teamB, leagueLabel) {
+  const token = await getToken()
+  if (!token) {
+    hideLoader()
+    alert('Connecte-toi pour lancer une analyse.')
+    window.location.href = 'login.html?next=analyse.html'
+    return
+  }
+
+  showLoader()
+  try {
+    const res = await fetch(`${S}/functions/v1/oracle`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': AK, 'Authorization': `Bearer ${token}` },
+      body: JSON.stringify({ team_a_name: teamA, team_b_name: teamB })
+    })
+    const data = await res.json()
+    hideLoader()
+
+    if (!res.ok) {
+      if (data.code === 'QUOTA_EXCEEDED') {
+        scrollToGate()
+        return
+      }
+      if (data.code === 'TEAM_NOT_FOUND') {
+        alert(`Équipe introuvable. Vérifie l'orthographe.\nEx : "Real Madrid vs PSG", "Arsenal vs Chelsea"`)
+        return
+      }
+      alert(data.detail || data.error || 'Erreur lors de l\'analyse. Réessaie.')
+      return
+    }
+
+    renderResult(data, leagueLabel)
+  } catch (e) {
+    hideLoader()
+    alert('Connexion impossible. Vérifie ta connexion internet et réessaie.')
+    console.error('[Oracle]', e)
+  }
+}
+
+// ════════ AFFICHAGE RÉSULTAT ════════
+function renderResult(d, leagueLabel) {
+  const nameA = d.team_a_name || 'Équipe A'
+  const nameB = d.team_b_name || 'Équipe B'
+
+  // En-tête match
+  setText('team-a', nameA)
+  setText('team-b', nameB)
+  setText('sp-team-a', nameA.split(' ')[0])
+  setText('sp-team-b', nameB.split(' ')[0])
+  if (leagueLabel) setText('match-league', leagueLabel)
+  setText('match-date', new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }))
+
+  // Probabilités (toujours visibles, même en free)
+  const sp = document.querySelectorAll('.sp-item .sp-val')
+  if (sp[0]) sp[0].textContent = (d.proba_1 ?? '—') + '%'
+  if (sp[1]) sp[1].textContent = (d.proba_x ?? '—') + '%'
+  if (sp[2]) sp[2].textContent = (d.proba_2 ?? '—') + '%'
+
+  // BTTS + Over (barres preview)
+  const bars = document.querySelectorAll('.sp-bar-row .val')
+  if (bars[0]) bars[0].textContent = (d.gg ?? '—') + '%'
+  if (bars[1]) bars[1].textContent = (d.ov25 ?? d.ov15 ?? '—') + '%'
+
+  // Forme (si débloquée)
+  if (d.form_a) {
+    const frA = document.getElementById('fr-team-a')
+    if (frA) frA.innerHTML = teamLogoImg(d.team_a_logo, nameA) + nameA
+    const dotsA = document.querySelectorAll('.form-rows .fr')[0]?.querySelector('.fr-dots')
+    if (dotsA) dotsA.innerHTML = renderFormDots(d.form_a.form_str)
+    const badgeA = document.querySelectorAll('.form-rows .fr')[0]?.querySelector('.fr-badge')
+    if (badgeA && d.form_a.form_label) badgeA.textContent = d.form_a.form_label
+  }
+  if (d.form_b) {
+    const frB = document.getElementById('fr-team-b')
+    if (frB) frB.innerHTML = teamLogoImg(d.team_b_logo, nameB) + nameB
+    const dotsB = document.querySelectorAll('.form-rows .fr')[1]?.querySelector('.fr-dots')
+    if (dotsB) dotsB.innerHTML = renderFormDots(d.form_b.form_str)
+    const badgeB = document.querySelectorAll('.form-rows .fr')[1]?.querySelector('.fr-badge')
+    if (badgeB && d.form_b.form_label) badgeB.textContent = d.form_b.form_label
+  }
+
+  // Confiance Oracle
+  const confEls = document.querySelectorAll('.gate-conf strong, #conf-val')
+  confEls.forEach(e => { if (d.confidence) e.textContent = d.confidence + '%' })
+
+  // Gestion du mur verrouillé
+  const lockWall = document.getElementById('lock-wall')
+  if (d.locked) {
+    if (lockWall) lockWall.style.display = 'block'
+  } else {
+    // Plan payant : masquer le mur, afficher l'analyse complète
+    if (lockWall) lockWall.style.display = 'none'
+    renderFullAnalysis(d)
+  }
+
+  // Scroll vers le résultat
+  document.querySelector('.match-header')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+// ════════ ANALYSE COMPLÈTE (plans payants) ════════
+function renderFullAnalysis(d) {
+  let container = document.getElementById('full-analysis')
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'full-analysis'
+    container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
+    document.querySelector('.lock-wall')?.after(container)
+  }
+  const odds = d.market_odds
+  const vb = d.value_bets || []
+  const ai = d.ai_analysis
+  const sc = d.scenarios || []
+
+  container.innerHTML = `
+    ${ai ? `
+    <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--gold);margin-bottom:10px"><i class="ti ti-brain"></i> ANALYSE DE L'ORACLE</div>
+      <p style="font-size:14px;line-height:1.6;color:var(--text);margin-bottom:12px">${ai.narrative || ''}</p>
+      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:12px;margin-bottom:10px">
+        <strong style="color:var(--gb);font-size:13px">✓ Recommandation :</strong>
+        <div style="font-size:14px;margin-top:4px">${ai.recommendation || ''}</div>
+      </div>
+      ${ai.risk_warning ? `<div style="font-size:13px;color:var(--muted)"><i class="ti ti-alert-triangle" style="color:var(--gold)"></i> ${ai.risk_warning}</div>` : ''}
+    </div>` : ''}
+
+    <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-chart-bar"></i> PRÉDICTIONS DÉTAILLÉES</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        ${[['Buts attendus', d.g], ['BTTS', d.gg+'%'], ['Over 1.5', d.ov15+'%'], ['Over 2.5', d.ov25+'%'], ['Over 3.5', d.ov35+'%'], ['Pick Oracle', (d.pick||'').toUpperCase()]].map(([l,v]) =>
+          `<div style="background:var(--bg2);border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:var(--muted)">${l}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gb)">${v ?? '—'}</div></div>`
+        ).join('')}
+      </div>
+    </div>
+
+    ${sc.length ? `
+    <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-route"></i> SCÉNARIOS</div>
+      ${sc.map(s => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)">
+        <div><div style="font-weight:600;font-size:14px">${s.label}</div><div style="font-size:12px;color:var(--muted)">${s.key_factor} · score ${s.score_est}</div></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">${s.proba}%</div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${vb.length ? `
+    <div class="fa-card" style="background:linear-gradient(160deg,rgba(245,200,66,.08),var(--s1));border:1px solid rgba(245,200,66,.3);border-radius:16px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--gold);margin-bottom:14px"><i class="ti ti-diamond"></i> VALUE BETS DÉTECTÉS</div>
+      ${vb.map(v => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)">
+        <div><div style="font-weight:700">Pari ${v.pick} @ ${v.market_odds}</div><div style="font-size:12px;color:var(--muted)">${v.rating} · Kelly ${v.kelly_pct}%</div></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gb)">+${v.value_pct}%</div>
+      </div>`).join('')}
+    </div>` : ''}
+
+    ${d.h2h && d.h2h.total ? `
+    <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-swords"></i> CONFRONTATIONS (${d.h2h.total})</div>
+      <div style="display:flex;justify-content:space-around;text-align:center">
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gb)">${d.h2h.wins_a}</div><div style="font-size:11px;color:var(--muted)">${d.team_a_name}</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--muted)">${d.h2h.draws}</div><div style="font-size:11px;color:var(--muted)">Nuls</div></div>
+        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#3b82f6">${d.h2h.wins_b}</div><div style="font-size:11px;color:var(--muted)">${d.team_b_name}</div></div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px">Moyenne : ${d.h2h.avg_goals} buts/match</div>
+    </div>` : ''}
+
+    <div style="text-align:center;font-size:11px;color:var(--muted)">Sources : ${(d.sources||[]).join(' · ')}</div>
+  `
+}
+
+// ════════ ACTIONS ════════
+function scrollToGate() {
+  document.getElementById('lock-wall')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+function choosePlan(p) {
+  sessionStorage.setItem('bp_plan_choice', p)
+  window.location.href = 'checkout.html?plan=' + p
+}
+function relaunchAnalyse() {
+  const val = document.getElementById('search-input').value.trim()
+  if (!val) { alert('Entre un match. Ex : Real Madrid vs PSG'); return }
+  const parts = val.split(/\s+vs\s+|\s+VS\s+|\s+-\s+/i)
+  if (parts.length !== 2) { alert('Format attendu : "Équipe A vs Équipe B"\nEx : Real Madrid vs PSG'); return }
+  runOracle(parts[0].trim(), parts[1].trim(), document.getElementById('match-league')?.textContent)
+}
+function setMatch(name, league, time, flag) {
   document.getElementById('search-input').value = name
   const parts = name.split(' vs ')
-  if(parts.length === 2){
-    document.getElementById('team-a').textContent = parts[0].trim()
-    document.getElementById('team-b').textContent = parts[1].trim()
-    document.getElementById('fr-team-a').textContent = parts[0].trim()
-    document.getElementById('fr-team-b').textContent = parts[1].trim()
-    document.getElementById('sp-team-a').textContent = parts[0].trim().split(' ')[0]
-    document.getElementById('sp-team-b').textContent = parts[1].trim().split(' ')[0]
-  }
-  document.getElementById('match-league').textContent = league
-  relaunchAnalyse()
+  if (parts.length === 2) runOracle(parts[0].trim(), parts[1].trim(), league)
 }
+
+// Au chargement : masquer le loader initial (pas d'analyse auto)
+window.addEventListener('DOMContentLoaded', () => {
+  hideLoader()
+  const lw = document.getElementById('lock-wall')
+  if (lw) lw.style.display = 'none'  // caché jusqu'à une analyse
+})
 </script>
 <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
 
