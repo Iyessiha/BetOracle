@@ -52,3 +52,4 @@ api-keys.txt
 *.tar.gz
 tmp/
 temp/
+_preview/
