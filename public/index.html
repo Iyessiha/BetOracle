@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Betoracle Pro — L'oracle des parieurs foot · Pronos IA & bankroll</title>
-<meta name="description" content="Coupons foot générés chaque matin par notre IA prédictive. 12 outils d'analyse pro, gestion de bankroll et alertes live. Commence gratuitement dès 500 FCFA/semaine.">
+<meta name="description" content="Coupons foot générés chaque matin par notre IA prédictive. 12 outils d'analyse pro, gestion de bankroll et alertes live. Commence gratuitement dès 750 FCFA/semaine.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,700&display=swap" rel="stylesheet">
@@ -1428,7 +1428,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       </details>
       <details class="faq-item">
         <summary>Quels moyens de paiement acceptez-vous ?</summary>
-        <div class="faq-a">Mobile Money (Orange Money, MTN, Moov, Wave) et carte bancaire. Les abonnements démarrent à 500 FCFA/semaine — moins cher qu'un café pour tester sans risquer ta bankroll.</div>
+        <div class="faq-a">Mobile Money (Orange Money, MTN, Moov, Wave) et carte bancaire. Les abonnements démarrent à 750 FCFA/semaine — moins cher qu'un café pour tester sans risquer ta bankroll.</div>
       </details>
       <details class="faq-item">
         <summary>Comment fonctionne l'Oracle derrière les analyses ?</summary>
@@ -1622,20 +1622,6 @@ function setBill2(t, btn) {
   })
 }
 
-function setBill(t,btn){
-  document.querySelectorAll('.billing-btn').forEach(b=>b.classList.remove('on'))
-  btn.classList.add('on')
-  const w=t==='w'
-  document.getElementById('sp').textContent=w?'500':'1 500'
-  document.getElementById('sper').textContent=w?'FCFA / semaine':'FCFA / mois'
-  document.getElementById('salt').textContent=w?'ou 1 500 F/mois (-25%)':'ou 500 F/semaine'
-  document.getElementById('pp').textContent=w?'1 000':'3 000'
-  document.getElementById('pper').textContent=w?'FCFA / semaine':'FCFA / mois'
-  document.getElementById('palt').textContent=w?'ou 3 000 F/mois (-25%)':'ou 1 000 F/semaine'
-  document.getElementById('ep').textContent=w?'2 000':'6 000'
-  document.getElementById('eper').textContent=w?'FCFA / semaine':'FCFA / mois'
-  document.getElementById('ealt').textContent=w?'ou 6 000 F/mois (-25%)':'ou 2 000 F/semaine'
-}
 </script>
 
 
