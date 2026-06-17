@@ -309,6 +309,19 @@ a{text-decoration:none;color:inherit}
 .match-pill-logos{display:flex;align-items:center;gap:6px}
 .mp-logo{width:22px;height:22px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.05);padding:2px}
 .mp-logo-init{width:22px;height:22px;border-radius:50%;background:var(--s3);display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--font-d);color:var(--muted)}
+
+/* Fix logo overflow mobile */
+.logo-badge, .m-orb, .logo-orb {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.logo-badge img, .m-orb img, .logo-orb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 </style>
 </head>
 <body data-page="analyse">

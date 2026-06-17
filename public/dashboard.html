@@ -694,6 +694,19 @@ button { cursor: pointer; font-family: var(--ff); }
 .btn-copy-tg{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border-radius:8px;background:var(--green);color:#000;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff)}
 .tg-msg{font-size:11px;text-align:center;min-height:16px;margin-top:6px}
 
+
+/* Fix logo overflow mobile */
+.logo-badge, .m-orb, .logo-orb {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.logo-badge img, .m-orb img, .logo-orb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 </style>
 </head>
 <body data-page="dashboard">

@@ -708,7 +708,8 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   nav>div:last-child{gap:7px}
   nav>div:last-child .btn{padding:8px 14px;font-size:12px}
   .logo-name{font-size:17px}
-  .logo-badge{width:30px;height:30px;font-size:16px}
+  .logo-badge{width:32px!important;height:32px!important;font-size:16px;flex-shrink:0}
+  .logo-name{font-size:15px;letter-spacing:.02em}
   /* Hero */
   #hero{padding:70px 16px 0}
   .hero-h1{font-size:clamp(48px,13vw,68px);line-height:.9}
@@ -823,6 +824,104 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 
 /* Drapeaux équipes nationales */
 .mp-flag { font-size: 18px; line-height: 1; display: inline-flex; align-items: center; }
+
+/* ── HAMBURGER MOBILE ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 38px; height: 38px;
+  background: var(--s1);
+  border: 1px solid var(--b2);
+  border-radius: 9px;
+  cursor: pointer;
+  padding: 8px;
+  flex-shrink: 0;
+}
+.nav-hamburger span {
+  display: block;
+  height: 2px;
+  background: var(--text);
+  border-radius: 2px;
+  transition: all .25s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* Overlay menu mobile */
+.mobile-menu {
+  position: fixed;
+  top: 54px; left: 0; right: 0;
+  background: rgba(6,9,6,.97);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--b1);
+  z-index: 99;
+  padding: 20px 20px 28px;
+  display: none;
+  flex-direction: column;
+  gap: 8px;
+  transform: translateY(-8px);
+  opacity: 0;
+  transition: transform .2s ease, opacity .2s ease;
+}
+.mobile-menu.open {
+  display: flex;
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Boutons d'auth en haut du menu */
+.mm-auth {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.mm-auth .btn {
+  flex: 1;
+  justify-content: center;
+  font-size: 14px;
+}
+
+/* Séparateur */
+.mm-sep {
+  height: 1px;
+  background: var(--b1);
+  margin: 4px 0;
+}
+
+/* Liens nav dans menu mobile */
+.mm-links {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.mm-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background .15s;
+}
+.mm-link:hover, .mm-link:active { background: var(--s1); color: var(--gb); }
+.mm-link i { color: var(--gb); font-size: 16px; width: 20px; }
+
+@media(max-width:1024px) {
+  .nav-hamburger { display: flex; }
+  .nav-links { display: none; }
+  nav > div:last-child .btn-outline { display: none; }
+  nav > div:last-child .btn-green { display: none; }
+}
+@media(max-width:640px) {
+  .mobile-menu { top: 54px; }
+}
+
 </style>
 </head>
 <body data-page="home">
@@ -830,7 +929,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 <!-- ═══ NAV ═══ -->
 <nav id="nav">
   <div class="nav-logo">
-    <div class="logo-badge" style="background:none;border:none;padding:0;width:42px;height:42px;overflow:hidden;border-radius:8px"><img src="/icons/logo-mark.png" alt="Betoracle" style="width:100%;height:100%;object-fit:cover"></div>
+    <div class="logo-badge" style="background:none;border:none;padding:0;width:38px;height:38px;flex-shrink:0;overflow:hidden;border-radius:8px"><img src="/icons/logo-mark.png" alt="Betoracle" style="width:100%;height:100%;object-fit:cover;display:block"></div>
     <div class="logo-name">BET<span>ORACLE</span> PRO</div>
   </div>
   <div class="nav-links">
@@ -842,9 +941,28 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   <div style="display:flex;gap:10px;align-items:center">
     <a href="/login" id="nav-login-btn" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
     <a href="/signup" class="btn btn-green">Commencer gratuitement</a>
-
+    <!-- Hamburger mobile -->
+    <button class="nav-hamburger" id="nav-hamburger" onclick="toggleMobileMenu()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- Menu mobile drawer -->
+<div class="mobile-menu" id="mobile-menu">
+  <div class="mm-auth">
+    <a href="/login" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
+    <a href="/signup" class="btn btn-green"><i class="ti ti-rocket"></i> S'inscrire</a>
+  </div>
+  <div class="mm-sep"></div>
+  <div class="mm-links">
+    <a href="#oracle-lock" class="mm-link" onclick="closeMobileMenu()"><i class="ti ti-brain"></i> L'Oracle IA</a>
+    <a href="#plans" class="mm-link" onclick="closeMobileMenu()"><i class="ti ti-crown"></i> Plans & Tarifs</a>
+    <a href="#coupon" class="mm-link" onclick="closeMobileMenu()"><i class="ti ti-ticket"></i> Coupons du jour</a>
+    <a href="#tools" class="mm-link" onclick="closeMobileMenu()"><i class="ti ti-tools"></i> Outils d'analyse</a>
+    <a href="#testi" class="mm-link" onclick="closeMobileMenu()"><i class="ti ti-star"></i> Témoignages</a>
+  </div>
+</div>
 
 <!-- ═══ HERO ═══ -->
 <section id="hero">
@@ -1861,6 +1979,38 @@ window.doSearch = function() {
       const btn = document.getElementById('pwa-install-btn')
       if (btn) btn.style.display = 'none'
     })
-  </script>
+  
+// Menu mobile hamburger
+function toggleMobileMenu() {
+  const menu = document.getElementById('mobile-menu')
+  const btn  = document.getElementById('nav-hamburger')
+  const isOpen = menu.classList.contains('open')
+  if (isOpen) { closeMobileMenu() } 
+  else {
+    menu.classList.add('open')
+    btn.classList.add('open')
+    document.body.style.overflow = 'hidden'
+  }
+}
+function closeMobileMenu() {
+  const menu = document.getElementById('mobile-menu')
+  const btn  = document.getElementById('nav-hamburger')
+  menu.classList.remove('open')
+  btn.classList.remove('open')
+  document.body.style.overflow = ''
+}
+// Fermer menu au clic extérieur
+document.addEventListener('click', e => {
+  const menu = document.getElementById('mobile-menu')
+  const btn  = document.getElementById('nav-hamburger')
+  if (menu?.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+    closeMobileMenu()
+  }
+})
+// Fermer menu au scroll
+window.addEventListener('scroll', () => {
+  if (document.getElementById('mobile-menu')?.classList.contains('open')) closeMobileMenu()
+}, { passive: true })
+</script>
 </body>
 </html>

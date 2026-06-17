@@ -186,6 +186,19 @@ h1{
   .field input{padding:12px 14px;font-size:16px} /* 16px évite le zoom iOS */
   .btn-login{padding:15px;font-size:16px}
 }
+
+/* Fix logo overflow mobile */
+.logo-badge, .m-orb, .logo-orb {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.logo-badge img, .m-orb img, .logo-orb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 </style>
 </head>
 <body data-page="login">

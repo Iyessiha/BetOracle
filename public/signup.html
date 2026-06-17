@@ -132,6 +132,19 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
   .perks{grid-template-columns:1fr}
 
 }
+
+/* Fix logo overflow mobile */
+.logo-badge, .m-orb, .logo-orb {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.logo-badge img, .m-orb img, .logo-orb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 </style>
 </head>
 <body data-page="signup">

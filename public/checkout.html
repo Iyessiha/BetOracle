@@ -189,6 +189,19 @@ button{cursor:pointer;font-family:var(--ff)}
   .plans-grid{grid-template-columns:1fr}
   .topbar{padding:0 16px}
 }
+
+/* Fix logo overflow mobile */
+.logo-badge, .m-orb, .logo-orb {
+  flex-shrink: 0 !important;
+  overflow: hidden !important;
+}
+.logo-badge img, .m-orb img, .logo-orb img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+
 </style>
 </head>
 <body>
