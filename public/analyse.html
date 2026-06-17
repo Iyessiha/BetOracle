@@ -535,11 +535,14 @@ async function getToken() {
 
 // ════════ LOADER ════════
 const steps = [
-  'Récupération des données de forme…',
-  'Analyse des confrontations directes…',
+  'Identification des équipes…',
+  'Recherche des dernières infos en ligne…',
+  'Analyse de la forme récente et des compos…',
+  'Vérification des blessures et absences…',
   'Calcul des probabilités 1X2…',
-  'Détection des value bets…',
-  'Génération du rapport Oracle…'
+  'Croisement des données statistiques…',
+  'Rédaction du pronostic argumenté…',
+  'Finalisation du rapport Oracle…'
 ]
 const stepEl = document.getElementById('loader-step')
 let stepInt = null
@@ -549,11 +552,13 @@ function showLoader() {
   let si = 0
   if (stepEl) stepEl.textContent = steps[0]
   clearInterval(stepInt)
+  // L'analyse hybride (recherche web) prend 30-90s : on étale les étapes
   stepInt = setInterval(() => {
     si++
     if (si < steps.length && stepEl) stepEl.textContent = steps[si]
-    else clearInterval(stepInt)
-  }, 600)
+    // Sur la dernière étape, on reste mais on rassure
+    else if (stepEl) stepEl.textContent = 'Analyse approfondie en cours, presque terminé…'
+  }, 5000)
 }
 function hideLoader() {
   clearInterval(stepInt)
@@ -572,8 +577,16 @@ function teamLogoImg(logo, alt) {
 function renderFormDots(formStr) {
   if (!formStr) return ''
   return formStr.split('').map(c => {
-    const cls = c === 'W' ? 'fd-v' : c === 'D' ? 'fd-n' : 'fd-l'
-    const lbl = c === 'W' ? 'V' : c === 'D' ? 'N' : 'D'
+    const u = c.toUpperCase()
+    // Supporte W/D/L (anglais) ET V/N/D (français)
+    let cls, lbl
+    if (u === 'W' || u === 'V') { cls = 'fd-v'; lbl = 'V' }
+    else if (u === 'N') { cls = 'fd-n'; lbl = 'N' }
+    else if (u === 'D' || u === 'L') {
+      // 'D' ambigu : en français = Défaite, en anglais = Draw (nul).
+      // La v17 renvoie du français (V/N/D), donc D = Défaite.
+      cls = 'fd-l'; lbl = 'D'
+    } else { return '' }
     return `<span class="fd ${cls}">${lbl}</span>`
   }).join('')
 }
@@ -589,12 +602,16 @@ async function runOracle(teamA, teamB, leagueLabel) {
   }
 
   showLoader()
+  const ctrl = new AbortController()
+  const tid = setTimeout(() => ctrl.abort(), 120000) // 120s max
   try {
     const res = await fetch(`${S}/functions/v1/oracle`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': AK, 'Authorization': `Bearer ${token}` },
-      body: JSON.stringify({ team_a_name: teamA, team_b_name: teamB })
+      body: JSON.stringify({ team_a_name: teamA, team_b_name: teamB }),
+      signal: ctrl.signal
     })
+    clearTimeout(tid)
     const data = await res.json()
     hideLoader()
 
@@ -603,8 +620,12 @@ async function runOracle(teamA, teamB, leagueLabel) {
         scrollToGate()
         return
       }
-      if (data.code === 'TEAM_NOT_FOUND') {
-        alert(`Équipe introuvable. Vérifie l'orthographe.\nEx : "Real Madrid vs PSG", "Arsenal vs Chelsea"`)
+      if (data.code === 'TEAM_NOT_FOUND' || data.code === 'MISSING_TEAMS') {
+        alert(`Équipe introuvable. Vérifie l'orthographe.\nEx : "Real Madrid vs PSG", "France vs Brésil"`)
+        return
+      }
+      if (data.code === 'AI_UNAVAILABLE') {
+        alert('L\'Oracle est très sollicité en ce moment. Réessaie dans quelques instants.')
         return
       }
       alert(data.detail || data.error || 'Erreur lors de l\'analyse. Réessaie.')
@@ -613,8 +634,13 @@ async function runOracle(teamA, teamB, leagueLabel) {
 
     renderResult(data, leagueLabel)
   } catch (e) {
+    clearTimeout(tid)
     hideLoader()
-    alert('Connexion impossible. Vérifie ta connexion internet et réessaie.')
+    if (e.name === 'AbortError') {
+      alert('L\'analyse prend plus de temps que prévu. Réessaie dans un instant.')
+    } else {
+      alert('Connexion impossible. Vérifie ta connexion internet et réessaie.')
+    }
     console.error('[Oracle]', e)
   }
 }
@@ -629,8 +655,9 @@ function renderResult(d, leagueLabel) {
   setText('team-b', nameB)
   setText('sp-team-a', nameA.split(' ')[0])
   setText('sp-team-b', nameB.split(' ')[0])
-  if (leagueLabel) setText('match-league', leagueLabel)
-  setText('match-date', new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }))
+  if (d.competition) setText('match-league', d.competition)
+  else if (leagueLabel) setText('match-league', leagueLabel)
+  setText('match-date', d.date_match || new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }))
 
   // Probabilités (toujours visibles, même en free)
   const sp = document.querySelectorAll('.sp-item .sp-val')
@@ -688,62 +715,47 @@ function renderFullAnalysis(d) {
     container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
     document.querySelector('.lock-wall')?.after(container)
   }
-  const odds = d.market_odds
-  const vb = d.value_bets || []
-  const ai = d.ai_analysis
-  const sc = d.scenarios || []
+  const ai = d.ai_analysis || {}
+  const esc = s => (s == null ? '' : String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+
+  // Prédictions principales (champs réellement renvoyés par la v17)
+  const preds = [
+    ['Pronostic', d.pick],
+    ['Score probable', d.score_est],
+    ['BTTS (2 équipes marquent)', d.gg != null ? d.gg + '%' : null],
+    ['Over 2.5 buts', d.ov25 != null ? d.ov25 + '%' : null]
+  ].filter(([, v]) => v)
 
   container.innerHTML = `
-    ${ai ? `
+    ${ai.narrative ? `
     <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--gold);margin-bottom:10px"><i class="ti ti-brain"></i> ANALYSE DE L'ORACLE</div>
-      <p style="font-size:14px;line-height:1.6;color:var(--text);margin-bottom:12px">${ai.narrative || ''}</p>
-      <div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:12px;margin-bottom:10px">
-        <strong style="color:var(--gb);font-size:13px">✓ Recommandation :</strong>
-        <div style="font-size:14px;margin-top:4px">${ai.recommendation || ''}</div>
-      </div>
-      ${ai.risk_warning ? `<div style="font-size:13px;color:var(--muted)"><i class="ti ti-alert-triangle" style="color:var(--gold)"></i> ${ai.risk_warning}</div>` : ''}
+      <p style="font-size:14px;line-height:1.6;color:var(--text);margin-bottom:12px">${esc(ai.narrative)}</p>
+      ${ai.recommendation ? `<div style="background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.25);border-radius:10px;padding:12px;margin-bottom:10px">
+        <strong style="color:var(--gb);font-size:13px">✓ Value bet :</strong>
+        <div style="font-size:14px;margin-top:4px">${esc(ai.recommendation)}</div>
+      </div>` : ''}
+      ${ai.risk_warning ? `<div style="font-size:13px;color:var(--muted)"><i class="ti ti-alert-triangle" style="color:var(--gold)"></i> ${esc(ai.risk_warning)}</div>` : ''}
     </div>` : ''}
 
+    ${preds.length ? `
     <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-chart-bar"></i> PRÉDICTIONS DÉTAILLÉES</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        ${[['Buts attendus', d.g], ['BTTS', d.gg+'%'], ['Over 1.5', d.ov15+'%'], ['Over 2.5', d.ov25+'%'], ['Over 3.5', d.ov35+'%'], ['Pick Oracle', (d.pick||'').toUpperCase()]].map(([l,v]) =>
-          `<div style="background:var(--bg2);border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:var(--muted)">${l}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gb)">${v ?? '—'}</div></div>`
+        ${preds.map(([l, v]) =>
+          `<div style="background:var(--bg2);border-radius:8px;padding:10px 12px"><div style="font-size:11px;color:var(--muted)">${l}</div><div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gb);line-height:1.2">${esc(v)}</div></div>`
         ).join('')}
       </div>
-    </div>
+    </div>` : ''}
 
-    ${sc.length ? `
+    ${d.absences ? `
     <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-route"></i> SCÉNARIOS</div>
-      ${sc.map(s => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)">
-        <div><div style="font-weight:600;font-size:14px">${s.label}</div><div style="font-size:12px;color:var(--muted)">${s.key_factor} · score ${s.score_est}</div></div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;color:var(--gold)">${s.proba}%</div>
-      </div>`).join('')}
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:10px"><i class="ti ti-bandage"></i> ABSENCES & COMPOS</div>
+      <div style="font-size:14px;line-height:1.6;color:var(--text)">${esc(d.absences)}</div>
     </div>` : ''}
 
-    ${vb.length ? `
-    <div class="fa-card" style="background:linear-gradient(160deg,rgba(245,200,66,.08),var(--s1));border:1px solid rgba(245,200,66,.3);border-radius:16px;padding:20px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--gold);margin-bottom:14px"><i class="ti ti-diamond"></i> VALUE BETS DÉTECTÉS</div>
-      ${vb.map(v => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b1)">
-        <div><div style="font-weight:700">Pari ${v.pick} @ ${v.market_odds}</div><div style="font-size:12px;color:var(--muted)">${v.rating} · Kelly ${v.kelly_pct}%</div></div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gb)">+${v.value_pct}%</div>
-      </div>`).join('')}
-    </div>` : ''}
-
-    ${d.h2h && d.h2h.total ? `
-    <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;margin-bottom:14px"><i class="ti ti-swords"></i> CONFRONTATIONS (${d.h2h.total})</div>
-      <div style="display:flex;justify-content:space-around;text-align:center">
-        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gb)">${d.h2h.wins_a}</div><div style="font-size:11px;color:var(--muted)">${d.team_a_name}</div></div>
-        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--muted)">${d.h2h.draws}</div><div style="font-size:11px;color:var(--muted)">Nuls</div></div>
-        <div><div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#3b82f6">${d.h2h.wins_b}</div><div style="font-size:11px;color:var(--muted)">${d.team_b_name}</div></div>
-      </div>
-      <div style="text-align:center;font-size:12px;color:var(--muted);margin-top:10px">Moyenne : ${d.h2h.avg_goals} buts/match</div>
-    </div>` : ''}
-
-    <div style="text-align:center;font-size:11px;color:var(--muted)">Sources : ${(d.sources||[]).join(' · ')}</div>
+    ${d.date_match ? `<div style="text-align:center;font-size:12px;color:var(--muted)"><i class="ti ti-calendar"></i> Match : ${esc(d.date_match)}</div>` : ''}
+    <div style="text-align:center;font-size:11px;color:var(--muted)">Sources : ${(d.sources || []).join(' · ')}</div>
   `
 }
 
