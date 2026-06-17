@@ -935,6 +935,62 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   .mobile-menu { top: 54px; }
 }
 
+
+/* ── PWA INSTALL POPUP ── */
+#pwa-popup {
+  position: fixed;
+  bottom: -120px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(420px, calc(100vw - 32px));
+  background: var(--s1);
+  border: 1px solid rgba(34,197,94,.35);
+  border-radius: 20px;
+  padding: 20px;
+  z-index: 1000;
+  box-shadow: 0 -4px 40px rgba(34,197,94,.15), 0 20px 60px rgba(0,0,0,.5);
+  transition: bottom .4s cubic-bezier(.34,1.56,.64,1);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+#pwa-popup.show { bottom: 24px; }
+.pwa-popup-icon {
+  width: 52px; height: 52px; flex-shrink: 0;
+  border-radius: 12px; overflow: hidden;
+}
+.pwa-popup-icon img { width: 100%; height: 100%; object-fit: cover; }
+.pwa-popup-body { flex: 1; min-width: 0; }
+.pwa-popup-title {
+  font-family: var(--font-d);
+  font-size: 16px; letter-spacing: .04em;
+  color: var(--white); margin-bottom: 3px;
+}
+.pwa-popup-sub { font-size: 12px; color: var(--muted); }
+.pwa-popup-actions { display: flex; gap: 8px; margin-top: 12px; }
+.pwa-btn-install {
+  flex: 1;
+  background: var(--gb); color: #000;
+  border: none; border-radius: 10px;
+  padding: 9px 16px; font-size: 13px;
+  font-weight: 800; cursor: pointer;
+  font-family: var(--font-b);
+  display: flex; align-items: center;
+  justify-content: center; gap: 6px;
+}
+.pwa-btn-later {
+  background: var(--s2); color: var(--muted);
+  border: 1px solid var(--b2); border-radius: 10px;
+  padding: 9px 14px; font-size: 12px;
+  font-weight: 600; cursor: pointer;
+  font-family: var(--font-b);
+}
+.pwa-ios-hint {
+  font-size: 11px; color: var(--muted);
+  margin-top: 10px; text-align: center;
+  display: none;
+}
+
 </style>
 </head>
 <body data-page="home">
@@ -2113,6 +2169,79 @@ document.addEventListener('click', e => {
 window.addEventListener('scroll', () => {
   if (document.getElementById('mobile-menu')?.classList.contains('open')) closeMobileMenu()
 }, { passive: true })
+
+// PWA Install Popup
+;(function() {
+  let deferredPrompt = null
+  const popup   = document.getElementById('pwa-popup')
+  const btnInst = document.getElementById('pwa-popup-install')
+  const btnLater= document.getElementById('pwa-popup-later')
+  const iosHint = document.getElementById('pwa-ios-hint')
+
+  // Ne pas afficher si déjà installée ou refusée récemment
+  const dismissed = localStorage.getItem('pwa_dismissed')
+  if (dismissed && Date.now() - parseInt(dismissed) < 3 * 24 * 3600 * 1000) return
+
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) && !window.navigator.standalone
+
+  // Android/Chrome : attendre beforeinstallprompt
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault()
+    deferredPrompt = e
+    setTimeout(() => popup?.classList.add('show'), 4000)
+  })
+
+  // iOS : afficher après 5s avec instructions
+  if (isIOS && !window.navigator.standalone) {
+    setTimeout(() => {
+      if (iosHint) iosHint.style.display = 'block'
+      if (btnInst) { btnInst.innerHTML = '📱 Comment installer ?'; btnInst.onclick = () => iosHint && (iosHint.style.display = iosHint.style.display === 'none' ? 'block' : 'none') }
+      popup?.classList.add('show')
+    }, 5000)
+  }
+
+  // Bouton installer
+  btnInst?.addEventListener('click', async () => {
+    if (!deferredPrompt) return
+    deferredPrompt.prompt()
+    const { outcome } = await deferredPrompt.userChoice
+    if (outcome === 'accepted') {
+      popup?.classList.remove('show')
+      localStorage.setItem('pwa_installed', '1')
+    }
+    deferredPrompt = null
+  })
+
+  // Bouton plus tard
+  btnLater?.addEventListener('click', () => {
+    popup?.classList.remove('show')
+    localStorage.setItem('pwa_dismissed', Date.now().toString())
+  })
+
+  // Masquer si déjà installée
+  window.addEventListener('appinstalled', () => popup?.classList.remove('show'))
+})()
 </script>
+
+<!-- PWA INSTALL POPUP -->
+<div id="pwa-popup">
+  <div class="pwa-popup-icon">
+    <img src="/icons/icon-192.png" alt="Betoracle Pro">
+  </div>
+  <div class="pwa-popup-body">
+    <div class="pwa-popup-title">Betoracle Pro</div>
+    <div class="pwa-popup-sub">📲 Installe l'app — accès rapide & offline</div>
+    <div class="pwa-popup-actions">
+      <button class="pwa-btn-install" id="pwa-popup-install">
+        <i class="ti ti-download"></i> Installer
+      </button>
+      <button class="pwa-btn-later" id="pwa-popup-later">Plus tard</button>
+    </div>
+    <div class="pwa-ios-hint" id="pwa-ios-hint">
+      iOS : appuie sur <strong>⬆️ Partager</strong> puis <strong>Ajouter à l'écran d'accueil</strong>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

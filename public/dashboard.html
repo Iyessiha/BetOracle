@@ -707,6 +707,65 @@ button { cursor: pointer; font-family: var(--ff); }
   display: block !important;
 }
 
+
+/* ── ONBOARDING OVERLAY ── */
+#onboarding-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(6,9,6,.92);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+#onboarding-overlay.show { display: flex; }
+.ob-card {
+  background: var(--s1);
+  border: 1px solid rgba(34,197,94,.3);
+  border-radius: 20px;
+  padding: 32px 28px;
+  max-width: 380px;
+  width: 100%;
+  text-align: center;
+  position: relative;
+}
+.ob-step-dots {
+  display: flex; gap: 6px; justify-content: center;
+  margin-bottom: 24px;
+}
+.ob-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--b2);
+  transition: all .3s;
+}
+.ob-dot.active { background: var(--gb); width: 22px; border-radius: 4px; }
+.ob-icon { font-size: 48px; margin-bottom: 16px; line-height: 1; }
+.ob-title {
+  font-family: var(--fd);
+  font-size: 26px; letter-spacing: .04em;
+  color: var(--white); margin-bottom: 10px;
+}
+.ob-desc {
+  font-size: 14px; color: var(--muted);
+  line-height: 1.7; margin-bottom: 28px;
+}
+.ob-desc strong { color: var(--text); }
+.ob-btn-main {
+  width: 100%;
+  background: var(--gb); color: #000;
+  border: none; border-radius: 12px;
+  padding: 14px; font-size: 15px;
+  font-weight: 800; cursor: pointer;
+  font-family: var(--fd); letter-spacing: .04em;
+  margin-bottom: 10px;
+}
+.ob-btn-skip {
+  background: none; border: none;
+  color: var(--muted); font-size: 13px;
+  cursor: pointer; font-family: var(--ff);
+  padding: 4px;
+}
+
 </style>
 </head>
 <body data-page="dashboard">
@@ -1400,6 +1459,119 @@ else init()
       const btn = document.getElementById('pwa-install-btn')
       if (btn) btn.style.display = 'none'
     })
-  </script>
+  
+// Onboarding guidé
+;(function(){
+  const S = window.__SB_URL || ''
+  const AK = window.__SB_AK  || ''
+
+  const steps = [
+    {
+      icon: '🔮',
+      title: 'BIENVENUE !',
+      desc: 'Betoracle Pro analyse les matchs avec <strong>l\'IA</strong> et génère tes coupons chaque matin à <strong>08h00</strong>.',
+      btn: 'Commencer →',
+      action: 'next'
+    },
+    {
+      icon: '⚽',
+      title: 'LANCE TON ORACLE',
+      desc: 'Tape un match dans la barre de recherche — ex : <strong>Portugal vs Maroc</strong>. L\'Oracle retourne probabilités, BTTS, Over/Under en 10 secondes.',
+      btn: '🔮 Analyser un match',
+      action: 'goto_analyse'
+    },
+    {
+      icon: '🛡️',
+      title: 'TON COUPON DU JOUR',
+      desc: 'Chaque matin à 08h00, un coupon sûr gratuit t\'attend. Upgrade <strong>Starter</strong> pour 2 coupons supplémentaires et le Value Bet.',
+      btn: '📋 Voir mon coupon',
+      action: 'goto_coupons'
+    }
+  ]
+
+  let currentStep = 0
+
+  function renderStep(step) {
+    const s = steps[step]
+    document.getElementById('ob-content').innerHTML = `
+      <div class="ob-icon">${s.icon}</div>
+      <div class="ob-title">${s.title}</div>
+      <p class="ob-desc">${s.desc}</p>
+      <button class="ob-btn-main" onclick="obAction('${s.action}')">${s.btn}</button>
+      <br><button class="ob-btn-skip" onclick="obDismiss()">Passer l'intro</button>
+    `
+    document.querySelectorAll('.ob-dot').forEach((d, i) => {
+      d.classList.toggle('active', i === step)
+    })
+  }
+
+  window.obAction = function(action) {
+    if (action === 'next') {
+      currentStep++
+      if (currentStep < steps.length) renderStep(currentStep)
+      else obDismiss()
+    } else if (action === 'goto_analyse') {
+      obDismiss(); window.location.href = '/analyse'
+    } else if (action === 'goto_coupons') {
+      obDismiss(); window.location.href = '/coupons'
+    }
+  }
+
+  window.obDismiss = async function() {
+    document.getElementById('onboarding-overlay')?.classList.remove('show')
+    localStorage.setItem('ob_done', '1')
+    // Marquer onboarding complété
+    try {
+      const token = localStorage.getItem('sb_access_token')
+      if (token) {
+        await fetch(`${S}/functions/v1/auth-secure?action=complete-onboarding`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'apikey': AK },
+          body: JSON.stringify({ token })
+        })
+      }
+    } catch(_) {}
+  }
+
+  // Afficher si onboarding pas encore fait
+  async function checkOnboarding() {
+    if (localStorage.getItem('ob_done')) return
+    const token = localStorage.getItem('sb_access_token')
+    if (!token) return
+    try {
+      const r = await fetch(`${S}/functions/v1/auth-secure?action=verify`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'apikey': AK },
+        body: JSON.stringify({ token })
+      })
+      const d = await r.json()
+      if (d.valid && !d.onboarding_completed) {
+        renderStep(0)
+        setTimeout(() => document.getElementById('onboarding-overlay')?.classList.add('show'), 800)
+      } else if (d.onboarding_completed) {
+        localStorage.setItem('ob_done', '1')
+      }
+    } catch(_) {}
+  }
+
+  // Lancer après chargement du dashboard
+  document.addEventListener('DOMContentLoaded', () => setTimeout(checkOnboarding, 1200))
+})()
+</script>
+
+<!-- ONBOARDING OVERLAY -->
+<div id="onboarding-overlay">
+  <div class="ob-card">
+    <div class="ob-step-dots">
+      <div class="ob-dot active" id="ob-dot-0"></div>
+      <div class="ob-dot" id="ob-dot-1"></div>
+      <div class="ob-dot" id="ob-dot-2"></div>
+    </div>
+    <div id="ob-content">
+      <!-- Rempli par JS -->
+    </div>
+  </div>
+</div>
+
 </body>
 </html>

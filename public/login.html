@@ -269,7 +269,13 @@ const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIs
   try{
     const r=await fetch(`${SUPA_URL}/auth/v1/user`,{headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${t}`}})
     const d=await r.json()
-    if(d.id) window.location.replace('dashboard.html')
+    // Redirection selon rôle
+    if(d.is_admin) {
+      window.location.replace('/admin')
+    } else {
+      const next = new URLSearchParams(location.search).get('next') || '/dashboard'
+      window.location.replace(next)
+    }
   }catch{}
 })()
 
@@ -327,8 +333,11 @@ async function doLogin(){
     sessionStorage.setItem('bp_plan',   d.effective_plan||'pro')
     showMsg(`Bienvenue ${d.first_name||email.split('@')[0]} ! 🏆`, true)
     setTimeout(()=>{
-      const next=new URLSearchParams(location.search).get('next')||'dashboard.html'
-      window.location.replace(next)  // replace() évite le retour arrière vers login
+      // Admin → /admin, sinon dashboard
+      const isAdmin = d.is_admin === true
+      if (isAdmin) { window.location.replace('/admin'); return }
+      const next = new URLSearchParams(location.search).get('next') || '/dashboard'
+      window.location.replace(next)
     }, 600)
   }catch(e){setBtn(false);showMsg('Erreur réseau. Vérifie ta connexion.')}
 }
