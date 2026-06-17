@@ -414,43 +414,6 @@ button { cursor: pointer; font-family: var(--ff); }
 .drawer-bg { display: none; }
 .drawer    { display: none; }
 
-/* ── PROFILE CARD ── */
-.profile-card{display:flex;align-items:center;gap:20px;background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:22px 24px;margin-bottom:20px;position:relative;overflow:hidden}
-.profile-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold))}
-.profile-av-big{width:68px;height:68px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;flex-shrink:0;border:2px solid;background:rgba(34,197,94,.1);color:var(--green);border-color:rgba(34,197,94,.3)}
-.profile-av-big img{width:100%;height:100%;object-fit:cover;border-radius:14px}
-.profile-info{flex:1;min-width:0}
-.profile-name{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.04em;color:var(--hi);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile-email{font-size:13px;color:var(--lo);margin-bottom:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.profile-tags{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
-.ptag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;border:1px solid;white-space:nowrap}
-.ptag-plan{background:rgba(245,200,66,.08);color:var(--gold);border-color:rgba(245,200,66,.25)}
-.ptag-exp{background:rgba(34,197,94,.08);color:var(--green);border-color:rgba(34,197,94,.2)}
-.ptag-verified{background:rgba(45,212,191,.08);color:var(--teal);border-color:rgba(45,212,191,.2)}
-.ptag-phone{background:rgba(255,255,255,.03);color:var(--lo);border-color:var(--b2)}
-.profile-right{flex-shrink:0;text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:8px}
-.profile-id{font-size:11px;color:var(--lo);background:rgba(0,0,0,.3);border:1px solid var(--b1);border-radius:8px;padding:5px 10px;font-family:monospace;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;cursor:pointer}
-.profile-since{font-size:11px;color:var(--lo)}
-.profile-edit-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:700;padding:7px 14px;border-radius:8px;border:1px solid var(--b2);background:transparent;color:var(--lo);cursor:pointer;font-family:var(--ff);transition:all .15s}
-.profile-edit-btn:hover{border-color:var(--green);color:var(--hi)}
-
-/* ── MODAL ÉDITION PROFIL ── */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px}
-.modal-bg.open{display:flex}
-.modal{background:var(--s1);border:1px solid var(--b2);border-radius:20px;width:100%;max-width:420px;overflow:hidden}
-.modal-head{padding:20px 24px;border-bottom:1px solid var(--b1);display:flex;align-items:center;justify-content:space-between}
-.modal-head h3{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.04em}
-.modal-close{background:none;border:none;color:var(--lo);cursor:pointer;font-size:20px;padding:4px}
-.modal-body{padding:22px 24px;display:flex;flex-direction:column;gap:14px}
-.modal-field label{display:block;font-size:11px;font-weight:700;color:var(--lo);text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.modal-field input{width:100%;background:var(--bg);border:1px solid var(--b2);border-radius:8px;padding:10px 14px;font-size:14px;color:var(--hi);font-family:var(--ff);outline:none}
-.modal-field input:focus{border-color:var(--green)}
-.modal-field input:disabled{opacity:.5;cursor:not-allowed}
-.modal-save{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:10px;background:var(--green);color:#000;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff);margin-top:4px;transition:background .15s}
-.modal-save:hover{background:#4ade80}
-.modal-save:disabled{opacity:.6;cursor:not-allowed}
-.modal-msg{font-size:12px;text-align:center;min-height:18px;padding:0 4px}
-
 @media (max-width: 768px) {
   /* Hide desktop elements */
   .sidebar { display: none; }
@@ -634,7 +597,7 @@ button { cursor: pointer; font-family: var(--ff); }
 
 <!-- ════════ MOBILE TOPBAR ════════ -->
 <div class="m-topbar">
-  <a href="index.html" class="m-brand">
+  <a href="/" class="m-brand">
     <div class="m-orb">🔮</div>
     <div class="m-name">BET<em>ORACLE</em></div>
   </a>
@@ -668,20 +631,20 @@ button { cursor: pointer; font-family: var(--ff); }
 
   <nav class="dr-nav">
     <div class="dr-section">Navigation</div>
-    <a href="dashboard.html" class="dr-link on" onclick="closeDr()"><i class="ti ti-layout-dashboard"></i> Mon espace</a>
-    <a href="analyse.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-brain"></i> Analyser un match</a>
-    <a href="coupons.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-ticket"></i> Coupons du jour</a>
-    <a href="welcome.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-gift"></i> Parrainage</a>
+    <a href="/dashboard" class="dr-link on" onclick="closeDr()"><i class="ti ti-layout-dashboard"></i> Mon espace</a>
+    <a href="/analyse"   class="dr-link"    onclick="closeDr()"><i class="ti ti-brain"></i> Analyser un match</a>
+    <a href="/coupons"   class="dr-link"    onclick="closeDr()"><i class="ti ti-ticket"></i> Coupons du jour</a>
+    <a href="/welcome"   class="dr-link"    onclick="closeDr()"><i class="ti ti-gift"></i> Parrainage</a>
     <div class="dr-div"></div>
     <div class="dr-section">Général</div>
-    <a href="index.html"     class="dr-link"    onclick="closeDr()"><i class="ti ti-home"></i> Accueil</a>
-    <a href="index.html#tools" class="dr-link"  onclick="closeDr()"><i class="ti ti-tools"></i> Outils d'analyse</a>
-    <a href="checkout.html"  class="dr-link"    onclick="closeDr()"><i class="ti ti-crown"></i> Plans & tarifs</a>
-    <a href="cgu.html"       class="dr-link"    onclick="closeDr()"><i class="ti ti-file-description"></i> Conditions</a>
+    <a href="/"     class="dr-link"    onclick="closeDr()"><i class="ti ti-home"></i> Accueil</a>
+    <a href="/#tools" class="dr-link"  onclick="closeDr()"><i class="ti ti-tools"></i> Outils d'analyse</a>
+    <a href="/checkout"  class="dr-link"    onclick="closeDr()"><i class="ti ti-crown"></i> Plans & tarifs</a>
+    <a href="/cgu"       class="dr-link"    onclick="closeDr()"><i class="ti ti-file-description"></i> Conditions</a>
   </nav>
 
   <div class="dr-foot">
-    <a href="checkout.html" class="dr-btn-up"><i class="ti ti-bolt"></i> Passer Premium</a>
+    <a href="/checkout" class="dr-btn-up"><i class="ti ti-bolt"></i> Passer Premium</a>
     <button class="dr-btn-out" onclick="doLogout()"><i class="ti ti-logout"></i> Se déconnecter</button>
   </div>
 </div>
@@ -691,7 +654,7 @@ button { cursor: pointer; font-family: var(--ff); }
 
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <a href="index.html" class="sb-brand">
+    <a href="/" class="sb-brand">
       <div class="sb-orb">🔮</div>
       <div>
         <div class="sb-wordmark">BET<em>ORACLE</em></div>
@@ -709,23 +672,23 @@ button { cursor: pointer; font-family: var(--ff); }
 
     <nav class="sb-nav">
       <div class="sb-section">Mon espace</div>
-      <a href="dashboard.html" class="sb-link on"><i class="ti ti-layout-dashboard"></i> Tableau de bord</a>
-      <a href="analyse.html"   class="sb-link"><i class="ti ti-brain"></i> Oracle IA <span class="sb-badge">IA</span></a>
-      <a href="coupons.html"   class="sb-link"><i class="ti ti-ticket"></i> Coupons du jour</a>
-      <a href="welcome.html"   class="sb-link"><i class="ti ti-gift"></i> Parrainage</a>
+      <a href="/dashboard" class="sb-link on"><i class="ti ti-layout-dashboard"></i> Tableau de bord</a>
+      <a href="/analyse"   class="sb-link"><i class="ti ti-brain"></i> Oracle IA <span class="sb-badge">IA</span></a>
+      <a href="/coupons"   class="sb-link"><i class="ti ti-ticket"></i> Coupons du jour</a>
+      <a href="/welcome"   class="sb-link"><i class="ti ti-gift"></i> Parrainage</a>
 
       <div class="sb-div"></div>
       <div class="sb-section">Découvrir</div>
-      <a href="index.html#tools"       class="sb-link"><i class="ti ti-chart-bar"></i> Outils d'analyse</a>
-      <a href="index.html#bookmakers"  class="sb-link"><i class="ti ti-building-bank"></i> Bookmakers</a>
-      <a href="checkout.html"          class="sb-link"><i class="ti ti-crown"></i> Plans & tarifs <span class="sb-badge g">Dès 750F</span></a>
+      <a href="/#tools"       class="sb-link"><i class="ti ti-chart-bar"></i> Outils d'analyse</a>
+      <a href="/#bookmakers"  class="sb-link"><i class="ti ti-building-bank"></i> Bookmakers</a>
+      <a href="/checkout"          class="sb-link"><i class="ti ti-crown"></i> Plans & tarifs <span class="sb-badge g">Dès 750F</span></a>
 
       <div class="sb-div"></div>
-      <a href="index.html" class="sb-link"><i class="ti ti-home"></i> Retour accueil</a>
+      <a href="/" class="sb-link"><i class="ti ti-home"></i> Retour accueil</a>
     </nav>
 
     <div class="sb-foot">
-      <a href="checkout.html" class="sb-upgrade">
+      <a href="/checkout" class="sb-upgrade">
         <i class="ti ti-bolt" style="font-size:15px"></i> Passer Premium
       </a>
       <button class="sb-logout-btn" onclick="doLogout()">
@@ -742,7 +705,7 @@ button { cursor: pointer; font-family: var(--ff); }
       <div class="topbar-title" id="topbar-greet">Bonjour 👋</div>
       <div class="topbar-right">
         <div class="plan-chip" id="tb-plan"><i class="ti ti-bolt" style="font-size:12px"></i> Pro</div>
-        <a href="analyse.html" class="btn-action">
+        <a href="/analyse" class="btn-action">
           <i class="ti ti-brain" style="font-size:14px"></i> Analyser un match
         </a>
       </div>
@@ -750,58 +713,6 @@ button { cursor: pointer; font-family: var(--ff); }
 
     <!-- CONTENT -->
     <div class="content">
-
-      <!-- ═══ MON PROFIL ═══ -->
-      <div class="sec-head fu"><i class="ti ti-user-circle" style="color:var(--green)"></i> Mon profil</div>
-      <div class="profile-card fu">
-        <div class="profile-av-big" id="pf-av">?</div>
-        <div class="profile-info">
-          <div class="profile-name" id="pf-name">Chargement…</div>
-          <div class="profile-email" id="pf-email">—</div>
-          <div class="profile-tags">
-            <span class="ptag ptag-plan" id="pf-plan">⚡ Pro</span>
-            <span class="ptag ptag-exp" id="pf-exp" style="display:none"></span>
-            <span class="ptag ptag-verified" id="pf-verified" style="display:none">✓ Email vérifié</span>
-            <span class="ptag ptag-phone" id="pf-phone" style="display:none"></span>
-          </div>
-        </div>
-        <div class="profile-right">
-          <div class="profile-id" id="pf-id" title="Copier l'ID" onclick="copyId()">ID: …</div>
-          <div class="profile-since" id="pf-since">Membre depuis …</div>
-          <button class="profile-edit-btn" onclick="openEditModal()">
-            <i class="ti ti-pencil"></i> Modifier
-          </button>
-        </div>
-      </div>
-
-      <!-- ═══ MODAL ÉDITION ═══ -->
-      <div class="modal-bg" id="edit-modal" onclick="if(event.target===this)closeEditModal()">
-        <div class="modal">
-          <div class="modal-head">
-            <h3>Modifier mon profil</h3>
-            <button class="modal-close" onclick="closeEditModal()"><i class="ti ti-x"></i></button>
-          </div>
-          <div class="modal-body">
-            <div class="modal-field">
-              <label>Nom complet</label>
-              <input type="text" id="edit-name" placeholder="Prénom Nom" maxlength="60">
-            </div>
-            <div class="modal-field">
-              <label>Email</label>
-              <input type="email" id="edit-email" placeholder="email@example.com" disabled>
-            </div>
-            <div class="modal-field">
-              <label>Téléphone (optionnel)</label>
-              <input type="tel" id="edit-phone" placeholder="+225 07 00 00 00 00" maxlength="20">
-            </div>
-            <div class="modal-msg" id="edit-msg"></div>
-            <button class="modal-save" id="edit-save" onclick="saveProfile()">
-              <i class="ti ti-check"></i> Enregistrer
-            </button>
-          </div>
-        </div>
-      </div>
-
       <!-- Stat cards -->
       <div class="sec-head fu"><i class="ti ti-pulse" style="color:var(--green)"></i> Résumé du jour</div>
       <div class="stat-row">
@@ -839,19 +750,19 @@ button { cursor: pointer; font-family: var(--ff); }
               <div class="card-title"><i class="ti ti-bolt" style="color:var(--green)"></i> Actions rapides</div>
             </div>
             <div class="actions-grid">
-              <a href="analyse.html" class="action-link">
+              <a href="/analyse" class="action-link">
                 <div class="al-icon"><i class="ti ti-brain"></i></div>
                 <div class="al-text"><div class="al-title">Analyser un match</div><div class="al-sub">Oracle IA</div></div>
               </a>
-              <a href="coupons.html" class="action-link gold-act">
+              <a href="/coupons" class="action-link gold-act">
                 <div class="al-icon"><i class="ti ti-ticket"></i></div>
                 <div class="al-text"><div class="al-title">Coupons du jour</div><div class="al-sub">3 niveaux de risque</div></div>
               </a>
-              <a href="welcome.html" class="action-link">
+              <a href="/welcome" class="action-link">
                 <div class="al-icon"><i class="ti ti-gift"></i></div>
                 <div class="al-text"><div class="al-title">Parrainer</div><div class="al-sub">7 jours / filleul</div></div>
               </a>
-              <a href="checkout.html" class="action-link">
+              <a href="/checkout" class="action-link">
                 <div class="al-icon"><i class="ti ti-crown"></i></div>
                 <div class="al-text"><div class="al-title">Mes plans</div><div class="al-sub">Gérer</div></div>
               </a>
@@ -922,10 +833,10 @@ button { cursor: pointer; font-family: var(--ff); }
 
 <!-- ════════ BOTTOM NAV MOBILE ════════ -->
 <nav class="m-bnav">
-  <a href="index.html"    class="bn-item"><i class="ti ti-home"></i>Accueil</a>
-  <a href="analyse.html"  class="bn-item"><i class="ti ti-brain"></i>Oracle</a>
-  <a href="checkout.html" class="bn-item bn-cta"><i class="ti ti-bolt"></i>Plans</a>
-  <a href="dashboard.html" class="bn-item on"><i class="ti ti-user-check"></i>Compte</a>
+  <a href="/dashboard" class="bn-item on"><i class="ti ti-layout-dashboard"></i>Mon espace</a>
+  <a href="/analyse"  class="bn-item"><i class="ti ti-brain"></i>Oracle</a>
+  <a href="/checkout" class="bn-item bn-cta"><i class="ti ti-bolt"></i>Plans</a>
+  <a href="/compte" class="bn-item"><i class="ti ti-user-circle"></i>Compte</a>
   <button class="bn-item" onclick="openDr()"><i class="ti ti-menu-2"></i>Menu</button>
 </nav>
 
@@ -998,88 +909,6 @@ function fillUI(name, plan, email) {
   Object.assign($('dr-plan'), { textContent: label, style: `color:${color}` })
 }
 
-// ── PROFIL : copier ID ──
-window.copyId = function() {
-  const uid = document.getElementById('pf-id').title
-  if (!uid) return
-  navigator.clipboard.writeText(uid).then(() => {
-    const el = document.getElementById('pf-id')
-    const orig = el.textContent
-    el.textContent = '✓ Copié !'
-    setTimeout(() => { el.textContent = orig }, 1800)
-  }).catch(() => {})
-}
-
-// ── MODAL ÉDITION ──
-window.openEditModal = function() {
-  $('edit-name').value  = sessionStorage.getItem('bp_full_name') || ''
-  $('edit-email').value = sessionStorage.getItem('bp_email') || ''
-  $('edit-phone').value = sessionStorage.getItem('bp_phone') || ''
-  $('edit-msg').textContent = ''
-  $('edit-modal').classList.add('open')
-}
-window.closeEditModal = function() {
-  $('edit-modal').classList.remove('open')
-}
-
-window.saveProfile = async function() {
-  const btn  = $('edit-save')
-  const msg  = $('edit-msg')
-  const name = $('edit-name').value.trim()
-  const phone = $('edit-phone').value.trim()
-
-  if (!name) { msg.style.color = 'var(--red)'; msg.textContent = 'Le nom est requis.'; return }
-
-  btn.disabled = true
-  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Enregistrement…'
-  msg.textContent = ''
-
-  try {
-    const uid   = sessionStorage.getItem('bp_uid') || ''
-    const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
-    if (!uid || !token) throw new Error('Non authentifié')
-
-    const res = await fetch(`${S}/rest/v1/profiles?id=eq.${uid}`, {
-      method: 'PATCH',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': AK,
-        'Authorization': `Bearer ${token}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({ full_name: name, phone: phone || null, updated_at: new Date().toISOString() })
-    })
-
-    if (!res.ok) throw new Error(`HTTP ${res.status}`)
-
-    // Mise à jour UI
-    sessionStorage.setItem('bp_full_name', name)
-    sessionStorage.setItem('bp_phone', phone)
-    const init = name[0].toUpperCase()
-    $('pf-name').textContent  = name
-    $('pf-av').textContent    = init
-    $('sb-av').textContent    = init
-    $('sb-name').textContent  = name.split(' ')[0]
-    $('dr-av').textContent    = init
-    $('dr-name').textContent  = name.split(' ')[0]
-    $('topbar-greet').textContent = `Bonjour ${name.split(' ')[0]} 👋`
-    if (phone) {
-      $('pf-phone').textContent     = `📞 ${phone}`
-      $('pf-phone').style.display   = 'inline-flex'
-    } else {
-      $('pf-phone').style.display = 'none'
-    }
-
-    msg.style.color = 'var(--green)'; msg.textContent = '✓ Profil mis à jour !'
-    setTimeout(() => closeEditModal(), 1200)
-
-  } catch (e) {
-    msg.style.color = 'var(--red)'; msg.textContent = 'Erreur : ' + e.message
-  } finally {
-    btn.disabled = false
-    btn.innerHTML = '<i class="ti ti-check"></i> Enregistrer'
-  }
-}
 
 
 
@@ -1121,7 +950,7 @@ async function loadCoupon(token) {
     }
 
     html += `<div class="coupon-total" style="margin-top:12px"><div><div class="ct-lbl">Cote totale (Sûr)</div><div style="font-size:10px;color:var(--lo);margin-top:2px">${safe.selections_count || sels.length} sélections</div></div><div class="ct-val">×${total.toFixed(2)}</div></div>`
-    html += `<a href="coupons.html" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:11px;border-radius:9px;background:var(--gold);color:#000;font-weight:800;font-size:13px"><i class="ti ti-ticket"></i> Voir les 3 coupons du jour</a>`
+    html += `<a href="/coupons" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:11px;border-radius:9px;background:var(--gold);color:#000;font-weight:800;font-size:13px"><i class="ti ti-ticket"></i> Voir les 3 coupons du jour</a>`
     $('coupon-body').innerHTML = html
   } catch {
     $('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--lo);font-size:12px">Coupons disponibles prochainement</div>`
@@ -1182,42 +1011,6 @@ async function init() {
 
     fillUI(firstName, ePlan, authUser.email || '')
 
-    // ── CARTE PROFIL ──
-    const uid2    = profile.id || authUser.id
-    const email   = authUser.email || ''
-    const phone   = profile.phone || ''
-    const created = profile.created_at ? new Date(profile.created_at) : null
-    const [planLabel, planColor] = PL[ePlan] || PL.free
-
-    $('pf-av').textContent   = (profile.full_name || email || 'P')[0].toUpperCase()
-    $('pf-name').textContent = profile.full_name || email.split('@')[0] || 'Parieur'
-    $('pf-email').textContent = email || '—'
-    Object.assign($('pf-plan'), { textContent: planLabel, style: `background:${planColor}12;color:${planColor};border-color:${planColor}30` })
-    $('pf-id').textContent   = `ID: ${uid2 ? uid2.slice(0,8) + '…' : '—'}`
-    $('pf-id').title         = uid2 || ''
-
-    if (profile.plan_expires_at && new Date(profile.plan_expires_at) > new Date() && ePlan !== 'free') {
-      const expDate = new Date(profile.plan_expires_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short', year:'numeric' })
-      $('pf-exp').textContent = `Exp. ${expDate}`
-      $('pf-exp').style.display = 'inline-flex'
-    }
-    if (profile.email_verified) {
-      $('pf-verified').style.display = 'inline-flex'
-    }
-    if (phone) {
-      $('pf-phone').textContent = `📞 ${phone}`
-      $('pf-phone').style.display = 'inline-flex'
-    }
-    if (created) {
-      $('pf-since').textContent = `Membre depuis ${created.toLocaleDateString('fr-FR', { month:'long', year:'numeric' })}`
-    }
-
-    // Pré-remplir le modal d'édition
-    sessionStorage.setItem('bp_uid',       uid2 || '')
-    sessionStorage.setItem('bp_email',     email)
-    sessionStorage.setItem('bp_full_name', profile.full_name || '')
-    sessionStorage.setItem('bp_phone',     phone)
-
     // Stats
     $('st-analyses').textContent = profile.analyses_today || 0
     $('st-refs').textContent     = profile.referral_count || 0
@@ -1241,7 +1034,7 @@ async function init() {
 
     // Parrainage
     _ref = profile.ref_code || ''
-    const refUrl = `https://bet-oracle.vercel.app/signup.html?ref=${_ref}`
+    const refUrl = `https://betoracl.com/signup?ref=${_ref}`
     $('ref-url').textContent      = refUrl
     $('ref-code-chip').textContent = _ref || '…'
     $('ref-count').textContent    = profile.referral_count || 0
@@ -1256,7 +1049,7 @@ async function init() {
 
 // Copy referral link
 window.copyRef = function() {
-  const url = `https://bet-oracle.vercel.app/signup.html?ref=${_ref}`
+  const url = `https://betoracl.com/signup?ref=${_ref}`
   const btn = document.querySelector('.ref-copy-btn')
   const orig = btn.innerHTML
   ;(navigator.clipboard?.writeText(url) || Promise.reject()).catch(() => {
