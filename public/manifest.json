@@ -1,7 +1,7 @@
 {
   "name": "Betoracle Pro",
   "short_name": "Betoracle",
-  "description": "L'oracle des parieurs — Pronos IA multi-sports & bankroll",
+  "description": "L'oracle des parieurs \u2014 Pronos IA multi-sports & bankroll",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -10,15 +10,53 @@
   "theme_color": "#22c55e",
   "lang": "fr",
   "icons": [
-    { "src": "/icons/icon-72.png",  "sizes": "72x72",   "type": "image/png" },
-    { "src": "/icons/icon-96.png",  "sizes": "96x96",   "type": "image/png" },
-    { "src": "/icons/icon-128.png", "sizes": "128x128", "type": "image/png" },
-    { "src": "/icons/icon-144.png", "sizes": "144x144", "type": "image/png" },
-    { "src": "/icons/icon-152.png", "sizes": "152x152", "type": "image/png" },
-    { "src": "/icons/icon-180.png", "sizes": "180x180", "type": "image/png" },
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable any" },
-    { "src": "/icons/icon-384.png", "sizes": "384x384", "type": "image/png" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable any" }
+    {
+      "src": "/icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-180.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
   ],
   "shortcuts": [
     {
@@ -26,21 +64,36 @@
       "short_name": "Oracle",
       "url": "/analyse",
       "description": "Analyser un match avec l'IA",
-      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Coupons du jour",
       "short_name": "Coupons",
       "url": "/coupons",
       "description": "Voir les coupons du jour",
-      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
     },
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
       "url": "/dashboard",
       "description": "Mon tableau de bord",
-      "icons": [{ "src": "/icons/icon-96.png", "sizes": "96x96" }]
+      "icons": [
+        {
+          "src": "/icons/icon-96.png",
+          "sizes": "96x96"
+        }
+      ]
     }
   ],
   "screenshots": [
@@ -52,7 +105,12 @@
       "label": "Betoracle Pro Dashboard"
     }
   ],
-  "categories": ["sports", "finance", "utilities"],
+  "categories": [
+    "sports",
+    "finance",
+    "utilities"
+  ],
   "related_applications": [],
-  "prefer_related_applications": false
+  "prefer_related_applications": false,
+  "version": "1.1"
 }

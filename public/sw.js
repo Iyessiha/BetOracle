@@ -1,4 +1,4 @@
-const CACHE = 'betoracle-v1'
+const CACHE = 'betoracle-v2'
 const SHELL = [
   '/', '/dashboard', '/analyse', '/coupons', '/login', '/signup',
   '/manifest.json',
