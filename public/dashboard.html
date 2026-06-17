@@ -399,6 +399,74 @@ button { cursor: pointer; font-family: var(--ff); }
 @keyframes skel { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
 
 /* Fade-in */
+
+/* ── PROFILE BAND ── */
+@keyframes gradRot{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.35)}60%{box-shadow:0 0 0 8px rgba(34,197,94,0)}}
+.pband {
+  display: flex; align-items: center; gap: 16px;
+  background: var(--surf1); border: 1px solid var(--line2);
+  border-radius: 16px; padding: 16px 20px;
+  margin-bottom: 20px; position: relative; overflow: hidden;
+}
+.pband::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2.5px;
+  background: linear-gradient(90deg,var(--green),var(--gold),var(--teal),var(--green));
+  background-size: 300% 300%; animation: gradRot 4s ease infinite;
+}
+.pband-av-wrap {
+  width: 56px; height: 56px; border-radius: 15px; flex-shrink: 0;
+  background: linear-gradient(135deg,var(--green),var(--gold),var(--teal),var(--green));
+  background-size: 300% 300%;
+  animation: gradRot 3.5s ease infinite, pulse 3s ease-in-out infinite;
+  padding: 2.5px;
+}
+.pband-av {
+  width: 100%; height: 100%; border-radius: 13px;
+  background: var(--ink2);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--fd); font-size: 26px; color: var(--green);
+  text-shadow: 0 0 12px rgba(34,197,94,.6);
+}
+.pband-info { flex: 1; min-width: 0; }
+.pband-name {
+  font-family: var(--fd); font-size: 20px; letter-spacing: .04em;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  line-height: 1.2; margin-bottom: 3px;
+}
+.pband-email { font-size: 12px; color: var(--lo); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-bottom: 8px; }
+.pband-tags { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; }
+.ptag {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 10px; font-weight: 700; padding: 2px 9px;
+  border-radius: 20px; border: 1px solid; white-space: nowrap;
+}
+.ptag-plan { background: rgba(245,200,66,.08); color: var(--gold); border-color: rgba(245,200,66,.25); }
+.ptag-exp  { background: rgba(34,197,94,.07);  color: var(--green); border-color: rgba(34,197,94,.2); }
+.ptag-free { background: rgba(255,255,255,.03); color: var(--lo); border-color: var(--line2); }
+.pband-right { flex-shrink: 0; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.pband-days {
+  font-family: var(--fd); font-size: 26px; color: var(--green);
+  line-height: 1; text-align: right;
+}
+.pband-days-lbl { font-size: 9px; color: var(--lo); text-transform: uppercase; letter-spacing: .08em; text-align: right; }
+.pband-btns { display: flex; gap: 6px; margin-top: 2px; }
+.pband-btn-compte {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 700; padding: 6px 12px;
+  border-radius: 8px; border: 1px solid var(--line2);
+  background: transparent; color: var(--mid); text-decoration: none;
+  transition: all .15s;
+}
+.pband-btn-compte:hover { border-color: var(--green); color: var(--hi); }
+.pband-btn-up {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: 11px; font-weight: 800; padding: 6px 12px;
+  border-radius: 8px; background: var(--green); color: #000; text-decoration: none;
+  transition: background .15s;
+}
+.pband-btn-up:hover { background: var(--green-l); }
+
 @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
 .fu  { animation: fadeUp .35s ease both; }
 .fu1 { animation-delay: .05s; }
@@ -488,6 +556,11 @@ button { cursor: pointer; font-family: var(--ff); }
 
   /* ── CONTENT MOBILE ── */
   .content { padding: 14px 14px 20px; }
+  .pband { padding: 12px 14px; gap: 12px; margin-bottom: 14px; }
+  .pband-av-wrap { width: 48px; height: 48px; border-radius: 13px; }
+  .pband-name { font-size: 17px; }
+  .pband-right { flex-direction: row; align-items: center; gap: 8px; }
+  .pband-days { font-size: 20px; }
   .stat-row { grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
   .stat-card { padding: 14px 13px; border-radius: 12px; }
   .sc-num { font-size: 28px; }
@@ -713,8 +786,34 @@ button { cursor: pointer; font-family: var(--ff); }
 
     <!-- CONTENT -->
     <div class="content">
+
+      <!-- ═══ BANDE PROFIL ═══ -->
+      <div class="pband fu">
+        <div class="pband-av-wrap">
+          <div class="pband-av" id="pb-av">?</div>
+        </div>
+        <div class="pband-info">
+          <div class="pband-name" id="pb-name">Chargement…</div>
+          <div class="pband-email" id="pb-email">—</div>
+          <div class="pband-tags">
+            <span class="ptag ptag-plan" id="pb-plan">Free</span>
+            <span class="ptag ptag-exp"  id="pb-exp" style="display:none"></span>
+          </div>
+        </div>
+        <div class="pband-right">
+          <div>
+            <div class="pband-days" id="pb-days">—</div>
+            <div class="pband-days-lbl">jours restants</div>
+          </div>
+          <div class="pband-btns">
+            <a href="/compte" class="pband-btn-compte"><i class="ti ti-user-circle"></i> Mon compte</a>
+            <a href="/checkout" class="pband-btn-up" id="pb-upgrade-btn" style="display:none"><i class="ti ti-bolt"></i> Upgrade</a>
+          </div>
+        </div>
+      </div>
+
       <!-- Stat cards -->
-      <div class="sec-head fu"><i class="ti ti-pulse" style="color:var(--green)"></i> Résumé du jour</div>
+      <div class="sec-head fu fu1"><i class="ti ti-pulse" style="color:var(--green)"></i> Résumé du jour</div>
       <div class="stat-row">
         <div class="stat-card c-green fu fu1">
           <span class="sc-emoji">🔮</span>
@@ -907,6 +1006,24 @@ function fillUI(name, plan, email) {
   $('dr-av').textContent  = init
   $('dr-name').textContent = name || 'Parieur'
   Object.assign($('dr-plan'), { textContent: label, style: `color:${color}` })
+
+  // ── BANDE PROFIL ──
+  $('pb-av').textContent  = init
+  $('pb-name').textContent = name || 'Parieur'
+  if (email) $('pb-email').textContent = email
+  Object.assign($('pb-plan'), { textContent: label, style: `background:${color}12;color:${color};border-color:${color}30` })
+  // Gradient avatar selon plan
+  const gradients = {
+    free: `linear-gradient(135deg,#4a6a4a,var(--green),#4a6a4a)`,
+    starter: `linear-gradient(135deg,var(--teal),var(--green),var(--teal))`,
+    pro: `linear-gradient(135deg,var(--green),var(--gold),var(--teal),var(--green))`,
+    elite: `linear-gradient(135deg,var(--purple),var(--gold),var(--green),var(--purple))`,
+  }
+  const wrap = document.querySelector('.pband-av-wrap')
+  if (wrap) { wrap.style.background = gradients[plan] || gradients.free; wrap.style.backgroundSize = '300% 300%' }
+  // Bouton upgrade si free
+  const upBtn = $('pb-upgrade-btn')
+  if (upBtn) upBtn.style.display = plan === 'free' ? 'inline-flex' : 'none'
 }
 
 
@@ -1010,6 +1127,19 @@ async function init() {
     localStorage.setItem('sb_user_id', authUser.id)
 
     fillUI(firstName, ePlan, authUser.email || '')
+
+    // ── Bande profil : email + expiration + jours
+    if (authUser.email) $('pb-email').textContent = authUser.email
+    if (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ePlan !== 'free') {
+      const daysLeft = Math.max(0, Math.ceil((new Date(profile.plan_expires_at) - now) / 86400000))
+      const expDate  = new Date(profile.plan_expires_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' })
+      $('pb-days').textContent = daysLeft
+      const expEl = $('pb-exp')
+      if (expEl) { expEl.textContent = `Exp. ${expDate}`; expEl.style.display = 'inline-flex' }
+    } else {
+      $('pb-days').textContent = '0'
+      $('pb-days').style.color = 'var(--lo)'
+    }
 
     // Stats
     $('st-analyses').textContent = profile.analyses_today || 0
