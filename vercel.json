@@ -16,6 +16,7 @@
     { "src": "/admin-recover",   "dest": "/admin-recover.html" },
     { "src": "/payment-success", "dest": "/payment-success.html" },
     { "src": "/payment-error",   "dest": "/payment-error.html" },
+    { "src": "/compte",          "dest": "/compte.html" },
     { "src": "/(.*)",            "dest": "/$1" }
   ],
   "headers": [
