@@ -3,6 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- PWA -->
+  <link rel="manifest" href="/manifest.json">
+  <meta name="theme-color" content="#22c55e">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Betoracle">
+  <link rel="apple-touch-icon" href="/icons/icon-180.png">
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
+  <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="/icons/icon-96.png">
+  <meta name="msapplication-TileColor" content="#060906">
+  <meta name="msapplication-TileImage" content="/icons/icon-144.png">
 <title>Coupons du jour — Betoracle Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
@@ -424,5 +439,36 @@ async function load() {
 
 load()
 </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+          .then(r => console.log('[SW] Enregistré:', r.scope))
+          .catch(e => console.log('[SW] Erreur:', e))
+      })
+    }
+
+    // Invite d'installation PWA (Android/Chrome)
+    let deferredPrompt
+    window.addEventListener('beforeinstallprompt', e => {
+      e.preventDefault()
+      deferredPrompt = e
+      // Afficher le bouton d'install si présent dans la page
+      const btn = document.getElementById('pwa-install-btn')
+      if (btn) {
+        btn.style.display = 'flex'
+        btn.addEventListener('click', () => {
+          deferredPrompt.prompt()
+          deferredPrompt.userChoice.then(() => { deferredPrompt = null; btn.style.display = 'none' })
+        })
+      }
+    })
+    window.addEventListener('appinstalled', () => {
+      console.log('[PWA] Application installée')
+      const btn = document.getElementById('pwa-install-btn')
+      if (btn) btn.style.display = 'none'
+    })
+  </script>
 </body>
 </html>
