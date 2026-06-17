@@ -112,21 +112,44 @@ button{font-family:var(--ff)}
 .card-body{padding:16px 20px}
 
 /* ── PROFIL HERO ── */
+/* ── ANIMATIONS ── */
+@keyframes gradRotate{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+@keyframes pulseRing{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.4),0 0 24px rgba(34,197,94,.15)}60%{box-shadow:0 0 0 10px rgba(34,197,94,0),0 0 32px rgba(34,197,94,.35)}}
+@keyframes floatBlob{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(30px,-20px) scale(1.08)}66%{transform:translate(-20px,15px) scale(.95)}}
+@keyframes floatBlob2{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(-25px,20px) scale(.92)}66%{transform:translate(20px,-15px) scale(1.06)}}
+
 .profil-hero{
   background:var(--s1);border:1px solid var(--b2);border-radius:18px;
   padding:28px 24px;margin-bottom:18px;position:relative;overflow:hidden;
 }
-.profil-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold))}
-.hero-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+/* Barre dégradé top */
+.profil-hero::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--gold),var(--teal));background-size:200%;animation:gradRotate 4s ease infinite;z-index:1}
+/* Blobs aurora en arrière-plan */
+.profil-hero .blob1,.profil-hero .blob2{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;z-index:0}
+.profil-hero .blob1{width:260px;height:260px;background:radial-gradient(circle,rgba(34,197,94,.1) 0%,transparent 70%);top:-60px;left:-40px;animation:floatBlob 9s ease-in-out infinite}
+.profil-hero .blob2{width:200px;height:200px;background:radial-gradient(circle,rgba(245,200,66,.08) 0%,transparent 70%);bottom:-40px;right:-20px;animation:floatBlob2 11s ease-in-out infinite}
+
+.hero-row{display:flex;align-items:center;gap:20px;flex-wrap:wrap;position:relative;z-index:1}
+
+/* Wrapper gradient tournant */
+.hero-av-wrap{
+  width:88px;height:88px;border-radius:24px;flex-shrink:0;
+  background:linear-gradient(135deg,#22c55e,#F5C842,#2dd4bf,#a78bfa,#22c55e);
+  background-size:300% 300%;
+  animation:gradRotate 3.5s ease infinite, pulseRing 3s ease-in-out infinite;
+  padding:3px;cursor:pointer;position:relative;
+}
+/* Inner dark */
 .hero-av{
-  width:80px;height:80px;border-radius:20px;flex-shrink:0;
-  background:rgba(34,197,94,.1);border:2px solid rgba(34,197,94,.25);
+  width:100%;height:100%;border-radius:21px;
+  background:#080e08;
   display:flex;align-items:center;justify-content:center;
   font-family:var(--fd);font-size:38px;color:var(--green);
-  cursor:pointer;position:relative;overflow:hidden;
+  position:relative;overflow:hidden;
+  text-shadow:0 0 18px rgba(34,197,94,.7);
 }
-.hero-av:hover::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:18px}
-.hero-av img{width:100%;height:100%;object-fit:cover;border-radius:18px}
+.hero-av:hover::after{content:'📷';position:absolute;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:21px}
+.hero-av img{width:100%;height:100%;object-fit:cover;border-radius:21px}
 .hero-info{flex:1;min-width:200px}
 .hero-name{font-family:var(--fd);font-size:26px;letter-spacing:.04em;color:var(--hi);line-height:1.1;margin-bottom:3px}
 .hero-email{font-size:13px;color:var(--lo);margin-bottom:12px}
@@ -300,8 +323,12 @@ button{font-family:var(--ff)}
 
       <!-- ═══ HERO PROFIL ═══ -->
       <div class="profil-hero">
+        <div class="blob1"></div>
+        <div class="blob2"></div>
         <div class="hero-row">
-          <div class="hero-av" id="hero-av" onclick="openEditModal()">?</div>
+          <div class="hero-av-wrap" onclick="openEditModal()">
+            <div class="hero-av" id="hero-av">?</div>
+          </div>
           <div class="hero-info">
             <div class="hero-name" id="hero-name">Chargement…</div>
             <div class="hero-email" id="hero-email">—</div>
@@ -517,6 +544,15 @@ function fillUI(name, plan) {
   $('hero-id').textContent    = `ID: ${_uid.slice(0,8)}…`
   $('hero-id').title          = _uid
   Object.assign($('hero-plan'), {textContent:planLabel, style:`background:${planColor}12;color:${planColor};border-color:${planColor}30`})
+  // Couleur wrapper avatar selon le plan
+  const planGradients = {
+    free:    'linear-gradient(135deg,#4a6a4a,#22c55e,#4a6a4a)',
+    starter: 'linear-gradient(135deg,#2dd4bf,#22c55e,#2dd4bf)',
+    pro:     'linear-gradient(135deg,#22c55e,#F5C842,#2dd4bf,#22c55e)',
+    elite:   'linear-gradient(135deg,#a78bfa,#F5C842,#22c55e,#a78bfa)',
+  }
+  const wrap = document.querySelector('.hero-av-wrap')
+  if (wrap) wrap.style.background = (planGradients[ePlan] || planGradients.free) + '\nbackground-size:300% 300%'
 
   if (p.plan_expires_at && new Date(p.plan_expires_at) > now && ePlan !== 'free') {
     const exp = new Date(p.plan_expires_at).toLocaleDateString('fr-FR',{day:'numeric',month:'short',year:'numeric'})
