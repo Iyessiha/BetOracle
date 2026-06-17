@@ -43,6 +43,12 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
 .btn-analyse{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;border:1px solid var(--b2);background:transparent;color:#6a8a6a;font-size:14px;font-weight:700;text-decoration:none;transition:all .15s}
 .btn-analyse:hover{border-color:var(--gb);color:var(--hi)}
 
+/* COUNTDOWN */
+.countdown-bar{width:100%;height:3px;background:var(--b1);border-radius:3px;margin-bottom:14px;overflow:hidden}
+.countdown-bar-fill{height:100%;background:var(--gb);border-radius:3px;transition:width 1s linear}
+.countdown-txt{font-size:12px;color:#4a6a4a;margin-bottom:12px}
+.countdown-txt span{color:var(--gb);font-weight:700}
+
 /* PENDING */
 #s-pending .icon{width:56px;height:56px;border-radius:16px;background:rgba(245,200,66,.08);border:1.5px solid rgba(245,200,66,.25);display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:18px}
 #s-pending h2{font-family:var(--fd);font-size:26px;letter-spacing:.04em;color:var(--gold);margin-bottom:8px}
@@ -95,8 +101,11 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
       <div class="info-row"><span class="label">Actif jusqu'au</span><span class="value green" id="r-end">—</span></div>
       <div class="info-row"><span class="label">Statut</span><span class="value green">✅ Confirmé</span></div>
     </div>
-    <a href="dashboard.html" class="btn-dash"><i class="ti ti-layout-dashboard"></i> Accéder à mon espace</a>
-    <a href="analyse.html" class="btn-analyse"><i class="ti ti-brain"></i> Lancer une analyse</a>
+    <!-- COUNTDOWN REDIRECT -->
+    <div class="countdown-bar"><div class="countdown-bar-fill" id="cd-bar" style="width:100%"></div></div>
+    <div class="countdown-txt">Redirection dans <span id="cd-num">3</span> secondes…</div>
+    <a href="/dashboard" class="btn-dash" id="btn-dashboard"><i class="ti ti-layout-dashboard"></i> Accéder à mon espace</a>
+    <a href="/analyse" class="btn-analyse"><i class="ti ti-brain"></i> Lancer une analyse</a>
   </div>
 
   <!-- PENDING -->
@@ -114,7 +123,7 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
     <button class="retry-btn" id="retry-btn" onclick="retryCheck()">
       <i class="ti ti-refresh"></i> Vérifier à nouveau
     </button>
-    <a href="dashboard.html" style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;font-size:13px;color:#4a6a4a;text-decoration:none">
+    <a href="/dashboard" style="display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;font-size:13px;color:#4a6a4a;text-decoration:none">
       <i class="ti ti-home"></i> Aller au tableau de bord
     </a>
   </div>
@@ -124,8 +133,8 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
     <div class="icon">❌</div>
     <h2>PAIEMENT REFUSÉ</h2>
     <p id="err-msg">Le paiement n'a pas pu être traité. Aucune somme n'a été débitée.</p>
-    <a href="checkout.html" class="btn-retry"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
-    <a href="dashboard.html" class="btn-back"><i class="ti ti-home"></i> Retour au tableau de bord</a>
+    <a href="/checkout" class="btn-retry"><i class="ti ti-refresh"></i> Réessayer le paiement</a>
+    <a href="/dashboard" class="btn-back"><i class="ti ti-home"></i> Retour au tableau de bord</a>
   </div>
 
   <!-- NOT FOUND -->
@@ -133,13 +142,13 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
     <div class="icon">🔍</div>
     <h2>TRANSACTION INTROUVABLE</h2>
     <p>Impossible de trouver cette transaction. Si tu as payé, contacte le support avec ta référence.</p>
-    <a href="dashboard.html" class="btn-dash">Aller au tableau de bord</a>
+    <a href="/dashboard" class="btn-dash">Aller au tableau de bord</a>
   </div>
 
 </div>
 
 <div style="margin-top:18px;font-size:12px;color:#3a5a3a;text-align:center">
-  <a href="index.html" style="color:#3a5a3a;text-decoration:none">← Retour à l'accueil</a>
+  <a href="/" style="color:#3a5a3a;text-decoration:none">← Retour à l'accueil</a>
 </div>
 
 <script>
@@ -152,27 +161,53 @@ const PLAN_PRICES = { starter:{week:'750 FCFA',month:'2 500 FCFA'}, pro:{week:'1
 const params   = new URLSearchParams(location.search)
 const txRef    = params.get('ref')    || ''
 const reason   = params.get('reason') || ''
-const isDemoParam = params.get('demo') === '1'
 
 let retryCount = 0
 const MAX_RETRIES = 8
-let autoRetryTimer: number | null = null
+let autoRetryTimer = null
+let countdownTimer = null
 
-function showState(id: string) {
+function showState(id) {
   document.querySelectorAll('.state').forEach(s => s.classList.remove('active'))
-  document.getElementById(id)?.classList.add('active')
+  document.getElementById(id).classList.add('active')
+}
+
+// Redirection automatique 3s après succès
+function startCountdown() {
+  let secs = 3
+  const bar  = document.getElementById('cd-bar')
+  const num  = document.getElementById('cd-num')
+  if (!bar || !num) return
+
+  // Déclenche l'animation CSS immédiatement
+  bar.style.transition = 'none'
+  bar.style.width = '100%'
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      bar.style.transition = 'width 3s linear'
+      bar.style.width = '0%'
+    })
+  })
+
+  countdownTimer = setInterval(() => {
+    secs--
+    if (num) num.textContent = String(secs)
+    if (secs <= 0) {
+      clearInterval(countdownTimer)
+      window.location.href = '/dashboard'
+    }
+  }, 1000)
 }
 
 // Paiement annulé ou refus explicite
 if (reason === 'cancelled') {
   showState('s-error')
-  document.getElementById('err-msg')!.textContent = 'Tu as annulé le paiement. Aucune somme n\'a été débitée.'
+  document.getElementById('err-msg').textContent = "Tu as annulé le paiement. Aucune somme n'a été débitée."
 } else if (reason === 'failed') {
   showState('s-error')
 } else if (!txRef) {
   showState('s-notfound')
 } else {
-  // Vérifier le paiement
   checkPayment()
 }
 
@@ -181,7 +216,7 @@ async function checkPayment() {
 
   try {
     const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
-    const headers: Record<string,string> = { 'Content-Type': 'application/json', 'apikey': SUPA_ANON }
+    const headers = { 'Content-Type': 'application/json', 'apikey': SUPA_ANON }
     if (token) headers['Authorization'] = `Bearer ${token}`
 
     const res = await fetch(EDGE_PAYMENTS + '?action=check', {
@@ -197,25 +232,26 @@ async function checkPayment() {
     }
 
     if (d.status === 'active') {
-      // Paiement confirmé ✅
       if (autoRetryTimer) clearInterval(autoRetryTimer)
 
       const planLabel = PLAN_LABELS[d.plan] || d.plan
-      document.getElementById('plan-badge')!.textContent = planLabel
+      document.getElementById('plan-badge').textContent = planLabel
 
-      const endsAt = d.ends_at ? new Date(d.ends_at).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'}) : '—'
-      document.getElementById('r-ref')!.textContent    = txRef
-      document.getElementById('r-amount')!.textContent = '—'
-      document.getElementById('r-end')!.textContent    = endsAt
+      const endsAt = d.ends_at
+        ? new Date(d.ends_at).toLocaleDateString('fr-FR', {day:'numeric',month:'long',year:'numeric'})
+        : '—'
+      document.getElementById('r-ref').textContent    = txRef
+      document.getElementById('r-amount').textContent = '—'
+      document.getElementById('r-end').textContent    = endsAt
 
-      // Mettre à jour le cache local
-      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+      // Mise à jour du cache local
       if (token) {
         localStorage.setItem('bp_plan', d.plan)
         sessionStorage.setItem('bp_plan', d.plan)
       }
 
       showState('s-success')
+      startCountdown()   // ← REDIRECTION AUTO 3s
       return
     }
 
@@ -224,16 +260,15 @@ async function checkPayment() {
       return
     }
 
-    // Status = pending → afficher l'état pending et retry auto
-    document.getElementById('p-ref')!.textContent = txRef
+    // pending → retry auto
+    document.getElementById('p-ref').textContent = txRef
     showState('s-pending')
     scheduleRetry()
 
   } catch (e) {
     console.error('check error:', e)
-    // Erreur réseau → afficher pending
     if (txRef) {
-      document.getElementById('p-ref')!.textContent = txRef
+      document.getElementById('p-ref').textContent = txRef
       showState('s-pending')
       scheduleRetry()
     } else {
@@ -244,9 +279,9 @@ async function checkPayment() {
 
 function scheduleRetry() {
   if (retryCount >= MAX_RETRIES) return
-  if (autoRetryTimer) return // déjà en attente
+  if (autoRetryTimer) return
 
-  const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000) // backoff: 5s, 7.5s, 11s...
+  const delay = Math.min(5000 * Math.pow(1.5, retryCount), 30000)
   retryCount++
 
   autoRetryTimer = window.setTimeout(async () => {
@@ -257,7 +292,7 @@ function scheduleRetry() {
 
 async function retryCheck() {
   if (autoRetryTimer) { clearTimeout(autoRetryTimer); autoRetryTimer = null }
-  const btn = document.getElementById('retry-btn') as HTMLButtonElement
+  const btn = document.getElementById('retry-btn')
   btn.disabled = true
   btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin 1s linear infinite"></i> Vérification…'
   await checkPayment()
