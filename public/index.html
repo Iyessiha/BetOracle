@@ -184,7 +184,7 @@ nav.scrolled{background:rgba(6,10,6,.95);backdrop-filter:blur(20px);border-color
 .ticker-wrap{background:var(--s1);border-top:1px solid var(--b1);overflow:hidden;height:40px;display:flex;align-items:center}
 .ticker{display:flex;animation:tick 36s linear infinite;white-space:nowrap}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:7px;padding:0 26px;font-size:12px;font-weight:500;color:var(--muted);border-right:1px solid var(--b1)}
+.ti-item{display:inline-flex;align-items:center;gap:7px;padding:0 26px;font-size:12px;font-weight:500;color:var(--muted);border-right:1px solid var(--b1)}
 .ti-up{color:var(--gb)}.ti-dn{color:var(--red)}
 
 /* ════════════════════════════════
@@ -796,6 +796,15 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 /* Supprime l'ancien hero-stadium */
 .hero-stadium{display:none!important}
 
+
+/* Icônes dans boutons — force couleur visible */
+.btn-green i, .btn-green .ti { color: #000 !important; }
+.btn-gold i, .btn-gold .ti  { color: #000 !important; }
+.btn-outline i { color: inherit; }
+.btn.btn-green i { color: #000 !important; }
+
+.bk-logo{display:flex;align-items:center;justify-content:center;margin-bottom:4px}
+.bk-logo svg{max-width:100%;height:auto}
 </style>
 </head>
 <body data-page="home">
@@ -813,8 +822,8 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
     <a href="#faq">FAQ</a>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
-    <a href="login.html" id="nav-login-btn" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
-    <a href="signup.html" class="btn btn-green">Commencer gratuitement</a>
+    <a href="/login" id="nav-login-btn" class="btn btn-outline"><i class="ti ti-login"></i> Se connecter</a>
+    <a href="/signup" class="btn btn-green">Commencer gratuitement</a>
 
   </div>
 </nav>
@@ -990,7 +999,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
           <div class="lr-item"><div class="lr-val" style="color:var(--gold)">64<span style="color:var(--gb)">%</span></div><div class="lr-lbl">Win rate moyen</div></div>
           <div class="lr-item"><div class="lr-val">55<span style="color:var(--gold)">+</span></div><div class="lr-lbl">Championnats</div></div>
         </div>
-        <a href="checkout.html" class="btn btn-green btn-lg">
+        <a href="/checkout" class="btn btn-green btn-lg">
           <i class="ti ti-lock-open"></i> Débloquer l'Oracle
         </a>
       </div>
@@ -1064,7 +1073,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
               <strong>Probabilités exactes, score IA, 3 scénarios complets,
               matchs pièges, niveau de risque.</strong>
             </div>
-            <a href="checkout.html" class="btn btn-gold" style="margin-top:4px">
+            <a href="/checkout" class="btn btn-gold" style="margin-top:4px">
               Débloquer l'analyse complète <i class="ti ti-arrow-right"></i>
             </a>
           </div>
@@ -1114,7 +1123,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       </div>
       <div class="machine-right reveal rd1">
         <p>Notre moteur ingère, recoupe et pondère chaque signal football mondial. Avant que le match commence, l'Oracle a déjà analysé plus d'éléments que toi en une saison entière.</p>
-        <a href="signup.html" class="btn btn-outline">Commencer gratuitement</a>
+        <a href="/signup" class="btn btn-outline">Commencer gratuitement</a>
       </div>
     </div>
     <div class="machine-grid reveal rd1">
@@ -1162,7 +1171,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         <div class="mcb-label">Test gratuit</div>
         <div class="mcb-text">Lance ta première analyse maintenant.</div>
       </div>
-      <a href="analyse.html" class="btn btn-green btn-lg">Analyser un match <i class="ti ti-arrow-right"></i></a>
+      <a href="/analyse" class="btn btn-green btn-lg">Analyser un match <i class="ti ti-arrow-right"></i></a>
     </div>
   </div>
 </section>
@@ -1301,7 +1310,7 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
           <li><span class="ck">✗</span>Alertes live</li>
           <li><span class="ck">✗</span>Stats H2H</li>
         </ul>
-        <a href="signup.html" class="btn btn-outline" style="width:100%;justify-content:center">Commencer gratuit</a>
+        <a href="/signup" class="btn btn-outline" style="width:100%;justify-content:center">Commencer gratuit</a>
       </div>
 
       <!-- STARTER -->
@@ -1310,8 +1319,8 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         <div class="plan-price" style="color:#2dd4bf" id="sp2-starter">750</div>
         <div class="plan-per" id="pp2-starter">FCFA / semaine</div>
         <ul class="plan-feats">
-          <li class="y"><span class="ck">✓</span>5 analyses IA / jour</li>
-          <li class="y"><span class="ck">✓</span>Coupon complet (3 sélections)</li>
+          <li class="y"><span class="ck">✓</span>3 analyses Oracle / jour</li>
+          <li class="y"><span class="ck">✓</span>Coupon complet (4 matchs/jour)</li>
           <li class="y"><span class="ck">✓</span>Stats 1X2 + BTTS</li>
           <li class="y"><span class="ck">✓</span>Forme équipes</li>
           <li class="y"><span class="ck">✓</span>Bankroll + ROI Tracker</li>
@@ -1346,11 +1355,11 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         <div class="plan-per" id="pp2-elite">FCFA / semaine</div>
         <ul class="plan-feats">
           <li class="y"><span class="ck">✓</span>Tout du plan Pro</li>
-          <li class="y"><span class="ck">✓</span>IA score exact</li>
-          <li class="y"><span class="ck">✓</span>Coaching bankroll 1h/sem</li>
-          <li class="y"><span class="ck">✓</span>Signaux live avant cotes</li>
+          <li class="y"><span class="ck">✓</span>IA prédictive score exact</li>
+          <li class="y"><span class="ck">✓</span>Analyses Oracle illimitées</li>
+          <li class="y"><span class="ck">✓</span>Alertes live + signaux IA</li>
           <li class="y"><span class="ck">✓</span>Canal VIP Telegram</li>
-          <li class="y"><span class="ck">✓</span>Gestionnaire dédié</li>
+          <li class="y"><span class="ck">✓</span>Support prioritaire 24/7</li>
         </ul>
         <a href="checkout.html?plan=elite" class="btn" style="width:100%;justify-content:center;background:rgba(167,139,250,.15);color:#a78bfa;border:1px solid rgba(167,139,250,.35)">Choisir Elite</a>
         <div class="plan-alt" id="alt2-elite">ou 10 000 F/mois (−30%)</div>
@@ -1553,10 +1562,10 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
       Lance ta première analyse — c'est maintenant.
     </p>
     <div class="reveal rd3" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
-      <a href="analyse.html" id="signup" class="btn btn-green btn-lg" style="font-size:16px;padding:17px 38px">
+      <a href="/analyse" id="signup" class="btn btn-green btn-lg" style="font-size:16px;padding:17px 38px">
         <i class="ti ti-search"></i> Analyser un match
       </a>
-      <a href="checkout.html" class="btn btn-outline btn-lg" style="font-size:16px;padding:17px 38px">
+      <a href="/checkout" class="btn btn-outline btn-lg" style="font-size:16px;padding:17px 38px">
         Voir les offres
       </a>
     </div>
@@ -1784,7 +1793,24 @@ function setBill2(t, btn) {
 </script>
 
 
-<script src="./assets/js/nav.js"></script>
+<script src="./assets/js/nav.js">
+// Barre de recherche → /analyse
+window.doSearch = function() {
+  const q = (document.getElementById('search-input')?.value || '').trim()
+  if (!q) return
+  window.location.href = '/analyse?q=' + encodeURIComponent(q)
+}
+
+// Protection anti-scraping
+;(function(){
+  document.addEventListener('contextmenu', e => e.preventDefault())
+  document.addEventListener('keydown', e => {
+    if (e.key === 'F12') { e.preventDefault(); return false }
+    if (e.ctrlKey && e.shiftKey && ['I','J','C'].includes(e.key.toUpperCase())) { e.preventDefault(); return false }
+    if (e.ctrlKey && e.key.toUpperCase() === 'U') { e.preventDefault(); return false }
+  })
+})()
+</script>
 
 
 </body>

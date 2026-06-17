@@ -203,7 +203,7 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
       </button>
 
       <div class="links">
-        Déjà un compte ? <a href="login.html">Se connecter →</a>
+        Déjà un compte ? <a href="/login">Se connecter →</a>
       </div>
     </div>
 
@@ -220,13 +220,13 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
         <div class="sp-item"><i class="ti ti-trending-up"></i>Value Bets, Kelly, Stats H2H</div>
         <div class="sp-item"><i class="ti ti-bell"></i>Alertes matchs et pronostics push</div>
       </div>
-      <a href="dashboard.html" class="btn-go" id="btn-go">
+      <a href="/dashboard" class="btn-go" id="btn-go">
         <i class="ti ti-arrow-right"></i> Accéder à mon compte
       </a>
     </div>
   </div>
 
-  <a href="index.html" class="back">
+  <a href="/" class="back">
     <i class="ti ti-arrow-left"></i> Retour à l'accueil
   </a>
 </div>
@@ -339,7 +339,7 @@ async function doSignup(){
     if(!d.success){
       setBtn(false)
       if(d.code==='EMAIL_EXISTS'){
-        return showMsg('Cet email est déjà utilisé. <a href="login.html" style="color:var(--gb);font-weight:700">Se connecter ?</a>')
+        return showMsg('Cet email est déjà utilisé. <a href="/login" style="color:var(--gb);font-weight:700">Se connecter ?</a>')
       }
       return showMsg(d.error||"Erreur lors de l'inscription.")
     }
