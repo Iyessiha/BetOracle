@@ -416,13 +416,20 @@ nav.scrolled{background:rgba(6,10,6,.95);backdrop-filter:blur(20px);border-color
 .leagues-kicker{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gb)}
 .leagues-kicker i{font-size:15px}
 .league-pill span:first-child{font-size:16px}
-.sport-foot:hover{border-color:#22c55e;color:#22c55e}
-.sport-basket:hover{border-color:#ff7a1a;color:#ff7a1a}
-.sport-tennis:hover{border-color:#c8ff3d;color:#c8ff3d}
-.sport-rugby:hover{border-color:#c97b4a;color:#c97b4a}
-.sport-hockey:hover{border-color:#5ec8ff;color:#5ec8ff}
-.sport-nfl:hover{border-color:#d4824a;color:#d4824a}
-.sport-mlb:hover{border-color:#ff5252;color:#ff5252}
+.sport-foot{color:#6ee7b7;border-color:rgba(110,231,183,.25)}
+.sport-foot:hover{border-color:#22c55e;color:#22c55e;background:rgba(34,197,94,.08)}
+.sport-basket{color:#fb923c;border-color:rgba(251,146,60,.25)}
+.sport-basket:hover{border-color:#ff7a1a;color:#ff7a1a;background:rgba(255,122,26,.06)}
+.sport-tennis{color:#bef264;border-color:rgba(190,242,100,.25)}
+.sport-tennis:hover{border-color:#c8ff3d;color:#c8ff3d;background:rgba(200,255,61,.06)}
+.sport-rugby{color:#d97706;border-color:rgba(217,119,6,.3)}
+.sport-rugby:hover{border-color:#c97b4a;color:#e8a070;background:rgba(201,123,74,.06)}
+.sport-hockey{color:#38bdf8;border-color:rgba(56,189,248,.25)}
+.sport-hockey:hover{border-color:#5ec8ff;color:#5ec8ff;background:rgba(94,200,255,.06)}
+.sport-nfl{color:#f97316;border-color:rgba(249,115,22,.25)}
+.sport-nfl:hover{border-color:#d4824a;color:#f0a070;background:rgba(212,130,74,.06)}
+.sport-mlb{color:#f87171;border-color:rgba(248,113,113,.25)}
+.sport-mlb:hover{border-color:#ff5252;color:#ff8080;background:rgba(255,82,82,.06)}
 .leagues-scroll{display:flex;gap:12px;overflow-x:auto;padding:0 clamp(20px,4vw,48px);scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .leagues-scroll::-webkit-scrollbar{display:none}
 .league-pill{
@@ -760,6 +767,35 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 .mp-logos { display:flex; align-items:center; gap:3px; flex-shrink:0; }
 .mp-logo { width:22px; height:22px; border-radius:50%; object-fit:contain; background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1); padding:2px; }
 .mp-init { width:22px; height:22px; border-radius:50%; display:none; align-items:center; justify-content:center; font-family:"Bebas Neue",sans-serif; font-size:8px; letter-spacing:.02em; border:1px solid; flex-shrink:0; }
+
+/* ── HERO SLIDESHOW ── */
+.hero-slides{position:absolute;inset:0;z-index:0}
+.hero-slide{
+  position:absolute;inset:0;
+  background-size:cover;background-color:#060a06;
+  opacity:0;transition:opacity 1.8s cubic-bezier(.4,0,.2,1);
+}
+.hero-slide.active{opacity:1}
+.hero-slide::after{
+  content:'';position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 100%,rgba(26,92,42,.55) 0%,transparent 70%),
+    linear-gradient(180deg,rgba(6,10,6,.3) 0%,rgba(6,10,6,.62) 55%,#060a06 100%);
+}
+/* Dots navigation */
+.slide-dots{
+  position:absolute;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:7px;z-index:2;
+}
+.s-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:rgba(255,255,255,.3);border:none;padding:0;cursor:pointer;
+  transition:all .3s;
+}
+.s-dot.active{background:var(--gb);width:20px;border-radius:4px}
+/* Supprime l'ancien hero-stadium */
+.hero-stadium{display:none!important}
+
 </style>
 </head>
 <body data-page="home">
@@ -785,12 +821,20 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 
 <!-- ═══ HERO ═══ -->
 <section id="hero">
-  <div class="hero-stadium" style="background-image:
-  radial-gradient(ellipse 80% 60% at 50% 100%,rgba(26,92,42,.5) 0%,transparent 70%),
-  radial-gradient(ellipse 60% 40% at 50% 60%,rgba(34,197,94,.07) 0%,transparent 60%),
-  linear-gradient(180deg,rgba(6,10,6,.25) 0%,rgba(6,10,6,.65) 55%,#060a06 100%),
-  url('https://images.unsplash.com/photo-1577223625816-7546f13df25d?auto=format&fit=crop&w=1920&q=70');
-  background-size:cover;background-position:center 35%"></div>
+  <div class="hero-slides" id="hero-slides">
+  <div class="hero-slide active" style="background-image:url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?auto=format&fit=crop&w=1920&q=75');background-position:center 40%"></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=1920&q=75');background-position:center 30%"></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1605296867424-35fc25c9212a?auto=format&fit=crop&w=1920&q=75');background-position:center 40%"></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1920&q=75');background-position:center 50%"></div>
+  <div class="hero-slide" style="background-image:url('https://images.unsplash.com/photo-1574629810360-7efbbe195018?auto=format&fit=crop&w=1920&q=75');background-position:center 50%"></div>
+</div>
+<div class="slide-dots" id="slide-dots">
+  <button class="s-dot active" onclick="goSlide(0)"></button>
+  <button class="s-dot" onclick="goSlide(1)"></button>
+  <button class="s-dot" onclick="goSlide(2)"></button>
+  <button class="s-dot" onclick="goSlide(3)"></button>
+  <button class="s-dot" onclick="goSlide(4)"></button>
+</div>
   <div class="hero-orbs"><span class="orb orb-1"></span><span class="orb orb-2"></span><span class="orb orb-3"></span></div>
   <div class="hero-sweep"></div>
   <div class="hero-inner">

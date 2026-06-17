@@ -87,7 +87,7 @@ button{cursor:pointer;font-family:var(--ff)}
 .cur-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--g);color:#000;font-size:10px;font-weight:800;font-family:var(--fd);letter-spacing:.07em;padding:3px 14px;border-radius:20px;white-space:nowrap}
 .plan-icon{font-size:24px;margin-bottom:10px}
 .plan-tier{font-family:var(--fd);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
-.plan-price{font-family:var(--fd);font-size:38px;line-height:1;margin-bottom:2px}
+.plan-price{font-family:var(--fd);font-size:38px;line-height:1;margin-bottom:2px;text-shadow:0 0 20px rgba(255,255,255,.1)}
 .plan-per{font-size:11px;color:var(--lo);margin-bottom:16px}
 .plan-feats{list-style:none;margin-bottom:18px;flex:1}
 .plan-feats li{display:flex;align-items:flex-start;gap:8px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--b1);color:var(--lo)}
@@ -109,7 +109,7 @@ button{cursor:pointer;font-family:var(--ff)}
 .cta-gold:hover:not(:disabled){background:#ffe066}
 .cta-outline{background:transparent;border:1px solid var(--b2)!important;color:var(--mid)}
 .cta-outline:hover:not(:disabled){border-color:var(--g)!important;color:var(--hi)}
-.cta-current{background:rgba(34,197,94,.1);color:var(--g);border:1px solid rgba(34,197,94,.25)!important}
+.cta-current{background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.35)!important;font-weight:800}
 
 /* ── CONFIRM OVERLAY ── */
 .confirm-overlay{
@@ -143,9 +143,10 @@ button{cursor:pointer;font-family:var(--ff)}
 .cp-per{font-size:11px;color:var(--lo);text-align:right}
 .confirm-note{font-size:12px;color:var(--lo);line-height:1.6;margin-bottom:18px;padding:10px 14px;background:rgba(255,255,255,.02);border-radius:8px;border:1px solid var(--b1)}
 .confirm-btns{display:flex;flex-direction:column;gap:8px}
-.btn-pay{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:11px;background:var(--g);color:#000;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff);transition:background .15s}
-.btn-pay:hover{background:var(--gl)}
-.btn-pay:disabled{opacity:.6;cursor:not-allowed}
+.btn-pay{display:flex;align-items:center;justify-content:center;gap:9px;width:100%;padding:14px;border-radius:11px;background:linear-gradient(90deg,#22c55e,#16a34a);color:#fff;font-size:14px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff);transition:all .15s;box-shadow:0 4px 14px rgba(34,197,94,.3);letter-spacing:.02em}
+.btn-pay:hover{background:linear-gradient(90deg,#4ade80,#22c55e);transform:translateY(-1px);box-shadow:0 6px 18px rgba(34,197,94,.35)}
+.btn-pay:disabled{opacity:.6;cursor:not-allowed;transform:none;box-shadow:none}
+.btn-pay i{font-size:16px;background:rgba(255,255,255,.2);border-radius:6px;padding:3px 5px}
 .btn-cancel{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:11px;border-radius:11px;border:1px solid var(--b2);background:transparent;color:var(--lo);font-size:13px;font-weight:700;cursor:pointer;font-family:var(--ff);transition:all .15s}
 .btn-cancel:hover{border-color:var(--red);color:var(--red)}
 .pay-msg{font-size:12px;text-align:center;min-height:18px;margin-top:8px}
