@@ -173,22 +173,27 @@ nav.scrolled{background:rgba(6,10,6,.95);backdrop-filter:blur(20px);border-color
 
 /* Strip matchs du jour */
 .match-strip{
-  width:100%;background:rgba(10,15,10,.85);backdrop-filter:blur(8px);
-  border-top:1px solid var(--b1);margin-top:auto;
+  width:100%;background:rgba(10,15,10,.9);backdrop-filter:blur(8px);
+  border-top:1px solid var(--b1);overflow:hidden;
 }
 .match-strip-inner{
-  display:flex;gap:0;overflow-x:auto;
-  scrollbar-width:none;-webkit-overflow-scrolling:touch;
+  display:flex;gap:0;
+  animation:stripScroll 40s linear infinite;
+  width:max-content;
 }
-.match-strip-inner::-webkit-scrollbar{display:none}
+.match-strip-inner:hover{animation-play-state:paused}
+@keyframes stripScroll{
+  from{transform:translateX(0)}
+  to{transform:translateX(-50%)}
+}
 .match-pill{
   display:flex;align-items:center;gap:12px;
-  padding:14px 24px;border-right:1px solid var(--b1);
-  flex-shrink:0;cursor:pointer;transition:background .15s;min-width:200px;
+  padding:12px 22px;border-right:1px solid var(--b1);
+  flex-shrink:0;cursor:pointer;transition:background .15s;min-width:220px;
 }
-.match-pill:hover{background:rgba(34,197,94,.05)}
+.match-pill:hover{background:rgba(34,197,94,.07)}
 .mp-teams{font-size:13px;font-weight:600;white-space:nowrap}
-.mp-time{font-size:11px;color:var(--muted);margin-top:2px}
+.mp-time{font-size:11px;color:var(--muted);margin-top:2px;white-space:nowrap}
 .mp-ia{
   margin-left:auto;font-size:11px;font-weight:800;letter-spacing:.04em;
   color:var(--gb);background:rgba(34,197,94,.12);
@@ -913,10 +918,15 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 .mm-link i { color: var(--gb); font-size: 16px; width: 20px; }
 
 @media(max-width:1024px) {
-  .nav-hamburger { display: flex; }
-  .nav-links { display: none; }
-  nav > div:last-child .btn-outline { display: none; }
-  nav > div:last-child .btn-green { display: none; }
+  .nav-hamburger { display: flex !important; visibility: visible !important; opacity: 1 !important; }
+  .nav-links { display: none !important; }
+  nav > div:last-child .btn-outline { display: none !important; }
+  nav > div:last-child .btn-green { display: none !important; }
+  /* S'assurer que la nav principale reste visible */
+  nav#nav { display: flex !important; }
+}
+@media(max-width:640px) {
+  nav#nav { display: flex !important; height: 54px !important; }
 }
 @media(max-width:640px) {
   .mobile-menu { top: 54px; }
@@ -997,8 +1007,9 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
     </p>
     <div class="hero-search reveal rd2">
       <i class="ti ti-search"></i>
-      <input type="text" placeholder="Initier une analyse... ex : Portugal vs Angleterre">
-      <button><i class="ti ti-arrow-right"></i></button>
+      <input type="text" id="search-input" placeholder="Initier une analyse... ex : Portugal vs Angleterre"
+        onkeydown="if(event.key==='Enter')doSearch()">
+      <button onclick="doSearch()"><i class="ti ti-arrow-right"></i></button>
     </div>
     <div class="hero-trust reveal rd3">
       <span class="trust-stars">★★★★★</span>
@@ -1013,55 +1024,63 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   <!-- Strip matchs -->
   <div class="match-strip">
     <div class="match-strip-inner">
-      <div class="match-pill">
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Portugal vs Maroc';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇵🇹</span><span class="mp-flag">🇲🇦</span></div>
+        <div>
+          <div class="mp-teams">Portugal vs Maroc</div>
+          <div class="mp-time">🌍 20/06 · CdM 2026 — Gr.I</div>
+        </div>
+        <span class="mp-ia">81% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Brésil vs Argentine';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇧🇷</span><span class="mp-flag">🇦🇷</span></div>
+        <div>
+          <div class="mp-teams">Brésil vs Argentine</div>
+          <div class="mp-time">🌎 21/06 · CdM 2026 — Gr.C</div>
+        </div>
+        <span class="mp-ia">76% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Espagne vs Allemagne';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇪🇸</span><span class="mp-flag">🇩🇪</span></div>
+        <div>
+          <div class="mp-teams">Espagne vs Allemagne</div>
+          <div class="mp-time">🌍 22/06 · CdM 2026 — Gr.B</div>
+        </div>
+        <span class="mp-ia">68% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='France vs Portugal';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇫🇷</span><span class="mp-flag">🇵🇹</span></div>
+        <div>
+          <div class="mp-teams">France vs Portugal</div>
+          <div class="mp-time">🌍 25/06 · CdM 2026 — 1/8</div>
+        </div>
+        <span class="mp-ia">72% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Nigeria vs Sénégal';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇳🇬</span><span class="mp-flag">🇸🇳</span></div>
+        <div>
+          <div class="mp-teams">Nigeria vs Sénégal</div>
+          <div class="mp-time">🌍 20/06 · CdM 2026 — Gr.A</div>
+        </div>
+        <span class="mp-ia">64% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Côte d'Ivoire vs Maroc';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇨🇮</span><span class="mp-flag">🇲🇦</span></div>
+        <div>
+          <div class="mp-teams">Côte d'Ivoire vs Maroc</div>
+          <div class="mp-time">🌍 22/06 · CdM 2026 — Gr.I</div>
+        </div>
+        <span class="mp-ia">70% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='PSG vs Marseille';doSearch()">
         <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/85.png" class="mp-logo" alt="PSG" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#00308722;color:#003087;border-color:#00308744">PSG</span><img src="https://media.api-sports.io/football/teams/81.png" class="mp-logo" alt="OM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#009FC722;color:#009FC7;border-color:#009FC744">OM</span></div>
         <div>
           <div class="mp-teams">PSG vs Marseille</div>
-          <div class="mp-time">20:45 · Ligue 1</div>
+          <div class="mp-time">⚽ 20:45 · Ligue 1</div>
         </div>
         <span class="mp-ia">82% IA</span>
       </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span class="mp-flag">🇭🇷</span></div>
-        <div>
-          <div class="mp-teams">Angleterre vs Croatie</div>
-          <div class="mp-time">🌍 21:00 · CdM 2026 — Groupe L</div>
-        </div>
-        <span class="mp-ia">78% IA</span>
-      </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-flag">🇫🇷</span><span class="mp-flag">🇸🇳</span></div>
-        <div>
-          <div class="mp-teams">France vs Sénégal</div>
-          <div class="mp-time">✅ 2-0 · CdM 2026 — Groupe I</div>
-        </div>
-        <span class="mp-ia">65% IA</span>
-      </div>
-      <div class="match-pill">
-        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/541.png" class="mp-logo" alt="RM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#FEBE1022;color:#FEBE10;border-color:#FEBE1044">RM</span><img src="https://media.api-sports.io/football/teams/85.png" class="mp-logo" alt="PSG" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#00308722;color:#003087;border-color:#00308744">PSG</span></div>
-        <div>
-          <div class="mp-teams">Real Madrid vs PSG</div>
-          <div class="mp-time">21:00 · UCL</div>
-        </div>
-        <span class="mp-ia">71% IA</span>
-      </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-flag">🇩🇪</span><span class="mp-flag">🇨🇼</span></div>
-        <div>
-          <div class="mp-teams">Allemagne vs Curaçao</div>
-          <div class="mp-time">✅ 7-1 · CdM 2026 — Groupe E</div>
-        </div>
-        <span class="mp-ia">60% IA</span>
-      </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-flag">🇬🇭</span><span class="mp-flag">🇵🇦</span></div>
-        <div>
-          <div class="mp-teams">Ghana vs Panama</div>
-          <div class="mp-time">🌍 00:00 · CdM 2026 — Groupe L</div>
-        </div>
-        <span class="mp-ia">67% IA</span>
-      </div>
-      <div class="match-pill">
+      <div class="match-pill" onclick="document.getElementById('search-input').value='ASEC vs Africa Sports';doSearch()">
         <div class="mp-logos"><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">ASC</span><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">AFS</span></div>
         <div>
           <div class="mp-teams">ASEC vs Africa Sports</div>
@@ -1069,21 +1088,101 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
         </div>
         <span class="mp-ia">74% IA</span>
       </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-flag">🇲🇽</span><span class="mp-flag">🇰🇷</span></div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Lakers vs Celtics';doSearch()">
+        <div class="mp-logos"><span class="mp-init" style="background:#552583;color:#FDB927;border-color:#55258380">LAL</span><span class="mp-init" style="background:#007A3360;color:#00b140;border-color:#007A3340">BOS</span></div>
         <div>
-          <div class="mp-teams">Mexique vs Corée du Sud</div>
-          <div class="mp-time">🌎 18/06 · CdM 2026 — Groupe A</div>
+          <div class="mp-teams">Lakers vs Celtics</div>
+          <div class="mp-time">🏀 02:30 · NBA Finals G6</div>
         </div>
-        <span class="mp-ia">69% IA</span>
+        <span class="mp-ia">61% IA</span>
       </div>
-      <div class="match-pill">
-        <div class="mp-logos"><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">ALC</span><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">SIN</span></div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Alcaraz vs Djokovic';doSearch()">
+        <div class="mp-logos"><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">ALC</span><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">DJO</span></div>
         <div>
-          <div class="mp-teams">Alcaraz vs Sinner</div>
-          <div class="mp-time">🎾 15:00 · ATP Masters</div>
+          <div class="mp-teams">Alcaraz vs Djokovic</div>
+          <div class="mp-time">🎾 15:00 · Roland Garros SF</div>
         </div>
-        <span class="mp-ia">58% IA</span>
+        <span class="mp-ia">59% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Portugal vs Maroc';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇵🇹</span><span class="mp-flag">🇲🇦</span></div>
+        <div>
+          <div class="mp-teams">Portugal vs Maroc</div>
+          <div class="mp-time">🌍 20/06 · CdM 2026 — Gr.I</div>
+        </div>
+        <span class="mp-ia">81% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Brésil vs Argentine';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇧🇷</span><span class="mp-flag">🇦🇷</span></div>
+        <div>
+          <div class="mp-teams">Brésil vs Argentine</div>
+          <div class="mp-time">🌎 21/06 · CdM 2026 — Gr.C</div>
+        </div>
+        <span class="mp-ia">76% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Espagne vs Allemagne';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇪🇸</span><span class="mp-flag">🇩🇪</span></div>
+        <div>
+          <div class="mp-teams">Espagne vs Allemagne</div>
+          <div class="mp-time">🌍 22/06 · CdM 2026 — Gr.B</div>
+        </div>
+        <span class="mp-ia">68% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='France vs Portugal';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇫🇷</span><span class="mp-flag">🇵🇹</span></div>
+        <div>
+          <div class="mp-teams">France vs Portugal</div>
+          <div class="mp-time">🌍 25/06 · CdM 2026 — 1/8</div>
+        </div>
+        <span class="mp-ia">72% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Nigeria vs Sénégal';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇳🇬</span><span class="mp-flag">🇸🇳</span></div>
+        <div>
+          <div class="mp-teams">Nigeria vs Sénégal</div>
+          <div class="mp-time">🌍 20/06 · CdM 2026 — Gr.A</div>
+        </div>
+        <span class="mp-ia">64% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Côte d'Ivoire vs Maroc';doSearch()">
+        <div class="mp-logos"><span class="mp-flag">🇨🇮</span><span class="mp-flag">🇲🇦</span></div>
+        <div>
+          <div class="mp-teams">Côte d'Ivoire vs Maroc</div>
+          <div class="mp-time">🌍 22/06 · CdM 2026 — Gr.I</div>
+        </div>
+        <span class="mp-ia">70% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='PSG vs Marseille';doSearch()">
+        <div class="mp-logos"><img src="https://media.api-sports.io/football/teams/85.png" class="mp-logo" alt="PSG" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#00308722;color:#003087;border-color:#00308744">PSG</span><img src="https://media.api-sports.io/football/teams/81.png" class="mp-logo" alt="OM" onerror="this.onerror=null;this.style.display='none';this.nextElementSibling.style.display='flex'" loading="lazy"><span class="mp-init" style="background:#009FC722;color:#009FC7;border-color:#009FC744">OM</span></div>
+        <div>
+          <div class="mp-teams">PSG vs Marseille</div>
+          <div class="mp-time">⚽ 20:45 · Ligue 1</div>
+        </div>
+        <span class="mp-ia">82% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='ASEC vs Africa Sports';doSearch()">
+        <div class="mp-logos"><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">ASC</span><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">AFS</span></div>
+        <div>
+          <div class="mp-teams">ASEC vs Africa Sports</div>
+          <div class="mp-time">⚽ 18:00 · Ligue 1 CI</div>
+        </div>
+        <span class="mp-ia">74% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Lakers vs Celtics';doSearch()">
+        <div class="mp-logos"><span class="mp-init" style="background:#552583;color:#FDB927;border-color:#55258380">LAL</span><span class="mp-init" style="background:#007A3360;color:#00b140;border-color:#007A3340">BOS</span></div>
+        <div>
+          <div class="mp-teams">Lakers vs Celtics</div>
+          <div class="mp-time">🏀 02:30 · NBA Finals G6</div>
+        </div>
+        <span class="mp-ia">61% IA</span>
+      </div>
+      <div class="match-pill" onclick="document.getElementById('search-input').value='Alcaraz vs Djokovic';doSearch()">
+        <div class="mp-logos"><span class="mp-init" style="background:#22c55e22;color:#22c55e;border-color:#22c55e44">ALC</span><span class="mp-init" style="background:#f5c84222;color:#f5c842;border-color:#f5c84244">DJO</span></div>
+        <div>
+          <div class="mp-teams">Alcaraz vs Djokovic</div>
+          <div class="mp-time">🎾 15:00 · Roland Garros SF</div>
+        </div>
+        <span class="mp-ia">59% IA</span>
       </div>
     </div>
   </div>
