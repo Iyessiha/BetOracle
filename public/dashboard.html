@@ -949,101 +949,162 @@ const PL = {
   pro:     ['⚡ Pro',     '#F5C842'],
   elite:   ['👑 Elite',   '#a78bfa']
 }
+const PLG = {
+  free:    'linear-gradient(135deg,#4a6a4a,#22c55e,#4a6a4a)',
+  starter: 'linear-gradient(135deg,#2dd4bf,#22c55e,#2dd4bf)',
+  pro:     'linear-gradient(135deg,#22c55e,#F5C842,#2dd4bf,#22c55e)',
+  elite:   'linear-gradient(135deg,#a78bfa,#F5C842,#22c55e,#a78bfa)',
+}
+// Accès minimum par fonctionnalité
+const ACCESS = {
+  analyse: 'starter',
+  coupons: 'free',
+  parrainage: 'free',
+  value_bet: 'pro',
+  kelly: 'pro',
+  ia: 'elite',
+}
+const PLAN_ORDER = { free:0, starter:1, pro:2, elite:3 }
+function hasAccess(userPlan, required) {
+  return (PLAN_ORDER[userPlan] || 0) >= (PLAN_ORDER[required] || 0)
+}
 
 let _ref = '', _done = false
+const $ = id => document.getElementById(id)
 
-// Drawer
-window.openDr  = () => { document.getElementById('dbg').classList.add('open'); document.getElementById('dr').classList.add('open'); document.body.style.overflow = 'hidden' }
-window.closeDr = () => { document.getElementById('dbg').classList.remove('open'); document.getElementById('dr').classList.remove('open'); document.body.style.overflow = '' }
+// ── DRAWER ──
+window.openDr  = () => { $('dbg').classList.add('open'); $('dr').classList.add('open'); document.body.style.overflow='hidden' }
+window.closeDr = () => { $('dbg').classList.remove('open'); $('dr').classList.remove('open'); document.body.style.overflow='' }
 
-// Refresh token
-async function tryRefresh() {
-  const r = localStorage.getItem('sb_refresh_token')
-  if (!r) return null
-  const res = await fetch(`${S}/auth/v1/token?grant_type=refresh_token`, {
-    method: 'POST', headers: { 'Content-Type': 'application/json', 'apikey': AK },
-    body: JSON.stringify({ refresh_token: r })
-  }).catch(() => null)
-  if (!res?.ok) return null
-  const d = await res.json()
-  if (d.access_token) {
-    localStorage.setItem('sb_access_token', d.access_token)
-    localStorage.setItem('sb_refresh_token', d.refresh_token || r)
-    sessionStorage.setItem('bp_token', d.access_token)
-    return d.access_token
-  }
-  return null
-}
-
-// Get valid token
-async function getToken() {
+// ── AUTH : token + refresh ──
+// Retourne {token, user} ou null — UNE SEULE requête pour valider
+async function getAuth() {
   let t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
   if (!t) return null
-  const ok = await fetch(`${S}/auth/v1/user`, { headers: { apikey: AK, Authorization: `Bearer ${t}` } })
-    .then(r => r.ok).catch(() => false)
-  if (ok) return t
-  return tryRefresh()
+  const r = await fetch(`${S}/auth/v1/user`, { headers:{ apikey:AK, Authorization:`Bearer ${t}` } }).catch(()=>null)
+  if (r?.ok) { const u = await r.json(); return { token:t, user:u } }
+  // Tenter refresh
+  const rt = localStorage.getItem('sb_refresh_token')
+  if (!rt) return null
+  const rr = await fetch(`${S}/auth/v1/token?grant_type=refresh_token`, {
+    method:'POST', headers:{'Content-Type':'application/json','apikey':AK}, body:JSON.stringify({refresh_token:rt})
+  }).catch(()=>null)
+  if (!rr?.ok) return null
+  const rd = await rr.json()
+  if (!rd.access_token) return null
+  localStorage.setItem('sb_access_token', rd.access_token)
+  localStorage.setItem('sb_refresh_token', rd.refresh_token || rt)
+  sessionStorage.setItem('bp_token', rd.access_token)
+  const r2 = await fetch(`${S}/auth/v1/user`, { headers:{ apikey:AK, Authorization:`Bearer ${rd.access_token}` } }).catch(()=>null)
+  if (!r2?.ok) return null
+  return { token: rd.access_token, user: await r2.json() }
 }
 
-// Fill UI with user data
+// ── PLAN : profiles + fallback subscriptions ──
+async function resolvePlan(userId, token) {
+  const now = new Date()
+  // 1. Profil
+  const pr = await fetch(`${S}/rest/v1/profiles?id=eq.${userId}&select=full_name,plan,plan_expires_at,email_verified,ref_code,referral_count,login_count,streak_days,analyses_today,phone,country,created_at,id`, {
+    headers:{ apikey:AK, Authorization:`Bearer ${token}` }
+  }).catch(()=>null)
+  const profile = pr?.ok ? (await pr.json())?.[0] || {} : {}
+
+  let ePlan = (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ['starter','pro','elite'].includes(profile.plan))
+    ? profile.plan : 'free'
+
+  // 2. Fallback : vérifier subscriptions actives si profil dit free
+  if (ePlan === 'free') {
+    const sr = await fetch(`${S}/rest/v1/subscriptions?user_id=eq.${userId}&status=eq.active&order=ends_at.desc&limit=1`, {
+      headers:{ apikey:AK, Authorization:`Bearer ${token}` }
+    }).catch(()=>null)
+    if (sr?.ok) {
+      const subs = await sr.json()
+      const activeSub = Array.isArray(subs) ? subs.find(s => s.ends_at && new Date(s.ends_at) > now) : null
+      if (activeSub && ['starter','pro','elite'].includes(activeSub.plan)) {
+        ePlan = activeSub.plan
+        // Corriger le profil en arrière-plan (ne bloque pas l'affichage)
+        fetch(`${S}/rest/v1/profiles?id=eq.${userId}`, {
+          method:'PATCH',
+          headers:{ apikey:AK, Authorization:`Bearer ${token}`, 'Content-Type':'application/json', 'Prefer':'return=minimal' },
+          body: JSON.stringify({ plan: activeSub.plan, plan_expires_at: activeSub.ends_at, updated_at: new Date().toISOString() })
+        }).catch(()=>{})
+        // Mettre à jour plan_expires_at dans profile pour les calculs suivants
+        profile.plan = activeSub.plan
+        profile.plan_expires_at = activeSub.ends_at
+      }
+    }
+  }
+  return { profile, ePlan }
+}
+
+// ── FILL UI ──
 function fillUI(name, plan, email) {
   const [label, color] = PL[plan] || PL.free
   const init = (name || 'P')[0].toUpperCase()
-
-  // Desktop sidebar
-  $('sb-av').textContent   = init
-  $('sb-name').textContent = name || 'Parieur'
-  Object.assign($('sb-plan'), { textContent: label, style: `color:${color}` })
-
-  // Desktop topbar
-  $('topbar-greet').textContent = `Bonjour ${name} 👋`
-  Object.assign($('tb-plan'), { innerHTML: `<i class="ti ti-bolt" style="font-size:12px"></i> ${label}`, style: `color:${color};border-color:${color}40` })
-
-  // Mobile topbar
-  Object.assign($('m-plan'), { textContent: label, style: `color:${color};border-color:${color}40;background:${color}12` })
-
-  // Drawer
-  $('dr-av').textContent  = init
-  $('dr-name').textContent = name || 'Parieur'
-  Object.assign($('dr-plan'), { textContent: label, style: `color:${color}` })
-
-  // ── BANDE PROFIL ──
-  $('pb-av').textContent  = init
-  $('pb-name').textContent = name || 'Parieur'
-  if (email) $('pb-email').textContent = email
-  Object.assign($('pb-plan'), { textContent: label, style: `background:${color}12;color:${color};border-color:${color}30` })
-  // Gradient avatar selon plan
-  const gradients = {
-    free: `linear-gradient(135deg,#4a6a4a,var(--green),#4a6a4a)`,
-    starter: `linear-gradient(135deg,var(--teal),var(--green),var(--teal))`,
-    pro: `linear-gradient(135deg,var(--green),var(--gold),var(--teal),var(--green))`,
-    elite: `linear-gradient(135deg,var(--purple),var(--gold),var(--green),var(--purple))`,
-  }
-  const wrap = document.querySelector('.pband-av-wrap')
-  if (wrap) { wrap.style.background = gradients[plan] || gradients.free; wrap.style.backgroundSize = '300% 300%' }
-  // Bouton upgrade si free
+  if ($('sb-av'))    $('sb-av').textContent    = init
+  if ($('sb-name'))  $('sb-name').textContent  = name || 'Parieur'
+  if ($('sb-plan'))  Object.assign($('sb-plan'),  { textContent:label, style:`color:${color}` })
+  if ($('dr-av'))    $('dr-av').textContent    = init
+  if ($('dr-name'))  $('dr-name').textContent  = name || 'Parieur'
+  if ($('dr-plan'))  Object.assign($('dr-plan'),  { textContent:label, style:`color:${color}` })
+  if ($('topbar-greet')) $('topbar-greet').textContent = `Bonjour ${name} 👋`
+  if ($('tb-plan'))  Object.assign($('tb-plan'),  { innerHTML:`<i class="ti ti-bolt" style="font-size:12px"></i> ${label}`, style:`color:${color};border-color:${color}40` })
+  if ($('m-plan'))   Object.assign($('m-plan'),   { textContent:label, style:`color:${color};border-color:${color}40;background:${color}12` })
+  // Bande profil
+  if ($('pb-av'))    $('pb-av').textContent    = init
+  if ($('pb-name'))  $('pb-name').textContent  = name || 'Parieur'
+  if ($('pb-plan'))  Object.assign($('pb-plan'), { textContent:label, style:`background:${color}12;color:${color};border-color:${color}30` })
+  if (email && $('pb-email')) $('pb-email').textContent = email
+  const w = document.querySelector('.pband-av-wrap')
+  if (w) { w.style.background = PLG[plan]||PLG.free; w.style.backgroundSize='300% 300%' }
   const upBtn = $('pb-upgrade-btn')
   if (upBtn) upBtn.style.display = plan === 'free' ? 'inline-flex' : 'none'
 }
 
+// ── ACCESS GATES UI ──
+function applyAccessGates(plan) {
+  // Actions rapides : montrer badge "requis" si plan insuffisant
+  const gates = [
+    { id:'action-analyse', req:'starter' },
+    { id:'action-oracle',  req:'starter' },
+  ]
+  gates.forEach(g => {
+    const el = $(g.id)
+    if (!el) return
+    if (!hasAccess(plan, g.req)) {
+      el.style.opacity = '0.5'
+      const existing = el.querySelector('.lock-badge')
+      if (!existing) {
+        const b = document.createElement('span')
+        b.className = 'lock-badge'
+        b.style.cssText = 'font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;background:rgba(245,200,66,.12);color:#F5C842;border:1px solid rgba(245,200,66,.25);margin-left:auto'
+        b.textContent = g.req.charAt(0).toUpperCase() + g.req.slice(1) + '+'
+        el.appendChild(b)
+      }
+    } else {
+      el.style.opacity = '1'
+    }
+  })
+}
 
-
-
-// Load coupon (aperçu du coupon Sûr via la RPC sécurisée)
-async function loadCoupon(token) {
+// ── COUPON avec timeout ──
+async function loadCoupon(token, plan) {
   const today = new Date().toISOString().split('T')[0]
-  const date  = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
-  $('coupon-date').textContent = date
+  $('coupon-date').textContent = new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long' })
 
+  // Timeout 8 secondes
+  const ctrl = new AbortController()
+  const timer = setTimeout(() => ctrl.abort(), 8000)
   try {
     const r = await fetch(`${S}/rest/v1/rpc/get_daily_coupons`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', apikey: AK, Authorization: `Bearer ${token || AK}` },
+      method:'POST', signal:ctrl.signal,
+      headers:{ 'Content-Type':'application/json', apikey:AK, Authorization:`Bearer ${token}` },
       body: JSON.stringify({ p_date: today })
     })
+    clearTimeout(timer)
+    if (!r.ok) throw new Error('Coupon HTTP ' + r.status)
     const data = await r.json()
     const list = Array.isArray(data) ? data : []
-    // On met en avant le coupon Sûr (premier)
     const safe = list.find(c => c.tier === 'safe') || list[0]
 
     if (!safe) {
@@ -1055,149 +1116,131 @@ async function loadCoupon(token) {
     const total = Number(safe.total_odds) || 0
     let html = ''
 
-    if (safe.unlocked && sels.length) {
+    // Accès coupon selon plan
+    const canSee = hasAccess(plan, safe.min_plan || 'free')
+    if (canSee && sels.length) {
       sels.slice(0, 4).forEach(s => {
         const cote = parseFloat(s.odds) || 1.5
-        const match = (s.team_a && s.team_b) ? `${s.team_a} vs ${s.team_b}` : (s.match || s.equipes || 'Match')
-        html += `<div class="coupon-item"><div class="ci-flag">⚽</div><div class="ci-info"><div class="ci-match">${match}</div><div class="ci-league">${s.league || s.championship || ''}</div></div><div class="ci-right"><div class="ci-pick">${s.pick || s.prediction || '1X2'}</div><div class="ci-cote">×${cote.toFixed(2)}</div></div></div>`
+        const match = (s.team_a && s.team_b) ? `${s.team_a} vs ${s.team_b}` : (s.match || 'Match')
+        html += `<div class="coupon-item"><div class="ci-flag">⚽</div><div class="ci-info"><div class="ci-match">${match}</div><div class="ci-league">${s.league||''}</div></div><div class="ci-right"><div class="ci-pick">${s.pick||'1X2'}</div><div class="ci-cote">×${cote.toFixed(2)}</div></div></div>`
       })
     } else {
-      // Verrouillé ou non connecté : aperçu flouté + invitation
-      html += `<div style="text-align:center;padding:8px 12px 14px"><div style="font-size:13px;font-weight:700;color:var(--mid);margin-bottom:4px">${safe.title || 'Coupon Sûr'}</div><div style="font-size:11px;color:var(--lo)">${safe.selections_count || 3} sélections · confiance ${safe.confidence || 75}%</div></div>`
+      html += `<div style="text-align:center;padding:12px;border-radius:10px;background:rgba(245,200,66,.04);border:1px dashed rgba(245,200,66,.2);margin-bottom:8px"><div style="font-size:12px;font-weight:700;color:var(--mid)">${safe.title||'Coupon Sûr'} — ${safe.selections_count||3} sélections</div><div style="font-size:11px;color:var(--lo);margin-top:3px">Confiance ${safe.confidence||75}%</div><a href="/checkout" style="display:inline-flex;align-items:center;gap:5px;margin-top:10px;padding:8px 16px;border-radius:8px;background:var(--gold);color:#000;font-size:11px;font-weight:800;text-decoration:none"><i class="ti ti-lock-open"></i> Débloquer — dès 750 F</a></div>`
     }
 
-    html += `<div class="coupon-total" style="margin-top:12px"><div><div class="ct-lbl">Cote totale (Sûr)</div><div style="font-size:10px;color:var(--lo);margin-top:2px">${safe.selections_count || sels.length} sélections</div></div><div class="ct-val">×${total.toFixed(2)}</div></div>`
-    html += `<a href="/coupons" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:11px;border-radius:9px;background:var(--gold);color:#000;font-weight:800;font-size:13px"><i class="ti ti-ticket"></i> Voir les 3 coupons du jour</a>`
+    html += `<div class="coupon-total"><div><div class="ct-lbl">Cote totale</div><div style="font-size:10px;color:var(--lo);margin-top:1px">${safe.selections_count||sels.length} sélections</div></div><div class="ct-val">×${total.toFixed(2)}</div></div>`
+    html += `<a href="/coupons" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:10px;padding:11px;border-radius:9px;background:var(--gold);color:#000;font-weight:800;font-size:13px"><i class="ti ti-ticket"></i> Voir les 3 coupons du jour</a>`
     $('coupon-body').innerHTML = html
-  } catch {
-    $('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--lo);font-size:12px">Coupons disponibles prochainement</div>`
+  } catch (e) {
+    clearTimeout(timer)
+    $('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--lo);font-size:12px"><div style="font-size:24px;margin-bottom:8px">⏳</div>Coupons disponibles prochainement</div>`
   }
 }
 
-// Init
+// ── INIT ──
 async function init() {
   if (_done) return; _done = true
 
-  // Afficher cache immédiatement
+  // Afficher cache immédiatement pour éviter le blanc
   const cn = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || ''
   const cp = sessionStorage.getItem('bp_plan')   || localStorage.getItem('bp_plan')   || 'free'
   if (cn) fillUI(cn, cp, '')
 
-  // Jours d'abonnement restants (calculé depuis plan_expires_at après chargement du profil)
-  $('st-days').textContent = '—'
-
-  // Valider token
-  const token = await getToken()
-  if (!token) { window.location.replace('login.html?next=dashboard.html'); return }
+  // Auth : un seul appel réseau
+  const auth = await getAuth()
+  if (!auth) {
+    window.location.replace('/login?next=/dashboard')
+    return
+  }
+  const { token, user: authUser } = auth
 
   try {
-    const uid = localStorage.getItem('sb_user_id') || ''
+    localStorage.setItem('sb_user_id', authUser.id)
+    const { profile, ePlan } = await resolvePlan(authUser.id, token)
 
-    const [authR, profR] = await Promise.all([
-      fetch(`${S}/auth/v1/user`, { headers: { apikey: AK, Authorization: `Bearer ${token}` } }),
-      uid ? fetch(`${S}/rest/v1/profiles?id=eq.${uid}&select=full_name,plan,plan_expires_at,email_verified,ref_code,referral_count,login_count,streak_days,analyses_today,phone,country,created_at,id`, {
-        headers: { apikey: AK, Authorization: `Bearer ${token}` }
-      }) : Promise.resolve(null)
-    ])
-
-    const authUser = await authR.json()
-    if (authUser.id) localStorage.setItem('sb_user_id', authUser.id)
-
-    // Si pas eu profil (pas de uid), refaire avec l'id
-    let profile = null
-    if (profR) {
-      const profData = await profR.json()
-      profile = profData?.[0]
-    }
-    if (!profile) {
-      const pr2 = await fetch(`${S}/rest/v1/profiles?id=eq.${authUser.id}&select=full_name,plan,plan_expires_at,email_verified,ref_code,referral_count,login_count,streak_days,analyses_today,phone,country,created_at,id`, {
-        headers: { apikey: AK, Authorization: `Bearer ${token}` }
-      })
-      profile = (await pr2.json())?.[0] || {}
-    }
-
-    // Plan effectif
     const now = new Date()
-    const ePlan = (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ['starter','pro','elite'].includes(profile.plan))
-      ? profile.plan : 'free'
-
     const firstName = profile.full_name?.split(' ')[0] || authUser.email?.split('@')[0] || 'Parieur'
+
     sessionStorage.setItem('bp_prenom', firstName)
     sessionStorage.setItem('bp_plan', ePlan)
-    localStorage.setItem('sb_user_id', authUser.id)
+    localStorage.setItem('bp_plan', ePlan)
 
     fillUI(firstName, ePlan, authUser.email || '')
+    applyAccessGates(ePlan)
 
-    // ── Bande profil : email + expiration + jours
-    if (authUser.email) $('pb-email').textContent = authUser.email
-    if (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ePlan !== 'free') {
-      const daysLeft = Math.max(0, Math.ceil((new Date(profile.plan_expires_at) - now) / 86400000))
-      const expDate  = new Date(profile.plan_expires_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' })
-      $('pb-days').textContent = daysLeft
+    // Bande profil — expiration + jours
+    if (authUser.email && $('pb-email')) $('pb-email').textContent = authUser.email
+    const expiresAt = profile.plan_expires_at
+    if (expiresAt && new Date(expiresAt) > now && ePlan !== 'free') {
+      const daysLeft = Math.max(0, Math.ceil((new Date(expiresAt) - now) / 86400000))
+      if ($('pb-days')) $('pb-days').textContent = daysLeft
       const expEl = $('pb-exp')
-      if (expEl) { expEl.textContent = `Exp. ${expDate}`; expEl.style.display = 'inline-flex' }
+      if (expEl) {
+        const expDate = new Date(expiresAt).toLocaleDateString('fr-FR', { day:'numeric', month:'short' })
+        expEl.textContent = `Exp. ${expDate}`; expEl.style.display = 'inline-flex'
+      }
     } else {
-      $('pb-days').textContent = '0'
-      $('pb-days').style.color = 'var(--lo)'
+      if ($('pb-days')) { $('pb-days').textContent = '0'; $('pb-days').style.color = 'var(--lo)' }
     }
 
     // Stats
-    $('st-analyses').textContent = profile.analyses_today || 0
-    $('st-refs').textContent     = profile.referral_count || 0
+    if ($('st-analyses')) $('st-analyses').textContent = profile.analyses_today || 0
+    if ($('st-refs'))     $('st-refs').textContent     = profile.referral_count || 0
 
-    // Jours d'abonnement restants
-    if (profile.plan_expires_at && new Date(profile.plan_expires_at) > now && ePlan !== 'free') {
-      const days = Math.max(0, Math.ceil((new Date(profile.plan_expires_at) - now) / 86400000))
-      $('st-days').textContent = days
+    // Jours restants
+    if (expiresAt && new Date(expiresAt) > now && ePlan !== 'free') {
+      const days = Math.max(0, Math.ceil((new Date(expiresAt) - now) / 86400000))
+      if ($('st-days')) $('st-days').textContent = days
     } else {
-      $('st-days').textContent = '0'
+      if ($('st-days')) $('st-days').textContent = '0'
     }
 
     // Streak
     const s = profile.streak_days || 0
-    $('st-streak').textContent = s
-    $('st-big').textContent    = s
-    $('st-fire').textContent   = s >= 7 ? '🔥🔥' : s >= 3 ? '🔥' : '💤'
-    $('st-msg').textContent    = s >= 7 ? 'Série légendaire ! Continue !' : s >= 3 ? 'En feu ! Ne lâche pas !' : s >= 1 ? 'Bonne série !' : 'Reviens chaque jour pour ta série'
-    $('st-bar').style.width    = Math.min(100, (s / 7) * 100) + '%'
-    $('st-hint').textContent   = s >= 7 ? '✅ Bonus débloqué !' : `${s}/7 jours pour débloquer un bonus`
+    if ($('st-streak')) $('st-streak').textContent = s
+    if ($('st-big'))    $('st-big').textContent    = s
+    if ($('st-fire'))   $('st-fire').textContent   = s >= 7 ? '🔥🔥' : s >= 3 ? '🔥' : '💤'
+    if ($('st-msg'))    $('st-msg').textContent    = s >= 7 ? 'Série légendaire ! Continue !' : s >= 3 ? 'En feu ! Ne lâche pas !' : s >= 1 ? 'Bonne série !' : 'Reviens chaque jour pour ta série'
+    if ($('st-bar'))    $('st-bar').style.width    = Math.min(100, (s / 7) * 100) + '%'
+    if ($('st-hint'))   $('st-hint').textContent   = s >= 7 ? '✅ Bonus débloqué !' : `${s}/7 jours pour un bonus`
 
     // Parrainage
     _ref = profile.ref_code || ''
     const refUrl = `https://betoracl.com/signup?ref=${_ref}`
-    $('ref-url').textContent      = refUrl
-    $('ref-code-chip').textContent = _ref || '…'
-    $('ref-count').textContent    = profile.referral_count || 0
-    $('ref-bonus').textContent    = (profile.referral_count || 0) * 7
+    if ($('ref-url'))       $('ref-url').textContent       = refUrl
+    if ($('ref-code-chip')) $('ref-code-chip').textContent = _ref || '…'
+    if ($('ref-count'))     $('ref-count').textContent     = profile.referral_count || 0
+    if ($('ref-bonus'))     $('ref-bonus').textContent     = (profile.referral_count || 0) * 7
 
-    loadCoupon(token)
+    // Coupon avec le plan résolu
+    loadCoupon(token, ePlan)
 
   } catch (e) {
-    console.warn('Dashboard error:', e)
+    console.error('Dashboard init error:', e)
   }
 }
 
-// Copy referral link
+// ── COPIER LIEN PARRAINAGE ──
 window.copyRef = function() {
   const url = `https://betoracl.com/signup?ref=${_ref}`
   const btn = document.querySelector('.ref-copy-btn')
+  if (!btn) return
   const orig = btn.innerHTML
-  ;(navigator.clipboard?.writeText(url) || Promise.reject()).catch(() => {
+  navigator.clipboard?.writeText(url).catch(() => {
     const ta = document.createElement('textarea')
     ta.value = url; document.body.appendChild(ta); ta.select()
-    document.execCommand('copy'); document.body.removeChild(ta)
-  }).finally ? null : null
-  navigator.clipboard?.writeText(url)
-  btn.innerHTML = '<i class="ti ti-check"></i> Copié !'
-  btn.style.color = 'var(--green)'
+    try { document.execCommand('copy') } catch {} 
+    document.body.removeChild(ta)
+  })
+  btn.innerHTML = '<i class="ti ti-check"></i> Copié !'; btn.style.color = 'var(--green)'
   setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2000)
 }
 
-// Logout
+// ── LOGOUT ──
 window.doLogout = function() {
-  ;['sb_access_token','sb_refresh_token','sb_user_id','bp_plan'].forEach(k => localStorage.removeItem(k))
+  ;['sb_access_token','sb_refresh_token','sb_user_id','bp_plan','bp_prenom'].forEach(k => localStorage.removeItem(k))
   sessionStorage.clear()
-  window.location.replace('index.html')
+  window.location.replace('/')
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init)
