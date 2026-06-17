@@ -142,6 +142,46 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
   .c-odds-lbl { margin-top: 0; }
   .hero h1 { font-size: clamp(36px, 11vw, 56px); }
 }
+
+/* Teaser freemium : sélections verrouillées après la 1ère */
+.teaser-blur {
+  filter: blur(5px);
+  pointer-events: none;
+  user-select: none;
+  opacity: .55;
+  position: relative;
+}
+.teaser-cover {
+  position: relative;
+  margin-top: 6px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+.teaser-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(13,19,13,0) 0%, rgba(13,19,13,.92) 45%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 14px 16px;
+  gap: 8px;
+  text-align: center;
+}
+.teaser-overlay .t-lock { font-size: 22px; color: var(--gold); }
+.teaser-overlay .t-txt { font-size: 13px; font-weight: 700; color: var(--white); }
+.teaser-overlay .t-sub { font-size: 11px; color: var(--mid); max-width: 240px; }
+.teaser-overlay .t-cta {
+  background: var(--green); color: #000;
+  font-size: 12px; font-weight: 800;
+  padding: 8px 20px; border-radius: 8px;
+  border: none; cursor: pointer;
+  font-family: var(--ff);
+  margin-top: 4px;
+}
+.teaser-overlay .t-cta:hover { background: #4ade80; }
+
 </style>
 </head>
 <body>
@@ -272,9 +312,10 @@ function renderCoupon(c, userPlan) {
   const sels = Array.isArray(c.selections) ? c.selections : []
   const total = Number(c.total_odds) || 0
   const conf = c.confidence || 60
-  // Le serveur (RPC) fait foi sur le déverrouillage et le nombre réel de sélections
   const unlocked = c.unlocked === true
+  const isTeaser = c.teaser === true   // Free sur coupon safe : accès partiel
   const selCount = c.selections_count ?? sels.length
+  const hiddenCount = isTeaser ? selCount - sels.length : 0
 
   const suffix = selCount ? ` · ${selCount} sélection${selCount > 1 ? 's' : ''}` : ''
   const lockCover = !unlocked ? `
@@ -285,7 +326,22 @@ function renderCoupon(c, userPlan) {
       <button class="lock-cta" onclick="goUpgrade('${info.min}')">${userPlan === 'guest' ? 'Se connecter' : 'Passer au plan ' + info.minLabel}</button>
     </div>` : ''
 
-  // Quand verrouillé, le serveur ne renvoie pas les sélections : on affiche des placeholders flous
+  // Teaser : 1 sélection visible + N floutées avec CTA
+  const teaserHtml = isTeaser && hiddenCount > 0 ? `
+    <div class="teaser-cover">
+      <div class="teaser-blur">
+        ${Array.from({ length: hiddenCount }).map(() =>
+          `<div class="sel"><div class="sel-top"><div><div class="sel-match">██████ vs ██████</div><div class="sel-league">████████ · ██:██</div></div><div class="sel-pick-wrap"><div class="sel-pick">████</div><div class="sel-odds">×0.00</div></div></div></div>`
+        ).join('')}
+      </div>
+      <div class="teaser-overlay">
+        <span class="t-lock">🔒</span>
+        <div class="t-txt">+${hiddenCount} sélection${hiddenCount > 1 ? 's' : ''} verrouillée${hiddenCount > 1 ? 's' : ''}</div>
+        <div class="t-sub">Passe au Starter pour voir le coupon complet et maximiser tes gains.</div>
+        <button class="t-cta" onclick="goUpgrade('starter')">Débloquer — 750 F/sem</button>
+      </div>
+    </div>` : ''
+
   const selsHtml = unlocked
     ? sels.map(s => renderSelection(s, tier)).join('')
     : Array.from({ length: Math.max(selCount, 3) }).map(() =>
@@ -312,6 +368,7 @@ function renderCoupon(c, userPlan) {
       </div>
       <div class="c-sels">
         ${selsHtml}
+        ${teaserHtml || ''}
       </div>
       <div class="c-foot">
         <div class="bk-row">${bookmakerRow()}</div>
