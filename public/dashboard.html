@@ -663,6 +663,22 @@ button { cursor: pointer; font-family: var(--ff); }
   .drawer-bg { display: none !important; }
   .drawer    { display: none !important; }
 }
+
+/* ── TELEGRAM ELITE CARD ── */
+.tg-card{background:linear-gradient(135deg,rgba(34,197,94,.06) 0%,rgba(167,139,250,.08) 100%);border:1px solid rgba(167,139,250,.3);border-radius:14px;padding:18px;margin-bottom:0;position:relative;overflow:hidden}
+.tg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--purple))}
+.tg-card-hd{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.tg-card-ic{width:40px;height:40px;border-radius:10px;background:rgba(167,139,250,.12);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--purple);flex-shrink:0}
+.tg-card-title{font-family:var(--fd);font-size:16px;letter-spacing:.04em}
+.tg-card-sub{font-size:11px;color:var(--lo);margin-top:1px}
+.btn-tg{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;border-radius:10px;background:linear-gradient(90deg,var(--green),#2dd4bf);color:#000;font-size:13px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff);transition:opacity .15s}
+.btn-tg:hover{opacity:.9}
+.btn-tg:disabled{opacity:.6;cursor:not-allowed}
+.tg-link-box{background:var(--bg);border:1px solid rgba(34,197,94,.25);border-radius:8px;padding:10px 12px;margin-top:10px;display:none}
+.tg-link-url{font-size:12px;color:var(--green);word-break:break-all;margin-bottom:8px;font-weight:600}
+.btn-copy-tg{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border-radius:8px;background:var(--green);color:#000;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff)}
+.tg-msg{font-size:11px;text-align:center;min-height:16px;margin-top:6px}
+
 </style>
 </head>
 <body data-page="dashboard">
@@ -861,10 +877,33 @@ button { cursor: pointer; font-family: var(--ff); }
                 <div class="al-icon"><i class="ti ti-gift"></i></div>
                 <div class="al-text"><div class="al-title">Parrainer</div><div class="al-sub">7 jours / filleul</div></div>
               </a>
-              <a href="/checkout" class="action-link">
+              <a href="/checkout" class="action-link" id="action-checkout">
                 <div class="al-icon"><i class="ti ti-crown"></i></div>
                 <div class="al-text"><div class="al-title">Mes plans</div><div class="al-sub">Gérer</div></div>
               </a>
+            </div>
+
+            <!-- Carte Telegram Elite (visible uniquement plan Elite) -->
+            <div id="tg-elite-card" style="display:none;padding:0 18px 16px">
+              <div class="tg-card">
+                <div class="tg-card-hd">
+                  <div class="tg-card-ic"><i class="ti ti-brand-telegram"></i></div>
+                  <div>
+                    <div class="tg-card-title">Canal Telegram Elite</div>
+                    <div class="tg-card-sub">Accès exclusif réservé aux membres Elite</div>
+                  </div>
+                </div>
+                <button class="btn-tg" id="btn-tg-access" onclick="getTgAccess()">
+                  <i class="ti ti-brand-telegram"></i> Rejoindre le canal privé
+                </button>
+                <div class="tg-link-box" id="tg-link-box">
+                  <div class="tg-link-url" id="tg-link-url">—</div>
+                  <button class="btn-copy-tg" onclick="copyTgLink()">
+                    <i class="ti ti-copy"></i> Copier et rejoindre
+                  </button>
+                </div>
+                <div class="tg-msg" id="tg-msg"></div>
+              </div>
             </div>
           </div>
 
@@ -1167,6 +1206,7 @@ async function init() {
 
     fillUI(firstName, ePlan, authUser.email || '')
     applyAccessGates(ePlan)
+    showTgCard(ePlan)
 
     // Bande profil — expiration + jours
     if (authUser.email && $('pb-email')) $('pb-email').textContent = authUser.email
@@ -1234,6 +1274,62 @@ window.copyRef = function() {
   })
   btn.innerHTML = '<i class="ti ti-check"></i> Copié !'; btn.style.color = 'var(--green)'
   setTimeout(() => { btn.innerHTML = orig; btn.style.color = '' }, 2000)
+}
+
+
+// ── TELEGRAM ELITE ACCESS ──
+let _tgLink = ''
+
+function showTgCard(plan) {
+  const card = document.getElementById('tg-elite-card')
+  if (card) card.style.display = plan === 'elite' ? 'block' : 'none'
+}
+
+window.getTgAccess = async function() {
+  const btn = document.getElementById('btn-tg-access')
+  const msg = document.getElementById('tg-msg')
+  const box = document.getElementById('tg-link-box')
+  const uid = localStorage.getItem('sb_user_id') || sessionStorage.getItem('bp_uid') || ''
+  if (!uid) { msg.style.color='var(--red)'; msg.textContent='Erreur : utilisateur non identifié'; return }
+
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Génération...'
+  msg.textContent = ''
+
+  try {
+    const r = await fetch(`${S}/functions/v1/tg-access`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': AK },
+      body: JSON.stringify({ action: 'grant_access', user_id: uid })
+    })
+    const d = await r.json()
+    if (d.ok && d.invite_link) {
+      _tgLink = d.invite_link
+      document.getElementById('tg-link-url').textContent = d.invite_link
+      if (box) box.style.display = 'block'
+      btn.style.display = 'none'
+      msg.style.color = 'var(--green)'
+      msg.textContent = '✅ Lien prêt — valable pour 1 seule utilisation'
+    } else if (d.already_active) {
+      msg.style.color = 'var(--teal)'
+      msg.textContent = '✓ Tu es déjà membre du canal'
+      btn.disabled = false
+      btn.innerHTML = '<i class="ti ti-check"></i> Déjà membre'
+    } else {
+      throw new Error(d.error || 'Erreur inconnue')
+    }
+  } catch(e) {
+    msg.style.color = 'var(--red)'
+    msg.textContent = 'Erreur : ' + e.message
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-brand-telegram"></i> Rejoindre le canal privé'
+  }
+}
+
+window.copyTgLink = function() {
+  if (!_tgLink) return
+  navigator.clipboard?.writeText(_tgLink).catch(() => {})
+  window.open(_tgLink, '_blank')
 }
 
 // ── LOGOUT ──

@@ -76,6 +76,15 @@ body{background:var(--bg);color:var(--hi);font-family:var(--ff);min-height:100dv
   .state{padding:30px 20px}
   .card{border-radius:16px}
 }
+
+.btn-tg-elite{display:none;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:12px;background:linear-gradient(90deg,#22c55e,#2dd4bf);color:#000;font-size:14px;font-weight:800;text-decoration:none;margin-bottom:10px;cursor:pointer;border:none;font-family:var(--ff);transition:opacity .15s}
+.btn-tg-elite:hover{opacity:.9}
+.btn-tg-elite.visible{display:flex}
+.tg-invite-box{display:none;background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px 14px;margin-bottom:10px;text-align:center}
+.tg-invite-box.visible{display:block}
+.tg-invite-url{font-size:12px;color:#22c55e;word-break:break-all;margin-bottom:8px;font-weight:600}
+.tg-invite-copy{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:9px;border-radius:8px;background:#22c55e;color:#000;font-size:12px;font-weight:800;border:none;cursor:pointer;font-family:var(--ff)}
+
 </style>
 </head>
 <body>
@@ -299,6 +308,55 @@ async function retryCheck() {
   btn.disabled = false
   btn.innerHTML = '<i class="ti ti-refresh"></i> Vérifier à nouveau'
 }
+
+// ── TELEGRAM ELITE (payment-success) ──
+let _psUid = '', _psToken = '', _psTgLink = ''
+
+async function initTgEliteBtn(plan, uid, token) {
+  _psUid = uid; _psToken = token
+  if (plan === 'elite') {
+    const btn = document.getElementById('btn-tg-elite')
+    if (btn) btn.classList.add('visible')
+  }
+}
+
+async function getEliteTgAccess() {
+  const btn = document.getElementById('btn-tg-elite')
+  const box = document.getElementById('tg-invite-box')
+  const url = document.getElementById('tg-invite-url')
+  const S = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+  const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Génération du lien...'
+
+  try {
+    const r = await fetch(`${S}/functions/v1/tg-access`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': AK },
+      body: JSON.stringify({ action: 'grant_access', user_id: _psUid })
+    })
+    const d = await r.json()
+    if (d.ok && d.invite_link) {
+      _psTgLink = d.invite_link
+      url.textContent = d.invite_link
+      box.classList.add('visible')
+      btn.classList.remove('visible')
+    } else {
+      throw new Error(d.error || 'Erreur')
+    }
+  } catch(e) {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-brand-telegram"></i> Rejoindre le canal Telegram Elite'
+  }
+}
+
+function copyEliteTgLink() {
+  if (!_psTgLink) return
+  navigator.clipboard?.writeText(_psTgLink).catch(() => {})
+  window.open(_psTgLink, '_blank')
+}
+
 </script>
 </body>
 </html>
