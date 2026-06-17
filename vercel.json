@@ -2,103 +2,49 @@
   "version": 2,
   "outputDirectory": "public",
   "routes": [
-    {
-      "src": "/",
-      "dest": "/index.html"
-    },
-    {
-      "src": "/signup",
-      "dest": "/signup.html"
-    },
-    {
-      "src": "/login",
-      "dest": "/login.html"
-    },
-    {
-      "src": "/dashboard",
-      "dest": "/dashboard.html"
-    },
-    {
-      "src": "/welcome",
-      "dest": "/welcome.html"
-    },
-    {
-      "src": "/analyse",
-      "dest": "/analyse.html"
-    },
-    {
-      "src": "/checkout",
-      "dest": "/checkout.html"
-    },
-    {
-      "src": "/cgu",
-      "dest": "/cgu.html"
-    },
-    {
-      "src": "/admin",
-      "dest": "/admin.html"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/$1"
-    }
+    { "src": "/",                "dest": "/index.html" },
+    { "src": "/signup",          "dest": "/signup.html" },
+    { "src": "/login",           "dest": "/login.html" },
+    { "src": "/dashboard",       "dest": "/dashboard.html" },
+    { "src": "/welcome",         "dest": "/welcome.html" },
+    { "src": "/analyse",         "dest": "/analyse.html" },
+    { "src": "/checkout",        "dest": "/checkout.html" },
+    { "src": "/coupons",         "dest": "/coupons.html" },
+    { "src": "/cgu",             "dest": "/cgu.html" },
+    { "src": "/admin",           "dest": "/admin.html" },
+    { "src": "/admin-login",     "dest": "/admin-login.html" },
+    { "src": "/admin-recover",   "dest": "/admin-recover.html" },
+    { "src": "/payment-success", "dest": "/payment-success.html" },
+    { "src": "/payment-error",   "dest": "/payment-error.html" },
+    { "src": "/(.*)",            "dest": "/$1" }
   ],
   "headers": [
     {
       "source": "/assets/(.*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=604800, immutable"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        }
+        { "key": "Cache-Control", "value": "public, max-age=604800, immutable" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" }
       ]
     },
     {
       "source": "/((?!assets/).*)",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        }
+        { "key": "Cache-Control", "value": "no-cache, no-store, must-revalidate" }
       ]
     },
     {
       "source": "/(.*)\\.html",
       "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "no-cache, no-store, must-revalidate"
-        },
-        {
-          "key": "X-Frame-Options",
-          "value": "DENY"
-        },
-        {
-          "key": "X-Content-Type-Options",
-          "value": "nosniff"
-        },
-        {
-          "key": "Referrer-Policy",
-          "value": "strict-origin-when-cross-origin"
-        },
-        {
-          "key": "Permissions-Policy",
-          "value": "camera=(), microphone=(), geolocation=()"
-        }
+        { "key": "Cache-Control",  "value": "no-cache, no-store, must-revalidate" },
+        { "key": "X-Frame-Options", "value": "DENY" },
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" }
       ]
     },
     {
       "source": "/(.*)",
-      "headers": [
-        {
-          "key": "X-Robots-Tag",
-          "value": "index, follow"
-        }
-      ]
+      "headers": [{ "key": "X-Robots-Tag", "value": "index, follow" }]
     }
   ]
 }
