@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Coupons du jour — Betoracle Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root {
+  --green: #22c55e; --green-l: #4ade80; --green-d: #16a34a;
+  --gold:  #F5C842; --gold-d:  #C89B0A;
+  --teal:  #2dd4bf; --purple: #a78bfa; --red: #f87171; --orange: #fb923c;
+  --ink:   #060906; --ink2: #0a0f0a; --ink3: #0e130e;
+  --surf1: #121912; --surf2: #181f18; --surf3: #1e271e;
+  --line1: #1e2c1e; --line2: #263626; --line3: #30463a;
+  --hi:    #e6f0e6; --mid:   #8aaa8a; --lo:  #4a6a4a;
+  --ff: 'Barlow', sans-serif;
+  --fd: 'Bebas Neue', sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+body { background: var(--ink); color: var(--hi); font-family: var(--ff); min-height: 100dvh; overflow-x: hidden; line-height: 1.6; }
+a { text-decoration: none; color: inherit; }
+button { cursor: pointer; font-family: var(--ff); border: none; }
+
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+
+/* ── HEADER ── */
+.top {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(8,12,8,.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid var(--line1);
+  padding: 14px 0;
+}
+.top-in { max-width: 1040px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+.brand { display: flex; align-items: center; gap: 10px; }
+.brand-badge { width: 34px; height: 34px; border-radius: 9px; background: var(--green-d); border: 1.5px solid var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--fd); font-size: 18px; color: var(--gold); }
+.brand-name { font-family: var(--fd); font-size: 20px; letter-spacing: .04em; }
+.brand-name span { color: var(--gold); }
+.back-link { font-size: 13px; color: var(--mid); display: flex; align-items: center; gap: 6px; }
+.back-link:hover { color: var(--green); }
+
+/* ── HERO ── */
+.hero { padding: 40px 0 20px; text-align: center; }
+.hero .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 12px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--green); background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.25); padding: 5px 14px; border-radius: 20px; margin-bottom: 16px; }
+.hero h1 { font-family: var(--fd); font-size: clamp(40px, 8vw, 68px); line-height: .98; letter-spacing: .02em; margin-bottom: 12px; }
+.hero h1 span { color: var(--gold); }
+.hero p { font-size: 15px; color: var(--mid); max-width: 480px; margin: 0 auto; }
+.hero .date-pill { display: inline-block; margin-top: 14px; font-size: 13px; color: var(--lo); }
+
+/* ── RISK LADDER (signature) ── */
+.ladder { display: flex; gap: 0; max-width: 420px; margin: 24px auto 8px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line2); }
+.ladder-step { flex: 1; padding: 9px 6px; text-align: center; font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; background: var(--surf1); color: var(--lo); transition: all .2s; }
+.ladder-step.s-safe.on { background: rgba(34,197,94,.18); color: var(--green-l); }
+.ladder-step.s-balanced.on { background: rgba(245,200,66,.18); color: var(--gold); }
+.ladder-step.s-bold.on { background: rgba(251,146,60,.18); color: var(--orange); }
+
+/* ── COUPONS ── */
+.coupons { padding: 24px 0 60px; display: flex; flex-direction: column; gap: 22px; }
+.coupon {
+  background: var(--surf1); border: 1px solid var(--line2);
+  border-radius: 18px; overflow: hidden; position: relative;
+}
+.coupon.safe { border-top: 3px solid var(--green); }
+.coupon.balanced { border-top: 3px solid var(--gold); }
+.coupon.bold { border-top: 3px solid var(--orange); }
+
+.c-head { padding: 20px 22px 16px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.c-head-l { min-width: 0; }
+.c-tier { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; padding: 4px 10px; border-radius: 20px; margin-bottom: 8px; }
+.safe .c-tier { background: rgba(34,197,94,.15); color: var(--green-l); }
+.balanced .c-tier { background: rgba(245,200,66,.15); color: var(--gold); }
+.bold .c-tier { background: rgba(251,146,60,.15); color: var(--orange); }
+.c-title { font-family: var(--fd); font-size: 24px; letter-spacing: .03em; line-height: 1.1; margin-bottom: 6px; }
+.c-summary { font-size: 13px; color: var(--mid); line-height: 1.55; }
+.c-odds { text-align: center; flex-shrink: 0; }
+.c-odds-val { font-family: var(--fd); font-size: 40px; line-height: 1; }
+.safe .c-odds-val { color: var(--green); }
+.balanced .c-odds-val { color: var(--gold); }
+.bold .c-odds-val { color: var(--orange); }
+.c-odds-lbl { font-size: 10px; color: var(--lo); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+
+.c-meta { display: flex; gap: 18px; padding: 0 22px 14px; font-size: 12px; color: var(--mid); flex-wrap: wrap; }
+.c-meta b { color: var(--hi); }
+.c-conf-bar { height: 5px; border-radius: 3px; background: var(--surf3); overflow: hidden; flex: 1; min-width: 80px; margin-top: 7px; }
+.c-conf-fill { height: 100%; border-radius: 3px; }
+.safe .c-conf-fill { background: var(--green); }
+.balanced .c-conf-fill { background: var(--gold); }
+.bold .c-conf-fill { background: var(--orange); }
+
+.c-sels { border-top: 1px solid var(--line1); }
+.sel { padding: 14px 22px; border-bottom: 1px solid var(--line1); }
+.sel:last-child { border-bottom: none; }
+.sel-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sel-match { font-weight: 700; font-size: 14px; }
+.sel-league { font-size: 11px; color: var(--lo); margin-top: 1px; }
+.sel-time { font-size: 11px; color: var(--mid); margin-top: 2px; }
+.sel-pick-wrap { text-align: right; flex-shrink: 0; }
+.sel-pick { font-size: 12px; font-weight: 700; color: var(--green-l); }
+.balanced .sel-pick { color: var(--gold); }
+.bold .sel-pick { color: var(--orange); }
+.sel-odds { display: inline-block; font-family: var(--fd); font-size: 15px; letter-spacing: .03em; background: var(--surf3); padding: 2px 9px; border-radius: 6px; margin-top: 3px; }
+.sel-reason { font-size: 12px; color: var(--mid); line-height: 1.5; margin-top: 8px; padding-left: 2px; border-left: 2px solid var(--line2); padding-left: 10px; }
+
+.c-foot { padding: 16px 22px; display: flex; align-items: center; justify-content: space-between; gap: 12px; background: var(--ink2); border-top: 1px solid var(--line1); flex-wrap: wrap; }
+.bk-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.bk { font-size: 11px; font-weight: 700; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--line2); color: var(--mid); background: var(--surf1); transition: all .15s; }
+.bk:hover { border-color: var(--gold); color: var(--gold); }
+.c-stake { font-size: 12px; color: var(--lo); }
+
+/* ── LOCK OVERLAY ── */
+.c-locked .c-sels, .c-locked .c-foot { filter: blur(6px); pointer-events: none; user-select: none; }
+.lock-cover {
+  position: absolute; left: 0; right: 0; bottom: 0; top: 130px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 12px; text-align: center; padding: 24px;
+  background: linear-gradient(180deg, transparent, var(--surf1) 38%);
+}
+.lock-cover i { font-size: 30px; color: var(--gold); }
+.lock-cover .lc-txt { font-size: 14px; font-weight: 700; }
+.lock-cover .lc-sub { font-size: 12px; color: var(--mid); max-width: 280px; }
+.lock-cta { margin-top: 4px; background: var(--gold); color: #000; font-weight: 800; font-size: 13px; padding: 11px 24px; border-radius: 9px; }
+.lock-cta:hover { background: #ffe066; }
+
+/* ── STATES ── */
+.state { text-align: center; padding: 70px 20px; color: var(--mid); }
+.state .ic { font-size: 44px; margin-bottom: 14px; }
+.state h3 { font-family: var(--fd); font-size: 26px; letter-spacing: .03em; color: var(--hi); margin-bottom: 8px; }
+.state p { font-size: 14px; max-width: 360px; margin: 0 auto 18px; }
+.state .btn { display: inline-flex; align-items: center; gap: 7px; background: var(--green); color: #000; font-weight: 700; font-size: 14px; padding: 12px 26px; border-radius: 9px; }
+
+.skel { background: var(--surf1); border: 1px solid var(--line2); border-radius: 18px; height: 220px; position: relative; overflow: hidden; }
+.skel::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.03), transparent); animation: sweep 1.4s infinite; }
+@keyframes sweep { to { transform: translateX(100%); } }
+
+.disclaimer { font-size: 11px; color: var(--lo); text-align: center; max-width: 620px; margin: 0 auto 40px; line-height: 1.6; padding: 0 20px; }
+
+@media (max-width: 600px) {
+  .c-head { flex-direction: column; gap: 10px; }
+  .c-odds { align-self: flex-start; display: flex; align-items: baseline; gap: 8px; }
+  .c-odds-lbl { margin-top: 0; }
+  .hero h1 { font-size: clamp(36px, 11vw, 56px); }
+}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-in">
+    <a href="dashboard.html" class="brand">
+      <div class="brand-badge">B</div>
+      <div class="brand-name">BET<span>ORACLE</span></div>
+    </a>
+    <a href="dashboard.html" class="back-link"><i class="ti ti-arrow-left"></i> Mon espace</a>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="eyebrow"><i class="ti ti-ticket"></i> Coupons du jour</div>
+    <h1>3 coupons. <span>3 niveaux de risque.</span></h1>
+    <p>Sélectionnés et analysés par l'Oracle à partir des vrais matchs à venir. Choisis selon ton appétit du risque.</p>
+    <div class="ladder">
+      <div class="ladder-step s-safe on">🛡️ Sûr</div>
+      <div class="ladder-step s-balanced on">⚖️ Équilibré</div>
+      <div class="ladder-step s-bold on">🔥 Audacieux</div>
+    </div>
+    <div class="date-pill" id="date-pill"></div>
+  </div>
+</section>
+
+<main class="wrap">
+  <div class="coupons" id="coupons">
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+  </div>
+</main>
+
+<p class="disclaimer">
+  ⚠️ Jeu responsable : les paris comportent des risques. Ne misez que ce que vous pouvez vous permettre de perdre. Les coupons de l'Oracle sont une aide à la décision, pas une garantie de gain. Les cotes sont indicatives et peuvent varier selon les bookmakers.
+</p>
+
+<script>
+const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+const TIER_INFO = {
+  safe:     { label: 'Coupon Sûr',      icon: '🛡️', min: 'free',    minLabel: 'Gratuit' },
+  balanced: { label: 'Coupon Équilibré', icon: '⚖️', min: 'starter', minLabel: 'Starter' },
+  bold:     { label: 'Coupon Audacieux', icon: '🔥', min: 'pro',     minLabel: 'Pro' }
+}
+const BOOKMAKERS = [
+  { name: '1XBET',     url: 'https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97' },
+  { name: 'BETWINNER', url: 'https://bwredir.com/2gdj' },
+  { name: 'MEGAPARI',  url: 'https://refpaiozdg.top/L?' },
+  { name: '1Win',      url: 'https://1wync.com/?p=3qq3' }
+]
+
+// ── Auth helpers (mêmes patterns que le dashboard) ──
+async function tryRefresh() {
+  const r = localStorage.getItem('sb_refresh_token')
+  if (!r) return null
+  try {
+    const res = await fetch(`${S}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', apikey: AK },
+      body: JSON.stringify({ refresh_token: r })
+    })
+    if (!res.ok) return null
+    const d = await res.json()
+    localStorage.setItem('sb_access_token', d.access_token)
+    localStorage.setItem('sb_refresh_token', d.refresh_token || r)
+    return d.access_token
+  } catch { return null }
+}
+async function getToken() {
+  let t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (t) return t
+  return tryRefresh()
+}
+
+// ── Récupère le plan effectif de l'utilisateur (ou 'guest') ──
+async function getUserPlan() {
+  const token = await getToken()
+  if (!token) return { plan: 'guest', loggedIn: false }
+  try {
+    const uid = localStorage.getItem('sb_user_id')
+    let url = `${S}/rest/v1/profiles?select=plan,plan_expires_at&limit=1`
+    if (uid) url += `&id=eq.${uid}`
+    const res = await fetch(url, { headers: { apikey: AK, Authorization: `Bearer ${token}` } })
+    const data = await res.json()
+    const p = data?.[0]
+    if (!p) return { plan: 'free', loggedIn: true }
+    // Vérifie l'expiration
+    if (p.plan_expires_at && new Date(p.plan_expires_at) <= new Date()) return { plan: 'free', loggedIn: true }
+    return { plan: p.plan || 'free', loggedIn: true }
+  } catch {
+    return { plan: 'free', loggedIn: true }
+  }
+}
+
+function esc(s) { return (s == null ? '' : String(s)).replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+function bookmakerRow() {
+  return BOOKMAKERS.map(b => `<a href="${b.url}" target="_blank" rel="noopener" class="bk">${b.name}</a>`).join('')
+}
+
+function renderSelection(s, tier) {
+  const odds = Number(s.odds) || 0
+  return `
+    <div class="sel">
+      <div class="sel-top">
+        <div>
+          <div class="sel-match">${esc(s.team_a || s.match || '')}${s.team_b ? ' <span style="color:var(--lo)">vs</span> ' + esc(s.team_b) : ''}</div>
+          <div class="sel-league">${esc(s.league || s.championship || '')}</div>
+          ${s.match_time ? `<div class="sel-time"><i class="ti ti-clock" style="font-size:11px"></i> ${esc(s.match_time)}</div>` : ''}
+        </div>
+        <div class="sel-pick-wrap">
+          <div class="sel-pick">${esc(s.pick || s.prediction || '')}</div>
+          <div class="sel-odds">×${odds.toFixed(2)}</div>
+        </div>
+      </div>
+      ${s.reason ? `<div class="sel-reason">${esc(s.reason)}</div>` : ''}
+    </div>`
+}
+
+function renderCoupon(c, userPlan) {
+  const tier = ['safe', 'balanced', 'bold'].includes(c.tier) ? c.tier : 'safe'
+  const info = TIER_INFO[tier]
+  const sels = Array.isArray(c.selections) ? c.selections : []
+  const total = Number(c.total_odds) || 0
+  const conf = c.confidence || 60
+  // Le serveur (RPC) fait foi sur le déverrouillage et le nombre réel de sélections
+  const unlocked = c.unlocked === true
+  const selCount = c.selections_count ?? sels.length
+
+  const suffix = selCount ? ` · ${selCount} sélection${selCount > 1 ? 's' : ''}` : ''
+  const lockCover = !unlocked ? `
+    <div class="lock-cover">
+      <i class="ti ti-lock"></i>
+      <div class="lc-txt">Réservé au plan ${info.minLabel}${info.min !== 'elite' ? '+' : ''}</div>
+      <div class="lc-sub">${userPlan === 'guest' ? 'Connecte-toi et passe au plan ' + info.minLabel + ' pour débloquer ce coupon.' : 'Passe au plan ' + info.minLabel + ' pour débloquer ce coupon et ses ' + selCount + ' sélections.'}</div>
+      <button class="lock-cta" onclick="goUpgrade('${info.min}')">${userPlan === 'guest' ? 'Se connecter' : 'Passer au plan ' + info.minLabel}</button>
+    </div>` : ''
+
+  // Quand verrouillé, le serveur ne renvoie pas les sélections : on affiche des placeholders flous
+  const selsHtml = unlocked
+    ? sels.map(s => renderSelection(s, tier)).join('')
+    : Array.from({ length: Math.max(selCount, 3) }).map(() =>
+        `<div class="sel"><div class="sel-top"><div><div class="sel-match">██████ vs ██████</div><div class="sel-league">████████</div></div><div class="sel-pick-wrap"><div class="sel-pick">████</div><div class="sel-odds">×0.00</div></div></div></div>`
+      ).join('')
+
+  return `
+    <div class="coupon ${tier} ${unlocked ? '' : 'c-locked'}">
+      <div class="c-head">
+        <div class="c-head-l">
+          <span class="c-tier">${info.icon} ${info.label}</span>
+          <div class="c-title">${esc(c.title || info.label)}</div>
+          <div class="c-summary">${esc(c.summary || '')}</div>
+        </div>
+        <div class="c-odds">
+          <div class="c-odds-val">×${total.toFixed(2)}</div>
+          <div class="c-odds-lbl">Cote totale</div>
+        </div>
+      </div>
+      <div class="c-meta">
+        <span>Confiance Oracle&nbsp;<b>${conf}%</b></span>
+        <div class="c-conf-bar"><div class="c-conf-fill" style="width:${conf}%"></div></div>
+        <span style="width:100%">Accès&nbsp;<b>${info.minLabel}${info.min !== 'elite' ? '+' : ''}</b>${suffix}</span>
+      </div>
+      <div class="c-sels">
+        ${selsHtml}
+      </div>
+      <div class="c-foot">
+        <div class="bk-row">${bookmakerRow()}</div>
+        <div class="c-stake">Mise conseillée : ${tier === 'safe' ? '5–10%' : tier === 'balanced' ? '3–5%' : '1–2%'} BK</div>
+      </div>
+      ${lockCover}
+    </div>`
+}
+
+function goUpgrade(minPlan) {
+  getToken().then(t => {
+    if (!t) { window.location.href = 'login.html?next=coupons.html'; return }
+    window.location.href = 'checkout.html?plan=' + minPlan
+  })
+}
+
+function showState(html) { document.getElementById('coupons').innerHTML = html }
+
+async function load() {
+  const today = new Date().toISOString().slice(0, 10)
+  document.getElementById('date-pill').textContent =
+    new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+
+  const { plan } = await getUserPlan()
+  const token = await getToken()
+
+  let coupons = []
+  try {
+    // RPC sécurisée : masque les sélections des coupons non débloqués côté serveur
+    const res = await fetch(`${S}/rest/v1/rpc/get_daily_coupons`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        apikey: AK,
+        Authorization: `Bearer ${token || AK}`
+      },
+      body: JSON.stringify({ p_date: today })
+    })
+    coupons = await res.json()
+    if (!Array.isArray(coupons)) coupons = []
+  } catch {
+    showState(`<div class="state"><div class="ic">⚠️</div><h3>Connexion impossible</h3><p>Impossible de charger les coupons. Vérifie ta connexion et réessaie.</p><button class="btn" onclick="location.reload()"><i class="ti ti-refresh"></i> Réessayer</button></div>`)
+    return
+  }
+
+  if (!coupons.length) {
+    showState(`<div class="state"><div class="ic">⏳</div><h3>Coupons en préparation</h3><p>L'Oracle prépare les coupons du jour. Reviens un peu plus tard — ils sont publiés chaque matin.</p><a class="btn" href="analyse.html"><i class="ti ti-search"></i> Analyser un match</a></div>`)
+    return
+  }
+
+  showState(coupons.map(c => renderCoupon(c, plan)).join(''))
+}
+
+load()
+</script>
+</body>
+</html>

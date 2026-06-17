@@ -633,7 +633,7 @@ button { cursor: pointer; font-family: var(--ff); }
     <div class="dr-section">Navigation</div>
     <a href="dashboard.html" class="dr-link on" onclick="closeDr()"><i class="ti ti-layout-dashboard"></i> Mon espace</a>
     <a href="analyse.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-brain"></i> Analyser un match</a>
-    <a href="analyse.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-ticket"></i> Coupon du jour</a>
+    <a href="coupons.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-ticket"></i> Coupons du jour</a>
     <a href="welcome.html"   class="dr-link"    onclick="closeDr()"><i class="ti ti-gift"></i> Parrainage</a>
     <div class="dr-div"></div>
     <div class="dr-section">Général</div>
@@ -674,7 +674,7 @@ button { cursor: pointer; font-family: var(--ff); }
       <div class="sb-section">Mon espace</div>
       <a href="dashboard.html" class="sb-link on"><i class="ti ti-layout-dashboard"></i> Tableau de bord</a>
       <a href="analyse.html"   class="sb-link"><i class="ti ti-brain"></i> Oracle IA <span class="sb-badge">IA</span></a>
-      <a href="analyse.html"   class="sb-link"><i class="ti ti-ticket"></i> Coupon du jour</a>
+      <a href="coupons.html"   class="sb-link"><i class="ti ti-ticket"></i> Coupons du jour</a>
       <a href="welcome.html"   class="sb-link"><i class="ti ti-gift"></i> Parrainage</a>
 
       <div class="sb-div"></div>
@@ -755,9 +755,9 @@ button { cursor: pointer; font-family: var(--ff); }
                 <div class="al-icon"><i class="ti ti-brain"></i></div>
                 <div class="al-text"><div class="al-title">Analyser un match</div><div class="al-sub">Oracle IA</div></div>
               </a>
-              <a href="analyse.html" class="action-link gold-act">
+              <a href="coupons.html" class="action-link gold-act">
                 <div class="al-icon"><i class="ti ti-ticket"></i></div>
-                <div class="al-text"><div class="al-title">Coupon du jour</div><div class="al-sub">Mis à jour à 8h</div></div>
+                <div class="al-text"><div class="al-title">Coupons du jour</div><div class="al-sub">3 niveaux de risque</div></div>
               </a>
               <a href="welcome.html" class="action-link">
                 <div class="al-icon"><i class="ti ti-gift"></i></div>
@@ -912,37 +912,48 @@ function fillUI(name, plan, email) {
 
 function $(id) { return document.getElementById(id) }
 
-// Load coupon
+// Load coupon (aperçu du coupon Sûr via la RPC sécurisée)
 async function loadCoupon(token) {
   const today = new Date().toISOString().split('T')[0]
   const date  = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' })
   $('coupon-date').textContent = date
 
   try {
-    const r = await fetch(`${S}/rest/v1/coupons?match_date=eq.${today}&status=eq.published&select=selections&limit=1`, {
-      headers: { apikey: AK, Authorization: `Bearer ${token}` }
+    const r = await fetch(`${S}/rest/v1/rpc/get_daily_coupons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: AK, Authorization: `Bearer ${token || AK}` },
+      body: JSON.stringify({ p_date: today })
     })
     const data = await r.json()
-    const sels = data?.[0]?.selections
+    const list = Array.isArray(data) ? data : []
+    // On met en avant le coupon Sûr (premier)
+    const safe = list.find(c => c.tier === 'safe') || list[0]
 
-    if (!sels?.length) {
-      $('coupon-body').innerHTML = `<div style="text-align:center;padding:24px 16px;color:var(--lo)"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-size:13px;font-weight:700;color:var(--mid)">Coupon en préparation</div><div style="font-size:11px;margin-top:4px">Disponible avant 12h</div></div>`
+    if (!safe) {
+      $('coupon-body').innerHTML = `<div style="text-align:center;padding:24px 16px;color:var(--lo)"><div style="font-size:32px;margin-bottom:8px">⏳</div><div style="font-size:13px;font-weight:700;color:var(--mid)">Coupons en préparation</div><div style="font-size:11px;margin-top:4px">Publiés chaque matin</div></div>`
       return
     }
 
-    const flags = { 'Champions League': '🏆', 'Premier League': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'Ligue 1': '🇫🇷', 'La Liga': '🇪🇸', 'Bundesliga': '🇩🇪', 'Serie A': '🇮🇹', 'MLS': '🇺🇸' }
-    let html = '', total = 1
-    sels.forEach(s => {
-      const cote = parseFloat(s.cote) || 1.5
-      total *= cote
-      const flag = flags[s.championship] || '⚽'
-      html += `<div class="coupon-item"><div class="ci-flag">${flag}</div><div class="ci-info"><div class="ci-match">${s.match || s.equipes || 'Match'}</div><div class="ci-league">${s.championship || ''}</div></div><div class="ci-right"><div class="ci-pick">${s.prediction || s.pick || '1X2'}</div><div class="ci-cote">×${cote.toFixed(2)}</div></div></div>`
-    })
-    html += `<div class="coupon-total" style="margin-top:12px"><div><div class="ct-lbl">Cote totale</div><div style="font-size:10px;color:var(--lo);margin-top:2px">${sels.length} sélections</div></div><div class="ct-val">×${total.toFixed(2)}</div></div>`
-    html += `<div class="bk-strip"><a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="bk-pill">1XBET</a><a href="https://bwredir.com/2gdj" target="_blank" class="bk-pill">BETWINNER</a><a href="https://1wync.com/?p=3qq3" target="_blank" class="bk-pill">1Win</a><a href="https://refpaiozdg.top/L?" target="_blank" class="bk-pill">MEGAPARI</a></div>`
+    const sels = Array.isArray(safe.selections) ? safe.selections : []
+    const total = Number(safe.total_odds) || 0
+    let html = ''
+
+    if (safe.unlocked && sels.length) {
+      sels.slice(0, 4).forEach(s => {
+        const cote = parseFloat(s.odds) || 1.5
+        const match = (s.team_a && s.team_b) ? `${s.team_a} vs ${s.team_b}` : (s.match || s.equipes || 'Match')
+        html += `<div class="coupon-item"><div class="ci-flag">⚽</div><div class="ci-info"><div class="ci-match">${match}</div><div class="ci-league">${s.league || s.championship || ''}</div></div><div class="ci-right"><div class="ci-pick">${s.pick || s.prediction || '1X2'}</div><div class="ci-cote">×${cote.toFixed(2)}</div></div></div>`
+      })
+    } else {
+      // Verrouillé ou non connecté : aperçu flouté + invitation
+      html += `<div style="text-align:center;padding:8px 12px 14px"><div style="font-size:13px;font-weight:700;color:var(--mid);margin-bottom:4px">${safe.title || 'Coupon Sûr'}</div><div style="font-size:11px;color:var(--lo)">${safe.selections_count || 3} sélections · confiance ${safe.confidence || 75}%</div></div>`
+    }
+
+    html += `<div class="coupon-total" style="margin-top:12px"><div><div class="ct-lbl">Cote totale (Sûr)</div><div style="font-size:10px;color:var(--lo);margin-top:2px">${safe.selections_count || sels.length} sélections</div></div><div class="ct-val">×${total.toFixed(2)}</div></div>`
+    html += `<a href="coupons.html" style="display:flex;align-items:center;justify-content:center;gap:6px;margin-top:12px;padding:11px;border-radius:9px;background:var(--gold);color:#000;font-weight:800;font-size:13px"><i class="ti ti-ticket"></i> Voir les 3 coupons du jour</a>`
     $('coupon-body').innerHTML = html
   } catch {
-    $('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--lo);font-size:12px">Coupon disponible prochainement</div>`
+    $('coupon-body').innerHTML = `<div style="padding:16px;text-align:center;color:var(--lo);font-size:12px">Coupons disponibles prochainement</div>`
   }
 }
 
