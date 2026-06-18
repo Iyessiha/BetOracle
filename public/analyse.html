@@ -487,6 +487,69 @@ a{text-decoration:none;color:inherit}
   font-weight: 700; text-decoration: none;
 }
 
+
+/* ── EMPTY STATE ANALYSE ── */
+#analyse-empty {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 48px clamp(20px,4vw,48px);
+  text-align: center;
+}
+.empty-oracle-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  animation: pulse 3s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.08); filter: brightness(1.2); }
+}
+.empty-title {
+  font-family: var(--font-d, 'Bebas Neue', sans-serif);
+  font-size: clamp(26px,4vw,38px);
+  letter-spacing: .05em;
+  color: var(--white, #f0fff0);
+  margin-bottom: 10px;
+}
+.empty-sub {
+  font-size: 15px;
+  color: var(--lo, #7a9a7a);
+  line-height: 1.6;
+  margin-bottom: 32px;
+}
+.empty-steps {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 32px;
+}
+.empty-step {
+  background: var(--s1, #0d130d);
+  border: 1px solid var(--b1, #1a261a);
+  border-radius: 12px;
+  padding: 16px 20px;
+  font-size: 13px;
+  color: var(--muted, #7a9a7a);
+  min-width: 160px;
+  flex: 1;
+  max-width: 200px;
+}
+.empty-step .step-num {
+  font-family: var(--font-d);
+  font-size: 22px;
+  color: var(--gb, #22c55e);
+  display: block;
+  margin-bottom: 6px;
+}
+.empty-trending {
+  font-size: 12px;
+  color: var(--lo, #7a9a7a);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  margin-bottom: 10px;
+}
+
 </style>
 </head>
 <body data-page="analyse">
@@ -540,7 +603,35 @@ a{text-decoration:none;color:inherit}
 </div>
 
 <!-- ANALYSE -->
-<div class="analyse-body">
+
+<!-- EMPTY STATE — affiché par défaut, caché quand analyse lance -->
+<div id="analyse-empty">
+  <div class="empty-oracle-icon">🔮</div>
+  <div class="empty-title">L'Oracle est prêt</div>
+  <p class="empty-sub">
+    Tape le nom de deux équipes et l'Oracle croise<br>
+    <strong style="color:var(--text)">500 000+ données</strong> pour te sortir probabilités,<br>
+    forme récente et score probable.
+  </p>
+  <div class="empty-steps">
+    <div class="empty-step">
+      <span class="step-num">1</span>
+      Tape un match<br><em>ex : France vs Brésil</em>
+    </div>
+    <div class="empty-step">
+      <span class="step-num">2</span>
+      Clique <strong style="color:var(--gb)">Analyser</strong><br>et attends 10s
+    </div>
+    <div class="empty-step">
+      <span class="step-num">3</span>
+      Reçois les proba,<br>BTTS & score prédit
+    </div>
+  </div>
+  <div class="empty-trending">⚡ Matchs du moment</div>
+</div>
+
+
+<div class="analyse-body" id="analyse-body" style="display:none">
 
   <!-- Match header -->
   <div class="match-header">
@@ -549,15 +640,15 @@ a{text-decoration:none;color:inherit}
   url('https://images.unsplash.com/photo-1543326727-cf6c39e8f84c?auto=format&fit=crop&w=900&q=60');
   background-size:cover;background-position:center">
       <div>
-        <div class="mh-league" id="match-league">🏆 Champions League · Demi-finale</div>
+        <div class="mh-league" id="match-league"></div>
         <div class="mh-teams">
-          <div class="mh-team"><span id="team-a-flag">⚽</span> <span id="team-a">Real Madrid</span></div>
+          <div class="mh-team"><span id="team-a-flag">⚽</span> <span id="team-a"></span></div>
           <div class="mh-vs">VS</div>
-          <div class="mh-team"><span id="team-b-flag">⚽</span> <span id="team-b">PSG</span></div>
+          <div class="mh-team"><span id="team-b-flag">⚽</span> <span id="team-b"></span></div>
         </div>
       </div>
       <div class="mh-meta">
-        <div class="mh-date" id="match-date">Mercredi 14 juin 2026</div>
+        <div class="mh-date" id="match-date"></div>
         <div class="mh-time">21:00</div>
       </div>
     </div>
@@ -960,6 +1051,12 @@ async function runOracle(teamA, teamB, leagueLabel) {
 
 // ════════ AFFICHAGE RÉSULTAT ════════
 function renderResult(d, leagueLabel) {
+  // Montrer le résultat, cacher l'empty state
+  const body   = document.getElementById('analyse-body')
+  const empty  = document.getElementById('analyse-empty')
+  if (body)  body.style.display  = 'block'
+  if (empty) empty.style.display = 'none'
+
   const nameA = d.team_a_name || 'Équipe A'
   const nameB = d.team_b_name || 'Équipe B'
 
@@ -1107,12 +1204,20 @@ window.addEventListener('DOMContentLoaded', () => {
   const lw = document.getElementById('lock-wall')
   if (lw) lw.style.display = 'none'
 
+  // S'assurer que le résultat est caché + empty state visible au démarrage
+  const body  = document.getElementById('analyse-body')
+  const empty = document.getElementById('analyse-empty')
+  if (body)  body.style.display  = 'none'
+  if (empty) empty.style.display = 'block'
+
   // Lire le paramètre ?q= depuis la landing page
   const params = new URLSearchParams(window.location.search)
   const q = params.get('q')?.trim()
   if (q) {
     const inp = document.getElementById('search-input')
     if (inp) inp.value = q
+    // Montrer directement le loader, cacher empty state
+    if (empty) empty.style.display = 'none'
     // Lancer l'analyse automatiquement après un court délai (auth chargée)
     setTimeout(() => relaunchAnalyse(), 600)
   }
