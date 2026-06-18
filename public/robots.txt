@@ -1,0 +1,20 @@
+User-agent: *
+Allow: /
+Allow: /coupons
+Allow: /analyse
+Allow: /comparateur
+Allow: /signup
+Allow: /login
+Allow: /checkout
+Allow: /cgu
+
+Disallow: /dashboard
+Disallow: /admin
+Disallow: /admin-login
+Disallow: /compte
+Disallow: /bankroll
+Disallow: /welcome
+Disallow: /payment-success
+Disallow: /payment-error
+
+Sitemap: https://betoracl.com/sitemap.xml

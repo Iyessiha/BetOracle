@@ -416,6 +416,30 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 .perf-lbl { font-size: 10px; color: var(--lo,#7a9a7a); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
 .perf-divider { width: 1px; height: 36px; background: var(--b1,#1a261a); flex-shrink: 0; }
 
+
+/* ── SHARE BUTTONS ── */
+.share-bar {
+  display: flex; gap: 8px; align-items: center;
+  padding: 12px 0; flex-wrap: wrap;
+}
+.share-bar-label {
+  font-size: 11px; color: var(--lo); text-transform: uppercase;
+  letter-spacing: .08em; flex-shrink: 0;
+}
+.btn-share {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border-radius: 8px; border: none;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  text-decoration: none; transition: all .15s; flex-shrink: 0;
+}
+.btn-share:hover { transform: translateY(-1px); }
+.btn-wa  { background: rgba(37,211,102,.15); color: #25D366; border: 1px solid rgba(37,211,102,.3); }
+.btn-tg  { background: rgba(36,161,222,.15); color: #24A1DE; border: 1px solid rgba(36,161,222,.3); }
+.btn-cp  { background: rgba(148,163,184,.1);  color: var(--text); border: 1px solid var(--b1); }
+.btn-wa:hover  { background: rgba(37,211,102,.25); }
+.btn-tg:hover  { background: rgba(36,161,222,.25); }
+.btn-cp:hover  { border-color: var(--gb); color: var(--gb); }
+
 </style>
 </head>
 <body>
@@ -609,6 +633,18 @@ function renderCoupon(c, userPlan) {
       </div>
       <div class="c-foot">
         <div class="bk-row">${bookmakerRow()}</div>
+        <div class="share-bar">
+          <span class="share-bar-label">Partager :</span>
+          <a class="btn-share btn-wa"  onclick="shareCoupon(lastCouponData||c,'wa')" href="#">
+            <i class="ti ti-brand-whatsapp"></i> WhatsApp
+          </a>
+          <a class="btn-share btn-tg"  onclick="shareCoupon(lastCouponData||c,'tg')" href="#">
+            <i class="ti ti-brand-telegram"></i> Telegram
+          </a>
+          <button class="btn-share btn-cp" id="share-copy-btn" onclick="shareCoupon(lastCouponData||c,'copy')">
+            📋 Copier
+          </button>
+        </div>
         <div class="c-stake">Mise conseillée : ${tier === 'safe' ? '5–10%' : tier === 'balanced' ? '3–5%' : '1–2%'} BK</div>
       </div>
       ${lockCover}
@@ -681,7 +717,7 @@ async function load(); loadPerformanceStats() {
     if (banner) banner.textContent = 'Derniers coupons disponibles — ' + label
   }
 
-  showState(coupons.map(c => renderCoupon(c, plan)).join(''))
+  lastCouponData = coupons[0]; showState(coupons.map(c => renderCoupon(c, plan)).join(''))
 }
 
 load(); loadPerformanceStats()
@@ -869,6 +905,50 @@ function selResultBadge(sel) {
   if (sel.result_won === false) return `<span class="sel-result sr-loss">✗ ${sel.result_score||''}</span>`
   return ''
 }
+
+
+// ── PARTAGE COUPON ────────────────────────────────
+function buildShareText(coupon) {
+  if (!coupon) return ''
+  const sels = coupon.selections || []
+  const tier = { safe: '🛡️ SÛR', balanced: '⚡ ÉQUILIBRÉ', bold: '🔥 AUDACIEUX' }[coupon.tier] || coupon.tier
+  const date = coupon.match_date ? new Date(coupon.match_date + 'T12:00:00')
+    .toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : ''
+  
+  let text = `🔮 *COUPON ${tier} — Betoracle Pro*\n`
+  if (date) text += `📅 ${date}\n`
+  text += `\n`
+  
+  sels.slice(0, 4).forEach(s => {
+    if (s.pick === '🔒') return
+    text += `⚽ ${s.team_a || '?'} vs ${s.team_b || '?'}\n`
+    text += `   → ${s.pick || ''} (cote ${s.odds || '?'})\n`
+  })
+  
+  text += `\n💰 *Cote totale : ×${coupon.total_odds || '?'}*\n`
+  text += `\n📊 Voir les coupons complets : https://betoracl.com/coupons`
+  return text
+}
+
+function shareCoupon(couponData, channel) {
+  const text = buildShareText(couponData)
+  if (!text) return
+  const encoded = encodeURIComponent(text)
+  
+  if (channel === 'wa') {
+    window.open('https://wa.me/?text=' + encoded, '_blank')
+  } else if (channel === 'tg') {
+    window.open('https://t.me/share/url?url=https://betoracl.com/coupons&text=' + encoded, '_blank')
+  } else if (channel === 'copy') {
+    navigator.clipboard.writeText(text.replace(/\*/g, '')).then(() => {
+      const btn = document.getElementById('share-copy-btn')
+      if (btn) { btn.textContent = '✓ Copié !'; setTimeout(() => btn.textContent = '📋 Copier', 2000) }
+    })
+  }
+}
+
+// Stocker les données du coupon pour le partage
+let lastCouponData = null
 
 </script>
 </body>
