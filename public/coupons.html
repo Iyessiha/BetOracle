@@ -210,6 +210,151 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
   display: block !important;
 }
 
+
+/* ── CLOCHE DE NOTIFICATIONS ── */
+.notif-bell-wrap {
+  position: relative;
+  flex-shrink: 0;
+}
+.notif-bell {
+  width: 38px; height: 38px;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--s2, #121a12);
+  border: 1px solid var(--b2, #223022);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all .15s;
+  position: relative;
+}
+.notif-bell:hover { background: var(--s3, #1a2a1a); border-color: var(--gb, #22c55e); }
+.notif-bell i { font-size: 18px; color: var(--text, #e4ede4); }
+.notif-badge {
+  position: absolute;
+  top: -5px; right: -5px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 10px; font-weight: 800;
+  min-width: 18px; height: 18px;
+  border-radius: 9px;
+  display: none;
+  align-items: center; justify-content: center;
+  padding: 0 4px;
+  border: 1.5px solid var(--bg, #060906);
+  animation: badge-pop .3s cubic-bezier(.34,1.56,.64,1);
+}
+.notif-badge.show { display: flex; }
+@keyframes badge-pop { from { transform: scale(0) } to { transform: scale(1) } }
+
+/* Panel de notifications */
+.notif-panel {
+  position: fixed;
+  top: 68px; right: 12px;
+  width: min(360px, calc(100vw - 24px));
+  background: var(--s1, #0d130d);
+  border: 1px solid var(--b1, #1a261a);
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,.6);
+  z-index: 300;
+  overflow: hidden;
+  transform: scale(.95) translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: all .2s cubic-bezier(.34,1.2,.64,1);
+}
+.notif-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+.notif-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--b1, #1a261a);
+}
+.notif-header-title {
+  font-family: var(--fd, 'Bebas Neue', sans-serif);
+  font-size: 18px; letter-spacing: .06em;
+  color: var(--white, #f0fff0);
+}
+.notif-mark-all {
+  font-size: 11px; font-weight: 700;
+  color: var(--gb, #22c55e);
+  background: none; border: none; cursor: pointer;
+  font-family: var(--ff, 'Barlow', sans-serif);
+  padding: 4px 8px; border-radius: 6px;
+  transition: background .15s;
+}
+.notif-mark-all:hover { background: rgba(34,197,94,.1); }
+.notif-list {
+  max-height: 380px;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+.notif-item {
+  display: flex; gap: 12px;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--b1, #1a261a);
+  cursor: pointer;
+  transition: background .15s;
+  position: relative;
+}
+.notif-item:last-child { border-bottom: none; }
+.notif-item:hover { background: rgba(34,197,94,.04); }
+.notif-item.unread { background: rgba(34,197,94,.03); }
+.notif-item.unread::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: 50%;
+  transform: translateY(-50%);
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--gb, #22c55e);
+}
+.notif-icon-wrap {
+  width: 38px; height: 38px; flex-shrink: 0;
+  border-radius: 10px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+}
+.notif-icon-wrap.success  { background: rgba(34,197,94,.15); }
+.notif-icon-wrap.coupon   { background: rgba(245,200,66,.12); }
+.notif-icon-wrap.update   { background: rgba(59,130,246,.12); }
+.notif-icon-wrap.info     { background: rgba(45,212,191,.12); }
+.notif-icon-wrap.warning  { background: rgba(239,68,68,.12); }
+.notif-icon-wrap.payment  { background: rgba(167,139,250,.12); }
+.notif-icon-wrap.alert    { background: rgba(239,68,68,.12); }
+.notif-icon-wrap.referral { background: rgba(245,200,66,.12); }
+.notif-body { flex: 1; min-width: 0; }
+.notif-title {
+  font-size: 13px; font-weight: 700;
+  color: var(--text, #e4ede4);
+  margin-bottom: 3px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.notif-msg {
+  font-size: 12px; color: var(--muted, #7a9a7a);
+  line-height: 1.5;
+  display: -webkit-box; -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical; overflow: hidden;
+}
+.notif-time {
+  font-size: 10px; color: var(--sub, #3a5a3a);
+  margin-top: 4px; white-space: nowrap;
+}
+.notif-empty {
+  padding: 32px 18px; text-align: center;
+  color: var(--muted, #7a9a7a); font-size: 14px;
+}
+.notif-footer {
+  padding: 12px 18px;
+  border-top: 1px solid var(--b1, #1a261a);
+  text-align: center;
+}
+.notif-footer a {
+  font-size: 12px; color: var(--gb, #22c55e);
+  font-weight: 700; text-decoration: none;
+}
+
 </style>
 </head>
 <body>
@@ -485,6 +630,120 @@ load()
       const btn = document.getElementById('pwa-install-btn')
       if (btn) btn.style.display = 'none'
     })
-  </script>
+  
+// ── SYSTÈME DE NOTIFICATIONS ────────────────────
+;(function() {
+  const SUPA = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+  const AK   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+  let _notifs = []
+  let _panelOpen = false
+
+  // Formater le temps relatif
+  function timeAgo(dateStr) {
+    const d = new Date(dateStr), now = new Date()
+    const diff = Math.floor((now - d) / 1000)
+    if (diff < 60)   return 'À l instant'
+    if (diff < 3600) return Math.floor(diff/60) + 'min'
+    if (diff < 86400)return Math.floor(diff/3600) + 'h'
+    return Math.floor(diff/86400) + 'j'
+  }
+
+  // Rendre une notification
+  function renderNotif(n) {
+    const unread = !n.read ? 'unread' : ''
+    const icon   = n.icon || ({coupon:'🛡️',success:'✅',update:'🔄',info:'ℹ️',warning:'⚠️',payment:'💳',referral:'🎁',alert:'🚨'}[n.type] || '🔔')
+    return `
+      <div class="notif-item ${unread}" onclick="notifClick('${n.id}','${n.link||''}')">
+        <div class="notif-icon-wrap ${n.type}">${icon}</div>
+        <div class="notif-body">
+          <div class="notif-title">${n.title}</div>
+          <div class="notif-msg">${n.body || ''}</div>
+          <div class="notif-time">${timeAgo(n.created_at)}</div>
+        </div>
+      </div>`
+  }
+
+  // Charger les notifications
+  async function loadNotifs() {
+    const token = localStorage.getItem('sb_access_token')
+    const headers = { 'apikey': AK, 'Content-Type': 'application/json' }
+    if (token) headers['Authorization'] = 'Bearer ' + token
+
+    try {
+      const res = await fetch(SUPA + '/rest/v1/notifications?select=*&order=created_at.desc&limit=20', { headers })
+      if (!res.ok) return
+      _notifs = await res.json()
+
+      const unread = _notifs.filter(n => !n.read).length
+      const badge  = document.getElementById('notif-badge')
+      const list   = document.getElementById('notif-list')
+      if (badge) {
+        badge.textContent = unread > 9 ? '9+' : unread
+        badge.classList.toggle('show', unread > 0)
+      }
+      if (list) {
+        list.innerHTML = _notifs.length
+          ? _notifs.map(renderNotif).join('')
+          : '<div class="notif-empty">🎉 Tout est à jour !</div>'
+      }
+    } catch (_) {}
+  }
+
+  // Ouvrir / fermer le panel
+  window.toggleNotifPanel = function() {
+    const panel = document.getElementById('notif-panel')
+    _panelOpen = !_panelOpen
+    panel?.classList.toggle('open', _panelOpen)
+    if (_panelOpen) loadNotifs()
+  }
+
+  // Clic sur une notification
+  window.notifClick = async function(id, link) {
+    // Marquer comme lue
+    const token = localStorage.getItem('sb_access_token')
+    const h = { 'apikey': AK, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+    if (token) h['Authorization'] = 'Bearer ' + token
+    try {
+      await fetch(SUPA + '/rest/v1/notifications?id=eq.' + id, {
+        method: 'PATCH', headers: h, body: JSON.stringify({ read: true })
+      })
+    } catch (_) {}
+    // Naviguer si lien
+    if (link && link !== 'null' && link.startsWith('/')) window.location.href = link
+    else loadNotifs()
+  }
+
+  // Tout marquer comme lu
+  window.markAllRead = async function() {
+    const token = localStorage.getItem('sb_access_token')
+    const h = { 'apikey': AK, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' }
+    if (token) h['Authorization'] = 'Bearer ' + token
+    try {
+      await fetch(SUPA + '/rest/v1/notifications?read=eq.false', {
+        method: 'PATCH', headers: h, body: JSON.stringify({ read: true })
+      })
+      loadNotifs()
+    } catch (_) {}
+  }
+
+  // Fermer au clic extérieur
+  document.addEventListener('click', e => {
+    if (!_panelOpen) return
+    const wrap = document.getElementById('notif-wrap')
+    const panel = document.getElementById('notif-panel')
+    if (!wrap?.contains(e.target) && !panel?.contains(e.target)) {
+      _panelOpen = false
+      panel?.classList.remove('open')
+    }
+  })
+
+  // Charger au démarrage + toutes les 60s
+  window.addEventListener('DOMContentLoaded', () => {
+    setTimeout(loadNotifs, 1000)
+    setInterval(loadNotifs, 60000)
+  })
+})()
+
+</script>
 </body>
 </html>
