@@ -550,6 +550,52 @@ a{text-decoration:none;color:inherit}
   margin-bottom: 10px;
 }
 
+
+/* ── PANELS ONGLETS ── */
+.side-panel {
+  display: none;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 20px clamp(16px,4vw,48px) 80px;
+}
+.side-panel.active { display: block; }
+.sp-title {
+  font-family: var(--font-d,'Bebas Neue',sans-serif);
+  font-size: 22px; letter-spacing:.06em;
+  color: var(--white); margin-bottom: 4px;
+}
+.sp-sub { font-size:13px; color:var(--lo); margin-bottom:20px; }
+.history-item, .fav-item {
+  display: flex; align-items: center; gap: 12px;
+  background: var(--s1,#0d130d);
+  border: 1px solid var(--b1,#1a261a);
+  border-radius: 12px; padding: 14px 16px;
+  margin-bottom: 10px; cursor: pointer;
+  transition: border-color .15s;
+}
+.history-item:hover, .fav-item:hover { border-color: var(--gb,#22c55e); }
+.hi-icon { font-size:22px; flex-shrink:0; }
+.hi-body { flex:1; min-width:0; }
+.hi-match { font-weight:700; font-size:14px;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.hi-meta { font-size:11px; color:var(--lo); margin-top:3px; }
+.hi-conf {
+  font-family:var(--font-d,'Bebas Neue');
+  font-size:18px; letter-spacing:.04em;
+  color:var(--gb); flex-shrink:0;
+}
+.hi-del {
+  width:28px;height:28px;border-radius:7px;
+  background:rgba(239,68,68,.1); border:none; color:#ef4444;
+  cursor:pointer; font-size:14px; flex-shrink:0;
+  display:flex; align-items:center; justify-content:center;
+}
+.sp-empty {
+  text-align:center; padding:40px 20px;
+  color:var(--lo); font-size:14px;
+}
+.sp-empty .sp-e-icon { font-size:42px; margin-bottom:12px; }
+
 </style>
 </head>
 <body data-page="analyse">
@@ -578,11 +624,11 @@ a{text-decoration:none;color:inherit}
 
 <!-- TABS -->
 <div class="app-tabs">
-  <div class="tab active"><i class="ti ti-chart-bar"></i> Analyse</div>
-  <div class="tab"><i class="ti ti-receipt"></i> Coupons</div>
-  <div class="tab"><i class="ti ti-star"></i> Favoris</div>
-  <div class="tab"><i class="ti ti-clock"></i> Historique</div>
-  <div class="tab"><i class="ti ti-crown"></i> Offres</div>
+  <div class="tab active" onclick="switchTab(0)"><i class="ti ti-chart-bar"></i> Analyse</div>
+  <div class="tab" onclick="switchTab(1)"><i class="ti ti-receipt"></i> Coupons</div>
+  <div class="tab" onclick="switchTab(2)"><i class="ti ti-star"></i> Favoris</div>
+  <div class="tab" onclick="switchTab(3)"><i class="ti ti-clock"></i> Historique</div>
+  <div class="tab" onclick="switchTab(4)"><i class="ti ti-crown"></i> Offres</div>
 </div>
 
 <!-- SEARCH -->
@@ -778,6 +824,21 @@ a{text-decoration:none;color:inherit}
     <div class="ao-btn">Changer de match <i class="ti ti-chevron-right"></i></div>
   </div>
 
+</div>
+
+
+<!-- ── PANEL FAVORIS ── -->
+<div class="side-panel" id="panel-favoris">
+  <div class="sp-title">Mes Favoris</div>
+  <div class="sp-sub">Tes matchs sauvegardés pour analyse rapide</div>
+  <div id="fav-list"></div>
+</div>
+
+<!-- ── PANEL HISTORIQUE ── -->
+<div class="side-panel" id="panel-historique">
+  <div class="sp-title">Historique des analyses</div>
+  <div class="sp-sub">Tes dernières analyses Oracle</div>
+  <div id="history-list"></div>
 </div>
 
 <script>
@@ -1056,6 +1117,8 @@ function renderResult(d, leagueLabel) {
   const empty  = document.getElementById('analyse-empty')
   if (body)  body.style.display  = 'block'
   if (empty) empty.style.display = 'none'
+  // Remettre l'onglet Analyse actif
+  document.querySelectorAll('.tab').forEach((t,i) => t.classList.toggle('active', i === 0))
 
   const nameA = d.team_a_name || 'Équipe A'
   const nameB = d.team_b_name || 'Équipe B'
@@ -1063,6 +1126,52 @@ function renderResult(d, leagueLabel) {
   // En-tête match
   setText('team-a', nameA)
   setText('team-b', nameB)
+
+  // Sauvegarder dans l'historique local + DB
+  const matchStr   = (d.team_a || '') + ' vs ' + (d.team_b || '')
+  const confNum    = d.confidence || d.win_probability || null
+  const compStr    = d.competition || leagueLabel || ''
+
+  saveLocalHistory({ match: matchStr, competition: compStr,
+    conf: confNum ? Math.round(confNum) : null, date: new Date().toISOString() })
+
+  // Sauvegarder en DB si connecté
+  ;(async () => {
+    try {
+      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+      if (!token) return
+      await fetch(`${SUPA}/rest/v1/analyses`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_AK,
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          team_a_name: d.team_a || '',
+          team_b_name: d.team_b || '',
+          league_name: compStr,
+          confidence:  confNum,
+          oracle_result: d
+        })
+      })
+    } catch(_) {}
+  })()
+
+  // Mettre à jour bouton Favori
+  const favs = getFavoris()
+  const isFav = favs.find(f => f.match === matchStr)
+  const btnFavEl = document.getElementById('btn-fav')
+  if (btnFavEl) {
+    if (isFav) { btnFavEl.innerHTML='<i class="ti ti-star-filled"></i> Favori'; btnFavEl.style.color='var(--gold)' }
+    else       { btnFavEl.innerHTML='<i class="ti ti-star"></i> Favoris'; btnFavEl.style.color='' }
+    btnFavEl.onclick = () => {
+      if (isFav) { removeFavori(matchStr); btnFavEl.innerHTML='<i class="ti ti-star"></i> Favoris'; btnFavEl.style.color='' }
+      else addFavori(matchStr, compStr, confNum ? Math.round(confNum) : null)
+    }
+  }
+
   setText('sp-team-a', nameA.split(' ')[0])
   setText('sp-team-b', nameB.split(' ')[0])
   if (d.competition) setText('match-league', d.competition)
@@ -1450,6 +1559,174 @@ window.addEventListener('DOMContentLoaded', () => {
     setInterval(loadNotifs, 60000)
   })
 })()
+
+
+// ── ONGLETS ──────────────────────────────────────
+const SUPA  = window.__SB_URL  || 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const SUPA_AK = window.__SB_AK || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+function switchTab(n) {
+  // Nav 1 : Coupons → rediriger
+  if (n === 1) { window.location.href = '/coupons'; return }
+  // Nav 4 : Offres → rediriger
+  if (n === 4) { window.location.href = '/checkout'; return }
+
+  // Activer le tab visuellement
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === n))
+
+  // Gérer les panels
+  const body     = document.getElementById('analyse-body')
+  const empty    = document.getElementById('analyse-empty')
+  const panelFav = document.getElementById('panel-favoris')
+  const panelHist= document.getElementById('panel-historique')
+
+  // Cacher tout
+  if (body)     body.style.display     = 'none'
+  if (empty)    empty.style.display    = 'none'
+  panelFav.classList.remove('active')
+  panelHist.classList.remove('active')
+
+  if (n === 0) {
+    // Tab Analyse : montrer analyse-body si résultat, sinon empty
+    const hasResult = document.getElementById('team-a')?.textContent?.trim()
+    if (hasResult) { if (body) body.style.display = 'block' }
+    else           { if (empty) empty.style.display = 'block' }
+  } else if (n === 2) {
+    panelFav.classList.add('active')
+    renderFavoris()
+  } else if (n === 3) {
+    panelHist.classList.add('active')
+    renderHistorique()
+  }
+}
+
+// ── FAVORIS (localStorage) ───────────────────────
+function getFavoris() {
+  try { return JSON.parse(localStorage.getItem('bp_favoris') || '[]') } catch { return [] }
+}
+function saveFavoris(list) {
+  localStorage.setItem('bp_favoris', JSON.stringify(list.slice(0, 20)))
+}
+window.addFavori = function(matchName, competition, conf) {
+  const list = getFavoris()
+  if (list.find(f => f.match === matchName)) {
+    showToast('Déjà dans tes favoris ⭐')
+    return
+  }
+  list.unshift({ match: matchName, competition, conf, date: new Date().toISOString() })
+  saveFavoris(list)
+  showToast('Ajouté aux favoris ⭐')
+  // Mettre à jour le bouton
+  const btn = document.getElementById('btn-fav')
+  if (btn) { btn.innerHTML = '<i class="ti ti-star-filled"></i> Favori'; btn.style.color='var(--gold)' }
+}
+window.removeFavori = function(matchName) {
+  saveFavoris(getFavoris().filter(f => f.match !== matchName))
+  renderFavoris()
+}
+
+function renderFavoris() {
+  const list = getFavoris()
+  const el   = document.getElementById('fav-list')
+  if (!el) return
+  if (!list.length) {
+    el.innerHTML = `<div class="sp-empty"><div class="sp-e-icon">⭐</div>
+      Aucun favori pour l'instant.<br>Lance une analyse et clique <strong>Ajouter aux favoris</strong>.</div>`
+    return
+  }
+  el.innerHTML = list.map(f => `
+    <div class="fav-item" onclick="rerunMatch('${f.match.replace(/'/g,"\'")}')">
+      <div class="hi-icon">⭐</div>
+      <div class="hi-body">
+        <div class="hi-match">${f.match}</div>
+        <div class="hi-meta">${f.competition || ''} · ${new Date(f.date).toLocaleDateString('fr-FR')}</div>
+      </div>
+      ${f.conf ? `<div class="hi-conf">${f.conf}%</div>` : ''}
+      <button class="hi-del" onclick="event.stopPropagation();removeFavori('${f.match.replace(/'/g,"\'")}')" title="Supprimer">✕</button>
+    </div>
+  `).join('')
+}
+
+// ── HISTORIQUE (DB + localStorage) ──────────────
+function getLocalHistory() {
+  try { return JSON.parse(localStorage.getItem('bp_history') || '[]') } catch { return [] }
+}
+function saveLocalHistory(item) {
+  const list = getLocalHistory()
+  const exists = list.find(h => h.match === item.match)
+  if (!exists) list.unshift(item)
+  localStorage.setItem('bp_history', JSON.stringify(list.slice(0, 30)))
+}
+
+async function renderHistorique() {
+  const el = document.getElementById('history-list')
+  if (!el) return
+  el.innerHTML = '<div style="text-align:center;color:var(--lo);padding:20px">Chargement...</div>'
+
+  let items = []
+
+  // 1. Essayer de charger depuis la DB
+  try {
+    const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+    if (token) {
+      const r = await fetch(`${SUPA}/rest/v1/analyses?select=team_a_name,team_b_name,league_name,confidence,created_at&order=created_at.desc&limit=20`, {
+        headers: { 'apikey': SUPA_AK, 'Authorization': 'Bearer ' + token }
+      })
+      if (r.ok) {
+        const data = await r.json()
+        items = data.map(d => ({
+          match: `${d.team_a_name} vs ${d.team_b_name}`,
+          competition: d.league_name,
+          conf: d.confidence ? Math.round(d.confidence) : null,
+          date: d.created_at
+        }))
+      }
+    }
+  } catch (_) {}
+
+  // 2. Fallback localStorage
+  if (!items.length) items = getLocalHistory()
+
+  if (!items.length) {
+    el.innerHTML = `<div class="sp-empty"><div class="sp-e-icon">🕐</div>
+      Aucune analyse pour l'instant.<br>Tape un match et clique <strong>Analyser</strong>.</div>`
+    return
+  }
+
+  el.innerHTML = items.map(h => `
+    <div class="history-item" onclick="rerunMatch('${(h.match||'').replace(/'/g,"\'")}')">
+      <div class="hi-icon">🔮</div>
+      <div class="hi-body">
+        <div class="hi-match">${h.match || '?'}</div>
+        <div class="hi-meta">${h.competition || ''} · ${h.date ? new Date(h.date).toLocaleDateString('fr-FR') : ''}</div>
+      </div>
+      ${h.conf ? `<div class="hi-conf">${h.conf}%</div>` : ''}
+    </div>
+  `).join('')
+}
+
+function rerunMatch(matchName) {
+  const inp = document.getElementById('search-input')
+  if (inp) inp.value = matchName
+  switchTab(0)
+  setTimeout(() => relaunchAnalyse(), 300)
+}
+
+// ── TOAST notification ────────────────────────────
+function showToast(msg) {
+  let t = document.getElementById('app-toast')
+  if (!t) {
+    t = document.createElement('div')
+    t.id = 'app-toast'
+    t.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--s2,#121a12);border:1px solid var(--b2,#223022);border-radius:10px;padding:10px 20px;font-size:13px;font-weight:600;color:var(--text);z-index:999;transition:all .3s;opacity:0;white-space:nowrap'
+    document.body.appendChild(t)
+  }
+  t.textContent = msg
+  t.style.opacity = '1'
+  t.style.transform = 'translateX(-50%) translateY(0)'
+  clearTimeout(t._timer)
+  t._timer = setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)' }, 2500)
+}
 
 </script>
 </body>
