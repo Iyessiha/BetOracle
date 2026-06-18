@@ -2222,6 +2222,44 @@ window.addEventListener('scroll', () => {
   // Masquer si déjà installée
   window.addEventListener('appinstalled', () => popup?.classList.remove('show'))
 })()
+
+// ── HERO SLIDESHOW ──────────────────────────────
+;(function() {
+  const slides = Array.from(document.querySelectorAll('.hero-slide'))
+  const dots   = Array.from(document.querySelectorAll('.s-dot'))
+  if (!slides.length) return
+
+  let cur = 0
+  let timer = null
+
+  function goTo(n) {
+    slides[cur].classList.remove('active')
+    dots[cur] && dots[cur].classList.remove('active')
+    cur = ((n % slides.length) + slides.length) % slides.length
+    slides[cur].classList.add('active')
+    dots[cur] && dots[cur].classList.add('active')
+  }
+
+  // Exposer globalement pour les onclick des dots
+  window.goSlide = function(n) {
+    clearInterval(timer)
+    goTo(n)
+    timer = setInterval(() => goTo(cur + 1), 5000)
+  }
+
+  // Lancer la rotation automatique
+  timer = setInterval(() => goTo(cur + 1), 5000)
+
+  // Pause au survol de la section hero
+  const hero = document.getElementById('hero')
+  if (hero) {
+    hero.addEventListener('mouseenter', () => clearInterval(timer))
+    hero.addEventListener('mouseleave', () => {
+      timer = setInterval(() => goTo(cur + 1), 5000)
+    })
+  }
+})()
+
 </script>
 
 <!-- PWA INSTALL POPUP -->
