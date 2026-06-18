@@ -81,13 +81,6 @@
     {
       "src": "/(.*)",
       "dest": "/$1"
-    },
-    {
-      "handle": "error"
-    },
-    {
-      "status": 404,
-      "dest": "/404.html"
     }
   ],
   "headers": [
@@ -251,5 +244,6 @@
       "path": "/api/cron-marketing",
       "schedule": "0 9 * * *"
     }
-  ]
+  ],
+  "cleanUrls": true
 }
