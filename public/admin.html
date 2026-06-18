@@ -1020,36 +1020,58 @@ async function loadPage(page) {
 // ── KPIs ──
 async function loadKPIs() {
   try {
-    const [users, subs, coupons, analyses, referrals] = await Promise.all([
-      sb('profiles?select=id,plan,plan_expires_at,created_at'),
-      sb('subscriptions?select=id,plan,status,amount_fcfa'),
-      sb('coupons?select=id,status,match_date'),
-      sb('analyses?select=id'),
+    const today = new Date().toISOString().split('T')[0]
+    const weekAgo = new Date(Date.now() - 7*24*3600*1000).toISOString()
+
+    const [users, subs, coupons, referrals, mktg] = await Promise.all([
+      sb('profiles?select=id,plan,plan_expires_at,created_at,email,telegram_chat_id'),
+      sb('subscriptions?select=id,plan,status,amount_fcfa,period,created_at'),
+      sb('coupons?select=id,status,match_date,tier'),
       sb('referrals?select=id,status'),
+      sb('marketing_sequences?select=id,status,sequence_name'),
     ])
 
-    const paid = users.filter(u => u.plan !== 'free' && u.plan_expires_at && new Date(u.plan_expires_at) > new Date())
+    const now = new Date()
+    const paid = users.filter(u => u.plan !== 'free' && u.plan_expires_at && new Date(u.plan_expires_at) > now)
     const revenue = subs.filter(s => s.status === 'active').reduce((a, s) => a + (s.amount_fcfa || 0), 0)
-    const todayCoupons = coupons.filter(c => c.match_date === new Date().toISOString().split('T')[0])
+    const todayCoupons = coupons.filter(c => c.match_date === today)
+    const newUsersToday = users.filter(u => u.created_at && u.created_at.startsWith(today))
+    const newUsersWeek  = users.filter(u => u.created_at && u.created_at > weekAgo)
+    const emailsPending = mktg.filter(m => m.status === 'pending').length
+    const tgLinked      = users.filter(u => u.telegram_chat_id).length
 
     document.getElementById('kpi-users').textContent = fmt(users.length)
-    document.getElementById('kpi-users-sub').textContent = `${users.filter(u=>u.plan!=='free').length} avec plan`
+    document.getElementById('kpi-users-sub').textContent =
+      `+${newUsersToday.length} aujourd'hui · ${newUsersWeek.length} cette semaine`
     document.getElementById('kpi-paid').textContent = fmt(paid.length)
-    document.getElementById('kpi-paid-sub').textContent = `${paid.filter(u=>u.plan==='elite').length} Elite · ${paid.filter(u=>u.plan==='pro').length} Pro`
+    document.getElementById('kpi-paid-sub').textContent =
+      `${paid.filter(u=>u.plan==='elite').length} Elite · ${paid.filter(u=>u.plan==='pro').length} Pro · ${paid.filter(u=>u.plan==='starter').length} Starter`
     document.getElementById('kpi-revenue').textContent = fmt(revenue) + ' F'
+    document.getElementById('kpi-revenue-sub') && (document.getElementById('kpi-revenue-sub').textContent =
+      `${subs.filter(s=>s.status==='active').length} abonnement(s) actif(s)`)
     document.getElementById('kpi-coupons').textContent = fmt(coupons.length)
-    document.getElementById('kpi-coupons-sub').textContent = todayCoupons.length ? `✅ Coupon publié aujourd'hui` : `⏳ Pas encore publié`
-    document.getElementById('kpi-analyses').textContent = fmt(analyses.length)
+    document.getElementById('kpi-coupons-sub').textContent = todayCoupons.length
+      ? `✅ ${todayCoupons.length} coupon(s) publié(s) aujourd'hui`
+      : `⏳ Aucun coupon aujourd'hui`
     document.getElementById('kpi-referrals').textContent = fmt(referrals.length)
-    document.getElementById('badge-users').textContent = users.length
+
+    // Nouvelles métriques
+    const elEmail = document.getElementById('kpi-emails-pending')
+    if (elEmail) elEmail.textContent = fmt(emailsPending)
+    const elTg = document.getElementById('kpi-tg-linked')
+    if (elTg) elTg.textContent = fmt(tgLinked)
+
+    cache.users = users
+    cache.subs  = subs
 
     cache.users = users
     cache.subs = subs
 
     // Statut fonctions
-    document.getElementById('oracle-status').innerHTML = `<span style="color:var(--gb)">✅ v4 ACTIVE</span>`
-    document.getElementById('payments-status').innerHTML = `<span style="color:var(--gb)">✅ v2 ACTIVE</span>`
-    document.getElementById('coupons-fn-status').innerHTML = `<span style="color:var(--gb)">✅ v1 ACTIVE</span>`
+    // Versions réelles des edge functions
+    document.getElementById('oracle-status').innerHTML = `<span style="color:var(--gb)">✅ v23 ACTIVE</span>`
+    document.getElementById('payments-status').innerHTML = `<span style="color:var(--gb)">✅ v28 ACTIVE</span>`
+    document.getElementById('coupons-fn-status').innerHTML = `<span style="color:var(--gb)">✅ v10 ACTIVE</span>`
 
   } catch(e) { console.error('[KPIs]', e) }
 }
@@ -1507,7 +1529,49 @@ document.getElementById('sb-av').textContent = prenom[0].toUpperCase()
 loadAll()
 
 // Auto-refresh toutes les 60s
-setInterval(() => { if (document.visibilityState === 'visible') loadAll() }, 60000)
+setInterval(() => { if (document.visibilityState === 'visible') loadAll() }, 30000)
+
+// ── SUPABASE REALTIME — mise à jour instantanée ──────────
+;(function() {
+  const SUPA_URL = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+  const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+  const script = document.createElement('script')
+  script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js'
+  script.onload = () => {
+    const client = window.supabase.createClient(SUPA_URL, SUPA_KEY, {
+      realtime: { params: { eventsPerSecond: 2 } }
+    })
+
+    const indicator = document.getElementById('realtime-dot')
+
+    client.channel('admin-live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },
+        () => { loadKPIs(); loadUsersTable(); showRealtimePing() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' },
+        () => { loadKPIs(); showRealtimePing() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'coupons' },
+        () => { loadKPIs(); loadCouponsTable && loadCouponsTable(); showRealtimePing() })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' },
+        () => { showRealtimePing() })
+      .subscribe(status => {
+        if (indicator) {
+          indicator.style.background = status === 'SUBSCRIBED' ? '#22c55e' : '#F5C842'
+          indicator.title = 'Realtime : ' + status
+        }
+        console.log('[Realtime]', status)
+      })
+  }
+  document.head.appendChild(script)
+
+  function showRealtimePing() {
+    const dot = document.getElementById('realtime-dot')
+    if (!dot) return
+    dot.style.transform = 'scale(1.8)'
+    setTimeout(() => { dot.style.transform = 'scale(1)' }, 300)
+  }
+})()
+
 </script>
 </body>
 </html>
