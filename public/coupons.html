@@ -260,11 +260,11 @@ const TIER_INFO = {
   bold:     { label: 'Coupon Audacieux', icon: '🔥', min: 'pro',     minLabel: 'Pro' }
 }
 const BOOKMAKERS = [
-  { name: '1XBET',     url: 'https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97' },
-  { name: 'BETWINNER', url: 'https://bwredir.com/2gdj' },
-  { name: 'MEGAPARI',  url: 'https://refpaiozdg.top/L?' },
-  { name: '1Win',      url: 'https://1wync.com/?p=3qq3' },
-  { name: '888starz',  url: 'https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159' }
+  { name: '1XBET',     url: 'https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97',             logo: '/bookmakers/1xbet.png'    },
+  { name: 'BETWINNER', url: 'https://bwredir.com/2gdj',                                                logo: '/bookmakers/betwinner.png'},
+  { name: 'MEGAPARI',  url: 'https://refpaiozdg.top/L?',                                              logo: '/bookmakers/megapari.png' },
+  { name: '1Win',      url: 'https://1wync.com/?p=3qq3',                                               logo: '/bookmakers/1win.png'     },
+  { name: '888starz',  url: 'https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159',    logo: '/bookmakers/888starz.png' }
 ]
 
 // ── Auth helpers (mêmes patterns que le dashboard) ──
@@ -312,7 +312,10 @@ async function getUserPlan() {
 function esc(s) { return (s == null ? '' : String(s)).replace(/</g, '&lt;').replace(/>/g, '&gt;') }
 
 function bookmakerRow() {
-  return BOOKMAKERS.map(b => `<a href="${b.url}" target="_blank" rel="noopener" class="bk">${b.name}</a>`).join('')
+  return BOOKMAKERS.map(b => `
+    <a href="${b.url}" target="_blank" rel="noopener" class="bk" title="${b.name}">
+      <img src="${b.logo}" alt="${b.name}" style="max-height:22px;max-width:70px;width:auto;object-fit:contain;vertical-align:middle;filter:brightness(.9)">
+    </a>`).join('')
 }
 
 function renderSelection(s, tier) {
