@@ -1,5 +1,5 @@
-// Vercel Cron — 08h01 UTC chaque jour
-// Kick automatique des membres Elite Telegram expirés
+// Vercel Cron — */5 14h-23h UTC
+// Alertes live : buts, cartons, rappels pre-match via Telegram
 
 export default async function handler(req, res) {
   const authHeader = req.headers['authorization']
@@ -9,22 +9,23 @@ export default async function handler(req, res) {
 
   const SUPA = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
   const AK   = process.env.SUPABASE_SERVICE_ROLE_KEY || ''
+  const CRON = process.env.CRON_SECRET || ''
 
   try {
-    const r = await fetch(`${SUPA}/functions/v1/tg-access`, {
+    const r = await fetch(`${SUPA}/functions/v1/live-alerts`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${AK}`,
         'apikey': AK
       },
-      body: JSON.stringify({ action: 'check_expired' })
+      body: JSON.stringify({ secret: CRON })
     })
     const data = await r.json().catch(() => ({}))
-    console.log('[CRON tg-access]', JSON.stringify(data))
-    res.status(200).json({ ok: true, result: data })
+    console.log('[CRON live-alerts]', JSON.stringify(data))
+    res.status(200).json({ ok: true, ...data })
   } catch (e) {
-    console.error('[CRON tg-access] Erreur:', e.message)
+    console.error('[CRON live-alerts] Erreur:', e.message)
     res.status(500).json({ error: e.message })
   }
 }
