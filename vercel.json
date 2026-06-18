@@ -227,10 +227,6 @@
     {
       "path": "/api/cron-marketing",
       "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron-live-alerts",
-      "schedule": "*/5 14-23 * * *"
     }
   ]
 }
