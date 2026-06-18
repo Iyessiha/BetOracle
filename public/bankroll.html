@@ -70,6 +70,17 @@ body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100
 .kelly-result{margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;text-align:center;display:none}
 .kr-val{font-family:var(--fd);font-size:28px;letter-spacing:.04em;color:var(--gb)}
 .kr-sub{font-size:12px;color:var(--muted);margin-top:2px}
+
+.bi-actions { display:flex; gap:6px; margin-top:8px; }
+.btn-won  { padding:5px 12px; border-radius:7px; font-size:11px; font-weight:800;
+            background:rgba(34,197,94,.15); color:#22c55e; border:1px solid rgba(34,197,94,.3); cursor:pointer; }
+.btn-lost { padding:5px 12px; border-radius:7px; font-size:11px; font-weight:800;
+            background:rgba(239,68,68,.12); color:#ef4444; border:1px solid rgba(239,68,68,.3); cursor:pointer; }
+.btn-del  { padding:5px 10px; border-radius:7px; font-size:11px; font-weight:700;
+            background:rgba(148,163,184,.08); color:var(--muted); border:1px solid var(--b1); cursor:pointer; }
+.btn-won:hover  { background:rgba(34,197,94,.25); }
+.btn-lost:hover { background:rgba(239,68,68,.2); }
+
 </style>
 </head>
 <body>
@@ -264,12 +275,19 @@ function renderBets(bets) {
     const pay  = b.status==='won' && b.payout_fcfa
       ? '+' + fmtF(b.payout_fcfa) : b.status==='lost'
       ? '-' + fmtF(b.stake_fcfa||0) : '×' + (b.odds||'?')
+    const actions = b.status==='pending' ? `
+      <div class="bi-actions">
+        <button class="btn-won"  onclick="updateBet('${b.id}','won')">✅ Gagné</button>
+        <button class="btn-lost" onclick="updateBet('${b.id}','lost')">❌ Perdu</button>
+        <button class="btn-del"  onclick="deleteBet('${b.id}')">🗑</button>
+      </div>` : `<div class="bi-actions"><button class="btn-del" onclick="deleteBet('${b.id}')">🗑 Supprimer</button></div>`
     return `
-    <div class="bet-item">
+    <div class="bet-item" id="bet-${b.id}">
       <div class="bi-status ${cls}">${ico}</div>
       <div class="bi-body">
         <div class="bi-match">${b.team_a||'?'} vs ${b.team_b||'?'}</div>
         <div class="bi-meta">${b.pick||''} · ${b.bookmaker||''} · ${b.match_date||''}</div>
+        ${actions}
       </div>
       <div class="bi-right">
         <div class="bi-stake">Mise: ${fmtF(b.stake_fcfa||0)} F</div>
@@ -360,6 +378,31 @@ function fmtF(n) { return Number(n).toLocaleString('fr-FR') }
 // ── Init ──────────────────────────────────────────
 if (!token) window.location.href = '/login?next=/bankroll'
 else loadAll()
+
+// ── Marquer un pari gagné ou perdu ──────────────
+async function updateBet(id, status) {
+  try {
+    const bet = allBets.find(b => b.id === id)
+    const payout = status === 'won' && bet ? Math.round((bet.stake_fcfa||0) * (bet.odds||1)) : null
+    await sb(`bets?id=eq.${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ status, payout_fcfa: payout })
+    })
+    await loadAll()
+  } catch(e) { alert('Erreur: ' + e.message) }
+}
+
+// ── Supprimer un pari ─────────────────────────────
+async function deleteBet(id) {
+  if (!confirm('Supprimer ce pari ?')) return
+  try {
+    await fetch(`${S}/rest/v1/bets?id=eq.${id}`, {
+      method: 'DELETE', headers: getH()
+    })
+    await loadAll()
+  } catch(e) { alert('Erreur: ' + e.message) }
+}
+
 </script>
 </body>
 </html>

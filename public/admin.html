@@ -1400,20 +1400,27 @@ async function loadNotifsTable() {
 
 // Déclencher coupon
 async function triggerCoupon() {
-  const action = document.getElementById('coupon-action').value
   closeModal('modal-coupon')
-  toast('Génération du coupon en cours…')
+  const btn = document.getElementById('gen-btn')
+  toast('⏳ Génération des coupons en cours… (30-90s)')
+  const jwt = localStorage.getItem('admin_token') || localStorage.getItem('sb_access_token') || token || ''
   try {
-    const r = await fetch(`${SUPA_URL}/functions/v1/coupons`, {
+    const r = await fetch(`${SUPA_URL}/functions/v1/generate-coupons`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token || SUPA_ANON}`, 'apikey': SUPA_ANON },
-      body: JSON.stringify({ action })
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${jwt}`,
+        'apikey': SUPA_ANON
+      },
+      body: JSON.stringify({ date: new Date().toISOString().slice(0,10) })
     })
     const d = await r.json()
-    if (d.success) { toast(`✅ Coupon publié ! ${d.selections} sélections · ×${d.total_odds}`) }
-    else if (d.message) { toast(d.message) }
-    else { toast('Réponse : ' + JSON.stringify(d).slice(0,60)) }
-    await loadCouponsTable()
+    if (d.ok) {
+      toast(`✅ ${d.count} coupons générés !`, 'success')
+      await loadCouponsTable()
+    } else {
+      toast('❌ ' + (d.error || d.detail || 'Erreur génération'), 'error')
+    }
   } catch(e) { toast('Erreur : ' + e.message, 'error') }
 }
 
@@ -1634,6 +1641,85 @@ async function loadOraclePerf() {
     }
     document.getElementById('perf-updated').textContent = 'Mis à jour ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})
   } catch(e) { console.error('[perf]', e) }
+}
+
+
+// ── GÉNÉRATION MANUELLE DE COUPONS ──────────────
+async function generateCoupons() {
+  const btn = document.getElementById('gen-btn')
+  const st  = document.getElementById('gen-status')
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Génération en cours… (30-90s)'
+  st.style.display = 'block'
+  st.textContent = '⏳ L'Oracle analyse les matchs du jour via IA + web search…'
+
+  try {
+    const jwt = localStorage.getItem('admin_token') || localStorage.getItem('sb_access_token') || ''
+    const r = await fetch('https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/generate-coupons', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + jwt,
+        'x-admin-key': localStorage.getItem('admin_cron_key') || ''
+      },
+      body: JSON.stringify({ date: new Date().toISOString().slice(0,10) })
+    })
+    const d = await r.json()
+    if (d.ok) {
+      st.style.background = 'rgba(34,197,94,.1)'
+      st.style.borderColor = 'rgba(34,197,94,.3)'
+      st.style.color = '#22c55e'
+      st.innerHTML = `✅ <strong>${d.count}</strong> coupons générés pour le ${d.date}`
+      loadAdminCoupons()
+    } else {
+      st.style.background = 'rgba(239,68,68,.08)'
+      st.style.borderColor = 'rgba(239,68,68,.2)'
+      st.style.color = '#ef4444'
+      st.textContent = '❌ Erreur : ' + (d.error || d.detail || 'Génération échouée')
+    }
+  } catch(e) {
+    st.style.color = '#ef4444'
+    st.textContent = '❌ ' + e.message
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-sparkles"></i> Générer les coupons'
+  }
+}
+
+// ── LISTE DES COUPONS ADMIN ───────────────────────
+async function loadAdminCoupons() {
+  try {
+    const coupons = await sb('coupons?select=id,match_date,tier,title,total_odds,confidence,result,wins_count,total_picks,status&order=match_date.desc,tier&limit=15')
+    const el = document.getElementById('coupons-admin-list')
+    if (!coupons?.length) { el.innerHTML = '<div style="text-align:center;color:var(--lo);padding:16px">Aucun coupon généré</div>'; return }
+    const tierColor = {safe:'var(--gb)',balanced:'var(--gold)',bold:'#8b5cf6'}
+    const resultIcon = {win:'✅',loss:'❌',partial:'⚡',pending:'⏳',void:'—'}
+    el.innerHTML = `<table style="width:100%;font-size:12px;border-collapse:collapse">
+      <thead><tr style="color:var(--lo);text-align:left">
+        <th style="padding:7px 8px">Date</th><th>Tier</th><th>Titre</th>
+        <th>Cote</th><th>Conf.</th><th>Résultat</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+        ${coupons.map(c => `<tr style="border-top:1px solid var(--b1)">
+          <td style="padding:7px 8px">${c.match_date}</td>
+          <td style="font-weight:700;color:${tierColor[c.tier]||'var(--text)'}">${c.tier}</td>
+          <td style="max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${c.title||'—'}</td>
+          <td>×${c.total_odds||'—'}</td>
+          <td>${c.confidence||'—'}%</td>
+          <td>${resultIcon[c.result]||'⏳'} ${c.result||'pending'} ${c.wins_count!=null?`(${c.wins_count}/${c.total_picks})`:''}
+          </td>
+          <td><span style="font-size:10px;padding:2px 7px;border-radius:8px;background:rgba(34,197,94,.1);color:var(--gb)">${c.status||'—'}</span></td>
+        </tr>`).join('')}
+      </tbody>
+    </table>`
+  } catch(e) { console.error('[admin coupons]', e) }
+}
+
+// Charger les coupons si on est sur l'onglet coupons
+function showCouponsTab() {
+  document.querySelectorAll('.admin-panel').forEach(p => p.style.display='none')
+  const el = document.getElementById('card-coupons')
+  if (el) { el.style.display='block'; loadAdminCoupons() }
 }
 
 </script>
