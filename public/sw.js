@@ -27,6 +27,10 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url)
   
   // Toujours réseau pour API Supabase, paiements, Resend
+  // Ne jamais mettre en cache les pages d'analyse, coupons, dashboard
+  if (url.pathname === '/analyse' || url.pathname === '/coupons' || url.pathname === '/dashboard') {
+    return  // réseau uniquement, pas de cache
+  }
   if (url.hostname.includes('supabase') || 
       url.hostname.includes('geniuspay') ||
       url.hostname.includes('resend') ||
