@@ -222,6 +222,29 @@ button{cursor:pointer;font-family:var(--ff)}
   display: block !important;
 }
 
+
+/* Bannière plan recommandé */
+.rec-banner {
+  display: none;
+  background: rgba(245,200,66,.08);
+  border: 1px solid rgba(245,200,66,.25);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text);
+}
+.rec-banner.show { display: block; }
+.rec-banner strong { color: var(--gold); }
+.rec-banner .rec-close {
+  font-size: 11px;
+  color: var(--lo);
+  cursor: pointer;
+  margin-left: 10px;
+  font-weight: 700;
+}
+
 </style>
 </head>
 <body>
@@ -452,7 +475,24 @@ async function tryRefresh() {
 
   // Si plan pré-sélectionné dans l'URL, ouvrir la confirmation
   if (urlPlan && ['starter','pro','elite'].includes(urlPlan)) {
-    setTimeout(() => choosePlan(urlPlan, urlPeriod || currentPeriod), 400)
+    // Highlight + scroll vers le plan suggéré SANS ouvrir le modal paiement
+    setTimeout(() => {
+      const card = document.getElementById('plan-' + urlPlan)
+      if (card) {
+        // Scrolle vers la carte
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        // Ajoute un effet de highlight temporaire
+        card.style.transition = 'box-shadow .4s, transform .4s'
+        card.style.boxShadow = '0 0 0 2px var(--gold), 0 8px 32px rgba(245,200,66,.25)'
+        card.style.transform = 'translateY(-4px) scale(1.01)'
+        setTimeout(() => {
+          card.style.boxShadow = ''
+          card.style.transform = ''
+        }, 2200)
+      }
+      // Mettre à jour la période si fournie
+      if (urlPeriod && urlPeriod !== currentPeriod) setBill(urlPeriod)
+    }, 500)
   }
 })()
 

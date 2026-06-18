@@ -577,7 +577,7 @@ function renderCoupon(c, userPlan) {
 function goUpgrade(minPlan) {
   getToken().then(t => {
     if (!t) { window.location.href = 'login.html?next=coupons.html'; return }
-    window.location.href = 'checkout.html?plan=' + minPlan
+    window.location.href = '/checkout?plan=' + minPlan
   })
 }
 
