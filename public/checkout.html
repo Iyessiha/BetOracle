@@ -245,6 +245,22 @@ button{cursor:pointer;font-family:var(--ff)}
   font-weight: 700;
 }
 
+
+/* ── ALERTE DOWNGRADE ── */
+.downgrade-alert {
+  display: none;
+  background: rgba(245,200,66,.08);
+  border: 1px solid rgba(245,200,66,.3);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 16px 0;
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--text);
+}
+.downgrade-alert.show { display: flex; gap: 10px; align-items: flex-start; }
+.downgrade-alert .da-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+
 </style>
 </head>
 <body>
@@ -428,7 +444,8 @@ const PERIOD_LABELS = { week:'1 semaine', month:'1 mois' }
 let currentPeriod = 'week'
 let selectedPlan = '', selectedPeriod = ''
 let paying = false
-let userPlan = 'free', token = ''
+let userPlan = 'free'
+let userExpires = null, token = ''
 
 const $ = id => document.getElementById(id)
 
@@ -553,6 +570,31 @@ window.setBill = function(period) {
 window.choosePlan = function(plan, period) {
   if (plan === 'free' || plan === userPlan) return
   if (!token) { window.location.href = '/login?redirect=' + encodeURIComponent(location.href); return }
+
+  // ── ANTI-DOWNGRADE : bloquer si abonnement actif ──
+  const PLAN_ORDER = { free: 0, starter: 1, pro: 2, elite: 3 }
+  const currentOrder = PLAN_ORDER[userPlan] || 0
+  const selectedOrder = PLAN_ORDER[plan] || 0
+  const hasActiveSub = userExpires && new Date(userExpires) > new Date()
+
+  if (hasActiveSub && selectedOrder < currentOrder) {
+    const alertEl = document.getElementById('downgrade-alert')
+    const msgEl   = document.getElementById('downgrade-msg')
+    if (alertEl && msgEl) {
+      const dateStr = new Date(userExpires).toLocaleDateString('fr-FR', {
+        day: 'numeric', month: 'long', year: 'numeric'
+      })
+      const planLabel = { starter: 'Starter', pro: 'Pro', elite: 'Elite' }[userPlan] || userPlan
+      msgEl.innerHTML = `<strong>Rétrogradation impossible.</strong> Ton abonnement <strong>${planLabel}</strong> est actif jusqu'au <strong>${dateStr}</strong>.<br>Tu pourras choisir un plan inférieur à son expiration.`
+      alertEl.classList.add('show')
+      alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      setTimeout(() => alertEl.classList.remove('show'), 8000)
+    }
+    return
+  }
+  // Cacher l'alerte si changement valide
+  document.getElementById('downgrade-alert')?.classList.remove('show')
+
   selectedPlan = plan; selectedPeriod = period || currentPeriod
   const price = PRICES[plan]?.[selectedPeriod] || 0
   $('cf-plan-name').textContent = PLAN_LABELS[plan] || plan

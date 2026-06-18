@@ -488,6 +488,139 @@ a{text-decoration:none;color:inherit}
 }
 
 
+
+/* ── ORACLE HERO ANIMÉ ── */
+.oracle-hero-wrap {
+  position: relative;
+  width: 160px; height: 160px;
+  margin: 0 auto 24px;
+}
+/* Terrain (fond) */
+.oracle-field {
+  position: absolute; inset: -30px;
+  background:
+    radial-gradient(circle at 50% 50%, rgba(34,197,94,.06) 0%, transparent 70%),
+    repeating-linear-gradient(90deg, transparent, transparent 19px, rgba(34,197,94,.04) 20px),
+    repeating-linear-gradient(0deg, transparent, transparent 19px, rgba(34,197,94,.04) 20px);
+  border-radius: 50%;
+}
+/* Anneau tournant externe */
+.oracle-ring-outer {
+  position: absolute; inset: -16px;
+  border-radius: 50%;
+  border: 1.5px dashed rgba(34,197,94,.2);
+  animation: ring-rot 12s linear infinite;
+}
+.oracle-ring-outer::before, .oracle-ring-outer::after {
+  content: '⚽'; position: absolute; font-size: 12px;
+  top: -8px; left: 50%; transform: translateX(-50%);
+}
+.oracle-ring-outer::after { top: auto; bottom: -8px; content: '⚽'; }
+/* Anneau tournant interne */
+.oracle-ring-inner {
+  position: absolute; inset: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(34,197,94,.15);
+  animation: ring-rot 8s linear infinite reverse;
+}
+/* Orbe principal */
+.oracle-orb-main {
+  position: absolute; inset: 20px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%,
+    rgba(34,197,94,.25) 0%, rgba(26,92,42,.4) 50%, rgba(8,12,8,.8) 100%);
+  border: 1.5px solid rgba(34,197,94,.4);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 30px rgba(34,197,94,.15), inset 0 0 20px rgba(34,197,94,.1);
+  animation: orb-pulse 3s ease-in-out infinite;
+}
+/* Image favicon dans l'orbe */
+.oracle-favicon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: drop-shadow(0 0 8px rgba(34,197,94,.5));
+  animation: favicon-glow 3s ease-in-out infinite;
+}
+/* Fallback si pas d'image */
+.oracle-favicon-fallback {
+  font-family: var(--font-d,'Bebas Neue',sans-serif);
+  font-size: 32px; color: var(--gold,#F5C842);
+  text-shadow: 0 0 12px rgba(245,200,66,.5);
+  letter-spacing: .04em;
+  animation: favicon-glow 3s ease-in-out infinite;
+}
+/* Points de scan animés */
+.oracle-scan {
+  position: absolute; inset: 0; border-radius: 50%; overflow: hidden;
+}
+.oracle-scan::after {
+  content: '';
+  position: absolute;
+  top: -100%; left: 50%;
+  width: 1px; height: 200%;
+  background: linear-gradient(180deg, transparent, rgba(34,197,94,.4), transparent);
+  transform-origin: bottom center;
+  animation: scan 4s ease-in-out infinite;
+}
+/* Silhouettes parieurs en arrière-plan */
+.players-bg {
+  position: absolute; inset: -60px;
+  pointer-events: none; overflow: hidden;
+  border-radius: 50%;
+}
+.player-silhouette {
+  position: absolute;
+  width: 20px; height: 36px;
+  background: rgba(34,197,94,.1);
+  border-radius: 10px 10px 4px 4px;
+  opacity: 0;
+}
+.player-silhouette::before {
+  content: '';
+  position: absolute;
+  top: -12px; left: 50%; transform: translateX(-50%);
+  width: 12px; height: 12px;
+  background: rgba(34,197,94,.1);
+  border-radius: 50%;
+}
+.ps1 { bottom: 10%; left: 5%; animation: player-appear 6s 0s ease-in-out infinite; }
+.ps2 { bottom: 15%; right: 8%; animation: player-appear 6s 1.5s ease-in-out infinite; }
+.ps3 { top: 12%; left: 8%; animation: player-appear 6s 3s ease-in-out infinite; }
+.ps4 { top: 8%;  right: 5%; animation: player-appear 6s 4.5s ease-in-out infinite; }
+/* Dots orbitaux */
+.orbit-dot {
+  position: absolute; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--gb,#22c55e);
+  top: 50%; left: 50%;
+  transform-origin: 0 0;
+  animation: orbit-dot 6s linear infinite;
+}
+.orbit-dot:nth-child(2) { animation-delay: -2s; opacity: .6; background: var(--gold,#F5C842); }
+.orbit-dot:nth-child(3) { animation-delay: -4s; opacity: .4; }
+/* Badge "EN LIGNE" */
+.oracle-badge {
+  position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+  background: rgba(8,12,8,.9); border: 1px solid rgba(34,197,94,.4);
+  border-radius: 20px; padding: 3px 12px;
+  font-size: 10px; font-weight: 700; letter-spacing: .1em;
+  color: var(--gb,#22c55e); white-space: nowrap;
+  display: flex; align-items: center; gap: 5px;
+}
+.oracle-badge::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--gb,#22c55e);
+  animation: livepulse 1.5s infinite;
+}
+/* Keyframes */
+@keyframes ring-rot    { to { transform: rotate(360deg); } }
+@keyframes orb-pulse   { 0%,100%{box-shadow:0 0 30px rgba(34,197,94,.15),inset 0 0 20px rgba(34,197,94,.1)} 50%{box-shadow:0 0 50px rgba(34,197,94,.3),inset 0 0 30px rgba(34,197,94,.2)} }
+@keyframes favicon-glow{ 0%,100%{filter:drop-shadow(0 0 8px rgba(34,197,94,.4))} 50%{filter:drop-shadow(0 0 16px rgba(34,197,94,.8))} }
+@keyframes scan        { 0%{transform:rotate(0deg)} 50%{transform:rotate(180deg)} 100%{transform:rotate(360deg)} }
+@keyframes player-appear{ 0%,100%{opacity:0;transform:translateY(10px)} 30%,70%{opacity:1;transform:translateY(0)} }
+@keyframes orbit-dot   { 0%{transform:rotate(0deg) translateX(68px)} 100%{transform:rotate(360deg) translateX(68px)} }
+@keyframes livepulse   { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(34,197,94,.6)} 70%{box-shadow:0 0 0 5px rgba(34,197,94,0)} }
+
 /* ── EMPTY STATE ANALYSE ── */
 #analyse-empty {
   max-width: 860px;
@@ -774,7 +907,33 @@ a{text-decoration:none;color:inherit}
 
 <!-- EMPTY STATE — affiché par défaut, caché quand analyse lance -->
 <div id="analyse-empty">
-  <div class="empty-oracle-icon">🔮</div>
+  <!-- ORACLE ANIMÉ -->
+  <div class="oracle-hero-wrap">
+    <div class="oracle-field"></div>
+    <!-- Silhouettes de parieurs -->
+    <div class="players-bg">
+      <div class="player-silhouette ps1"></div>
+      <div class="player-silhouette ps2"></div>
+      <div class="player-silhouette ps3"></div>
+      <div class="player-silhouette ps4"></div>
+    </div>
+    <!-- Anneaux orbitaux -->
+    <div class="oracle-ring-outer"></div>
+    <div class="oracle-ring-inner"></div>
+    <!-- Points orbitaux -->
+    <div class="orbit-dot"></div>
+    <div class="orbit-dot"></div>
+    <div class="orbit-dot"></div>
+    <!-- Orbe principale avec favicon -->
+    <div class="oracle-orb-main">
+      <div class="oracle-scan"></div>
+      <img src="/icons/icon-192.png" class="oracle-favicon"
+           alt="Oracle" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <div class="oracle-favicon-fallback" style="display:none">BO</div>
+    </div>
+    <!-- Badge EN LIGNE -->
+    <div class="oracle-badge">ORACLE EN LIGNE</div>
+  </div>
   <div class="empty-title">L'Oracle est prêt</div>
   <p class="empty-sub">
     Tape le nom de deux équipes et l'Oracle croise<br>
