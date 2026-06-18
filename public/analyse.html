@@ -596,6 +596,74 @@ a{text-decoration:none;color:inherit}
 }
 .sp-empty .sp-e-icon { font-size:42px; margin-bottom:12px; }
 
+
+/* ── SENTIMENT DES PARIEURS ── */
+.sentiment-section {
+  background: var(--s1,#0d130d);
+  border: 1px solid var(--b1,#1a261a);
+  border-radius: 14px;
+  padding: 18px 20px;
+  margin-bottom: 16px;
+}
+.sentiment-title {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .1em; color: var(--lo,#7a9a7a);
+  margin-bottom: 14px;
+}
+.sentiment-title i { color: var(--gb,#22c55e); }
+.sentiment-row {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 10px;
+}
+.sentiment-row:last-of-type { margin-bottom: 0; }
+.sentiment-label {
+  font-size: 12px; font-weight: 700;
+  color: var(--text); min-width: 90px;
+  white-space: nowrap; overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sentiment-bar-wrap {
+  flex: 1; height: 8px; background: var(--bg2,#080c08);
+  border-radius: 4px; overflow: hidden;
+}
+.sentiment-bar {
+  height: 100%; border-radius: 4px;
+  transition: width .6s cubic-bezier(.34,1.2,.64,1);
+}
+.bar-1  { background: var(--gb,#22c55e); }
+.bar-x  { background: var(--gold,#F5C842); }
+.bar-2  { background: #3b82f6; }
+.sentiment-pct {
+  font-family: var(--fd,'Bebas Neue',sans-serif);
+  font-size: 16px; letter-spacing: .04em;
+  min-width: 42px; text-align: right;
+}
+.pct-1 { color: var(--gb,#22c55e); }
+.pct-x { color: var(--gold,#F5C842); }
+.pct-2 { color: #3b82f6; }
+.sentiment-meta {
+  display: flex; align-items: center; gap: 8px;
+  margin-top: 12px; flex-wrap: wrap; gap: 6px;
+}
+.sentiment-badge {
+  font-size: 11px; font-weight: 700;
+  padding: 3px 10px; border-radius: 20px;
+  display: inline-flex; align-items: center; gap: 5px;
+}
+.badge-sharp { background: rgba(139,92,246,.15); color: #8b5cf6; }
+.badge-consensus { background: rgba(34,197,94,.1); color: var(--gb); }
+.badge-source { background: rgba(255,255,255,.04); color: var(--lo); font-weight: 400; }
+.trap-warning-box {
+  background: rgba(239,68,68,.08);
+  border: 1px solid rgba(239,68,68,.25);
+  border-radius: 10px; padding: 10px 14px;
+  margin-top: 10px; font-size: 12px;
+  color: #ef4444; line-height: 1.5;
+  display: flex; gap: 8px; align-items: flex-start;
+}
+.trap-warning-box .tw-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
 </style>
 </head>
 <body data-page="analyse">
@@ -759,6 +827,21 @@ a{text-decoration:none;color:inherit}
     <div class="lock-blur">
       <div class="lb-section">
         <div class="lb-head"></div>
+
+    <!-- SENTIMENT PARIEURS -->
+    <div class="sentiment-section" id="sentiment-section" style="display:none">
+      <div class="sentiment-title">
+        <i class="ti ti-activity-heartbeat"></i>
+        Sentiment des parieurs
+      </div>
+      <div id="sentiment-bars"></div>
+      <div class="sentiment-meta" id="sentiment-meta"></div>
+      <div class="trap-warning-box" id="trap-warning" style="display:none">
+        <span class="tw-icon">⚠️</span>
+        <span id="trap-text"></span>
+      </div>
+    </div>
+
         <div class="lb-row w90"></div><div class="lb-row w70"></div>
         <div class="lb-row w80"></div><div class="lb-row w55"></div>
       </div>
@@ -1726,6 +1809,72 @@ function showToast(msg) {
   t.style.transform = 'translateX(-50%) translateY(0)'
   clearTimeout(t._timer)
   t._timer = setTimeout(() => { t.style.opacity='0'; t.style.transform='translateX(-50%) translateY(20px)' }, 2500)
+}
+
+
+// ── Rendu du sentiment des parieurs ─────────────
+function renderSentiment(d) {
+  const s = d.sentiment
+  const section = document.getElementById('sentiment-section')
+  const barsEl  = document.getElementById('sentiment-bars')
+  const metaEl  = document.getElementById('sentiment-meta')
+  const trapEl  = document.getElementById('trap-warning')
+  const trapTxt = document.getElementById('trap-text')
+
+  if (!section || !s) return
+
+  const nameA = d.team_a || d.team_a_name || 'Équipe A'
+  const nameB = d.team_b || d.team_b_name || 'Équipe B'
+
+  const p1 = s.public_pct_1 || 0
+  const px = s.public_pct_x || 0
+  const p2 = s.public_pct_2 || 0
+
+  // Cacher si aucune donnée
+  if (!p1 && !px && !p2) { section.style.display = 'none'; return }
+
+  section.style.display = 'block'
+
+  barsEl.innerHTML = `
+    <div class="sentiment-row">
+      <div class="sentiment-label">${nameA.split(' ')[0]}</div>
+      <div class="sentiment-bar-wrap"><div class="sentiment-bar bar-1" style="width:${p1}%"></div></div>
+      <div class="sentiment-pct pct-1">${p1}%</div>
+    </div>
+    <div class="sentiment-row">
+      <div class="sentiment-label">Nul</div>
+      <div class="sentiment-bar-wrap"><div class="sentiment-bar bar-x" style="width:${px}%"></div></div>
+      <div class="sentiment-pct pct-x">${px}%</div>
+    </div>
+    <div class="sentiment-row">
+      <div class="sentiment-label">${nameB.split(' ')[0]}</div>
+      <div class="sentiment-bar-wrap"><div class="sentiment-bar bar-2" style="width:${p2}%"></div></div>
+      <div class="sentiment-pct pct-2">${p2}%</div>
+    </div>
+  `
+
+  // Badges
+  const badges = []
+  if (s.sharp_signal && s.sharp_signal !== 'unknown') {
+    const sigLabel = s.sharp_signal === '1' ? nameA.split(' ')[0] : s.sharp_signal === '2' ? nameB.split(' ')[0] : 'Nul'
+    badges.push(`<span class="sentiment-badge badge-sharp">💜 Sharps → ${sigLabel}</span>`)
+  }
+  if (s.consensus_pick) {
+    const cLabel = s.consensus_pick === '1' ? nameA.split(' ')[0] : s.consensus_pick === '2' ? nameB.split(' ')[0] : 'Nul'
+    badges.push(`<span class="sentiment-badge badge-consensus">👥 Consensus → ${cLabel}</span>`)
+  }
+  if (s.source && s.source !== 'estimation') {
+    badges.push(`<span class="sentiment-badge badge-source">📊 ${s.source}</span>`)
+  }
+  metaEl.innerHTML = badges.join('')
+
+  // Alerte piège
+  if (s.trap_warning && s.trap_reason) {
+    trapEl.style.display = 'flex'
+    trapTxt.textContent = s.trap_reason
+  } else {
+    trapEl.style.display = 'none'
+  }
 }
 
 </script>
