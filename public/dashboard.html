@@ -913,6 +913,52 @@ button { cursor: pointer; font-family: var(--ff); }
   font-weight: 700; text-decoration: none;
 }
 
+
+/* ── BLOC TELEGRAM PRO ── */
+.tg-link-card {
+  background: linear-gradient(135deg, rgba(45,212,191,.06) 0%, rgba(34,197,94,.04) 100%);
+  border: 1px solid rgba(45,212,191,.25);
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+.tg-link-card .tg-head {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 12px;
+}
+.tg-link-card .tg-icon {
+  width: 40px; height: 40px; border-radius: 10px;
+  background: rgba(45,212,191,.15);
+  display: flex; align-items: center; justify-content: center; font-size: 22px;
+  flex-shrink: 0;
+}
+.tg-link-card .tg-title { font-weight: 800; font-size: 14px; color: var(--white); }
+.tg-link-card .tg-sub   { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.tg-link-card .tg-linked {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.2);
+  border-radius: 8px; padding: 8px 12px;
+  font-size: 13px; font-weight: 600; color: var(--gb);
+}
+.tg-btn-link {
+  width: 100%; padding: 11px;
+  background: rgba(45,212,191,.15);
+  border: 1px solid rgba(45,212,191,.4);
+  border-radius: 10px; color: #2dd4bf;
+  font-size: 13px; font-weight: 800;
+  cursor: pointer; font-family: var(--ff);
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: all .15s;
+}
+.tg-btn-link:hover { background: rgba(45,212,191,.25); }
+.tg-features-list {
+  list-style: none; margin-bottom: 14px;
+}
+.tg-features-list li {
+  font-size: 12px; color: var(--muted); padding: 4px 0;
+  display: flex; align-items: center; gap: 7px;
+}
+.tg-features-list li::before { content: '•'; color: #2dd4bf; font-size: 14px; }
+
 </style>
 </head>
 <body data-page="dashboard">
@@ -993,6 +1039,41 @@ button { cursor: pointer; font-family: var(--ff); }
     </div>
 
     <nav class="sb-nav">
+
+      <!-- Bloc Telegram Pro -->
+      <div id="tg-pro-block" style="display:none">
+        <div class="tg-link-card" id="tg-link-card">
+          <div class="tg-head">
+            <div class="tg-icon">📱</div>
+            <div>
+              <div class="tg-title">Alertes Telegram</div>
+              <div class="tg-sub">Reçois les alertes en DM — Plan Pro</div>
+            </div>
+          </div>
+          <!-- État non lié -->
+          <div id="tg-not-linked">
+            <ul class="tg-features-list">
+              <li>Rappel 1h avant tes matchs favoris</li>
+              <li>Alerte à chaque but & carton rouge</li>
+              <li>Ton coupon du jour via /coupon</li>
+            </ul>
+            <button class="tg-btn-link" onclick="linkTelegram()" id="tg-btn">
+              <i class="ti ti-brand-telegram"></i> Lier mon Telegram
+            </button>
+          </div>
+          <!-- État lié -->
+          <div id="tg-linked" style="display:none">
+            <div class="tg-linked">
+              ✅ Telegram lié — <span id="tg-username-display">@...</span>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:10px">
+              Bot : <a href="https://t.me/betoraclexbot" target="_blank" style="color:#2dd4bf">@betoraclexbot</a>
+              · Tape <code>/aide</code> pour les commandes
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="sb-section">Mon espace</div>
       <a href="/dashboard" class="sb-link on"><i class="ti ti-layout-dashboard"></i> Tableau de bord</a>
       <a href="/analyse"   class="sb-link"><i class="ti ti-brain"></i> Oracle IA <span class="sb-badge">IA</span></a>
@@ -1810,6 +1891,68 @@ else init()
     setInterval(loadNotifs, 60000)
   })
 })()
+
+
+// ── Bloc Telegram Pro ────────────────────────────────────
+async function initTgBlock(plan, userId, tgChatId, tgUsername) {
+  const block = document.getElementById('tg-pro-block')
+  if (!block) return
+  if (!['pro', 'elite'].includes(plan)) { block.style.display = 'none'; return }
+  block.style.display = 'block'
+
+  if (tgChatId) {
+    // Déjà lié
+    document.getElementById('tg-not-linked').style.display = 'none'
+    document.getElementById('tg-linked').style.display = 'block'
+    const udisp = document.getElementById('tg-username-display')
+    if (udisp) udisp.textContent = tgUsername ? '@' + tgUsername : 'Lié ✓'
+  }
+}
+
+async function linkTelegram() {
+  const btn = document.getElementById('tg-btn')
+  if (btn) { btn.innerHTML = '<i class="ti ti-loader-2" style="animation:spin .8s linear infinite"></i> Génération...'; btn.disabled = true }
+
+  const token = Math.random().toString(36).slice(2, 10).toUpperCase() + Date.now().toString(36).toUpperCase()
+
+  try {
+    const t = localStorage.getItem('sb_access_token')
+    const uid = JSON.parse(atob(t.split('.')[1])).sub
+
+    // Sauvegarder le token en base
+    const AK = window.__SB_AK || ''
+    const S  = window.__SB_URL || ''
+    await fetch(`${S}/rest/v1/profiles?id=eq.${uid}`, {
+      method: 'PATCH',
+      headers: { 'apikey': AK, 'Authorization': 'Bearer ' + t, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ tg_bot_token: token })
+    })
+
+    // Ouvrir le bot avec le token
+    const tgLink = `https://t.me/betoraclexbot?start=${token}`
+    window.open(tgLink, '_blank')
+
+    if (btn) { btn.innerHTML = '<i class="ti ti-check"></i> Lien envoyé — ouvre Telegram'; btn.disabled = false }
+
+    // Rafraîchir après 10s pour voir si lié
+    setTimeout(async () => {
+      const res = await fetch(`${S}/rest/v1/profiles?id=eq.${uid}&select=telegram_chat_id,telegram_username`, {
+        headers: { 'apikey': AK, 'Authorization': 'Bearer ' + t }
+      }).then(r => r.json())
+      const p = res?.[0]
+      if (p?.telegram_chat_id) {
+        document.getElementById('tg-not-linked').style.display = 'none'
+        document.getElementById('tg-linked').style.display = 'block'
+        const udisp = document.getElementById('tg-username-display')
+        if (udisp) udisp.textContent = p.telegram_username ? '@' + p.telegram_username : 'Lié ✓'
+      }
+    }, 10000)
+
+  } catch (e) {
+    console.error('[TG link]', e)
+    if (btn) { btn.innerHTML = '<i class="ti ti-brand-telegram"></i> Lier mon Telegram'; btn.disabled = false }
+  }
+}
 
 </script>
 
