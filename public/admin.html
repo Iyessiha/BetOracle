@@ -1158,7 +1158,7 @@ async function loadRecentSubs() {
 
 // ── Table utilisateurs ──
 let allUsers = []
-async function loadUsersTable() {
+async function loadUsersTable(); loadOraclePerf() {
   const el = document.getElementById('users-table')
   try {
     const users = await sb('profiles?select=id,email,full_name,phone,plan,plan_expires_at,ref_code,referral_count,is_active,created_at&order=created_at.desc')
@@ -1247,7 +1247,7 @@ async function savePlan() {
     })
     closeModal('modal-plan')
     toast(`Plan mis à jour : ${plan}`)
-    await loadUsersTable()
+    await loadUsersTable(); loadOraclePerf()
     await loadKPIs()
   } catch(e) { toast('Erreur : ' + e.message, 'error') }
 }
@@ -1260,7 +1260,7 @@ async function banUser(uid, email) {
       body: JSON.stringify({ is_active: false, plan: 'free', plan_expires_at: null })
     })
     toast(`Compte désactivé`)
-    await loadUsersTable()
+    await loadUsersTable(); loadOraclePerf()
   } catch(e) { toast('Erreur : ' + e.message, 'error') }
 }
 
@@ -1445,7 +1445,7 @@ async function expirePlans() {
     })
     toast('Plans expirés désactivés')
     await loadKPIs()
-    await loadUsersTable()
+    await loadUsersTable(); loadOraclePerf()
   } catch(e) { toast('Erreur : ' + e.message, 'error') }
 }
 
@@ -1563,7 +1563,7 @@ setInterval(() => { if (document.visibilityState === 'visible') loadAll() }, 300
 
     client.channel('admin-live')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' },
-        () => { loadKPIs(); loadUsersTable(); showRealtimePing() })
+        () => { loadKPIs(); loadUsersTable(); loadOraclePerf(); showRealtimePing() })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'subscriptions' },
         () => { loadKPIs(); showRealtimePing() })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'coupons' },
@@ -1587,6 +1587,54 @@ setInterval(() => { if (document.visibilityState === 'visible') loadAll() }, 300
     setTimeout(() => { dot.style.transform = 'scale(1)' }, 300)
   }
 })()
+
+
+// ── STATS PERFORMANCE ORACLE (admin) ────────────
+async function loadOraclePerf() {
+  try {
+    const stats = await sb('coupon_performance?select=*')
+    const map = {}
+    for (const s of stats) map[s.tier] = s
+    function fill(tier, rateId, detailId) {
+      const s = map[tier]
+      if (!s) return
+      document.getElementById(rateId).textContent  = (s.win_rate_pct || 0) + '%'
+      document.getElementById(detailId).textContent = `${s.wins||0}/${(s.wins||0)+(s.losses||0)} gagnés`
+    }
+    fill('safe',     'perf-safe-rate', 'perf-safe-detail')
+    fill('balanced', 'perf-bal-rate',  'perf-bal-detail')
+    fill('bold',     'perf-bold-rate', 'perf-bold-detail')
+
+    // Tableau récent
+    const recent = await sb('coupons?select=match_date,tier,result,total_odds,wins_count,total_picks&order=match_date.desc&limit=10&result=neq.pending')
+    if (recent?.length) {
+      document.getElementById('perf-table').innerHTML = `
+        <table style="width:100%;font-size:12px;border-collapse:collapse">
+          <thead><tr style="color:var(--lo);text-align:left">
+            <th style="padding:6px 8px">Date</th>
+            <th>Tier</th>
+            <th>Cote</th>
+            <th>Picks</th>
+            <th>Résultat</th>
+          </tr></thead>
+          <tbody>
+            ${recent.map(r => {
+              const rb = {win:'✅',loss:'❌',partial:'⚡',pending:'⏳'}[r.result] || '⏳'
+              return \`<tr style="border-top:1px solid var(--b1)">
+                <td style="padding:6px 8px">${r.match_date}</td>
+                <td>${r.tier}</td>
+                <td>×${r.total_odds||'—'}</td>
+                <td>${r.wins_count||0}/${r.total_picks||0}</td>
+                <td>${rb} ${r.result}</td>
+              </tr>\`
+            }).join('')}
+          </tbody>
+        </table>
+      `
+    }
+    document.getElementById('perf-updated').textContent = 'Mis à jour ' + new Date().toLocaleTimeString('fr-FR', {hour:'2-digit',minute:'2-digit'})
+  } catch(e) { console.error('[perf]', e) }
+}
 
 </script>
 </body>

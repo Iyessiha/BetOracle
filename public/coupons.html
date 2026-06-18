@@ -375,6 +375,47 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
   font-weight: 700; text-decoration: none;
 }
 
+
+/* ── RÉSULTATS COUPONS ── */
+.result-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 12px; border-radius: 20px;
+  font-size: 11px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .08em;
+  flex-shrink: 0;
+}
+.rb-win     { background: rgba(34,197,94,.15); color: #22c55e; border: 1px solid rgba(34,197,94,.3); }
+.rb-loss    { background: rgba(239,68,68,.12); color: #ef4444; border: 1px solid rgba(239,68,68,.3); }
+.rb-partial { background: rgba(245,200,66,.12); color: #F5C842; border: 1px solid rgba(245,200,66,.3); }
+.rb-pending { background: rgba(148,163,184,.1); color: #94a3b8; border: 1px solid rgba(148,163,184,.2); }
+
+/* Indicateur par sélection dans le coupon */
+.sel-result {
+  display: inline-flex; align-items: center; gap: 4px;
+  font-size: 11px; font-weight: 700;
+  padding: 2px 8px; border-radius: 10px; margin-left: 6px;
+}
+.sr-win  { background: rgba(34,197,94,.12); color: #22c55e; }
+.sr-loss { background: rgba(239,68,68,.12); color: #ef4444; }
+
+/* Bande de performance globale */
+.perf-banner {
+  background: var(--s1,#0d130d);
+  border: 1px solid var(--b1,#1a261a);
+  border-radius: 14px; padding: 16px 20px;
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 20px;
+  flex-wrap: wrap;
+}
+.perf-stat { text-align: center; flex: 1; min-width: 70px; }
+.perf-val {
+  font-family: var(--fd,'Bebas Neue',sans-serif);
+  font-size: 28px; letter-spacing: .04em;
+  line-height: 1;
+}
+.perf-lbl { font-size: 10px; color: var(--lo,#7a9a7a); text-transform: uppercase; letter-spacing: .08em; margin-top: 3px; }
+.perf-divider { width: 1px; height: 36px; background: var(--b1,#1a261a); flex-shrink: 0; }
+
 </style>
 </head>
 <body>
@@ -583,7 +624,7 @@ function goUpgrade(minPlan) {
 
 function showState(html) { document.getElementById('coupons').innerHTML = html }
 
-async function load() {
+async function load(); loadPerformanceStats() {
   const today = new Date().toISOString().slice(0, 10)
   document.getElementById('date-pill').textContent =
     new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -618,7 +659,7 @@ async function load() {
     }
     if (!Array.isArray(coupons)) coupons = []
   } catch {
-    showState(`<div class="state"><div class="ic">⚠️</div><h3>Connexion impossible</h3><p>Impossible de charger les coupons. Vérifie ta connexion et réessaie.</p><button class="btn" onclick="location.reload()"><i class="ti ti-refresh"></i> Réessayer</button></div>`)
+    showState(`<div class="state"><div class="ic">⚠️</div><h3>Connexion impossible</h3><p>Impossible de charger les coupons. Vérifie ta connexion et réessaie.</p><button class="btn" onclick="location.reload(); loadPerformanceStats()"><i class="ti ti-refresh"></i> Réessayer</button></div>`)
     return
   }
 
@@ -643,7 +684,7 @@ async function load() {
   showState(coupons.map(c => renderCoupon(c, plan)).join(''))
 }
 
-load()
+load(); loadPerformanceStats()
 </script>
 
   <script>
@@ -788,6 +829,46 @@ load()
     setInterval(loadNotifs, 60000)
   })
 })()
+
+
+// ── STATS DE PERFORMANCE ────────────────────────
+async function loadPerformanceStats() {
+  const AK  = window.SUPA_AK || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+  const SUPA = window.SUPA_URL || 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+  try {
+    const r = await fetch(`${SUPA}/rest/v1/coupon_performance?select=*`, {
+      headers: { apikey: AK, Authorization: 'Bearer ' + AK }
+    })
+    if (!r.ok) return
+    const stats = await r.json()
+    const safe = stats.find(s => s.tier === 'safe')
+    if (!safe || !safe.total) return
+    document.getElementById('perf-banner').style.display = 'flex'
+    document.getElementById('perf-total').textContent = safe.total
+    document.getElementById('perf-wins').textContent  = safe.wins || 0
+    document.getElementById('perf-rate').textContent  = (safe.win_rate_pct || 0) + '%'
+    document.getElementById('perf-odds').textContent  = safe.avg_winning_odds ? '×' + safe.avg_winning_odds : '—'
+  } catch(_) {}
+}
+
+// Badge de résultat pour un coupon
+function resultBadge(result) {
+  const map = {
+    win:     ['rb-win',     '✅ Gagné'],
+    loss:    ['rb-loss',    '❌ Perdu'],
+    partial: ['rb-partial', '⚡ Partiel'],
+    pending: ['rb-pending', '⏳ En cours']
+  }
+  const [cls, label] = map[result] || map.pending
+  return `<span class="result-badge ${cls}">${label}</span>`
+}
+
+// Badge résultat par sélection
+function selResultBadge(sel) {
+  if (sel.result_won === true)  return `<span class="sel-result sr-win">✓ ${sel.result_score||''}</span>`
+  if (sel.result_won === false) return `<span class="sel-result sr-loss">✗ ${sel.result_score||''}</span>`
+  return ''
+}
 
 </script>
 </body>
