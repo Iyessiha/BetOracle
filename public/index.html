@@ -1496,20 +1496,20 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
   <div class="wrap">
     <div class="proof-grid reveal">
       <div class="pf-item">
-        <div class="pf-val"><span class="count" data-count="3200" data-sep="1">0</span><span class="g">+</span></div>
-        <div class="pf-lbl">Parieurs actifs</div>
+        <div class="pf-val" id="pf-users"><span class="count" data-count="847" data-sep="1">0</span><span class="g">+</span></div>
+        <div class="pf-lbl">Parieurs inscrits</div>
       </div>
       <div class="pf-item">
-        <div class="pf-val" style="color:var(--gold)"><span class="count" data-count="64">0</span><span style="color:var(--gb)">%</span></div>
-        <div class="pf-lbl">Win rate moyen</div>
+        <div class="pf-val" style="color:var(--gold)"><span class="count" data-count="67">0</span><span style="color:var(--gb)">%</span></div>
+        <div class="pf-lbl">Win rate coupon Sûr</div>
       </div>
       <div class="pf-item">
         <div class="pf-val"><span class="count" data-count="55">0</span><span class="g">+</span></div>
         <div class="pf-lbl">Championnats</div>
       </div>
       <div class="pf-item">
-        <div class="pf-val">24<span class="g">/7</span></div>
-        <div class="pf-lbl">Oracle live</div>
+        <div class="pf-val">3<span class="g">h</span></div>
+        <div class="pf-lbl">Cache cotes live</div>
       </div>
     </div>
   </div>
@@ -1548,6 +1548,77 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
           <div class="testi-av" style="background:rgba(59,130,246,.2);color:#3b82f6">Y</div>
           <div><div class="testi-name">Yao K.</div><div class="testi-city">🇨🇮 Abidjan · Plan Pro</div></div>
           <div class="testi-gain">+67 000 F</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══ SENTIMENT PARIEURS ═══ -->
+<section id="sentiment-feature" style="padding:80px 0;background:var(--bg2);border-top:1px solid var(--b1)">
+  <div class="wrap">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:center" class="reveal">
+      <div>
+        <div class="eyebrow" style="margin-bottom:16px"><i class="ti ti-activity-heartbeat"></i> Nouveau — Intelligence marché</div>
+        <h2 style="font-family:var(--font-d);font-size:clamp(32px,5vw,56px);letter-spacing:.03em;line-height:1.05;margin-bottom:16px">
+          Vois où misent<br><span style="color:var(--gb)">les pros</span>
+        </h2>
+        <p style="font-size:16px;color:var(--muted);line-height:1.75;margin-bottom:24px">
+          L'Oracle analyse le sentiment des parieurs en temps réel. Si 80% du public mise sur le favori <strong style="color:var(--text)">mais que les cotes montent</strong>, les pros jouent l'autre sens — et l'Oracle te le dit.
+        </p>
+        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px"><i class="ti ti-check" style="color:var(--gb)"></i> % public sur 1/X/2 en temps réel</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px"><i class="ti ti-check" style="color:var(--gb)"></i> Signal "Sharp Money" — où vont les pros</div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:14px"><i class="ti ti-check" style="color:var(--gb)"></i> Alerte ⚠️ piège si consensus public trompeur</div>
+        </div>
+        <a href="/signup" class="hero-btn-main" style="display:inline-flex;align-items:center;gap:8px;padding:13px 26px;border-radius:10px;background:var(--gb);color:#000;font-weight:800;font-size:14px;text-decoration:none">
+          <i class="ti ti-brain"></i> Essayer l'Oracle gratuitement
+        </a>
+      </div>
+      <div style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:24px">
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-activity-heartbeat" style="color:var(--gb)"></i> Sentiment des parieurs
+        </div>
+        <!-- Barre 1 -->
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="font-weight:700">Portugal</span>
+            <span style="font-family:var(--font-d);font-size:16px;color:var(--gb)">78%</span>
+          </div>
+          <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden">
+            <div style="width:78%;height:100%;background:var(--gb);border-radius:4px"></div>
+          </div>
+        </div>
+        <!-- Barre 2 -->
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="font-weight:700">Nul</span>
+            <span style="font-family:var(--font-d);font-size:16px;color:var(--gold)">14%</span>
+          </div>
+          <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden">
+            <div style="width:14%;height:100%;background:var(--gold);border-radius:4px"></div>
+          </div>
+        </div>
+        <!-- Barre 3 -->
+        <div style="margin-bottom:16px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:5px">
+            <span style="font-weight:700">RD Congo</span>
+            <span style="font-family:var(--font-d);font-size:16px;color:#3b82f6">8%</span>
+          </div>
+          <div style="height:8px;background:var(--bg2);border-radius:4px;overflow:hidden">
+            <div style="width:8%;height:100%;background:#3b82f6;border-radius:4px"></div>
+          </div>
+        </div>
+        <!-- Badges -->
+        <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(139,92,246,.15);color:#8b5cf6">💜 Sharps → Nul</span>
+          <span style="font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(34,197,94,.1);color:var(--gb)">👥 Consensus → Portugal</span>
+        </div>
+        <!-- Alerte piège -->
+        <div style="background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 12px;font-size:12px;color:#ef4444;display:flex;gap:7px;align-items:flex-start">
+          <span style="flex-shrink:0">⚠️</span>
+          <span><strong>Piège détecté :</strong> 78% du public sur Portugal mais les cotes montent — les pros jouent contra.</span>
         </div>
       </div>
     </div>
@@ -1863,6 +1934,38 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:64px 0 32px}
 </section>
 
 <!-- ═══ CTA FINAL ═══ -->
+
+<!-- ═══ COUPON LIVE ═══ -->
+<section id="coupon-live" style="padding:80px 0">
+  <div class="wrap" style="text-align:center">
+    <div class="eyebrow" style="margin:0 auto 16px;justify-content:center"><i class="ti ti-receipt"></i> Publié chaque matin à 08h00</div>
+    <h2 style="font-family:var(--font-d);font-size:clamp(36px,5vw,64px);letter-spacing:.03em;line-height:1.05;margin-bottom:12px">
+      Le coupon du jour<br><span style="color:var(--gb)">en direct</span>
+    </h2>
+    <p style="font-size:16px;color:var(--muted);margin-bottom:36px">Généré par l'Oracle IA chaque matin. Accès gratuit à la sélection Sûr.</p>
+    <div id="landing-coupon" style="max-width:520px;margin:0 auto;background:var(--s1);border:1px solid var(--b1);border-radius:18px;overflow:hidden">
+      <div style="background:var(--green-pitch,#1a5c2a);padding:16px 20px;display:flex;justify-content:space-between;align-items:center">
+        <div style="font-family:var(--font-d);font-size:18px;letter-spacing:.05em">COUPON SÛR</div>
+        <div id="lc-odds" style="font-family:var(--font-d);font-size:32px;color:var(--gold)">—</div>
+      </div>
+      <div id="lc-selections" style="padding:8px 0">
+        <div style="text-align:center;padding:20px;color:var(--muted);font-size:13px">Chargement du coupon…</div>
+      </div>
+      <div style="padding:14px 20px;border-top:1px solid var(--b1);display:flex;justify-content:space-between;align-items:center">
+        <a href="/coupons" style="font-size:13px;color:var(--gb);font-weight:700;text-decoration:none;display:flex;align-items:center;gap:6px">
+          <i class="ti ti-lock-open"></i> Voir coupon Équilibré & Audacieux
+        </a>
+        <span style="font-size:11px;color:var(--muted)">Mise: 5% BK</span>
+      </div>
+    </div>
+    <div style="margin-top:20px">
+      <a href="/signup" style="display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;background:var(--gb);color:#000;font-weight:800;font-size:14px;text-decoration:none">
+        <i class="ti ti-rocket"></i> Créer un compte gratuit
+      </a>
+    </div>
+  </div>
+</section>
+
 <section id="cta">
   <div class="cta-bg"></div>
   <div class="wrap" style="position:relative;z-index:1;text-align:center">
@@ -2278,6 +2381,41 @@ window.addEventListener('scroll', () => {
       timer = setInterval(() => goTo(cur + 1), 5000)
     })
   }
+})()
+
+
+// ── COUPON DU JOUR EN LIVE (landing) ─────────────
+;(async () => {
+  try {
+    const S   = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+    const AK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+    const r = await fetch(`${S}/rest/v1/rpc/get_daily_coupons`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: AK, Authorization: 'Bearer ' + AK },
+      body: JSON.stringify({ p_date: new Date().toISOString().slice(0,10) })
+    })
+    const data = await r.json()
+    const raw = Array.isArray(data) ? data : (data || [])
+    const safe = (Array.isArray(raw) ? raw : []).find(c => c.tier === 'safe')
+    if (!safe) return
+
+    const sels = safe.selections || []
+    document.getElementById('lc-odds').textContent = '×' + (safe.total_odds || '—')
+    document.getElementById('lc-selections').innerHTML = sels.slice(0,3).map(s => `
+      <div style="display:flex;align-items:center;padding:12px 20px;border-bottom:1px solid var(--b1,#1a261a);gap:12px">
+        <div style="flex:1">
+          <div style="font-weight:700;font-size:14px">${s.team_a || '?'} vs ${s.team_b || '?'}</div>
+          <div style="font-size:11px;color:var(--muted,#7a9a7a);margin-top:2px">${s.league || ''} · ${s.match_time ? s.match_time.slice(11,16) : ''}</div>
+        </div>
+        <div style="text-align:right">
+          <div style="font-size:12px;color:var(--gb,#22c55e);font-weight:600">${s.pick || ''}</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gb,#22c55e);background:rgba(34,197,94,.12);padding:2px 10px;border-radius:6px;margin-top:3px">
+            ${s.result_won !== undefined ? (s.result_won ? '✅' : '❌') : ''}${s.odds || '—'}
+          </div>
+        </div>
+      </div>
+    `).join('') || '<div style="text-align:center;padding:20px;color:var(--muted)">Coupon du jour en préparation</div>'
+  } catch(_) {}
 })()
 
 </script>

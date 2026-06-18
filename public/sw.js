@@ -67,3 +67,36 @@ self.addEventListener('fetch', e => {
     })
   )
 })
+
+// ── PUSH NOTIFICATIONS ──────────────────────────
+self.addEventListener('push', e => {
+  if (!e.data) return
+  let payload
+  try { payload = e.data.json() }
+  catch { payload = { title: 'Betoracle Pro', body: e.data.text() } }
+
+  const title   = payload.title || 'Betoracle Pro'
+  const options = {
+    body:  payload.body || 'Nouvelle notification',
+    icon:  payload.icon  || '/icons/icon-192.png',
+    badge: payload.badge || '/icons/icon-72.png',
+    tag:   payload.tag   || 'betoracle-notif',
+    data:  { url: payload.url || '/dashboard' },
+    actions: payload.actions || [],
+    vibrate: [100, 50, 100],
+    renotify: true
+  }
+  e.waitUntil(self.registration.showNotification(title, options))
+})
+
+self.addEventListener('notificationclick', e => {
+  e.notification.close()
+  const url = e.notification.data?.url || '/dashboard'
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(cs => {
+      const found = cs.find(c => c.url.includes(url) && 'focus' in c)
+      if (found) return found.focus()
+      if (clients.openWindow) return clients.openWindow(url)
+    })
+  )
+})

@@ -959,6 +959,64 @@ button { cursor: pointer; font-family: var(--ff); }
 }
 .tg-features-list li::before { content: '•'; color: #2dd4bf; font-size: 14px; }
 
+
+/* ── WIDGET ROI PERSONNEL ── */
+.roi-widget {
+  background: linear-gradient(135deg, rgba(26,92,42,.4), var(--s1));
+  border: 1px solid rgba(34,197,94,.2);
+  border-radius: 16px; padding: 18px;
+  margin-bottom: 14px;
+}
+.roi-head {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 14px;
+}
+.roi-title {
+  font-family: var(--fd); font-size: 14px; letter-spacing: .08em;
+  text-transform: uppercase; color: var(--green);
+  display: flex; align-items: center; gap: 7px;
+}
+.roi-badge {
+  font-family: var(--fd); font-size: 11px; letter-spacing: .06em;
+  padding: 3px 10px; border-radius: 20px;
+  background: rgba(34,197,94,.1); color: var(--green);
+}
+.roi-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }
+.roi-item { text-align: center; padding: 12px 8px; background: rgba(0,0,0,.2); border-radius: 10px; }
+.roi-val {
+  font-family: var(--fd); font-size: 24px; letter-spacing: .04em;
+  line-height: 1; margin-bottom: 4px;
+}
+.roi-lbl { font-size: 10px; color: var(--lo); text-transform: uppercase; letter-spacing: .08em; }
+.roi-link {
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+  margin-top: 12px; padding: 8px 14px;
+  background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.15);
+  border-radius: 8px; font-size: 12px; color: var(--green);
+  cursor: pointer; transition: all .15s; text-decoration: none;
+}
+.roi-link:hover { background: rgba(34,197,94,.15); }
+
+
+/* ── PUSH NOTIFICATION BANNER ── */
+.push-banner {
+  background: linear-gradient(135deg, rgba(139,92,246,.15), rgba(26,42,26,.4));
+  border: 1px solid rgba(139,92,246,.3);
+  border-radius: 12px; padding: 14px 16px;
+  display: flex; align-items: center; gap: 12px;
+  margin-bottom: 14px; cursor: pointer;
+  transition: border-color .2s;
+}
+.push-banner:hover { border-color: rgba(139,92,246,.6); }
+.push-banner-icon { font-size: 24px; flex-shrink:0; }
+.push-banner-text { flex:1 }
+.push-banner-title { font-weight:700; font-size:14px; margin-bottom:2px }
+.push-banner-sub { font-size:12px; color:var(--lo) }
+.push-btn { padding:8px 16px; background:rgba(139,92,246,.2); color:#8b5cf6;
+  border:1px solid rgba(139,92,246,.35); border-radius:8px; font-size:12px;
+  font-weight:800; cursor:pointer; flex-shrink:0; transition:all .15s; }
+.push-btn:hover { background:rgba(139,92,246,.35); }
+
 </style>
 </head>
 <body data-page="dashboard">
@@ -1167,6 +1225,42 @@ button { cursor: pointer; font-family: var(--ff); }
           <div class="sc-num" id="st-days">—</div>
           <div class="sc-label">Jours d'abo restants</div>
         </div>
+      </div>
+
+
+      <!-- Widget ROI personnel -->
+      <div class="roi-widget fu fu2" id="roi-widget" style="display:none">
+        <div class="roi-head">
+          <div class="roi-title"><i class="ti ti-chart-arrows-vertical"></i> Mon ROI bancaire</div>
+          <span class="roi-badge" id="roi-trend">—</span>
+        </div>
+        <div class="roi-grid">
+          <div class="roi-item">
+            <div class="roi-val" id="roi-winrate" style="color:var(--green)">—%</div>
+            <div class="roi-lbl">Win rate</div>
+          </div>
+          <div class="roi-item">
+            <div class="roi-val" id="roi-roi" style="color:var(--gold)">—%</div>
+            <div class="roi-lbl">ROI</div>
+          </div>
+          <div class="roi-item">
+            <div class="roi-val" id="roi-pl" style="color:var(--green)">—</div>
+            <div class="roi-lbl">P&L (FCFA)</div>
+          </div>
+        </div>
+        <a href="/bankroll" class="roi-link">
+          <i class="ti ti-chart-line"></i> Voir ma bankroll complète
+        </a>
+      </div>
+
+      <!-- Bannière activation push -->
+      <div class="push-banner fu fu2" id="push-banner" style="display:none" onclick="subscribePush()">
+        <div class="push-banner-icon">🔔</div>
+        <div class="push-banner-text">
+          <div class="push-banner-title">Activer les notifications</div>
+          <div class="push-banner-sub">Reçois les coupons, alertes buts et récompenses parrainage</div>
+        </div>
+        <button class="push-btn" id="push-btn">Activer</button>
       </div>
 
       <!-- Two columns -->
@@ -1953,6 +2047,113 @@ async function linkTelegram() {
   } catch (e) {
     console.error('[TG link]', e)
     if (btn) { btn.innerHTML = '<i class="ti ti-brand-telegram"></i> Lier mon Telegram'; btn.disabled = false }
+  }
+}
+
+
+// ── WIDGET ROI PERSONNEL ─────────────────────────
+async function loadROIWidget() {
+  try {
+    const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+    const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+    const t  = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+    if (!t) return
+    const r = await fetch(`${S}/rest/v1/bankroll_summary?select=win_rate_pct,roi_pct,profit_loss,total_bets,wins&limit=1`, {
+      headers: { apikey: AK, Authorization: 'Bearer ' + t }
+    })
+    if (!r.ok) return
+    const d = await r.json()
+    const stats = d?.[0]
+    if (!stats || !stats.total_bets) return  // pas de données → widget caché
+
+    document.getElementById('roi-widget').style.display = 'block'
+    const wr  = stats.win_rate_pct || 0
+    const roi = stats.roi_pct || 0
+    const pl  = stats.profit_loss || 0
+
+    // Win rate
+    const wrEl = document.getElementById('roi-winrate')
+    wrEl.textContent = wr + '%'
+    wrEl.style.color = wr >= 55 ? 'var(--green)' : wr >= 45 ? 'var(--gold)' : '#ef4444'
+
+    // ROI
+    const roiEl = document.getElementById('roi-roi')
+    roiEl.textContent = (roi >= 0 ? '+' : '') + roi + '%'
+    roiEl.style.color = roi >= 0 ? 'var(--gold)' : '#ef4444'
+
+    // P&L
+    const plEl = document.getElementById('roi-pl')
+    plEl.textContent = (pl >= 0 ? '+' : '') + Number(pl).toLocaleString('fr-FR')
+    plEl.style.color = pl >= 0 ? 'var(--green)' : '#ef4444'
+
+    // Badge tendance
+    const badge = document.getElementById('roi-trend')
+    if (roi >= 10)      { badge.textContent = '🔥 Excellent'; badge.style.color = 'var(--green)' }
+    else if (roi >= 0)  { badge.textContent = '📈 Positif';   badge.style.color = 'var(--gold)' }
+    else                { badge.textContent = '📉 À améliorer'; badge.style.color = '#ef4444' }
+  } catch(e) { console.warn('[roi]', e) }
+}
+
+
+// ── NOTIFICATIONS PUSH ───────────────────────────
+const VAPID_PUBLIC = '' // À configurer : clé VAPID publique
+
+async function checkPushStatus() {
+  if (!('serviceWorker' in navigator) || !('PushManager' in window)) return
+  const perm = Notification.permission
+  if (perm === 'denied') return
+  if (perm === 'granted') {
+    // Déjà accordé — vérifier si abonné
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.getSubscription()
+    if (sub) return // déjà abonné → cacher la bannière
+  }
+  // Afficher la bannière
+  document.getElementById('push-banner').style.display = 'flex'
+}
+
+async function subscribePush() {
+  const btn = document.getElementById('push-btn')
+  btn.textContent = 'Activation…'
+  btn.disabled = true
+  try {
+    const perm = await Notification.requestPermission()
+    if (perm !== 'granted') {
+      btn.textContent = 'Refusé'
+      return
+    }
+    const reg = await navigator.serviceWorker.ready
+    const sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      // Si pas de VAPID key : utilise une clé de test
+      applicationServerKey: VAPID_PUBLIC ||
+        'BEl62iUYgUivxIkv69yViEuiBIa-Ib9-SkvMeAtA3LFgDzkrxZJjSgSnfckjZJTHluwefXYIfI_3lORGa1Y'
+    })
+    // Sauvegarder en DB
+    const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+    const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+    const t  = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+    const k  = sub.getKey ? {
+      p256dh:   btoa(String.fromCharCode(...new Uint8Array(sub.getKey('p256dh')))),
+      auth_key: btoa(String.fromCharCode(...new Uint8Array(sub.getKey('auth'))))
+    } : {}
+    await fetch(`${S}/rest/v1/push_subscriptions`, {
+      method: 'POST',
+      headers: { apikey: AK, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json', Prefer: 'return=minimal' },
+      body: JSON.stringify({ endpoint: sub.endpoint, ...k })
+    })
+    document.getElementById('push-banner').style.display = 'none'
+    // Toast confirmation
+    const toast = document.createElement('div')
+    toast.style.cssText = 'position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1a261a;border:1px solid #223022;border-radius:10px;padding:12px 20px;font-size:13px;font-weight:700;color:#e8f0e8;z-index:999;white-space:nowrap'
+    toast.textContent = '🔔 Notifications activées !'
+    document.body.appendChild(toast)
+    setTimeout(() => toast.remove(), 3000)
+  } catch(e) {
+    btn.textContent = 'Erreur'
+    console.error('[push]', e)
+  } finally {
+    if (btn) { btn.disabled = false }
   }
 }
 
