@@ -808,11 +808,21 @@ function setMatch(name, league, time, flag) {
   if (parts.length === 2) runOracle(parts[0].trim(), parts[1].trim(), league)
 }
 
-// Au chargement : masquer le loader initial (pas d'analyse auto)
+// Au chargement : lire ?q= de l'URL et lancer l'analyse automatiquement
 window.addEventListener('DOMContentLoaded', () => {
   hideLoader()
   const lw = document.getElementById('lock-wall')
-  if (lw) lw.style.display = 'none'  // caché jusqu'à une analyse
+  if (lw) lw.style.display = 'none'
+
+  // Lire le paramètre ?q= depuis la landing page
+  const params = new URLSearchParams(window.location.search)
+  const q = params.get('q')?.trim()
+  if (q) {
+    const inp = document.getElementById('search-input')
+    if (inp) inp.value = q
+    // Lancer l'analyse automatiquement après un court délai (auth chargée)
+    setTimeout(() => relaunchAnalyse(), 600)
+  }
 })
 </script>
 <style>@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}</style>
