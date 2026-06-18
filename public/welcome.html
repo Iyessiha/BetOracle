@@ -367,6 +367,35 @@ function shareTG(){
 }
 </script>
 <script src="./assets/js/betoracle-ui.js"></script>
-<script src="./assets/js/nav.js"></script>
+<script src="./assets/js/nav.js">
+// ── STATS PARRAINAGE RÉELLES ──────────────────────
+async function loadRefStats() {
+  const S   = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+  const AK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+  const t   = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+  if (!t) return
+  try {
+    const r = await fetch(`${S}/rest/v1/referral_stats?select=total_invites,conversions,rewards_given,ref_code&limit=1`, {
+      headers: { apikey: AK, Authorization: 'Bearer ' + t }
+    })
+    if (!r.ok) return
+    const d = await r.json()
+    if (!d?.length) return
+    const s = d[0]
+    // Mettre à jour le lien de parrainage
+    const codeEl = document.getElementById('ref-code')
+    if (codeEl && s.ref_code) codeEl.textContent = s.ref_code
+    // Ajouter badge compteur si > 0
+    if (s.conversions > 0) {
+      const banner = document.createElement('div')
+      banner.style.cssText = 'background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:14px;display:flex;align-items:center;gap:8px'
+      banner.innerHTML = `<span style="font-size:18px">🎁</span> <span><strong style="color:#22c55e">${s.conversions} filleul${s.conversions>1?'s':''}</strong> converti${s.conversions>1?'s':''} · ${s.rewards_given} récompense${s.rewards_given>1?'s':''} reçue${s.rewards_given>1?'s':''}</span>`
+      const refWrap = document.querySelector('.reflink-wrap')
+      if (refWrap?.parentNode) refWrap.parentNode.insertBefore(banner, refWrap.nextSibling)
+    }
+  } catch(_) {}
+}
+
+</script>
 </body>
 </html>

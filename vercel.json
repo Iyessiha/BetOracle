@@ -3,6 +3,10 @@
   "outputDirectory": "public",
   "routes": [
     {
+      "src": "/bankroll",
+      "dest": "/bankroll.html"
+    },
+    {
       "src": "/",
       "dest": "/index.html"
     },

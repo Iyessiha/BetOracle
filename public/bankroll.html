@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bankroll — Betoracle Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gold:#F5C842;--red:#ef4444;--bg:#080c08;--bg2:#0d120d;--s1:#111711;--s2:#161e16;--b1:#1a261a;--b2:#223022;--text:#e8f0e8;--muted:#6b8a6b;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;padding-bottom:80px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(8,12,8,.95);border-bottom:1px solid var(--b1);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.tb-back{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer}
+.tb-back:hover{color:var(--gb)}
+.tb-title{font-family:var(--fd);font-size:18px;letter-spacing:.06em}
+.wrap{max-width:640px;margin:0 auto;padding:20px 16px}
+
+/* Stats résumé */
+.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:16px;text-align:center}
+.stat-val{font-family:var(--fd);font-size:28px;letter-spacing:.04em;line-height:1}
+.stat-lbl{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:4px}
+.bankroll-total{background:linear-gradient(135deg,rgba(34,197,94,.12),rgba(26,92,42,.2));border:1px solid rgba(34,197,94,.3);border-radius:16px;padding:22px 20px;text-align:center;margin-bottom:20px}
+.bt-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+.bt-amount{font-family:var(--fd);font-size:52px;letter-spacing:.04em;color:var(--gb);line-height:1}
+.bt-sub{font-size:12px;color:var(--muted);margin-top:6px}
+.bt-profit{font-family:var(--fd);font-size:22px;letter-spacing:.04em;margin-top:8px}
+
+/* Formulaire */
+.card{background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px;margin-bottom:16px}
+.card-title{font-family:var(--fd);font-size:16px;letter-spacing:.06em;color:var(--text);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.form-row.full{grid-template-columns:1fr}
+.fi{display:flex;flex-direction:column;gap:4px}
+.fi label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.fi input,.fi select{background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--fb);outline:none;width:100%}
+.fi input:focus,.fi select:focus{border-color:var(--gb)}
+.fi select option{background:var(--bg2)}
+.btn-submit{width:100%;padding:14px;background:var(--gb);color:#000;border:none;border-radius:10px;font-size:15px;font-weight:800;font-family:var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .2s}
+.btn-submit:hover{background:#4ade80;transform:translateY(-1px)}
+.btn-submit:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Liste des paris */
+.bet-item{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--b1)}
+.bet-item:last-child{border-bottom:none}
+.bi-status{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.bis-won    {background:rgba(34,197,94,.15)}
+.bis-lost   {background:rgba(239,68,68,.12)}
+.bis-pending{background:rgba(148,163,184,.1)}
+.bi-body{flex:1;min-width:0}
+.bi-match{font-weight:700;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bi-meta{font-size:11px;color:var(--muted);margin-top:2px}
+.bi-right{text-align:right;flex-shrink:0}
+.bi-stake{font-size:12px;color:var(--muted)}
+.bi-payout{font-family:var(--fd);font-size:16px;letter-spacing:.04em}
+.payout-won  {color:var(--gb)}
+.payout-lost {color:var(--red)}
+.payout-pend {color:var(--muted)}
+
+/* Config bankroll initiale */
+.init-form{display:flex;gap:10px;align-items:flex-end}
+.init-form .fi{flex:1}
+.btn-sm{padding:10px 16px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;border:none;transition:all .2s}
+.btn-green-sm{background:var(--gb);color:#000}
+.btn-green-sm:hover{background:#4ade80}
+.empty-state{text-align:center;padding:32px 16px;color:var(--muted)}
+.empty-state .ei{font-size:40px;margin-bottom:10px}
+.kelly-result{margin-top:12px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);border-radius:10px;padding:12px;text-align:center;display:none}
+.kr-val{font-family:var(--fd);font-size:28px;letter-spacing:.04em;color:var(--gb)}
+.kr-sub{font-size:12px;color:var(--muted);margin-top:2px}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-back" onclick="window.location.href='/dashboard'">
+    <i class="ti ti-arrow-left"></i> Dashboard
+  </div>
+  <div class="tb-title">📊 BANKROLL</div>
+  <div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- Bankroll totale -->
+  <div class="bankroll-total" id="bk-total-card">
+    <div class="bt-label">Ma Bankroll</div>
+    <div class="bt-amount" id="bk-amount">—</div>
+    <div class="bt-sub">FCFA</div>
+    <div class="bt-profit" id="bk-profit" style="color:var(--muted)">P&L : — FCFA</div>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-val" id="sk-total" style="color:var(--text)">—</div>
+      <div class="stat-lbl">Paris totaux</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="sk-winrate" style="color:var(--gb)">—%</div>
+      <div class="stat-lbl">Taux de réussite</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="sk-roi" style="color:var(--gold)">—%</div>
+      <div class="stat-lbl">ROI</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-val" id="sk-staked" style="color:var(--muted)">—</div>
+      <div class="stat-lbl">Total misé (FCFA)</div>
+    </div>
+  </div>
+
+  <!-- Config bankroll initiale -->
+  <div class="card" id="init-card">
+    <div class="card-title"><i class="ti ti-settings"></i> Configurer ma bankroll</div>
+    <div class="init-form">
+      <div class="fi">
+        <label>Bankroll de départ (FCFA)</label>
+        <input type="number" id="init-amount" placeholder="ex: 50000" min="0">
+      </div>
+      <button class="btn-sm btn-green-sm" onclick="saveBankrollConfig()">
+        <i class="ti ti-check"></i> Sauvegarder
+      </button>
+    </div>
+  </div>
+
+  <!-- Ajouter un pari -->
+  <div class="card">
+    <div class="card-title"><i class="ti ti-plus"></i> Enregistrer un pari</div>
+    <div class="form-row">
+      <div class="fi"><label>Équipe A</label><input type="text" id="f-team-a" placeholder="ex: PSG"></div>
+      <div class="fi"><label>Équipe B</label><input type="text" id="f-team-b" placeholder="ex: Lyon"></div>
+    </div>
+    <div class="form-row">
+      <div class="fi">
+        <label>Mon pari</label>
+        <select id="f-pick">
+          <option value="1">1 — Victoire A</option>
+          <option value="X">X — Nul</option>
+          <option value="2">2 — Victoire B</option>
+          <option value="1X">1X — A ou Nul</option>
+          <option value="X2">X2 — Nul ou B</option>
+          <option value="Over 2.5">Over 2.5 buts</option>
+          <option value="Under 2.5">Under 2.5 buts</option>
+          <option value="BTTS Oui">BTTS Oui</option>
+          <option value="BTTS Non">BTTS Non</option>
+        </select>
+      </div>
+      <div class="fi"><label>Cote</label><input type="number" id="f-odds" placeholder="ex: 1.85" step="0.01" min="1" oninput="calcKelly()"></div>
+    </div>
+    <div class="form-row">
+      <div class="fi"><label>Mise (FCFA)</label><input type="number" id="f-stake" placeholder="ex: 2500" min="0"></div>
+      <div class="fi">
+        <label>Bookmaker</label>
+        <select id="f-bk">
+          <option>1XBET</option><option>BETWINNER</option><option>MEGAPARI</option>
+          <option>1Win</option><option>888starz</option><option>Autre</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row full">
+      <div class="fi"><label>Date du match</label><input type="date" id="f-date"></div>
+    </div>
+    <!-- Suggestion Kelly -->
+    <div class="kelly-result" id="kelly-box">
+      <div class="kr-val" id="kelly-val">—</div>
+      <div class="kr-sub" id="kelly-sub">Mise Kelly suggérée</div>
+    </div>
+    <button class="btn-submit" id="submit-btn" onclick="submitBet()">
+      <i class="ti ti-plus"></i> Enregistrer le pari
+    </button>
+  </div>
+
+  <!-- Historique -->
+  <div class="card">
+    <div class="card-title"><i class="ti ti-history"></i> Mes paris</div>
+    <div id="bets-list"><div class="empty-state"><div class="ei">📋</div>Aucun pari enregistré</div></div>
+    <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap" id="status-filters">
+      <button onclick="filterBets('all')"     class="btn-sm btn-green-sm" id="f-all">Tous</button>
+      <button onclick="filterBets('won')"     class="btn-sm" style="background:rgba(34,197,94,.1);color:var(--gb);border:1px solid rgba(34,197,94,.2)" id="f-won">✅ Gagnés</button>
+      <button onclick="filterBets('lost')"    class="btn-sm" style="background:rgba(239,68,68,.08);color:var(--red);border:1px solid rgba(239,68,68,.2)" id="f-lost">❌ Perdus</button>
+      <button onclick="filterBets('pending')" class="btn-sm" style="background:rgba(148,163,184,.08);color:var(--muted);border:1px solid var(--b1)" id="f-pend">⏳ En cours</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const S   = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+let token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+let allBets = []
+let bankrollInitial = 0
+
+function getH() {
+  const t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || token
+  return { apikey: AK, Authorization: 'Bearer ' + t, 'Content-Type': 'application/json', Prefer: 'return=representation' }
+}
+
+async function sb(path, opts = {}) {
+  const r = await fetch(`${S}/rest/v1/${path}`, { headers: getH(), ...opts })
+  if (!r.ok) { const e = await r.text(); throw new Error(e) }
+  return r.json()
+}
+
+// Initialiser la date du jour
+document.getElementById('f-date').value = new Date().toISOString().slice(0,10)
+
+// ── Charger les données ──────────────────────────
+async function loadAll() {
+  await Promise.all([loadConfig(), loadStats(), loadBets()])
+}
+
+async function loadConfig() {
+  try {
+    const d = await sb('bankroll_config?select=initial_fcfa,current_fcfa&limit=1')
+    if (d?.length) {
+      bankrollInitial = d[0].initial_fcfa || 0
+      document.getElementById('init-amount').value = bankrollInitial
+    }
+  } catch(_) {}
+}
+
+async function loadStats() {
+  try {
+    const d = await sb('bankroll_summary?select=*&limit=1')
+    if (!d?.length) return
+    const s = d[0]
+    document.getElementById('sk-total').textContent   = s.total_bets || 0
+    document.getElementById('sk-winrate').textContent = (s.win_rate_pct || 0) + '%'
+    document.getElementById('sk-roi').textContent     = (s.roi_pct || 0) + '%'
+    document.getElementById('sk-staked').textContent  = fmtF(s.total_staked || 0)
+    const pl = s.profit_loss || 0
+    document.getElementById('bk-amount').textContent  = fmtF(bankrollInitial + pl)
+    const plEl = document.getElementById('bk-profit')
+    plEl.textContent = 'P&L : ' + (pl >= 0 ? '+' : '') + fmtF(pl) + ' FCFA'
+    plEl.style.color = pl >= 0 ? 'var(--gb)' : 'var(--red)'
+    document.getElementById('sk-roi').style.color = (s.roi_pct||0) >= 0 ? 'var(--gold)' : 'var(--red)'
+  } catch(_) {}
+}
+
+async function loadBets(status = 'all') {
+  try {
+    let path = 'bets?select=*&order=placed_at.desc&limit=50'
+    if (status !== 'all') path += `&status=eq.${status}`
+    allBets = await sb(path)
+    renderBets(allBets)
+  } catch(_) {}
+}
+
+function renderBets(bets) {
+  const el = document.getElementById('bets-list')
+  if (!bets?.length) {
+    el.innerHTML = '<div class="empty-state"><div class="ei">📋</div>Aucun pari ici</div>'
+    return
+  }
+  el.innerHTML = bets.map(b => {
+    const ico  = b.status==='won' ? '✅' : b.status==='lost' ? '❌' : '⏳'
+    const cls  = 'bis-' + (b.status||'pending')
+    const payC = b.status==='won' ? 'payout-won' : b.status==='lost' ? 'payout-lost' : 'payout-pend'
+    const pay  = b.status==='won' && b.payout_fcfa
+      ? '+' + fmtF(b.payout_fcfa) : b.status==='lost'
+      ? '-' + fmtF(b.stake_fcfa||0) : '×' + (b.odds||'?')
+    return `
+    <div class="bet-item">
+      <div class="bi-status ${cls}">${ico}</div>
+      <div class="bi-body">
+        <div class="bi-match">${b.team_a||'?'} vs ${b.team_b||'?'}</div>
+        <div class="bi-meta">${b.pick||''} · ${b.bookmaker||''} · ${b.match_date||''}</div>
+      </div>
+      <div class="bi-right">
+        <div class="bi-stake">Mise: ${fmtF(b.stake_fcfa||0)} F</div>
+        <div class="bi-payout ${payC}">${pay}</div>
+      </div>
+    </div>`
+  }).join('')
+}
+
+function filterBets(status) {
+  loadBets(status)
+}
+
+// ── Enregistrer un pari ──────────────────────────
+async function submitBet() {
+  const btn = document.getElementById('submit-btn')
+  const teamA = document.getElementById('f-team-a').value.trim()
+  const teamB = document.getElementById('f-team-b').value.trim()
+  const pick  = document.getElementById('f-pick').value
+  const odds  = parseFloat(document.getElementById('f-odds').value)
+  const stake = parseInt(document.getElementById('f-stake').value)
+  const bk    = document.getElementById('f-bk').value
+  const date  = document.getElementById('f-date').value
+
+  if (!teamA||!teamB||!odds||!stake) { alert('Remplis tous les champs'); return }
+
+  btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Enregistrement...'
+
+  try {
+    await sb('bets', {
+      method: 'POST',
+      body: JSON.stringify({
+        team_a: teamA, team_b: teamB, pick, odds, stake_fcfa: stake,
+        bookmaker: bk, match_date: date, status: 'pending',
+        payout_fcfa: Math.round(stake * odds)
+      })
+    })
+    // Reset
+    document.getElementById('f-team-a').value = ''
+    document.getElementById('f-team-b').value = ''
+    document.getElementById('f-stake').value  = ''
+    document.getElementById('f-odds').value   = ''
+    document.getElementById('kelly-box').style.display = 'none'
+    await loadAll()
+  } catch(e) { alert('Erreur: ' + e.message) }
+  finally {
+    btn.disabled = false; btn.innerHTML = '<i class="ti ti-plus"></i> Enregistrer le pari'
+  }
+}
+
+// ── Config bankroll initiale ──────────────────────
+async function saveBankrollConfig() {
+  const val = parseInt(document.getElementById('init-amount').value)
+  if (!val || val < 0) return
+  try {
+    await fetch(`${S}/rest/v1/bankroll_config`, {
+      method: 'POST',
+      headers: { ...getH(), Prefer: 'resolution=merge-duplicates,return=minimal' },
+      body: JSON.stringify({ initial_fcfa: val, current_fcfa: val })
+    })
+    bankrollInitial = val
+    await loadStats()
+    document.getElementById('init-card').style.border = '1px solid rgba(34,197,94,.3)'
+    setTimeout(() => document.getElementById('init-card').style.border = '1px solid var(--b1)', 2000)
+  } catch(e) { alert('Erreur: ' + e.message) }
+}
+
+// ── Calcul Kelly ──────────────────────────────────
+function calcKelly() {
+  const odds  = parseFloat(document.getElementById('f-odds').value)
+  if (!odds || odds <= 1) { document.getElementById('kelly-box').style.display='none'; return }
+  // Kelly avec probabilité estimée à partir de la cote (sans marge)
+  const impliedProb = 1 / odds
+  const k = Math.max(0, impliedProb - (1 - impliedProb) / (odds - 1))
+  const kFrac = k * 0.25 // Kelly fraction ¼
+  if (kFrac <= 0) { document.getElementById('kelly-box').style.display='none'; return }
+  const kellyStake = Math.round(bankrollInitial * kFrac)
+  document.getElementById('kelly-box').style.display = 'block'
+  document.getElementById('kelly-val').textContent = kellyStake > 0 ? fmtF(kellyStake) + ' FCFA' : '—'
+  document.getElementById('kelly-sub').textContent = `Kelly ¼ = ${(kFrac*100).toFixed(1)}% bankroll`
+  // Préremplir la mise si vide
+  const stakeEl = document.getElementById('f-stake')
+  if (!stakeEl.value && kellyStake > 0) stakeEl.value = kellyStake
+}
+
+function fmtF(n) { return Number(n).toLocaleString('fr-FR') }
+
+// ── Init ──────────────────────────────────────────
+if (!token) window.location.href = '/login?next=/bankroll'
+else loadAll()
+</script>
+</body>
+</html>

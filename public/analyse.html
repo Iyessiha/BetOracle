@@ -664,6 +664,48 @@ a{text-decoration:none;color:inherit}
 }
 .trap-warning-box .tw-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
 
+
+/* ── SCORE PROBABLE HERO ── */
+.score-hero {
+  display: flex; align-items: center; justify-content: center;
+  gap: 12px; margin: 0 0 18px; padding: 20px;
+  background: linear-gradient(135deg,rgba(26,92,42,.5),rgba(34,197,94,.08));
+  border: 1px solid rgba(34,197,94,.2); border-radius: 16px;
+}
+.sh-team {
+  font-family: var(--font-d,'Bebas Neue',sans-serif);
+  font-size: clamp(15px,3vw,22px); letter-spacing:.04em;
+  color: var(--text); text-align:center; flex:1; min-width:0;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+}
+.sh-score {
+  font-family: var(--font-d,'Bebas Neue',sans-serif);
+  font-size: clamp(42px,8vw,72px); letter-spacing:.04em;
+  color: var(--gold,#F5C842); line-height:1;
+  padding: 0 16px; text-align:center; flex-shrink:0;
+  text-shadow: 0 0 30px rgba(245,200,66,.4);
+}
+.sh-badge {
+  text-align:center; margin-top:4px;
+  font-size:10px; color:var(--muted); letter-spacing:.08em;
+  text-transform:uppercase;
+}
+.pick-hero {
+  display: flex; align-items: center; justify-content: center;
+  gap: 10px; padding: 12px 18px; margin-bottom: 16px;
+  background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.2);
+  border-radius: 12px;
+}
+.pick-hero-label { font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em; }
+.pick-hero-val {
+  font-family: var(--font-d,'Bebas Neue',sans-serif);
+  font-size:22px; letter-spacing:.06em; color:var(--gb,#22c55e);
+}
+.pick-hero-conf {
+  margin-left:auto; font-family:var(--font-d,'Bebas Neue',sans-serif);
+  font-size:22px; letter-spacing:.04em; color:var(--text);
+}
+
 </style>
 </head>
 <body data-page="analyse">
@@ -1322,7 +1364,27 @@ function renderFullAnalysis(d) {
   if (!container) {
     container = document.createElement('div')
     container.id = 'full-analysis'
-    container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
+    // ── Score probable + pick en hero ──
+  const scoreHtml = d.score_est ? `
+    <div class="score-hero">
+      <div class="sh-team">${d.team_a_name||d.team_a||'Équipe A'}</div>
+      <div>
+        <div class="sh-score">${d.score_est}</div>
+        <div class="sh-badge">Score prédit</div>
+      </div>
+      <div class="sh-team">${d.team_b_name||d.team_b||'Équipe B'}</div>
+    </div>` : ''
+
+  const pickHtml = d.pick ? `
+    <div class="pick-hero">
+      <div>
+        <div class="pick-hero-label">Recommandation Oracle</div>
+        <div class="pick-hero-val">${d.pick}</div>
+      </div>
+      <div class="pick-hero-conf">${d.confidence||'—'}%</div>
+    </div>` : ''
+
+  container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
     document.querySelector('.lock-wall')?.after(container)
   }
   const ai = d.ai_analysis || {}
@@ -1336,7 +1398,7 @@ function renderFullAnalysis(d) {
     ['Over 2.5 buts', d.ov25 != null ? d.ov25 + '%' : null]
   ].filter(([, v]) => v)
 
-  container.innerHTML = `
+  container.innerHTML = scoreHtml + pickHtml + `
     ${ai.narrative ? `
     <div class="fa-card" style="background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px">
       <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em;color:var(--gold);margin-bottom:10px"><i class="ti ti-brain"></i> ANALYSE DE L'ORACLE</div>
