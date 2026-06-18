@@ -386,9 +386,9 @@ a{text-decoration:none;color:inherit}
       <div>
         <div class="mh-league" id="match-league">🏆 Champions League · Demi-finale</div>
         <div class="mh-teams">
-          <div class="mh-team"><span id="team-a-flag">🇪🇸</span> <span id="team-a">Real Madrid</span></div>
+          <div class="mh-team"><span id="team-a-flag">⚽</span> <span id="team-a">Real Madrid</span></div>
           <div class="mh-vs">VS</div>
-          <div class="mh-team"><span id="team-b-flag">🇫🇷</span> <span id="team-b">PSG</span></div>
+          <div class="mh-team"><span id="team-b-flag">⚽</span> <span id="team-b">PSG</span></div>
         </div>
       </div>
       <div class="mh-meta">
@@ -621,6 +621,124 @@ function renderFormDots(formStr) {
   }).join('')
 }
 
+
+// ── Mapping équipes → drapeau emoji ──────────────────────
+const TEAM_FLAGS = {
+  // Sélections nationales Afrique
+  'côte d\'ivoire': '🇨🇮', 'cote d\'ivoire': '🇨🇮', 'ivory coast': '🇨🇮',
+  'sénégal': '🇸🇳', 'senegal': '🇸🇳',
+  'ghana': '🇬🇭', 'nigeria': '🇳🇬', 'maroc': '🇲🇦', 'morocco': '🇲🇦',
+  'algérie': '🇩🇿', 'algerie': '🇩🇿', 'algeria': '🇩🇿',
+  'tunisie': '🇹🇳', 'tunisia': '🇹🇳', 'égypte': '🇪🇬', 'egypt': '🇪🇬',
+  'cameroun': '🇨🇲', 'mali': '🇲🇱', 'burkina faso': '🇧🇫',
+  'guinée': '🇬🇳', 'guinee': '🇬🇳', 'guinea': '🇬🇳',
+  'afrique du sud': '🇿🇦', 'south africa': '🇿🇦',
+  'tanzanie': '🇹🇿', 'kenya': '🇰🇪', 'ethiopie': '🇪🇹',
+  'angola': '🇦🇴', 'mozambique': '🇲🇿', 'madagascar': '🇲🇬',
+  'rdc': '🇨🇩', 'rép. dém. congo': '🇨🇩', 'congo': '🇨🇬',
+  'gabon': '🇬🇦', 'bénin': '🇧🇯', 'benin': '🇧🇯', 'togo': '🇹🇬',
+  // Sélections Europe
+  'france': '🇫🇷', 'espagne': '🇪🇸', 'spain': '🇪🇸',
+  'allemagne': '🇩🇪', 'germany': '🇩🇪',
+  'italie': '🇮🇹', 'italy': '🇮🇹',
+  'portugal': '🇵🇹', 'angleterre': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'england': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'pays-bas': '🇳🇱', 'netherlands': '🇳🇱', 'hollande': '🇳🇱',
+  'belgique': '🇧🇪', 'belgium': '🇧🇪',
+  'croatie': '🇭🇷', 'croatia': '🇭🇷',
+  'autriche': '🇦🇹', 'austria': '🇦🇹',
+  'suisse': '🇨🇭', 'switzerland': '🇨🇭',
+  'turquie': '🇹🇷', 'turkey': '🇹🇷',
+  'pologne': '🇵🇱', 'poland': '🇵🇱',
+  'ukraine': '🇺🇦', 'russie': '🇷🇺', 'russia': '🇷🇺',
+  'danemark': '🇩🇰', 'denmark': '🇩🇰',
+  'suède': '🇸🇪', 'sweden': '🇸🇪', 'norvège': '🇳🇴', 'norway': '🇳🇴',
+  'écosse': '🏴󠁧󠁢󠁳󠁣󠁴󠁿', 'scotland': '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+  'pays de galles': '🏴󠁧󠁢󠁷󠁬󠁳󠁿', 'wales': '🏴󠁧󠁢󠁷󠁬󠁳󠁿',
+  'serbie': '🇷🇸', 'serbia': '🇷🇸',
+  'roumanie': '🇷🇴', 'romania': '🇷🇴',
+  'hongrie': '🇭🇺', 'hungary': '🇭🇺',
+  'bosnie': '🇧🇦', 'bosnia': '🇧🇦',
+  'slovaquie': '🇸🇰', 'slovakia': '🇸🇰',
+  'slovénie': '🇸🇮', 'slovenia': '🇸🇮',
+  'curaçao': '🇨🇼', 'curacao': '🇨🇼',
+  'géorgie': '🇬🇪', 'georgia': '🇬🇪',
+  'islande': '🇮🇸', 'iceland': '🇮🇸',
+  // Amériques
+  'brésil': '🇧🇷', 'brazil': '🇧🇷',
+  'argentine': '🇦🇷', 'argentina': '🇦🇷',
+  'mexique': '🇲🇽', 'mexico': '🇲🇽',
+  'usa': '🇺🇸', 'états-unis': '🇺🇸', 'etats-unis': '🇺🇸', 'united states': '🇺🇸',
+  'canada': '🇨🇦', 'colombie': '🇨🇴', 'colombia': '🇨🇴',
+  'uruguay': '🇺🇾', 'chili': '🇨🇱', 'chile': '🇨🇱',
+  'pérou': '🇵🇪', 'peru': '🇵🇪',
+  'paraguay': '🇵🇾', 'équateur': '🇪🇨', 'ecuador': '🇪🇨',
+  'jamaïque': '🇯🇲', 'jamaica': '🇯🇲', 'haïti': '🇭🇹', 'haiti': '🇭🇹',
+  'venezuela': '🇻🇪', 'bolivie': '🇧🇴', 'bolivia': '🇧🇴',
+  'costa rica': '🇨🇷', 'panama': '🇵🇦',
+  // Asie / Océanie
+  'corée du sud': '🇰🇷', 'south korea': '🇰🇷', 'korea': '🇰🇷',
+  'japon': '🇯🇵', 'japan': '🇯🇵', 'chine': '🇨🇳', 'china': '🇨🇳',
+  'arabie saoudite': '🇸🇦', 'saudi arabia': '🇸🇦',
+  'australie': '🇦🇺', 'australia': '🇦🇺',
+  'iran': '🇮🇷', 'irak': '🇮🇶', 'iraq': '🇮🇶',
+  'emirats arabes unis': '🇦🇪',
+  // Clubs français → drapeau France
+  'psg': '🇫🇷', 'paris saint-germain': '🇫🇷', 'paris sg': '🇫🇷',
+  'marseille': '🇫🇷', 'om': '🇫🇷', 'olympique de marseille': '🇫🇷',
+  'lyon': '🇫🇷', 'ol': '🇫🇷', 'olympique lyonnais': '🇫🇷',
+  'monaco': '🇫🇷', 'lille': '🇫🇷', 'nice': '🇫🇷', 'rennes': '🇫🇷',
+  'lens': '🇫🇷', 'strasbourg': '🇫🇷', 'nantes': '🇫🇷',
+  // Clubs espagnols → drapeau Espagne
+  'real madrid': '🇪🇸', 'barcelona': '🇪🇸', 'barça': '🇪🇸', 'barca': '🇪🇸',
+  'atletico madrid': '🇪🇸', 'atlético madrid': '🇪🇸', 'atlético': '🇪🇸',
+  'sevilla': '🇪🇸', 'séville': '🇪🇸', 'valencia': '🇪🇸',
+  'villarreal': '🇪🇸', 'real sociedad': '🇪🇸', 'athletic bilbao': '🇪🇸',
+  // Clubs anglais → drapeau Angleterre
+  'arsenal': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'chelsea': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'liverpool': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'manchester city': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'man city': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'manchester united': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'man united': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'man utd': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'tottenham': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'spurs': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'newcastle': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'aston villa': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  'west ham': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'brighton': '🏴󠁧󠁢󠁥󠁮󠁧󠁿', 'fulham': '🏴󠁧󠁢󠁥󠁮󠁧󠁿',
+  // Clubs allemands → drapeau Allemagne
+  'bayern munich': '🇩🇪', 'fcb': '🇩🇪', 'borussia dortmund': '🇩🇪', 'bvb': '🇩🇪',
+  'rb leipzig': '🇩🇪', 'bayer leverkusen': '🇩🇪', 'borussia m\'gladbach': '🇩🇪',
+  'eintracht francfort': '🇩🇪', 'wolfsburg': '🇩🇪',
+  // Clubs italiens → drapeau Italie
+  'inter milan': '🇮🇹', 'inter': '🇮🇹', 'internazionale': '🇮🇹',
+  'juventus': '🇮🇹', 'juve': '🇮🇹', 'ac milan': '🇮🇹', 'milan': '🇮🇹',
+  'roma': '🇮🇹', 'as roma': '🇮🇹', 'lazio': '🇮🇹', 'naples': '🇮🇹', 'napoli': '🇮🇹',
+  'atalanta': '🇮🇹', 'fiorentina': '🇮🇹', 'torino': '🇮🇹',
+  // Clubs portugais → drapeau Portugal
+  'benfica': '🇵🇹', 'porto': '🇵🇹', 'sporting cp': '🇵🇹', 'sporting': '🇵🇹',
+  'braga': '🇵🇹',
+  // Clubs africains → drapeaux corrects
+  'asec': '🇨🇮', 'asec mimosas': '🇨🇮', 'africa sports': '🇨🇮',
+  'al ahly': '🇪🇬', 'zamalek': '🇪🇬',
+  'esperance': '🇹🇳', 'espérance': '🇹🇳',
+  'wydad': '🇲🇦', 'raja casablanca': '🇲🇦',
+  'kaizer chiefs': '🇿🇦', 'sundowns': '🇿🇦',
+  'tp mazembe': '🇨🇩', 'hearts of oak': '🇬🇭',
+  // NBA → drapeau US
+  'lakers': '🇺🇸', 'celtics': '🇺🇸', 'warriors': '🇺🇸',
+  'bulls': '🇺🇸', 'heat': '🇺🇸', 'nuggets': '🇺🇸', 'clippers': '🇺🇸',
+  // Tennis → drapeau neutre
+  'alcaraz': '🇪🇸', 'djokovic': '🇷🇸', 'nadal': '🇪🇸', 'federer': '🇨🇭',
+  'sinner': '🇮🇹', 'zverev': '🇩🇪'
+}
+
+function getTeamFlag(name) {
+  if (!name) return '⚽'
+  const key = name.toLowerCase().trim()
+  // Recherche exacte
+  if (TEAM_FLAGS[key]) return TEAM_FLAGS[key]
+  // Recherche partielle (nom contient une équipe connue)
+  for (const [k, v] of Object.entries(TEAM_FLAGS)) {
+    if (key.includes(k) || k.includes(key)) return v
+  }
+  return '⚽'  // fallback neutre
+}
+
 // ════════ APPEL ORACLE ════════
 async function runOracle(teamA, teamB, leagueLabel) {
   const token = await getToken()
@@ -687,6 +805,14 @@ function renderResult(d, leagueLabel) {
   setText('sp-team-b', nameB.split(' ')[0])
   if (d.competition) setText('match-league', d.competition)
   else if (leagueLabel) setText('match-league', leagueLabel)
+
+  // Mettre à jour les drapeaux avec le bon mapping
+  const flagA = d.team_a_flag || getTeamFlag(nameA)
+  const flagB = d.team_b_flag || getTeamFlag(nameB)
+  const elFlagA = document.getElementById('team-a-flag')
+  const elFlagB = document.getElementById('team-b-flag')
+  if (elFlagA) elFlagA.textContent = flagA
+  if (elFlagB) elFlagB.textContent = flagB
   setText('match-date', d.date_match || new Date().toLocaleDateString('fr-FR', { weekday:'long', day:'numeric', month:'long', year:'numeric' }))
 
   // Probabilités (toujours visibles, même en free)
