@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparateur de cotes — Betoracle Pro</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{--gb:#22c55e;--gold:#F5C842;--red:#ef4444;--bg:#080c08;--bg2:#0d120d;--s1:#111711;--s2:#161e16;--b1:#1a261a;--b2:#223022;--text:#e8f0e8;--muted:#6b8a6b;--fd:'Bebas Neue',sans-serif;--fb:'Barlow',sans-serif}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh;padding-bottom:80px}
+.topbar{position:sticky;top:0;z-index:50;background:rgba(8,12,8,.95);border-bottom:1px solid var(--b1);padding:0 20px;height:56px;display:flex;align-items:center;justify-content:space-between;backdrop-filter:blur(12px)}
+.tb-back{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--muted);cursor:pointer;transition:color .15s}
+.tb-back:hover{color:var(--gb)}
+.tb-title{font-family:var(--fd);font-size:18px;letter-spacing:.06em}
+.wrap{max-width:720px;margin:0 auto;padding:24px 16px}
+
+/* Search */
+.search-box{background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:20px;margin-bottom:20px}
+.search-title{font-family:var(--fd);font-size:16px;letter-spacing:.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px;color:var(--gb)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.fi{display:flex;flex-direction:column;gap:4px}
+.fi label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em}
+.fi input{background:var(--bg2);border:1px solid var(--b2);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);font-family:var(--fb);outline:none;width:100%}
+.fi input:focus{border-color:var(--gb)}
+.btn-compare{width:100%;padding:13px;background:var(--gb);color:#000;border:none;border-radius:10px;font-size:14px;font-weight:800;font-family:var(--fb);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;transition:all .2s}
+.btn-compare:hover{background:#4ade80;transform:translateY(-1px)}
+.btn-compare:disabled{opacity:.5;cursor:not-allowed;transform:none}
+
+/* Résultats */
+.match-header{background:linear-gradient(135deg,rgba(26,92,42,.6),rgba(34,197,94,.1));border:1px solid rgba(34,197,94,.25);border-radius:14px;padding:18px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between}
+.mh-teams{font-family:var(--fd);font-size:22px;letter-spacing:.04em}
+.mh-meta{font-size:12px;color:var(--muted);text-align:right}
+.mh-source{font-size:11px;color:var(--muted);margin-top:3px}
+
+/* Tableau comparatif */
+.comp-table{background:var(--s1);border:1px solid var(--b1);border-radius:14px;overflow:hidden;margin-bottom:16px}
+.ct-head{display:grid;grid-template-columns:120px repeat(6,1fr);background:var(--bg2);padding:10px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);gap:4px}
+.ct-row{display:grid;grid-template-columns:120px repeat(6,1fr);padding:12px 12px;border-top:1px solid var(--b1);gap:4px;align-items:center;transition:background .15s}
+.ct-row:hover{background:rgba(34,197,94,.03)}
+.bk-name{font-weight:700;font-size:13px}
+.odds-cell{text-align:center;font-family:var(--fd);font-size:16px;letter-spacing:.04em;border-radius:6px;padding:4px 2px;cursor:pointer;transition:all .15s}
+.odds-cell:hover{transform:scale(1.05)}
+.best-cell{background:rgba(34,197,94,.15);color:var(--gb) !important;border:1px solid rgba(34,197,94,.3)}
+.odds-null{color:var(--muted);font-size:12px;font-family:var(--fb)}
+
+/* Carte "Meilleures cotes" */
+.best-card{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:18px;margin-bottom:16px}
+.bc-title{font-family:var(--fd);font-size:15px;letter-spacing:.06em;color:var(--gold);margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.best-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.best-item{background:var(--bg2);border-radius:10px;padding:12px;text-align:center}
+.bi-type{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+.bi-odds{font-family:var(--fd);font-size:24px;letter-spacing:.04em;color:var(--gb);line-height:1}
+.bi-bk{font-size:11px;color:var(--muted);margin-top:4px}
+.bi-link{display:inline-block;margin-top:6px;padding:4px 12px;background:rgba(245,200,66,.12);color:var(--gold);border:1px solid rgba(245,200,66,.25);border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;transition:all .15s}
+.bi-link:hover{background:rgba(245,200,66,.2)}
+
+/* Économie possible */
+.saving-box{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:13px;display:flex;align-items:center;gap:10px}
+.sb-icon{font-size:22px;flex-shrink:0}
+
+/* Recent searches */
+.recent-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+.recent-list{display:flex;gap:8px;flex-wrap:wrap}
+.recent-pill{background:var(--s1);border:1px solid var(--b1);border-radius:20px;padding:6px 14px;font-size:12px;cursor:pointer;transition:all .15s}
+.recent-pill:hover{border-color:var(--gb);color:var(--gb)}
+
+/* Loader */
+.loader-box{text-align:center;padding:40px;color:var(--muted)}
+.lo-spin{font-size:32px;animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
+.lo-text{margin-top:10px;font-size:13px}
+.lo-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:16px;font-size:14px;color:#ef4444;text-align:center}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-back" onclick="window.location.href='/dashboard'">
+    <i class="ti ti-arrow-left"></i> Dashboard
+  </div>
+  <div class="tb-title">📊 COMPARATEUR</div>
+  <div></div>
+</div>
+
+<div class="wrap">
+
+  <!-- Formulaire de recherche -->
+  <div class="search-box">
+    <div class="search-title"><i class="ti ti-scale"></i> Comparer les cotes</div>
+    <div class="fields">
+      <div class="fi">
+        <label>Équipe A</label>
+        <input type="text" id="ca" placeholder="ex: PSG" oninput="updateTitle()">
+      </div>
+      <div class="fi">
+        <label>Équipe B</label>
+        <input type="text" id="cb" placeholder="ex: Lyon" oninput="updateTitle()">
+      </div>
+    </div>
+    <div class="fields">
+      <div class="fi">
+        <label>Date du match (optionnel)</label>
+        <input type="date" id="cd">
+      </div>
+      <div class="fi" style="justify-content:flex-end">
+        <label style="opacity:0">.</label>
+        <button class="btn-compare" id="cmp-btn" onclick="compare()">
+          <i class="ti ti-scale"></i> Comparer maintenant
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Recherches récentes -->
+  <div id="recent-section" style="margin-bottom:20px">
+    <div class="recent-title">🕐 Recherches récentes</div>
+    <div class="recent-list" id="recent-list"></div>
+  </div>
+
+  <!-- Résultats -->
+  <div id="result-section" style="display:none"></div>
+
+</div>
+
+<script>
+const S   = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+let token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token') || ''
+
+const FIELDS = ['odds_1','odds_x','odds_2','btts_yes','over25','under25']
+const LABELS = {'odds_1':'1','odds_x':'X','odds_2':'2','btts_yes':'BTTS✓','over25':'+2.5','under25':'-2.5'}
+const COLORS = {'odds_1':'var(--gb)','odds_x':'var(--gold)','odds_2':'#3b82f6','btts_yes':'#8b5cf6','over25':'#14b8a6','under25':'#f97316'}
+
+function updateTitle() {
+  const a = document.getElementById('ca').value
+  const b = document.getElementById('cb').value
+  document.title = a && b ? `${a} vs ${b} — Comparateur` : 'Comparateur de cotes — Betoracle Pro'
+}
+
+// Recherches récentes (localStorage)
+function getRecent() {
+  try { return JSON.parse(localStorage.getItem('comp_recent') || '[]') } catch { return [] }
+}
+function addRecent(a, b, d) {
+  const list = getRecent().filter(r => !(r.a === a && r.b === b))
+  list.unshift({ a, b, d, ts: Date.now() })
+  localStorage.setItem('comp_recent', JSON.stringify(list.slice(0, 6)))
+  renderRecent()
+}
+function renderRecent() {
+  const list = getRecent()
+  const el = document.getElementById('recent-list')
+  const sec = document.getElementById('recent-section')
+  if (!list.length) { sec.style.display = 'none'; return }
+  sec.style.display = 'block'
+  el.innerHTML = list.map(r =>
+    `<div class="recent-pill" onclick="loadRecent('${r.a.replace(/'/g,"\\'")}','${r.b.replace(/'/g,"\\'")}','${r.d||''}')">
+      ${r.a} vs ${r.b}
+    </div>`
+  ).join('')
+}
+function loadRecent(a, b, d) {
+  document.getElementById('ca').value = a
+  document.getElementById('cb').value = b
+  document.getElementById('cd').value = d || ''
+  compare()
+}
+
+async function compare() {
+  const a = document.getElementById('ca').value.trim()
+  const b = document.getElementById('cb').value.trim()
+  const d = document.getElementById('cd').value
+  if (!a || !b) { alert('Entre les deux équipes'); return }
+
+  const btn = document.getElementById('cmp-btn')
+  btn.disabled = true
+  btn.innerHTML = '<i class="ti ti-loader-2"></i> Recherche en cours…'
+
+  const res = document.getElementById('result-section')
+  res.style.display = 'block'
+  res.innerHTML = `<div class="loader-box">
+    <div class="lo-spin">⚡</div>
+    <div class="lo-text">L'Oracle compare les cotes sur 5 bookmakers…</div>
+    <div class="lo-sub">3 recherches web en temps réel · ~10 secondes</div>
+  </div>`
+
+  try {
+    const r = await fetch(`${S}/functions/v1/compare-odds`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, 'apikey': AK },
+      body: JSON.stringify({ team_a: a, team_b: b, match_date: d || null })
+    })
+    const data = await r.json()
+    if (!r.ok) {
+      if (data.code === 'UPGRADE_REQUIRED') {
+        res.innerHTML = `<div class="error-box">🔒 Le comparateur de cotes est réservé aux plans <strong>Starter et supérieurs</strong>.<br>
+          <a href="/checkout" style="color:var(--gold);text-decoration:underline;margin-top:8px;display:inline-block">Upgrader maintenant →</a></div>`
+        return
+      }
+      res.innerHTML = `<div class="error-box">❌ ${data.error || 'Erreur inconnue'}</div>`
+      return
+    }
+    addRecent(a, b, d)
+    renderResults(data, a, b)
+  } catch(e) {
+    res.innerHTML = `<div class="error-box">❌ ${e.message}</div>`
+  } finally {
+    btn.disabled = false
+    btn.innerHTML = '<i class="ti ti-scale"></i> Comparer maintenant'
+  }
+}
+
+function renderResults(data, teamA, teamB) {
+  const bks = data.bookmakers || []
+  const best = data.best_odds || {}
+  const res  = document.getElementById('result-section')
+
+  // Calculer économie maximale
+  const bestOdds1 = best.odds_1?.odds || 0
+  const avgOdds1  = data.market_avg?.odds_1 || bestOdds1 * 0.97
+  const diff      = bestOdds1 > 0 ? ((bestOdds1 - avgOdds1) / avgOdds1 * 100).toFixed(1) : 0
+  const savingHtml = bestOdds1 > 0 ? `
+    <div class="saving-box">
+      <div class="sb-icon">💡</div>
+      <div>En pariant sur <strong style="color:var(--gb)">${best.odds_1?.bookmaker || '—'}</strong> (×${bestOdds1}) au lieu de la cote moyenne (×${avgOdds1.toFixed(2)}), tu gagnes <strong style="color:var(--gb)">+${diff}%</strong> sur ta mise.</div>
+    </div>` : ''
+
+  // Tableau principal
+  const headers = FIELDS.map(f => `<div style="text-align:center">${LABELS[f]}</div>`).join('')
+  const rows = bks.map(bk => {
+    const cells = FIELDS.map(f => {
+      const v = bk[f]
+      if (!v) return `<div class="odds-cell odds-null" style="color:var(--muted)">—</div>`
+      const isBest = best[f]?.bookmaker === bk.name
+      const col = COLORS[f] || 'var(--text)'
+      return `<div class="odds-cell ${isBest ? 'best-cell' : ''}"
+        style="color:${isBest ? '' : col}"
+        onclick="window.open('${bk.link}','_blank')"
+        title="Parier sur ${bk.name}">${v}</div>`
+    }).join('')
+    return `<div class="ct-row">
+      <a href="${bk.link}" target="_blank" style="color:var(--text);text-decoration:none">
+        <div class="bk-name">${bk.name}</div>
+      </a>
+      ${cells}
+    </div>`
+  }).join('')
+
+  // Meilleures cotes par type
+  const bestItems = [
+    { field: 'odds_1',   label: `1 — ${teamA}` },
+    { field: 'odds_x',   label: 'X — Nul' },
+    { field: 'odds_2',   label: `2 — ${teamB}` },
+    { field: 'btts_yes', label: 'BTTS Oui' },
+    { field: 'over25',   label: 'Over 2.5' },
+    { field: 'under25',  label: 'Under 2.5' },
+  ].filter(item => best[item.field])
+   .map(item => {
+    const b = best[item.field]
+    return `<div class="best-item">
+      <div class="bi-type">${item.label}</div>
+      <div class="bi-odds" style="color:${COLORS[item.field]||'var(--gb)'}">${b.odds}</div>
+      <div class="bi-bk">${b.bookmaker}</div>
+      <a href="${b.link}" target="_blank" class="bi-link">Parier →</a>
+    </div>`
+  }).join('')
+
+  res.innerHTML = `
+    <div class="match-header">
+      <div class="mh-teams">${teamA} VS ${teamB}</div>
+      <div class="mh-meta">
+        <div>${data.date || ''}</div>
+        <div class="mh-source">Source : ${data.data_source || 'web'} ${data.cached ? '· Cache' : '· Temps réel'}</div>
+      </div>
+    </div>
+
+    ${savingHtml}
+
+    <div class="best-card">
+      <div class="bc-title"><i class="ti ti-star-filled"></i> Meilleures cotes du marché</div>
+      <div class="best-grid">${bestItems}</div>
+    </div>
+
+    <div class="comp-table">
+      <div class="ct-head">
+        <div>Bookmaker</div>
+        ${headers}
+      </div>
+      ${rows}
+    </div>
+
+    <div style="font-size:11px;color:var(--muted);text-align:center;padding-top:8px">
+      Les cellules <span style="background:rgba(34,197,94,.15);color:var(--gb);padding:1px 6px;border-radius:4px">vertes</span> indiquent la meilleure cote disponible pour chaque pari. Cliquer sur une cote pour parier.
+    </div>
+  `
+}
+
+// Pré-remplir depuis les paramètres URL (?a=PSG&b=Lyon&d=2026-06-20)
+const params = new URLSearchParams(location.search)
+if (params.get('a') && params.get('b')) {
+  document.getElementById('ca').value = params.get('a')
+  document.getElementById('cb').value = params.get('b')
+  if (params.get('d')) document.getElementById('cd').value = params.get('d')
+  setTimeout(() => compare(), 400)
+}
+
+if (!token) window.location.href = '/login?next=/comparateur'
+renderRecent()
+</script>
+</body>
+</html>
