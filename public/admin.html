@@ -1158,7 +1158,7 @@ async function loadRecentSubs() {
 
 // ── Table utilisateurs ──
 let allUsers = []
-async function loadUsersTable(); loadOraclePerf() {
+async function loadUsersTable() {
   const el = document.getElementById('users-table')
   try {
     const users = await sb('profiles?select=id,email,full_name,phone,plan,plan_expires_at,ref_code,referral_count,is_active,created_at&order=created_at.desc')
@@ -1626,13 +1626,13 @@ async function loadOraclePerf() {
           <tbody>
             ${recent.map(r => {
               const rb = {win:'✅',loss:'❌',partial:'⚡',pending:'⏳'}[r.result] || '⏳'
-              return \`<tr style="border-top:1px solid var(--b1)">
+              return `<tr style="border-top:1px solid var(--b1)">
                 <td style="padding:6px 8px">${r.match_date}</td>
                 <td>${r.tier}</td>
                 <td>×${r.total_odds||'—'}</td>
                 <td>${r.wins_count||0}/${r.total_picks||0}</td>
                 <td>${rb} ${r.result}</td>
-              </tr>\`
+              </tr>`
             }).join('')}
           </tbody>
         </table>
