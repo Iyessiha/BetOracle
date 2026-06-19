@@ -2011,7 +2011,7 @@ async function renderHistorique() {
 
   el.innerHTML = items.map(h => `
     <div class="history-item" onclick="rerunMatch('${(h.match||'').replace(/'/g,"\'")}')">
-      <div class="hi-icon">🔮</div>
+      <div class="hi-icon" style="width:28px;height:28px;overflow:hidden;border-radius:7px;flex-shrink:0"><img src="/icons/icon-192.png" style="width:28px;height:28px;object-fit:cover;display:block;border-radius:7px" alt="Betoracle"></div>
       <div class="hi-body">
         <div class="hi-match">${h.match || '?'}</div>
         <div class="hi-meta">${h.competition || ''} · ${h.date ? new Date(h.date).toLocaleDateString('fr-FR') : ''}</div>
