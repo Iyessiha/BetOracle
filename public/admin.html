@@ -585,6 +585,40 @@ button { cursor: pointer; font-family: var(--fb); }
           </div>
         </div>
 
+        <!-- KPIs ligne 2 -->
+        <div class="kpi-grid" style="margin-top:-8px">
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-chart-bar"></i> Paris bankroll</div>
+            <div class="kpi-val" id="kpi-bets">—</div>
+            <div class="kpi-sub" id="kpi-bets-sub">Enregistrés</div>
+          </div>
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-bell"></i> Push abonnés</div>
+            <div class="kpi-val" id="kpi-push">—</div>
+            <div class="kpi-sub">Notifications web</div>
+          </div>
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-brand-telegram"></i> Membres Telegram</div>
+            <div class="kpi-val" id="kpi-tg">—</div>
+            <div class="kpi-sub" id="kpi-tg-sub">Canal bot</div>
+          </div>
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-mail"></i> Emails en queue</div>
+            <div class="kpi-val" id="kpi-email-q">—</div>
+            <div class="kpi-sub" id="kpi-email-sub">Séquences marketing</div>
+          </div>
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-activity"></i> Sessions actives</div>
+            <div class="kpi-val" id="kpi-sessions">—</div>
+            <div class="kpi-sub">7 derniers jours</div>
+          </div>
+          <div class="kpi" style="border-color:var(--b2)">
+            <div class="kpi-label"><i class="ti ti-flame"></i> Streaks actifs</div>
+            <div class="kpi-val" id="kpi-streaks">—</div>
+            <div class="kpi-sub">Connexions consécutives</div>
+          </div>
+        </div>
+
         <div class="grid2">
           <!-- Répartition plans -->
           <div class="panel">
@@ -778,6 +812,107 @@ button { cursor: pointer; font-family: var(--fb); }
         </div>
       </div>
 
+
+      <!-- ── PAGE : ACTIVITÉ ── -->
+      <div class="page" id="page-activite">
+        <div class="ph"><h1>Activité</h1><p>Sessions, événements, streaks utilisateurs</p></div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-activity"></i> Sessions récentes</div>
+              <button class="btn-outline-sm" onclick="loadSessionsTable()">↻</button>
+            </div>
+            <div class="panel-body" id="sessions-table"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-flame"></i> Streaks utilisateurs</div></div>
+            <div class="panel-body" id="streaks-table"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-calendar-event"></i> Événements récents</div>
+            <button class="btn-outline-sm" onclick="loadEventsTable()">↻</button>
+          </div>
+          <div class="panel-body" id="events-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : MARKETING ── -->
+      <div class="page" id="page-marketing">
+        <div class="ph"><h1>Marketing</h1><p>Séquences email, queue, parrainage</p></div>
+        <div class="grid2">
+          <div class="panel">
+            <div class="panel-head">
+              <div class="panel-title"><i class="ti ti-mail"></i> Email queue</div>
+              <button class="btn-outline-sm" onclick="loadEmailQueue()">↻</button>
+            </div>
+            <div class="panel-body" id="email-queue-table"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-brand-telegram"></i> Membres Telegram</div></div>
+            <div class="panel-body" id="tg-members-table"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-send"></i> Séquences marketing</div>
+            <button class="btn-outline-sm" onclick="loadMktgTable()">↻</button>
+          </div>
+          <div class="panel-body" id="mktg-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : PARRAINAGES ── -->
+      <div class="page" id="page-parrainages">
+        <div class="ph"><h1>Parrainages</h1><p>Filleuls, récompenses, conversions</p></div>
+        <div class="panel">
+          <div class="panel-body" id="referrals-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : BANKROLL ── -->
+      <div class="page" id="page-bankroll">
+        <div class="ph"><h1>Bankroll & Paris</h1><p>Paris enregistrés par les utilisateurs</p></div>
+        <div class="grid3" style="margin-bottom:16px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-chart-pie"></i> Paris</div></div>
+            <div class="panel-body" id="bets-stats"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-wallet"></i> Bankroll configs</div></div>
+            <div class="panel-body" id="bankroll-stats"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-scale"></i> Cotes comparées</div></div>
+            <div class="panel-body" id="odds-stats"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-list"></i> Derniers paris</div>
+            <button class="btn-outline-sm" onclick="loadBetsTable()">↻</button>
+          </div>
+          <div class="panel-body" id="bets-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+      </div>
+
+      <!-- ── PAGE : CONFIG ── -->
+      <div class="page" id="page-config">
+        <div class="ph"><h1>Configuration</h1><p>Paramètres globaux de l'application</p></div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-settings"></i> App Config</div>
+            <button class="btn-outline-sm" onclick="loadAppConfig()">↻</button>
+          </div>
+          <div class="panel-body" id="config-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><div class="panel-title"><i class="ti ti-shield"></i> Rate limits (dernières 24h)</div></div>
+          <div class="panel-body" id="ratelimits-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+      </div>
+
       <!-- ── PAGE : NOTIFICATIONS ── -->
       <div class="page" id="page-notifications">
         <div class="ph">
@@ -913,7 +1048,7 @@ function logout() {
 // ══════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════
-const PAGES = { overview:'Vue globale', users:'Utilisateurs', subscriptions:'Abonnements', coupons:'Coupons', analyses:'Analyses Oracle', actions:'Actions rapides', notifications:'Notifications', settings:'Configuration' }
+const PAGES = { overview:'Vue globale', users:'Utilisateurs', subscriptions:'Abonnements', coupons:'Coupons', analyses:'Analyses Oracle', activite:'Activité', marketing:'Marketing', parrainages:'Parrainages', bankroll:'Bankroll & Paris', config:'Configuration App', actions:'Actions rapides', notifications:'Notifications', settings:'Paramètres' }
 let currentPage = 'overview'
 
 function nav(page) {
@@ -1026,6 +1161,11 @@ async function loadPage(page) {
     subscriptions: loadSubsTable,
     coupons:       loadCouponsTable,
     analyses:      loadAnalysesTable,
+    activite:      () => Promise.all([loadSessionsTable(), loadStreaksTable(), loadEventsTable()]),
+    marketing:     () => Promise.all([loadEmailQueue(), loadTgMembers(), loadMktgTable()]),
+    parrainages:   loadReferralsTable,
+    bankroll:      () => Promise.all([loadBetsStats(), loadBetsTable()]),
+    config:        () => Promise.all([loadAppConfig(), loadRateLimits()]),
     notifications: loadNotifsTable,
     actions:       () => {},
     settings:      () => {}
@@ -1080,14 +1220,40 @@ async function loadKPIs() {
     cache.users = users
     cache.subs  = subs
 
-    cache.users = users
-    cache.subs = subs
+    // Nouvelles métriques supplémentaires
+    const [bets, pushSubs, tgMembers, emailQ, sessions, streaks, fnList] = await Promise.all([
+      sb('bets?select=id,status').catch(() => []),
+      sb('push_subscriptions?select=id').catch(() => []),
+      sb('telegram_members?select=id,is_active').catch(() => []),
+      sb('email_queue?select=id,status').catch(() => []),
+      sb('user_sessions?select=id,created_at').catch(() => []),
+      sb('user_streaks?select=id,current_streak').catch(() => []),
+      fetch(`${SUPA_URL}/functions/v1/`, { headers: getH() }).then(r => r.json()).catch(() => null),
+    ])
 
-    // Statut fonctions
-    // Versions réelles des edge functions
-    document.getElementById('oracle-status').innerHTML = `<span style="color:var(--gb)">✅ v23 ACTIVE</span>`
-    document.getElementById('payments-status').innerHTML = `<span style="color:var(--gb)">✅ v28 ACTIVE</span>`
-    document.getElementById('coupons-fn-status').innerHTML = `<span style="color:var(--gb)">✅ v10 ACTIVE</span>`
+    // KPIs ligne 2
+    const setKpi = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val }
+    const weekAgo2 = new Date(Date.now() - 7*24*3600*1000).toISOString()
+    setKpi('kpi-bets', fmt(bets.length))
+    setKpi('kpi-bets-sub', `${bets.filter(b=>b.status==='won').length} gagnés · ${bets.filter(b=>b.status==='lost').length} perdus`)
+    setKpi('kpi-push', fmt(pushSubs.length))
+    setKpi('kpi-tg', fmt(tgMembers.length))
+    setKpi('kpi-tg-sub', `${tgMembers.filter(t=>t.is_active).length} actifs`)
+    setKpi('kpi-email-q', fmt(emailQ.filter(e=>e.status==='pending').length))
+    setKpi('kpi-email-sub', `${emailQ.length} total · ${emailQ.filter(e=>e.status==='sent').length} envoyés`)
+    setKpi('kpi-sessions', fmt(sessions.filter(s => s.created_at > weekAgo2).length))
+    setKpi('kpi-streaks', fmt(streaks.filter(s => (s.current_streak||0) > 1).length))
+
+    // Statut Edge Functions (versions réelles)
+    const fnVersions = { oracle: '—', payments: '—', 'generate-coupons': '—' }
+    if (fnList?.functions) {
+      fnList.functions.forEach(fn => {
+        if (fnVersions[fn.slug] !== undefined) fnVersions[fn.slug] = fn.version || 'v?'
+      })
+    }
+    document.getElementById('oracle-status').innerHTML = `<span style="color:var(--gb)">✅ v${fnVersions.oracle} ACTIVE</span>`
+    document.getElementById('payments-status').innerHTML = `<span style="color:var(--gb)">✅ v${fnVersions.payments} ACTIVE</span>`
+    document.getElementById('coupons-fn-status').innerHTML = `<span style="color:var(--gb)">✅ v${fnVersions['generate-coupons']} ACTIVE</span>`
 
   } catch(e) { console.error('[KPIs]', e) }
 }
@@ -1717,6 +1883,235 @@ function showCouponsTab() {
   document.querySelectorAll('.admin-panel').forEach(p => p.style.display='none')
   const el = document.getElementById('card-coupons')
   if (el) { el.style.display='block'; loadAdminCoupons() }
+}
+
+
+// ══════════════════════════════════════════════════
+// NOUVELLES FONCTIONS DE DONNÉES
+// ══════════════════════════════════════════════════
+
+// ── ACTIVITÉ : Sessions ────────────────────────────
+async function loadSessionsTable() {
+  const el = document.getElementById('sessions-table')
+  if (!el) return
+  try {
+    const data = await sb('user_sessions?select=id,user_id,created_at,ip_address,user_agent&order=created_at.desc&limit=30')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-activity"></i><p>Aucune session</p></div>'; return }
+    el.innerHTML = `<table class="tbl"><thead><tr>
+      <th>Date</th><th>User ID</th><th>IP</th><th>Agent</th>
+    </tr></thead><tbody>
+      ${data.map(s => `<tr>
+        <td>${new Date(s.created_at).toLocaleString('fr-FR')}</td>
+        <td style="font-size:11px;color:var(--muted)">${(s.user_id||'').slice(0,8)}…</td>
+        <td>${s.ip_address||'—'}</td>
+        <td style="font-size:11px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${(s.user_agent||'').slice(0,40)}</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── ACTIVITÉ : Streaks ─────────────────────────────
+async function loadStreaksTable() {
+  const el = document.getElementById('streaks-table')
+  if (!el) return
+  try {
+    const data = await sb('user_streaks?select=user_id,current_streak,longest_streak,last_activity&order=current_streak.desc&limit=20')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-flame"></i><p>Aucun streak</p></div>'; return }
+    el.innerHTML = data.map(s => `
+      <div class="stat-row">
+        <span class="lbl" style="font-size:11px">${(s.user_id||'').slice(0,12)}…</span>
+        <span class="val">🔥 ${s.current_streak} jours <span style="color:var(--muted);font-size:11px">(record: ${s.longest_streak})</span></span>
+      </div>`).join('')
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── ACTIVITÉ : Events ──────────────────────────────
+async function loadEventsTable() {
+  const el = document.getElementById('events-table')
+  if (!el) return
+  try {
+    const data = await sb('user_events?select=id,user_id,event_name,event_data,created_at&order=created_at.desc&limit=50')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-calendar-event"></i><p>Aucun événement</p></div>'; return }
+    const evtColor = { login:'var(--gb)', signup:'var(--gold)', upgrade:'#8b5cf6', analyse:'var(--gb)', payment:'#3b82f6' }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Date</th><th>Événement</th><th>User</th><th>Données</th></tr></thead><tbody>
+      ${data.map(e => {
+        const col = evtColor[e.event_name] || 'var(--muted)'
+        return `<tr>
+          <td>${new Date(e.created_at).toLocaleString('fr-FR')}</td>
+          <td><span style="color:${col};font-weight:700;font-size:12px">${e.event_name||'—'}</span></td>
+          <td style="font-size:11px;color:var(--muted)">${(e.user_id||'').slice(0,8)}…</td>
+          <td style="font-size:11px;color:var(--muted);max-width:200px;overflow:hidden;text-overflow:ellipsis">${e.event_data ? JSON.stringify(e.event_data).slice(0,60) : '—'}</td>
+        </tr>`
+      }).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── MARKETING : Email queue ────────────────────────
+async function loadEmailQueue() {
+  const el = document.getElementById('email-queue-table')
+  if (!el) return
+  try {
+    const data = await sb('email_queue?select=id,to_email,subject,status,created_at,sent_at&order=created_at.desc&limit=30')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-mail"></i><p>Queue vide</p></div>'; return }
+    const stColor = { pending:'var(--gold)', sent:'var(--gb)', failed:'#ef4444' }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Date</th><th>À</th><th>Sujet</th><th>Status</th></tr></thead><tbody>
+      ${data.map(m => `<tr>
+        <td>${new Date(m.created_at).toLocaleString('fr-FR')}</td>
+        <td style="font-size:12px">${m.to_email||'—'}</td>
+        <td style="font-size:12px;max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.subject||'—'}</td>
+        <td><span style="color:${stColor[m.status]||'var(--muted)'};font-weight:700;font-size:11px">${m.status||'—'}</span></td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── MARKETING : Membres Telegram ──────────────────
+async function loadTgMembers() {
+  const el = document.getElementById('tg-members-table')
+  if (!el) return
+  try {
+    const data = await sb('telegram_members?select=user_id,telegram_chat_id,username,is_active,joined_at&order=joined_at.desc&limit=30')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-brand-telegram"></i><p>Aucun membre</p></div>'; return }
+    el.innerHTML = data.map(m => `
+      <div class="stat-row">
+        <span class="lbl">@${m.username||'—'} <span style="font-size:10px;color:var(--muted)">${(m.user_id||'').slice(0,8)}…</span></span>
+        <span class="val">${m.is_active ? '<span style="color:var(--gb)">✅ Actif</span>' : '<span style="color:var(--muted)">Inactif</span>'}</span>
+      </div>`).join('')
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── MARKETING : Séquences ─────────────────────────
+async function loadMktgTable() {
+  const el = document.getElementById('mktg-table')
+  if (!el) return
+  try {
+    const data = await sb('marketing_sequences?select=id,user_id,sequence_name,status,step,next_send_at,created_at&order=created_at.desc&limit=50')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-send"></i><p>Aucune séquence</p></div>'; return }
+    const stColor = { pending:'var(--gold)', active:'var(--gb)', completed:'var(--muted)', paused:'#ef4444' }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Séquence</th><th>User</th><th>Étape</th><th>Status</th><th>Prochain envoi</th></tr></thead><tbody>
+      ${data.map(m => `<tr>
+        <td style="font-weight:700;font-size:12px">${m.sequence_name||'—'}</td>
+        <td style="font-size:11px;color:var(--muted)">${(m.user_id||'').slice(0,8)}…</td>
+        <td>${m.step||0}</td>
+        <td><span style="color:${stColor[m.status]||'var(--muted)'};font-size:11px;font-weight:700">${m.status||'—'}</span></td>
+        <td style="font-size:11px">${m.next_send_at ? new Date(m.next_send_at).toLocaleString('fr-FR') : '—'}</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── PARRAINAGES ────────────────────────────────────
+async function loadReferralsTable() {
+  const el = document.getElementById('referrals-table')
+  if (!el) return
+  try {
+    const data = await sb('referrals?select=id,referrer_id,referred_id,status,reward_granted,created_at&order=created_at.desc&limit=50')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-gift"></i><p>Aucun parrainage</p></div>'; return }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Date</th><th>Parrain</th><th>Filleul</th><th>Status</th><th>Récompense</th></tr></thead><tbody>
+      ${data.map(r => `<tr>
+        <td>${new Date(r.created_at).toLocaleString('fr-FR')}</td>
+        <td style="font-size:11px;color:var(--muted)">${(r.referrer_id||'').slice(0,10)}…</td>
+        <td style="font-size:11px;color:var(--muted)">${(r.referred_id||'').slice(0,10)}…</td>
+        <td><span style="color:${r.status==='completed'?'var(--gb)':'var(--gold)'};font-weight:700;font-size:11px">${r.status||'—'}</span></td>
+        <td>${r.reward_granted ? '<span style="color:var(--gb)">✅</span>' : '<span style="color:var(--muted)">—</span>'}</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── BANKROLL : Stats ───────────────────────────────
+async function loadBetsStats() {
+  const [bets, bankrolls, oddsCache] = await Promise.all([
+    sb('bets?select=id,status,stake_fcfa,payout_fcfa').catch(()=>[]),
+    sb('bankroll_config?select=id,user_id,initial_amount,current_amount').catch(()=>[]),
+    sb('odds_cache?select=id,match_key,fetched_at').catch(()=>[]),
+  ])
+  const betsEl = document.getElementById('bets-stats')
+  const bankEl = document.getElementById('bankroll-stats')
+  const oddsEl = document.getElementById('odds-stats')
+  if (betsEl) {
+    const won = bets.filter(b=>b.status==='won'), lost = bets.filter(b=>b.status==='lost')
+    const totalStake = bets.reduce((s,b)=>s+(b.stake_fcfa||0),0)
+    const totalPayout = bets.filter(b=>b.status==='won').reduce((s,b)=>s+(b.payout_fcfa||0),0)
+    betsEl.innerHTML = `
+      <div class="stat-row"><span class="lbl">Total paris</span><span class="val">${bets.length}</span></div>
+      <div class="stat-row"><span class="lbl">Gagnés</span><span class="val" style="color:var(--gb)">${won.length}</span></div>
+      <div class="stat-row"><span class="lbl">Perdus</span><span class="val" style="color:#ef4444">${lost.length}</span></div>
+      <div class="stat-row"><span class="lbl">Win rate</span><span class="val">${bets.length ? Math.round(won.length/bets.length*100) : 0}%</span></div>
+      <div class="stat-row"><span class="lbl">Mises totales</span><span class="val">${fmt(totalStake)} F</span></div>
+      <div class="stat-row"><span class="lbl">Gains totaux</span><span class="val" style="color:var(--gb)">${fmt(totalPayout)} F</span></div>`
+  }
+  if (bankEl) {
+    bankEl.innerHTML = bankrolls.length ? bankrolls.map(b => `
+      <div class="stat-row">
+        <span class="lbl" style="font-size:11px">${(b.user_id||'').slice(0,10)}…</span>
+        <span class="val">${fmt(b.current_amount||0)} F <span style="font-size:10px;color:var(--muted)">(init: ${fmt(b.initial_amount||0)})</span></span>
+      </div>`).join('') : '<div class="empty"><p>Aucune bankroll configurée</p></div>'
+  }
+  if (oddsEl) {
+    oddsEl.innerHTML = oddsCache.length ? `
+      <div class="stat-row"><span class="lbl">Comparaisons cachées</span><span class="val">${oddsCache.length}</span></div>
+      ${oddsCache.slice(0,5).map(o => `<div class="stat-row"><span class="lbl" style="font-size:11px">${o.match_key}</span><span class="val" style="font-size:10px">${new Date(o.fetched_at).toLocaleTimeString('fr-FR')}</span></div>`).join('')}
+    ` : '<div class="empty"><p>Cache vide</p></div>'
+  }
+}
+
+async function loadBetsTable() {
+  const el = document.getElementById('bets-table')
+  if (!el) return
+  try {
+    const data = await sb('bets?select=id,user_id,team_a,team_b,pick,odds,stake_fcfa,payout_fcfa,status,bookmaker,match_date&order=created_at.desc&limit=50')
+    if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-chart-bar"></i><p>Aucun pari enregistré</p></div>'; return }
+    const stColor = { won:'var(--gb)', lost:'#ef4444', pending:'var(--gold)' }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Match</th><th>Pick</th><th>Cote</th><th>Mise</th><th>Gain</th><th>Status</th><th>User</th></tr></thead><tbody>
+      ${data.map(b => `<tr>
+        <td><div style="font-weight:700;font-size:13px">${b.team_a||'?'} vs ${b.team_b||'?'}</div><div style="font-size:10px;color:var(--muted)">${b.match_date||''} · ${b.bookmaker||''}</div></td>
+        <td>${b.pick||'—'}</td>
+        <td>${b.odds||'—'}</td>
+        <td>${fmt(b.stake_fcfa||0)} F</td>
+        <td style="color:var(--gb)">${b.payout_fcfa ? fmt(b.payout_fcfa)+' F' : '—'}</td>
+        <td><span style="color:${stColor[b.status]||'var(--muted)'};font-weight:700;font-size:11px">${b.status||'—'}</span></td>
+        <td style="font-size:10px;color:var(--muted)">${(b.user_id||'').slice(0,8)}…</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── CONFIG : App Config ────────────────────────────
+async function loadAppConfig() {
+  const el = document.getElementById('config-table')
+  if (!el) return
+  try {
+    const data = await sb('app_config?select=key,value,description,updated_at&order=key')
+    if (!data.length) { el.innerHTML = '<div class="empty"><p>Aucune config</p></div>'; return }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Clé</th><th>Valeur</th><th>Description</th><th>Modifié</th></tr></thead><tbody>
+      ${data.map(cfg => `<tr>
+        <td style="font-weight:700;font-family:monospace;font-size:12px">${cfg.key}</td>
+        <td style="font-family:monospace;font-size:12px;max-width:200px;overflow:hidden;text-overflow:ellipsis">${JSON.stringify(cfg.value).slice(0,80)}</td>
+        <td style="font-size:11px;color:var(--muted)">${cfg.description||'—'}</td>
+        <td style="font-size:11px;color:var(--muted)">${cfg.updated_at ? new Date(cfg.updated_at).toLocaleString('fr-FR') : '—'}</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── CONFIG : Rate Limits ────────────────────────────
+async function loadRateLimits() {
+  const el = document.getElementById('ratelimits-table')
+  if (!el) return
+  try {
+    const data = await sb('rate_limits?select=identifier,action,count,window_start&order=count.desc&limit=20')
+    if (!data.length) { el.innerHTML = '<div class="empty"><p>Aucun rate limit récent</p></div>'; return }
+    el.innerHTML = `<table class="tbl"><thead><tr><th>Identifiant</th><th>Action</th><th>Requêtes</th><th>Début fenêtre</th></tr></thead><tbody>
+      ${data.map(r => `<tr>
+        <td style="font-family:monospace;font-size:11px">${r.identifier||'—'}</td>
+        <td style="font-weight:700;font-size:12px">${r.action||'—'}</td>
+        <td><span style="color:${(r.count||0)>50?'#ef4444':'var(--text)'};font-weight:700">${r.count||0}</span></td>
+        <td style="font-size:11px">${r.window_start ? new Date(r.window_start).toLocaleString('fr-FR') : '—'}</td>
+      </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
 }
 
 </script>
