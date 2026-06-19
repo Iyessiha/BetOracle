@@ -1401,7 +1401,6 @@ async function loadNotifsTable() {
 // Déclencher coupon
 async function triggerCoupon() {
   closeModal('modal-coupon')
-  const btn = document.getElementById('gen-btn')
   toast('⏳ Génération des coupons en cours… (30-90s)')
   const jwt = localStorage.getItem('admin_token') || localStorage.getItem('sb_access_token') || token || ''
   try {
@@ -1648,10 +1647,9 @@ async function loadOraclePerf() {
 async function generateCoupons() {
   const btn = document.getElementById('gen-btn')
   const st  = document.getElementById('gen-status')
-  btn.disabled = true
-  btn.innerHTML = '<i class="ti ti-loader-2"></i> Génération en cours… (30-90s)'
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="ti ti-loader-2"></i> Génération en cours… (30-90s)' }
   st.style.display = 'block'
-  st.textContent = '⏳ L'Oracle analyse les matchs du jour via IA + web search…'
+  st.textContent = "⏳ L'Oracle analyse les matchs du jour via IA + web search…"
 
   try {
     const jwt = localStorage.getItem('admin_token') || localStorage.getItem('sb_access_token') || ''
@@ -1681,8 +1679,7 @@ async function generateCoupons() {
     st.style.color = '#ef4444'
     st.textContent = '❌ ' + e.message
   } finally {
-    btn.disabled = false
-    btn.innerHTML = '<i class="ti ti-sparkles"></i> Générer les coupons'
+    if (btn) { btn.disabled = false; btn.innerHTML = '<i class="ti ti-sparkles"></i> Générer les coupons' }
   }
 }
 
