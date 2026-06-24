@@ -660,7 +660,7 @@ function goUpgrade(minPlan) {
 
 function showState(html) { document.getElementById('coupons').innerHTML = html }
 
-async function load(); loadPerformanceStats() {
+async function load() {
   const today = new Date().toISOString().slice(0, 10)
   document.getElementById('date-pill').textContent =
     new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
@@ -950,6 +950,8 @@ function shareCoupon(couponData, channel) {
 // Stocker les données du coupon pour le partage
 let lastCouponData = null
 
+load();
+loadPerformanceStats();
 </script>
 </body>
 </html>
