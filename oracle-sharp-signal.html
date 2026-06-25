@@ -1,0 +1,326 @@
+<!--
+  ORACLE SHARP SIGNAL — composant dashboard
+  Intégration : inclure après le bloc résultat Oracle
+  Appel : renderSharpSignal(sentiment, teamA, teamB)
+  `sentiment` = champ oracle_result.sentiment retourné par l'edge function Oracle
+-->
+<style>
+.sharp-panel {
+  background: var(--s1, #161e16);
+  border: 1px solid var(--b1, #2a3a2a);
+  border-radius: 14px;
+  padding: 20px;
+  margin-top: 16px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color .2s;
+}
+.sharp-panel.signal-fort   { border-color: rgba(34,197,94,.5) }
+.sharp-panel.signal-modere { border-color: rgba(245,200,66,.4) }
+.sharp-panel.has-trap      { border-color: rgba(239,68,68,.4) }
+
+.sharp-panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+}
+.sharp-panel.signal-fort::before   { background: linear-gradient(90deg,#22c55e,transparent) }
+.sharp-panel.signal-modere::before { background: linear-gradient(90deg,#F5C842,transparent) }
+.sharp-panel.has-trap::before      { background: linear-gradient(90deg,#ef4444,transparent) }
+
+.sharp-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+  color: #7a9a7a;
+  margin-bottom: 14px;
+}
+.sharp-eyebrow .dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #22c55e;
+  animation: spulse 2s infinite;
+}
+@keyframes spulse {
+  0%,100% { opacity:1; box-shadow: 0 0 0 0 rgba(34,197,94,.4) }
+  60%     { opacity:.7; box-shadow: 0 0 0 5px rgba(34,197,94,0) }
+}
+
+.sharp-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.sharp-side-label {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 28px;
+  letter-spacing: .04em;
+  line-height: 1;
+}
+.sharp-conf {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+}
+.conf-fort   { background: rgba(34,197,94,.15); color: #22c55e }
+.conf-modere { background: rgba(245,200,66,.15); color: #F5C842 }
+.conf-faible { background: rgba(122,154,122,.1);  color: #7a9a7a }
+
+.sharp-bar-wrap {
+  margin-bottom: 14px;
+}
+.sharp-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: #7a9a7a;
+  margin-bottom: 5px;
+}
+.sharp-bar-track {
+  height: 8px;
+  background: rgba(255,255,255,.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.sharp-bar-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width .8s cubic-bezier(.22,1,.36,1);
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+}
+.sharp-bar-fill.modere { background: linear-gradient(90deg, #F5C842, #ffe066) }
+.sharp-bar-fill.faible { background: rgba(122,154,122,.4) }
+
+.sharp-source {
+  font-size: 11px;
+  color: #4a6a4a;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.trap-box {
+  display: none;
+  background: rgba(239,68,68,.07);
+  border: 1px solid rgba(239,68,68,.25);
+  border-radius: 10px;
+  padding: 12px 14px;
+  margin-top: 12px;
+  font-size: 13px;
+  line-height: 1.6;
+  color: #e8f0e8;
+}
+.trap-box.visible { display: block }
+.trap-box strong { color: #ef4444 }
+
+.sharp-unknown {
+  display: none;
+  text-align: center;
+  padding: 24px;
+  color: #4a6a4a;
+  font-size: 13px;
+}
+.sharp-unknown.visible { display: block }
+
+/* Comparaison bookmakers */
+.bk-compare {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 14px;
+}
+.bk-item {
+  background: rgba(0,0,0,.2);
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+.bk-name {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: #7a9a7a;
+  margin-bottom: 6px;
+}
+.bk-name.pinnacle { color: #22c55e }
+.bk-odds-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: .04em;
+}
+.bk-odds-row span { opacity: .7; font-size: 11px }
+</style>
+
+<!-- Conteneur principal -->
+<div class="sharp-panel" id="sharpPanel" style="display:none">
+  <div class="sharp-eyebrow">
+    <span class="dot"></span>
+    Signal Sharp — Analyse marché
+  </div>
+
+  <!-- État : inconnu -->
+  <div class="sharp-unknown" id="sharpUnknown">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#4a6a4a" stroke-width="1.5" style="margin-bottom:8px"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+    <div>Cotes Pinnacle non disponibles pour ce match</div>
+    <div style="font-size:11px;color:#344834;margin-top:4px">Le signal sharp nécessite les cotes TheStatsAPI</div>
+  </div>
+
+  <!-- État : signal trouvé -->
+  <div id="sharpContent" style="display:none">
+    <div class="sharp-main">
+      <div>
+        <div style="font-size:11px;color:#7a9a7a;margin-bottom:4px">Volume sharp détecté sur</div>
+        <div class="sharp-side-label" id="sharpLabel">—</div>
+      </div>
+      <div style="text-align:right">
+        <span class="sharp-conf" id="sharpConf">—</span>
+        <div style="font-size:11px;color:#7a9a7a;margin-top:6px">Écart <span id="sharpGap" style="font-weight:700;color:#e8f0e8">0</span>% Pinnacle/Bet365</div>
+      </div>
+    </div>
+
+    <div class="sharp-bar-wrap">
+      <div class="sharp-bar-label">
+        <span>Intensité du signal</span>
+        <span id="sharpBarPct">0%</span>
+      </div>
+      <div class="sharp-bar-track">
+        <div class="sharp-bar-fill" id="sharpBarFill" style="width:0%"></div>
+      </div>
+    </div>
+
+    <!-- Comparaison cotes bookmakers -->
+    <div class="bk-compare" id="bkCompare" style="display:none"></div>
+
+    <!-- Piège -->
+    <div class="trap-box" id="trapBox">
+      <strong>⚠️ Piège potentiel —</strong> <span id="trapReason"></span>
+    </div>
+
+    <div class="sharp-source" style="margin-top:14px">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      <span id="sharpSource">—</span>
+    </div>
+  </div>
+</div>
+
+<script>
+/**
+ * Affiche le sharp signal après une analyse Oracle
+ * @param {Object} sentiment - champ oracle_result.sentiment de l'API Oracle
+ * @param {string} teamA
+ * @param {string} teamB
+ * @param {Object} odds - optionnel : cotes brutes {pinnacle:{h,d,a}, bet365:{h,d,a}}
+ */
+function renderSharpSignal(sentiment, teamA, teamB, odds) {
+  const panel   = document.getElementById('sharpPanel')
+  const unknown = document.getElementById('sharpUnknown')
+  const content = document.getElementById('sharpContent')
+  if (!panel) return
+
+  panel.style.display = 'block'
+
+  if (!sentiment || sentiment.source === 'estimation' || sentiment.sharp_signal === 'unknown') {
+    unknown.classList.add('visible')
+    return
+  }
+
+  content.style.display = 'block'
+
+  const conf      = sentiment.sharp_confidence || 'faible'
+  const gap       = sentiment.sharp_gap_pct || 0
+  const trapWarn  = sentiment.trap_warning
+  const sharpSide = sentiment.sharp_signal  // '1','X','2'
+
+  // Label lisible
+  const sideMap = { '1': teamA, 'X': 'Nul', '2': teamB }
+  const label   = sideMap[sharpSide] || sharpSide
+
+  // Couleur selon confiance
+  const colorMap = { fort: '#22c55e', modéré: '#F5C842', faible: '#7a9a7a' }
+  const color    = colorMap[conf] || '#7a9a7a'
+
+  document.getElementById('sharpLabel').textContent = label
+  document.getElementById('sharpLabel').style.color = color
+
+  // Badge confiance
+  const confEl  = document.getElementById('sharpConf')
+  confEl.textContent = conf.charAt(0).toUpperCase() + conf.slice(1)
+  confEl.className   = `sharp-conf conf-${conf.replace('é','e')}`
+
+  // Barre (gap max ~15%)
+  const pct = Math.min(100, Math.round(gap / 15 * 100))
+  const fill = document.getElementById('sharpBarFill')
+  fill.className = `sharp-bar-fill ${conf.replace('é','e')}`
+  setTimeout(() => { fill.style.width = pct + '%' }, 50)
+  document.getElementById('sharpBarPct').textContent = gap + '%'
+  document.getElementById('sharpGap').textContent    = gap
+
+  // Panel classe
+  panel.className = `sharp-panel signal-${conf.replace('é','e')}${trapWarn ? ' has-trap' : ''}`
+
+  // Piège
+  const trapBox = document.getElementById('trapBox')
+  if (trapWarn && sentiment.trap_reason) {
+    trapBox.classList.add('visible')
+    document.getElementById('trapReason').textContent = sentiment.trap_reason
+  }
+
+  // Comparaison bookmakers si dispo
+  if (odds && (odds.pinnacle || odds.bet365)) {
+    renderBkCompare(odds, teamA, teamB)
+  }
+
+  // Source
+  const srcMap = {
+    'pinnacle_vs_bet365': 'Pinnacle × Bet365 — TheStatsAPI',
+    'pinnacle_only':      'Pinnacle uniquement — TheStatsAPI',
+    'estimation':         'Estimation'
+  }
+  document.getElementById('sharpSource').textContent = srcMap[sentiment.source] || sentiment.source
+}
+
+function renderBkCompare(odds, teamA, teamB) {
+  const wrap = document.getElementById('bkCompare')
+  if (!wrap) return
+  const items = []
+  for (const [bk, o] of Object.entries(odds)) {
+    if (!o.h || !o.d || !o.a) continue
+    const isPinnacle = bk.includes('pinnacle')
+    const label = isPinnacle ? 'Pinnacle (sharp)' : bk.includes('bet365') ? 'Bet365' : bk
+    items.push(`
+      <div class="bk-item">
+        <div class="bk-name${isPinnacle ? ' pinnacle' : ''}">${label}</div>
+        <div class="bk-odds-row">
+          <div>${o.h}<br><span>1</span></div>
+          <div>${o.d}<br><span>X</span></div>
+          <div>${o.a}<br><span>2</span></div>
+        </div>
+      </div>`)
+  }
+  if (items.length) {
+    wrap.innerHTML = items.join('')
+    wrap.style.display = 'grid'
+  }
+}
+
+// Appel automatique si les données sont déjà disponibles via window.lastOracleResult
+if (window.lastOracleResult?.sentiment) {
+  renderSharpSignal(
+    window.lastOracleResult.sentiment,
+    window.lastOracleResult.team_a_name,
+    window.lastOracleResult.team_b_name
+  )
+}
+</script>
