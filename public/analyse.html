@@ -1461,29 +1461,8 @@ function renderResult(d, leagueLabel) {
   saveLocalHistory({ match: matchStr, competition: compStr,
     conf: confNum ? Math.round(confNum) : null, date: new Date().toISOString() })
 
-  // Sauvegarder en DB si connecté
-  ;(async () => {
-    try {
-      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
-      if (!token) return
-      await fetch(`${SUPA}/rest/v1/analyses`, {
-        method: 'POST',
-        headers: {
-          'apikey': SUPA_AK,
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json',
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          team_a_name: nameA,
-          team_b_name: nameB,
-          league_name: compStr,
-          confidence:  confNum,
-          oracle_result: d
-        })
-      })
-    } catch(_) {}
-  })()
+  // Note : l'analyse est déjà enregistrée en DB côté serveur (edge function Oracle,
+  // service_role). Pas d'insertion REST ici — elle échouait en 403 (RLS).
 
   // Mettre à jour bouton Favori
   const favs = getFavoris()
@@ -1561,11 +1540,7 @@ function renderResult(d, leagueLabel) {
 
 // ════════ ANALYSE COMPLÈTE (plans payants) ════════
 function renderFullAnalysis(d) {
-  let container = document.getElementById('full-analysis')
-  if (!container) {
-    container = document.createElement('div')
-    container.id = 'full-analysis'
-    // ── Score probable + pick en hero ──
+  // ── Score probable + pick en hero (déclarés hors du if : utilisés plus bas) ──
   const scoreHtml = d.score_est ? `
     <div class="score-hero">
       <div class="sh-team">${d.team_a_name||d.team_a||'Équipe A'}</div>
@@ -1585,7 +1560,11 @@ function renderFullAnalysis(d) {
       <div class="pick-hero-conf">${d.confidence||'—'}%</div>
     </div>` : ''
 
-  container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
+  let container = document.getElementById('full-analysis')
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'full-analysis'
+    container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
     document.querySelector('.lock-wall')?.after(container)
   }
   const ai = d.ai_analysis || {}
