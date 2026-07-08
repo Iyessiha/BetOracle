@@ -1,5 +1,5 @@
 /**
- * BETORACLE PRO — Gestionnaire de logos et images
+ * BETORACL PRO — Gestionnaire de logos et images
  * Sources : api-sports.io (logos clubs/ligues) + flagcdn.com (drapeaux) + thesportsdb.com (photos)
  * Tous les appels logos api-sports.io sont GRATUITS et hors quota
  */
@@ -148,4 +148,4 @@ function getStadiumBg(index = 0) {
 }
 
 /* Exporte */
-window.BetOracle = { LOGOS, makeLogoImg, makeFlagImg, makeInitials, injectMatchLogos, getStadiumBg };
+window.BetOracl = { LOGOS, makeLogoImg, makeFlagImg, makeInitials, injectMatchLogos, getStadiumBg };

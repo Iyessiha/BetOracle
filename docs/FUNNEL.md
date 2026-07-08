@@ -1,4 +1,4 @@
-# Funnel de conversion — Betoracle Pro
+# Funnel de conversion — Betoracl Pro
 
 ## Vue d'ensemble
 
@@ -56,7 +56,7 @@ sessionStorage.setItem('bp_plan', 'free' | 'pro')
 3. Upsell plan Pro avant la première analyse
 
 ### Leviers de conversion
-- **Personnalisation** : "SALUT [PRENOM], BIENVENUE SUR BETORACLE PRO" (prénom depuis sessionStorage)
+- **Personnalisation** : "SALUT [PRENOM], BIENVENUE SUR BETORACL PRO" (prénom depuis sessionStorage)
 - **Programme parrainage** avec lien copier-coller généré automatiquement
   - 10 filleuls → 1 mois Starter offert
   - 50 filleuls → 3 mois Pro offerts

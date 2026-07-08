@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════
---  BETORACLE PRO — Migration 001
+--  BETORACL PRO — Migration 001
 --  Base de données complète : tables, RLS, triggers, indexes
 --  Editeur : MonWe Infinity LLC
 -- ═══════════════════════════════════════════════════════════

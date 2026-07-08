@@ -24,9 +24,9 @@ enabled = true
 
 [auth]
 enabled = true
-site_url = "https://betoracle.pro"
+site_url = "https://betoracl.pro"
 additional_redirect_urls = [
-  "https://betoracle.pro/welcome.html",
+  "https://betoracl.pro/welcome.html",
   "http://localhost:3000/welcome.html"
 ]
 jwt_expiry = 3600
@@ -51,7 +51,7 @@ policy = "per_worker"
 #
 # -- Générer le coupon chaque matin à 07h00 UTC (= 08h00 WAT)
 # SELECT cron.schedule(
-#   'betoracle-daily-coupon',
+#   'betoracl-daily-coupon',
 #   '0 7 * * *',
 #   $$
 #     SELECT net.http_post(
@@ -67,7 +67,7 @@ policy = "per_worker"
 #
 # -- Désactiver les abonnements expirés chaque heure
 # SELECT cron.schedule(
-#   'betoracle-expire-plans',
+#   'betoracl-expire-plans',
 #   '0 * * * *',
 #   $$
 #     UPDATE public.profiles

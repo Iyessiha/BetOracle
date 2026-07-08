@@ -19,7 +19,7 @@ const APP_URL       = Deno.env.get("APP_URL") ?? "https://bet-oracle.vercel.app"
 // Base URL GeniusPay
 const GP_BASE = "https://pay.genius.ci/api/v1/merchant/payments";
 
-// Tarifs Betoracle Pro (FCFA)
+// Tarifs Betoracl Pro (FCFA)
 const PRICES: Record<string, Record<string, number>> = {
   starter: { week: 500,  month: 1500 },
   pro:     { week: 1000, month: 3000 },
@@ -118,7 +118,7 @@ serve(async (req) => {
     const gpPayload: Record<string, unknown> = {
       amount,
       currency:    "XOF",
-      description: `Betoracle Pro — Plan ${plan.charAt(0).toUpperCase()+plan.slice(1)} (${period === "week" ? "1 semaine" : "1 mois"})`,
+      description: `Betoracl Pro — Plan ${plan.charAt(0).toUpperCase()+plan.slice(1)} (${period === "week" ? "1 semaine" : "1 mois"})`,
       customer: {
         name:    profile?.full_name || user.email?.split("@")[0] || "Client",
         email:   user.email,

@@ -1,5 +1,5 @@
 -- ═══════════════════════════════════════════════════════════════
---  BETORACLE PRO — Migration 006
+--  BETORACL PRO — Migration 006
 --  Coupe du Monde 2026 : Accès gratuit + Sécurité anti-abus
 --  MonWe Infinity LLC
 -- ═══════════════════════════════════════════════════════════════
@@ -53,7 +53,7 @@ insert into public.app_config (key, value, description) values
     "re_engagement_after_days": 3,
     "upsell_after_analyses": 5,
     "referral_bonus_enabled": true,
-    "telegram_channel": "@betoracle_pro"
+    "telegram_channel": "@betoracl_pro"
   }',
   'Configuration marketing et rétention'
 )
@@ -324,7 +324,7 @@ begin
     new.id,
     new.email,
     'welcome',
-    '🔮 Bienvenue sur Betoracle Pro — Ton accès Coupe du Monde est prêt !',
+    '🔮 Bienvenue sur Betoracl Pro — Ton accès Coupe du Monde est prêt !',
     jsonb_build_object(
       'first_name', split_part(coalesce(new.full_name, new.email), ' ', 1),
       'ref_code', new.ref_code,

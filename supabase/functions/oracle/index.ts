@@ -239,7 +239,7 @@ async function claudeAnalysis(data: {
 }): Promise<{ narrative: string; recommendation: string; risk_warning: string } | null> {
   if (!ANTHROPIC_KEY) return null;
 
-  const prompt = `Tu es l'Oracle de Betoracle Pro, expert en analyse de paris sportifs pour l'Afrique de l'Ouest.
+  const prompt = `Tu es l'Oracle de Betoracl Pro, expert en analyse de paris sportifs pour l'Afrique de l'Ouest.
 
 MATCH : ${data.teamA} vs ${data.teamB} — ${data.league}
 

@@ -1,6 +1,6 @@
 {
-  "name": "Betoracle Pro",
-  "short_name": "Betoracle",
+  "name": "Betoracl Pro",
+  "short_name": "Betoracl",
   "description": "L'oracle des parieurs \u2014 Pronos IA multi-sports & bankroll",
   "start_url": "/",
   "scope": "/",
@@ -102,7 +102,7 @@
       "sizes": "512x512",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Betoracle Pro Dashboard"
+      "label": "Betoracl Pro Dashboard"
     }
   ],
   "categories": [

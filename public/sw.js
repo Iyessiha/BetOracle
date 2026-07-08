@@ -1,4 +1,4 @@
-const CACHE = 'betoracle-v3'
+const CACHE = 'betoracl-v2'
 const SHELL = [
   '/', '/dashboard', '/analyse', '/coupons', '/login', '/signup',
   '/manifest.json',
@@ -25,13 +25,7 @@ self.addEventListener('activate', e => {
 // Fetch : network-first pour API/auth, cache-first pour assets
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url)
-
-  // Ne traiter QUE le http/https + GET. Ignore chrome-extension://, POST, etc.
-  // (évite : "put on Cache: Request scheme 'chrome-extension' is unsupported")
-  if (e.request.method !== 'GET') return
-  if (url.protocol !== 'http:' && url.protocol !== 'https:') return
-  if (url.origin !== self.location.origin) return
-
+  
   // Toujours réseau pour API Supabase, paiements, Resend
   // Ne jamais mettre en cache les pages d'analyse, coupons, dashboard
   if (url.pathname === '/analyse' || url.pathname === '/coupons' || url.pathname === '/dashboard') {
@@ -79,14 +73,14 @@ self.addEventListener('push', e => {
   if (!e.data) return
   let payload
   try { payload = e.data.json() }
-  catch { payload = { title: 'Betoracle Pro', body: e.data.text() } }
+  catch { payload = { title: 'Betoracl Pro', body: e.data.text() } }
 
-  const title   = payload.title || 'Betoracle Pro'
+  const title   = payload.title || 'Betoracl Pro'
   const options = {
     body:  payload.body || 'Nouvelle notification',
     icon:  payload.icon  || '/icons/icon-192.png',
     badge: payload.badge || '/icons/icon-72.png',
-    tag:   payload.tag   || 'betoracle-notif',
+    tag:   payload.tag   || 'betoracl-notif',
     data:  { url: payload.url || '/dashboard' },
     actions: payload.actions || [],
     vibrate: [100, 50, 100],

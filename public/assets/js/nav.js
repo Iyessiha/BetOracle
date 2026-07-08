@@ -1,5 +1,5 @@
 /**
- * BETORACLE PRO — nav.js
+ * BETORACL PRO — nav.js
  * Gestion navigation desktop + mobile sur toutes les pages
  * Ne redirige jamais — observe seulement et adapte l'UI
  */
@@ -64,7 +64,7 @@
     <div style="display:flex;align-items:center;gap:10px">
       <div style="width:34px;height:34px;border-radius:9px;background:rgba(34,197,94,.12);border:1.5px solid #22c55e;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 0 12px rgba(34,197,94,.12)">🔮</div>
       <div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;color:#e4ede4">BET<span style="color:#F5C842">ORACLE</span></div>
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.06em;color:#e4ede4">BET<span style="color:#F5C842">ORACL</span></div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#5a7a5a">Paris sportifs intelligents</div>
       </div>
     </div>

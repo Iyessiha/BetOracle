@@ -48,7 +48,7 @@ export default async function handler(req, res) {
           secret: CRON,
           payload: {
             title: `🔮 Coupon Sûr du jour — ×${safeCoupon.total_odds}`,
-            body: sels || 'Voir le coupon du jour sur Betoracle Pro',
+            body: sels || 'Voir le coupon du jour sur Betoracl Pro',
             icon: '/icons/icon-192.png',
             badge: '/icons/icon-72.png',
             url: '/coupons',

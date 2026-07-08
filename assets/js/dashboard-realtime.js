@@ -1,5 +1,5 @@
 /**
- * BETORACLE PRO — Notifications Realtime Dashboard
+ * BETORACL PRO — Notifications Realtime Dashboard
  * Supabase Realtime sur : coupons · credit_transactions · analyses
  *
  * INTÉGRATION :

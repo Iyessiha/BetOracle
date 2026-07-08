@@ -1,4 +1,4 @@
-# 🔮 Betoracle Pro
+# 🔮 Betoracl Pro
 
 > **L'oracle des paris foot** — Plateforme d'aide à la décision pour les parieurs sérieux d'Afrique de l'Ouest et du monde entier.
 
@@ -10,7 +10,7 @@
 
 ## 🌐 Aperçu
 
-Betoracle Pro est un produit de **MonWe Infinity LLC**. Il combine :
+Betoracl Pro est un produit de **MonWe Infinity LLC**. Il combine :
 
 - 🧠 **L'Oracle IA** — moteur de prédiction entraîné sur 500 000+ matchs
 - 📊 **12 outils d'analyse** — Stats 1X2, Value Bet, Kelly, H2H, alertes live
@@ -23,7 +23,7 @@ Betoracle Pro est un produit de **MonWe Infinity LLC**. Il combine :
 ## 📁 Structure du projet
 
 ```
-betoracle-pro/
+betoracl-pro/
 ├── public/                 # Pages HTML (frontend statique)
 │   ├── index.html          # Landing page principale
 │   ├── signup.html         # Page d'inscription (étape 1 funnel)
@@ -93,8 +93,8 @@ Landing (index.html)
 
 ```bash
 # Cloner le dépôt
-git clone https://github.com/Iyessiha/betoracle-pro.git
-cd betoracle-pro
+git clone https://github.com/Iyessiha/betoracl-pro.git
+cd betoracl-pro
 
 # Lancer un serveur local (Python)
 cd public && python3 -m http.server 8000
@@ -141,7 +141,7 @@ npm run deploy:pages
 
 ## 🏢 Éditeur
 
-**Betoracle Pro** est un produit de **MonWe Infinity LLC**
+**Betoracl Pro** est un produit de **MonWe Infinity LLC**
 
 - Forme juridique : LLC, New Mexico, États-Unis
 - N° dépôt SOS : 3213688
@@ -153,7 +153,7 @@ npm run deploy:pages
 
 ## ⚠️ Avertissement
 
-Betoracle Pro est un **outil d'aide à la décision**, non une garantie de gains. Les paris sportifs comportent des risques financiers. Ne misez que ce que vous pouvez vous permettre de perdre. Voir [CGU](public/cgu.html) pour les détails.
+Betoracl Pro est un **outil d'aide à la décision**, non une garantie de gains. Les paris sportifs comportent des risques financiers. Ne misez que ce que vous pouvez vous permettre de perdre. Voir [CGU](public/cgu.html) pour les détails.
 
 ---
 

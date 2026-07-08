@@ -7,18 +7,18 @@
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://betoracl.com/analyse">
-  <meta property="og:title"       content="Oracle IA — Analyser un match | Betoracle Pro">
+  <meta property="og:title"       content="Oracle IA — Analyser un match | Betoracl Pro">
   <meta property="og:description" content="Lance une analyse IA sur n'importe quel match : probabilités 1X2, BTTS, Over/Under, score probable. Football, basket, tennis, CdM 2026.">
   <meta property="og:image"       content="https://betoracl.com/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height"content="630">
-  <meta property="og:image:alt"   content="Betoracle Pro — L'Oracle IA des parieurs">
-  <meta property="og:site_name"   content="Betoracle Pro">
+  <meta property="og:image:alt"   content="Betoracl Pro — L'Oracle IA des parieurs">
+  <meta property="og:site_name"   content="Betoracl Pro">
   <meta property="og:locale"      content="fr_FR">
   <!-- Twitter / X Card -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:url"         content="https://betoracl.com/analyse">
-  <meta name="twitter:title"       content="Oracle IA — Analyser un match | Betoracle Pro">
+  <meta name="twitter:title"       content="Oracle IA — Analyser un match | Betoracl Pro">
   <meta name="twitter:description" content="Lance une analyse IA sur n'importe quel match : probabilités 1X2, BTTS, Over/Under, score probable. Football, basket, tennis, CdM 2026.">
   <meta name="twitter:image"       content="https://betoracl.com/og-image.png">
   <!-- Canonical -->
@@ -29,7 +29,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Betoracle">
+  <meta name="apple-mobile-web-app-title" content="Betoracl">
   <link rel="apple-touch-icon" href="/icons/icon-180.png">
   <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
   <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
@@ -38,7 +38,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
   <meta name="msapplication-TileColor" content="#060906">
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
-<title>Analyse — Betoracle Pro</title>
+<title>Analyse — Betoracl Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
@@ -865,7 +865,7 @@ a{text-decoration:none;color:inherit}
 <nav class="top-nav">
   <div class="nav-logo">
     <div class="logo-badge" style="background:none;border:none;padding:0;width:42px;height:42px;overflow:hidden;border-radius:8px"><img src="/icons/icon-192.png" style="width:34px;height:34px;object-fit:cover;display:block;border-radius:8px" ></div>
-    <div class="logo-name">BET<span>ORACLE</span> PRO</div>
+    <div class="logo-name">BET<span>ORACL</span> PRO</div>
   </div>
   <div class="nav-right">
     <div class="nav-plan" id="nav-plan-badge">
@@ -1461,8 +1461,29 @@ function renderResult(d, leagueLabel) {
   saveLocalHistory({ match: matchStr, competition: compStr,
     conf: confNum ? Math.round(confNum) : null, date: new Date().toISOString() })
 
-  // Note : l'analyse est déjà enregistrée en DB côté serveur (edge function Oracle,
-  // service_role). Pas d'insertion REST ici — elle échouait en 403 (RLS).
+  // Sauvegarder en DB si connecté
+  ;(async () => {
+    try {
+      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+      if (!token) return
+      await fetch(`${SUPA}/rest/v1/analyses`, {
+        method: 'POST',
+        headers: {
+          'apikey': SUPA_AK,
+          'Authorization': 'Bearer ' + token,
+          'Content-Type': 'application/json',
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          team_a_name: nameA,
+          team_b_name: nameB,
+          league_name: compStr,
+          confidence:  confNum,
+          oracle_result: d
+        })
+      })
+    } catch(_) {}
+  })()
 
   // Mettre à jour bouton Favori
   const favs = getFavoris()
@@ -1540,7 +1561,11 @@ function renderResult(d, leagueLabel) {
 
 // ════════ ANALYSE COMPLÈTE (plans payants) ════════
 function renderFullAnalysis(d) {
-  // ── Score probable + pick en hero (déclarés hors du if : utilisés plus bas) ──
+  let container = document.getElementById('full-analysis')
+  if (!container) {
+    container = document.createElement('div')
+    container.id = 'full-analysis'
+    // ── Score probable + pick en hero ──
   const scoreHtml = d.score_est ? `
     <div class="score-hero">
       <div class="sh-team">${d.team_a_name||d.team_a||'Équipe A'}</div>
@@ -1560,11 +1585,7 @@ function renderFullAnalysis(d) {
       <div class="pick-hero-conf">${d.confidence||'—'}%</div>
     </div>` : ''
 
-  let container = document.getElementById('full-analysis')
-  if (!container) {
-    container = document.createElement('div')
-    container.id = 'full-analysis'
-    container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
+  container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
     document.querySelector('.lock-wall')?.after(container)
   }
   const ai = d.ai_analysis || {}
@@ -2020,7 +2041,7 @@ async function renderHistorique() {
 
   el.innerHTML = items.map(h => `
     <div class="history-item" onclick="rerunMatch('${(h.match||'').replace(/'/g,"\'")}')">
-      <div class="hi-icon" style="width:28px;height:28px;overflow:hidden;border-radius:7px;flex-shrink:0"><img src="/icons/icon-192.png" style="width:28px;height:28px;object-fit:cover;display:block;border-radius:7px" alt="Betoracle"></div>
+      <div class="hi-icon" style="width:28px;height:28px;overflow:hidden;border-radius:7px;flex-shrink:0"><img src="/icons/icon-192.png" style="width:28px;height:28px;object-fit:cover;display:block;border-radius:7px" alt="Betoracl"></div>
       <div class="hi-body">
         <div class="hi-match">${h.match || '?'}</div>
         <div class="hi-meta">${h.competition || ''} · ${h.date ? new Date(h.date).toLocaleDateString('fr-FR') : ''}</div>

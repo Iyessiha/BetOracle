@@ -7,18 +7,18 @@
   <!-- Open Graph / Facebook / WhatsApp -->
   <meta property="og:type"        content="website">
   <meta property="og:url"         content="https://betoracl.com/coupons">
-  <meta property="og:title"       content="Coupons du jour — Betoracle Pro">
+  <meta property="og:title"       content="Coupons du jour — Betoracl Pro">
   <meta property="og:description" content="Découvre les coupons sportifs du jour générés par l'IA : coupon Sûr (gratuit), Équilibré et Audacieux. Mis à jour chaque matin à 08h00.">
   <meta property="og:image"       content="https://betoracl.com/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height"content="630">
-  <meta property="og:image:alt"   content="Betoracle Pro — L'Oracle IA des parieurs">
-  <meta property="og:site_name"   content="Betoracle Pro">
+  <meta property="og:image:alt"   content="Betoracl Pro — L'Oracle IA des parieurs">
+  <meta property="og:site_name"   content="Betoracl Pro">
   <meta property="og:locale"      content="fr_FR">
   <!-- Twitter / X Card -->
   <meta name="twitter:card"        content="summary_large_image">
   <meta name="twitter:url"         content="https://betoracl.com/coupons">
-  <meta name="twitter:title"       content="Coupons du jour — Betoracle Pro">
+  <meta name="twitter:title"       content="Coupons du jour — Betoracl Pro">
   <meta name="twitter:description" content="Découvre les coupons sportifs du jour générés par l'IA : coupon Sûr (gratuit), Équilibré et Audacieux. Mis à jour chaque matin à 08h00.">
   <meta name="twitter:image"       content="https://betoracl.com/og-image.png">
   <!-- Canonical -->
@@ -29,7 +29,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Betoracle">
+  <meta name="apple-mobile-web-app-title" content="Betoracl">
   <link rel="apple-touch-icon" href="/icons/icon-180.png">
   <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png">
   <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
@@ -38,7 +38,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
   <meta name="msapplication-TileColor" content="#060906">
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
-<title>Coupons du jour — Betoracle Pro</title>
+<title>Coupons du jour — Betoracl Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
 <style>
@@ -70,7 +70,8 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 }
 .top-in { max-width: 1040px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
 .brand { display: flex; align-items: center; gap: 10px; }
-.brand-badge { width: 34px; height: 34px; border-radius: 9px; background: var(--green-d); border: 1.5px solid var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--fd); font-size: 18px; color: var(--gold); }
+.brand-badge { width: 34px; height: 34px; border-radius: 9px; background: var(--green-d); border: 1.5px solid var(--green); display: flex; align-items: center; justify-content: center; font-family: var(--fd); font-size: 18px; color: var(--gold); overflow: hidden; padding: 0; }
+.brand-badge img { width: 100%; height: 100%; object-fit: cover; display: block; border-radius: 7px; }
 .brand-name { font-family: var(--fd); font-size: 20px; letter-spacing: .04em; }
 .brand-name span { color: var(--gold); }
 .back-link { font-size: 13px; color: var(--mid); display: flex; align-items: center; gap: 6px; }
@@ -447,8 +448,8 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 <header class="top">
   <div class="top-in">
     <a href="dashboard.html" class="brand">
-      <div class="brand-badge">B</div>
-      <div class="brand-name">BET<span>ORACLE</span></div>
+      <div class="brand-badge"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
+      <div class="brand-name">BET<span>ORACL</span></div>
     </a>
     <a href="dashboard.html" class="back-link"><i class="ti ti-arrow-left"></i> Mon espace</a>
   </div>
@@ -915,7 +916,7 @@ function buildShareText(coupon) {
   const date = coupon.match_date ? new Date(coupon.match_date + 'T12:00:00')
     .toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : ''
   
-  let text = `🔮 *COUPON ${tier} — Betoracle Pro*\n`
+  let text = `🔮 *COUPON ${tier} — Betoracl Pro*\n`
   if (date) text += `📅 ${date}\n`
   text += `\n`
   

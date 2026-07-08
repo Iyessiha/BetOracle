@@ -10,7 +10,7 @@ const SUPABASE_URL    = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_KEY    = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const API_SPORTS_KEY  = Deno.env.get("API_SPORTS_KEY")!;
 const TELEGRAM_TOKEN  = Deno.env.get("TELEGRAM_BOT_TOKEN")!;
-const TELEGRAM_CHAN   = Deno.env.get("TELEGRAM_CHANNEL_ID")!; // ex: @betoracle_pro
+const TELEGRAM_CHAN   = Deno.env.get("TELEGRAM_CHANNEL_ID")!; // ex: @betoracl_pro
 
 const corsHeaders = {
   "Access-Control-Allow-Origin":  "*",
@@ -212,7 +212,7 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
 
   const escMd = (s: string) => s.replace(/[_*[\]()~`>#+\-=|{}.!]/g, "\\$&");
 
-  let msg = `🔮 *BETORACLE PRO — COUPON DU JOUR*\n`;
+  let msg = `🔮 *BETORACL PRO — COUPON DU JOUR*\n`;
   msg += `📅 ${escMd(dateStr)}\n`;
   msg += `━━━━━━━━━━━━━━━━━━━━━━\n\n`;
 
@@ -234,14 +234,14 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
   }
 
   msg += `\n⚠️ _Jeu responsable — L'Oracle est un outil d'aide, pas une garantie\\._\n`;
-  msg += `🔗 [Voir l'analyse complète](https://betoracle\\.pro/analyse)`;
+  msg += `🔗 [Voir l'analyse complète](https://betoracl\\.pro/analyse)`;
 
   // Inline keyboard avec liens bookmakers
   const keyboard = {
     inline_keyboard: [
       BOOKMAKERS.slice(0, 2).map(bk => ({ text: `🎲 ${bk.name}`, url: bk.url })),
       BOOKMAKERS.slice(2, 4).map(bk => ({ text: `🎲 ${bk.name}`, url: bk.url })),
-      [{ text: "🔮 Analyse complète", url: "https://betoracle.pro/analyse" }],
+      [{ text: "🔮 Analyse complète", url: "https://betoracl.pro/analyse" }],
     ]
   };
 

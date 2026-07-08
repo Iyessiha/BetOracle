@@ -1,6 +1,6 @@
 #!/bin/bash
 # ══════════════════════════════════════════════════════
-#  Betoracle Pro — Script de déploiement GitHub
+#  Betoracl Pro — Script de déploiement GitHub
 #  Usage : bash deploy.sh [TON_USERNAME_GITHUB]
 #  Exemple : bash deploy.sh yessiha-ilboudo
 # ══════════════════════════════════════════════════════
@@ -15,13 +15,13 @@ NC='\033[0m' # No Color
 BOLD='\033[1m'
 
 echo ""
-echo -e "${GOLD}${BOLD}🔮 BETORACLE PRO — Déploiement GitHub${NC}"
+echo -e "${GOLD}${BOLD}🔮 BETORACL PRO — Déploiement GitHub${NC}"
 echo -e "${GOLD}══════════════════════════════════════${NC}"
 echo ""
 
 # ── VÉRIFICATION ARGUMENTS ──
 GITHUB_USER="${1:-}"
-REPO_NAME="betoracle-pro"
+REPO_NAME="betoracl-pro"
 
 if [ -z "$GITHUB_USER" ]; then
   echo -e "${RED}❌ Usage : bash deploy.sh TON_USERNAME_GITHUB${NC}"
@@ -76,7 +76,7 @@ if git diff --cached --quiet; then
   echo -e "${GOLD}⚠️  Aucun changement à committer${NC}"
 else
   TIMESTAMP=$(date +"%Y-%m-%d %H:%M")
-  git commit -m "feat: Betoracle Pro v1.0 — ${TIMESTAMP}
+  git commit -m "feat: Betoracl Pro v1.0 — ${TIMESTAMP}
 
 - Landing page + funnel 3 étapes (signup, welcome, analyse)
 - Mécanisme curiosity gate (85% verrouillé)
@@ -112,10 +112,10 @@ echo ""
 echo -e "  2️⃣  ${BOLD}Netlify (recommandé - plus rapide)${NC}"
 echo -e "     → https://app.netlify.com/drop"
 echo -e "     → Glisse-dépose le dossier /public"
-echo -e "     → URL gratuite : https://betoracle-pro.netlify.app"
+echo -e "     → URL gratuite : https://betoracl-pro.netlify.app"
 echo ""
 echo -e "  3️⃣  ${BOLD}Domaine personnalisé${NC}"
-echo -e "     → betoracle.pro / betoracle.app / betoracle.ci"
+echo -e "     → betoracl.pro / betoracl.app / betoracl.ci"
 echo ""
-echo -e "${GREEN}🔮 Betoracle Pro est en ligne !${NC}"
+echo -e "${GREEN}🔮 Betoracl Pro est en ligne !${NC}"
 echo ""
