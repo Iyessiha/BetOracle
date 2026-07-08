@@ -1169,23 +1169,30 @@ async function tryRefresh() {
 }
 async function getToken() {
   let t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
-  if (!t) return null
-  const ok = await fetch(`${S}/auth/v1/user`, { headers: { apikey: AK, Authorization: `Bearer ${t}` } })
-    .then(r => r.ok).catch(() => false)
-  if (ok) return t
+  // Pas de token en local mais un refresh_token dispo → tenter le refresh direct
+  if (!t) return tryRefresh()
+  // Vérifie la validité du token courant ; sur échec réseau on ne conclut pas à l'expiration
+  let verified = null
+  try {
+    const r = await fetch(`${S}/auth/v1/user`, { headers: { apikey: AK, Authorization: `Bearer ${t}` } })
+    verified = r.ok
+  } catch (_) {
+    // Erreur réseau pendant la vérif : on renvoie le token existant, le POST tranchera
+    return t
+  }
+  if (verified) return t
+  // Token invalide/expiré → refresh
   return tryRefresh()
 }
 
 // ════════ LOADER ════════
 const steps = [
   'Identification des équipes…',
-  'Recherche des dernières infos en ligne…',
-  'Analyse de la forme récente et des compos…',
-  'Vérification des blessures et absences…',
+  'Récupération de la forme récente…',
+  'Analyse des cotes Pinnacle & Bet365…',
   'Calcul des probabilités 1X2…',
-  'Croisement des données statistiques…',
-  'Rédaction du pronostic argumenté…',
-  'Finalisation du rapport Oracle…'
+  'Rédaction du pronostic Oracle…',
+  'Finalisation du rapport…'
 ]
 const stepEl = document.getElementById('loader-step')
 let stepInt = null
@@ -1195,13 +1202,12 @@ function showLoader() {
   let si = 0
   if (stepEl) stepEl.textContent = steps[0]
   clearInterval(stepInt)
-  // L'analyse hybride (recherche web) prend 30-90s : on étale les étapes
+  // Analyse rapide (~5-10s) : on défile les étapes plus vite
   stepInt = setInterval(() => {
     si++
     if (si < steps.length && stepEl) stepEl.textContent = steps[si]
-    // Sur la dernière étape, on reste mais on rassure
-    else if (stepEl) stepEl.textContent = 'Analyse approfondie en cours, presque terminé…'
-  }, 5000)
+    else if (stepEl) stepEl.textContent = 'Presque terminé…'
+  }, 1800)
 }
 function hideLoader() {
   clearInterval(stepInt)
@@ -1364,36 +1370,19 @@ async function runOracle(teamA, teamB, leagueLabel) {
 
   showLoader()
   const ctrl = new AbortController()
-  const tid = setTimeout(() => ctrl.abort(), 120000) // 120s max
+  const tid = setTimeout(() => ctrl.abort(), 90000) // 90s max (analyse ~5-10s désormais)
+
+  // ── ÉTAPE 1 : appel réseau (uniquement le fetch dans le try réseau) ──
+  let res, data
   try {
-    const res = await fetch(`${S}/functions/v1/oracle`, {
+    res = await fetch(`${S}/functions/v1/oracle`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'apikey': AK, 'Authorization': `Bearer ${token}` },
       body: JSON.stringify({ team_a_name: teamA, team_b_name: teamB }),
       signal: ctrl.signal
     })
     clearTimeout(tid)
-    const data = await res.json()
-    hideLoader()
-
-    if (!res.ok) {
-      if (data.code === 'QUOTA_EXCEEDED') {
-        scrollToGate()
-        return
-      }
-      if (data.code === 'TEAM_NOT_FOUND' || data.code === 'MISSING_TEAMS') {
-        alert(`Équipe introuvable. Vérifie l'orthographe.\nEx : "Real Madrid vs PSG", "France vs Brésil"`)
-        return
-      }
-      if (data.code === 'AI_UNAVAILABLE') {
-        alert('L\'Oracle est très sollicité en ce moment. Réessaie dans quelques instants.')
-        return
-      }
-      alert(data.detail || data.error || 'Erreur lors de l\'analyse. Réessaie.')
-      return
-    }
-
-    renderResult(data, leagueLabel)
+    data = await res.json().catch(() => ({}))
   } catch (e) {
     clearTimeout(tid)
     hideLoader()
@@ -1402,7 +1391,48 @@ async function runOracle(teamA, teamB, leagueLabel) {
     } else {
       alert('Connexion impossible. Vérifie ta connexion internet et réessaie.')
     }
-    console.error('[Oracle]', e)
+    console.error('[Oracle:network]', e)
+    return
+  }
+
+  hideLoader()
+
+  // ── ÉTAPE 2 : gestion des réponses non-OK ──
+  if (!res.ok) {
+    // 401 passerelle OU fonction : session expirée → tenter un refresh puis reconnexion
+    if (res.status === 401) {
+      const fresh = await tryRefresh()
+      if (fresh) {
+        // token rafraîchi : on relance une fois l'analyse
+        return runOracle(teamA, teamB, leagueLabel)
+      }
+      alert('Ta session a expiré. Reconnecte-toi pour lancer une analyse.')
+      window.location.href = 'login.html?next=analyse.html'
+      return
+    }
+    if (data.code === 'INSUFFICIENT_CREDITS' || data.code === 'QUOTA_EXCEEDED') {
+      scrollToGate()
+      return
+    }
+    if (data.code === 'TEAM_NOT_FOUND' || data.code === 'MISSING_TEAMS') {
+      alert(`Équipe introuvable. Vérifie l'orthographe.\nEx : "Real Madrid vs PSG", "France vs Brésil"`)
+      return
+    }
+    if (data.code === 'AI_UNAVAILABLE') {
+      alert('L\'Oracle est très sollicité en ce moment. Réessaie dans quelques instants.')
+      return
+    }
+    alert(data.detail || data.error || 'Erreur lors de l\'analyse. Réessaie.')
+    return
+  }
+
+  // ── ÉTAPE 3 : affichage (hors du try réseau : une erreur d'affichage
+  // ne doit JAMAIS être confondue avec une erreur de connexion) ──
+  try {
+    renderResult(data, leagueLabel)
+  } catch (e) {
+    console.error('[Oracle:render]', e)
+    alert('L\'analyse a été reçue mais un souci d\'affichage est survenu. Réessaie.')
   }
 }
 
@@ -1424,7 +1454,7 @@ function renderResult(d, leagueLabel) {
   setText('team-b', nameB)
 
   // Sauvegarder dans l'historique local + DB
-  const matchStr   = (d.team_a || '') + ' vs ' + (d.team_b || '')
+  const matchStr   = nameA + ' vs ' + nameB
   const confNum    = d.confidence || d.win_probability || null
   const compStr    = d.competition || leagueLabel || ''
 
@@ -1445,8 +1475,8 @@ function renderResult(d, leagueLabel) {
           'Prefer': 'return=minimal'
         },
         body: JSON.stringify({
-          team_a_name: d.team_a || '',
-          team_b_name: d.team_b || '',
+          team_a_name: nameA,
+          team_b_name: nameB,
           league_name: compStr,
           confidence:  confNum,
           oracle_result: d
@@ -2056,8 +2086,8 @@ function renderSentiment(d) {
 
   if (!section || !s) return
 
-  const nameA = d.team_a || d.team_a_name || 'Équipe A'
-  const nameB = d.team_b || d.team_b_name || 'Équipe B'
+  const nameA = d.team_a_name || d.team_a || 'Équipe A'
+  const nameB = d.team_b_name || d.team_b || 'Équipe B'
 
   const p1 = s.public_pct_1 || 0
   const px = s.public_pct_x || 0
