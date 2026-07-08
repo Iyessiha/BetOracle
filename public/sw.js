@@ -1,4 +1,4 @@
-const CACHE = 'betoracle-v2'
+const CACHE = 'betoracle-v3'
 const SHELL = [
   '/', '/dashboard', '/analyse', '/coupons', '/login', '/signup',
   '/manifest.json',
@@ -25,7 +25,13 @@ self.addEventListener('activate', e => {
 // Fetch : network-first pour API/auth, cache-first pour assets
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url)
-  
+
+  // Ne traiter QUE le http/https + GET. Ignore chrome-extension://, POST, etc.
+  // (évite : "put on Cache: Request scheme 'chrome-extension' is unsupported")
+  if (e.request.method !== 'GET') return
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return
+  if (url.origin !== self.location.origin) return
+
   // Toujours réseau pour API Supabase, paiements, Resend
   // Ne jamais mettre en cache les pages d'analyse, coupons, dashboard
   if (url.pathname === '/analyse' || url.pathname === '/coupons' || url.pathname === '/dashboard') {
