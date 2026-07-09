@@ -1483,6 +1483,7 @@ function renderResult(d, leagueLabel) {
           'Prefer': 'return=minimal'
         },
         body: JSON.stringify({
+          user_id: localStorage.getItem('sb_user_id') || undefined,
           team_a_name: nameA,
           team_b_name: nameB,
           league_name: compStr,
@@ -1573,7 +1574,13 @@ function renderFullAnalysis(d) {
   if (!container) {
     container = document.createElement('div')
     container.id = 'full-analysis'
-    // ── Score probable + pick en hero ──
+    container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
+    document.querySelector('.lock-wall')?.after(container)
+  }
+  const ai = d.ai_analysis || {}
+  const esc = s => (s == null ? '' : String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;'))
+
+  // ── Score probable + pick en hero ──
   const scoreHtml = d.score_est ? `
     <div class="score-hero">
       <div class="sh-team">${d.team_a_name||d.team_a||'Équipe A'}</div>
@@ -1592,12 +1599,6 @@ function renderFullAnalysis(d) {
       </div>
       <div class="pick-hero-conf">${d.confidence||'—'}%</div>
     </div>` : ''
-
-  container.style.cssText = 'margin-top:20px;display:flex;flex-direction:column;gap:16px'
-    document.querySelector('.lock-wall')?.after(container)
-  }
-  const ai = d.ai_analysis || {}
-  const esc = s => (s == null ? '' : String(s).replace(/</g, '&lt;').replace(/>/g, '&gt;'))
 
   // Prédictions principales (champs réellement renvoyés par la v17)
   const preds = [
