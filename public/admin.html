@@ -497,6 +497,10 @@ button { cursor: pointer; font-family: var(--fb); }
 
     <div class="sb-section">
       <div class="sb-label">Actions</div>
+      <div class="sb-item" onclick="nav('parrainages')">
+        <i class="ti ti-trophy" style="color:#F5C842"></i><span>Jackpot & Parrainage</span>
+        <span class="sb-badge" id="badge-jackpot" style="background:rgba(245,200,66,.15);color:#F5C842">500K</span>
+      </div>
       <div class="sb-item" onclick="nav('actions')">
         <i class="ti ti-bolt"></i><span>Actions rapides</span>
       </div>
@@ -865,8 +869,51 @@ button { cursor: pointer; font-family: var(--fb); }
 
       <!-- ── PAGE : PARRAINAGES ── -->
       <div class="page" id="page-parrainages">
-        <div class="ph"><h1>Parrainages</h1><p>Filleuls, récompenses, conversions</p></div>
+        <div class="ph"><h1>Parrainages & Jackpot</h1><p>Classement mensuel, cagnotte, paiements</p></div>
+
+        <!-- KPIs jackpot -->
+        <div class="grid3" style="margin-bottom:16px">
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-trophy" style="color:#F5C842"></i> Jackpot du mois</div></div>
+            <div class="panel-body" id="jackpot-kpi"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-medal"></i> Leader actuel</div></div>
+            <div class="panel-body" id="jackpot-leader"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+          <div class="panel">
+            <div class="panel-head"><div class="panel-title"><i class="ti ti-users"></i> Total filleuls</div></div>
+            <div class="panel-body" id="jackpot-total"><div class="loader"><div class="loader-ring"></div></div></div>
+          </div>
+        </div>
+
+        <!-- Leaderboard complet -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-list-numbers"></i> Classement mensuel complet</div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select id="jackpot-month-sel" style="background:var(--s2);border:1px solid var(--b1);color:var(--text);border-radius:6px;padding:4px 10px;font-size:12px" onchange="loadJackpotAdmin()"></select>
+              <button class="btn-outline-sm" onclick="loadJackpotAdmin()">↻</button>
+            </div>
+          </div>
+          <div class="panel-body" id="jackpot-lb-table"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+
+        <!-- Paiements jackpot -->
+        <div class="panel" style="margin-bottom:16px">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-cash" style="color:#22c55e"></i> Paiements jackpot</div>
+            <button class="btn-outline-sm" onclick="loadJackpotHistory()">↻</button>
+          </div>
+          <div class="panel-body" id="jackpot-history"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+
+        <!-- Tous les filleuls -->
         <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-git-branch"></i> Tous les parrainages</div>
+            <button class="btn-outline-sm" onclick="loadReferralsTable()">↻</button>
+          </div>
           <div class="panel-body" id="referrals-table"><div class="loader"><div class="loader-ring"></div></div></div>
         </div>
       </div>
@@ -1163,7 +1210,7 @@ async function loadPage(page) {
     analyses:      loadAnalysesTable,
     activite:      () => Promise.all([loadSessionsTable(), loadStreaksTable(), loadEventsTable()]),
     marketing:     () => Promise.all([loadEmailQueue(), loadTgMembers(), loadMktgTable()]),
-    parrainages:   loadReferralsTable,
+    parrainages:   () => { initMonthSelector(); loadJackpotAdmin(); loadJackpotHistory(); loadReferralsTable() },
     bankroll:      () => Promise.all([loadBetsStats(), loadBetsTable()]),
     config:        () => Promise.all([loadAppConfig(), loadRateLimits()]),
     notifications: loadNotifsTable,
@@ -2018,6 +2065,195 @@ async function loadReferralsTable() {
       </tr>`).join('')}
     </tbody></table>`
   } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+// ── JACKPOT ADMIN ─────────────────────────────────
+function initMonthSelector() {
+  const sel = document.getElementById('jackpot-month-sel')
+  if (!sel) return
+  const now = new Date()
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const key = d.toISOString().slice(0, 7)
+    const label = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+    const opt = document.createElement('option')
+    opt.value = key; opt.textContent = label
+    if (i === 0) opt.selected = true
+    sel.appendChild(opt)
+  }
+}
+
+async function loadJackpotAdmin() {
+  const sel = document.getElementById('jackpot-month-sel')
+  const month = sel?.value || new Date().toISOString().slice(0, 7)
+
+  // KPIs
+  const [jackpots, lb, allRefs] = await Promise.all([
+    sb(`jackpot_monthly?month_key=eq.${month}&select=*`).catch(() => []),
+    sb(`referral_leaderboard?month_key=eq.${month}&select=*,profiles!user_id(full_name,email,phone)&order=rank.asc&limit=20`).catch(() => []),
+    sb('referrals?select=id,status').catch(() => [])
+  ])
+
+  const jk = jackpots[0] || {}
+  const leader = lb[0]
+
+  // KPI : Jackpot
+  const kpiEl = document.getElementById('jackpot-kpi')
+  if (kpiEl) {
+    const statusColor = jk.status === 'paid' ? 'var(--gb)' : jk.status === 'closed' ? 'var(--gold)' : '#60a5fa'
+    kpiEl.innerHTML = `
+      <div class="stat-row"><span class="lbl">Montant</span><span class="val" style="color:#F5C842;font-weight:800">${(jk.prize_amount||500000).toLocaleString('fr-FR')} FCFA</span></div>
+      <div class="stat-row"><span class="lbl">Type</span><span class="val">${jk.prize_type === 'cash' ? '💸 Cash Mobile Money' : '🎯 Crédits'}</span></div>
+      <div class="stat-row"><span class="lbl">Statut</span><span class="val" style="color:${statusColor};font-weight:700">${jk.status || 'open'}</span></div>
+      ${jk.paid_at ? `<div class="stat-row"><span class="lbl">Payé le</span><span class="val">${new Date(jk.paid_at).toLocaleDateString('fr-FR')}</span></div>` : ''}
+      ${jk.payment_ref ? `<div class="stat-row"><span class="lbl">Référence</span><span class="val" style="font-size:11px">${jk.payment_ref}</span></div>` : ''}
+    `
+  }
+
+  // KPI : Leader
+  const leaderEl = document.getElementById('jackpot-leader')
+  if (leaderEl) {
+    if (!leader) {
+      leaderEl.innerHTML = '<div class="empty"><p>Aucun parrain ce mois</p></div>'
+    } else {
+      const p = leader.profiles || {}
+      const name = p.full_name || p.email?.split('@')[0] || 'Anonyme'
+      const phone = p.phone || '—'
+      const alreadyPaid = jk.status === 'paid'
+      leaderEl.innerHTML = `
+        <div class="stat-row"><span class="lbl">Nom</span><span class="val" style="font-weight:800">${name}</span></div>
+        <div class="stat-row"><span class="lbl">Filleuls</span><span class="val" style="color:var(--gb)">${leader.ref_count}</span></div>
+        <div class="stat-row"><span class="lbl">Abonnés actifs</span><span class="val" style="color:#F5C842">${leader.active_count}</span></div>
+        <div class="stat-row"><span class="lbl">Mobile Money</span><span class="val" style="color:var(--gb)">${phone}</span></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap">
+          ${!alreadyPaid ? `
+            <button onclick="markJackpotPaid('${jk.id||''}','${leader.user_id}','${month}')"
+              style="background:#22c55e;color:#000;border:none;border-radius:7px;padding:8px 16px;font-weight:800;font-size:12px;cursor:pointer;display:flex;align-items:center;gap:5px">
+              <i class="ti ti-check"></i> Marquer payé
+            </button>
+          ` : '<span style="color:var(--gb);font-weight:700;font-size:12px">✅ Jackpot payé</span>'}
+          <button onclick="copyWinnerInfo('${name}','${phone}','${leader.ref_count}')"
+            style="background:var(--s2);color:var(--text);border:1px solid var(--b1);border-radius:7px;padding:8px 12px;font-size:12px;cursor:pointer">
+            <i class="ti ti-copy"></i> Copier infos
+          </button>
+        </div>
+      `
+    }
+  }
+
+  // KPI : Total
+  const totalEl = document.getElementById('jackpot-total')
+  if (totalEl) {
+    totalEl.innerHTML = `
+      <div class="stat-row"><span class="lbl">Parrainages total</span><span class="val">${allRefs.length}</span></div>
+      <div class="stat-row"><span class="lbl">Convertis (abonnés)</span><span class="val" style="color:var(--gb)">${allRefs.filter(r=>r.status==='subscribed'||r.status==='active').length}</span></div>
+      <div class="stat-row"><span class="lbl">Inscrits (free)</span><span class="val" style="color:var(--gold)">${allRefs.filter(r=>r.status==='registered'||r.status==='pending').length}</span></div>
+      <div class="stat-row"><span class="lbl">Participants ce mois</span><span class="val">${lb.length}</span></div>
+    `
+  }
+
+  // Leaderboard complet
+  const lbEl = document.getElementById('jackpot-lb-table')
+  if (lbEl) {
+    if (!lb.length) {
+      lbEl.innerHTML = '<div class="empty"><i class="ti ti-users"></i><p>Aucun participant ce mois</p></div>'
+    } else {
+      const PRIZES = { 1:'🏆 500 000 FCFA CASH', 2:'💎 50 000 FCFA crédits', 3:'🥇 10 000 FCFA crédits' }
+      lbEl.innerHTML = `<table class="tbl"><thead><tr>
+        <th>#</th><th>Nom</th><th>Email</th><th>Filleuls</th><th>Abonnés</th><th>Récompense</th><th>Mobile Money</th><th>Action</th>
+      </tr></thead><tbody>
+      ${lb.map((r, i) => {
+        const p = r.profiles || {}
+        const name = p.full_name || p.email?.split('@')[0] || 'Anonyme'
+        const prize = PRIZES[r.rank] || (r.rank <= 10 ? '⭐ Top 10' : '')
+        const rankStyle = r.rank === 1 ? 'color:#F5C842;font-weight:800' : r.rank <= 3 ? 'color:var(--gb)' : 'color:var(--muted)'
+        return `<tr>
+          <td style="${rankStyle}">${r.rank}</td>
+          <td style="font-weight:600">${name}</td>
+          <td style="font-size:11px;color:var(--muted)">${p.email || '—'}</td>
+          <td style="color:var(--gb);font-weight:700">${r.ref_count}</td>
+          <td style="color:#F5C842">${r.active_count}</td>
+          <td style="font-size:11px;font-weight:700">${prize}</td>
+          <td style="font-size:11px;color:var(--gb)">${p.phone || '—'}</td>
+          <td><button onclick="copyWinnerInfo('${name}','${p.phone||'—'}','${r.ref_count}')"
+            style="background:var(--s2);border:1px solid var(--b1);color:var(--text);border-radius:5px;padding:4px 8px;font-size:10px;cursor:pointer">
+            Copier
+          </button></td>
+        </tr>`
+      }).join('')}
+      </tbody></table>`
+    }
+  }
+}
+
+async function loadJackpotHistory() {
+  const el = document.getElementById('jackpot-history')
+  if (!el) return
+  try {
+    const data = await sb('jackpot_monthly?select=*&order=month_key.desc&limit=12')
+    if (!data.length) { el.innerHTML = '<div class="empty"><p>Aucun jackpot enregistré</p></div>'; return }
+    el.innerHTML = `<table class="tbl"><thead><tr>
+      <th>Mois</th><th>Montant</th><th>Type</th><th>Statut</th><th>Gagnant ID</th><th>Payé le</th><th>Référence</th>
+    </tr></thead><tbody>
+    ${data.map(j => `<tr>
+      <td style="font-weight:700">${j.month_key}</td>
+      <td style="color:#F5C842;font-weight:700">${(j.prize_amount||0).toLocaleString('fr-FR')} FCFA</td>
+      <td>${j.prize_type === 'cash' ? '💸 Cash' : '🎯 Crédits'}</td>
+      <td><span style="color:${j.status==='paid'?'var(--gb)':j.status==='closed'?'var(--gold)':'#60a5fa'};font-weight:700">${j.status||'—'}</span></td>
+      <td style="font-size:10px;color:var(--muted)">${j.winner_id ? j.winner_id.slice(0,12)+'…' : '—'}</td>
+      <td style="font-size:11px">${j.paid_at ? new Date(j.paid_at).toLocaleDateString('fr-FR') : '—'}</td>
+      <td style="font-size:11px;color:var(--gb)">${j.payment_ref || '—'}</td>
+    </tr>`).join('')}
+    </tbody></table>`
+  } catch(e) { el.innerHTML = `<div class="empty"><p>${e.message}</p></div>` }
+}
+
+async function markJackpotPaid(jackpotId, winnerId, month) {
+  if (!confirm(`Confirmer le paiement de 500 000 FCFA pour le jackpot ${month} ?\nCette action est irréversible.`)) return
+  const ref = prompt('Référence du virement (ex: Orange Money #12345) :')
+  if (!ref) return
+  try {
+    // Créer l'entrée jackpot si elle n'existe pas encore
+    if (!jackpotId) {
+      const ins = await fetch(`${SUPA_URL}/rest/v1/jackpot_monthly`, {
+        method: 'POST',
+        headers: { ...getH(), 'Prefer': 'return=representation' },
+        body: JSON.stringify({ month_key: month, prize_amount: 500000, prize_type: 'cash', status: 'open' })
+      })
+      const rows = await ins.json()
+      jackpotId = rows[0]?.id
+    }
+    if (!jackpotId) { alert('Erreur : impossible de créer l\'entrée jackpot'); return }
+
+    await fetch(`${SUPA_URL}/rest/v1/jackpot_monthly?id=eq.${jackpotId}`, {
+      method: 'PATCH',
+      headers: { ...getH(), 'Prefer': 'return=minimal' },
+      body: JSON.stringify({
+        status: 'paid',
+        winner_id: winnerId,
+        winner_ref_count: 0,
+        paid_at: new Date().toISOString(),
+        payment_ref: ref
+      })
+    })
+    showToast('✅ Jackpot marqué comme payé !')
+    await loadJackpotAdmin()
+    await loadJackpotHistory()
+  } catch(e) { alert('Erreur : ' + e.message) }
+}
+
+function copyWinnerInfo(name, phone, refCount) {
+  const month = document.getElementById('jackpot-month-sel')?.value || ''
+  const txt = `🏆 Gagnant Jackpot Betoracl Pro — ${month}\nNom : ${name}\nMobile Money : ${phone}\nFilleuls : ${refCount}\nMontant : 500 000 FCFA`
+  navigator.clipboard?.writeText(txt).then(() => showToast('✅ Infos copiées !'))
+}
+
+function showToast(msg) {
+  let t = document.getElementById('admin-toast')
+  if (!t) { t = document.createElement('div'); t.id = 'admin-toast'; t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#22c55e;color:#000;font-weight:700;font-size:13px;padding:10px 22px;border-radius:30px;z-index:9999;transition:transform .3s;pointer-events:none'; document.body.appendChild(t) }
+  t.textContent = msg
+  t.style.transform = 'translateX(-50%) translateY(0)'
+  setTimeout(() => { t.style.transform = 'translateX(-50%) translateY(80px)' }, 2500)
 }
 
 // ── BANKROLL : Stats ───────────────────────────────
