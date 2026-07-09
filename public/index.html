@@ -59,6 +59,10 @@ nav.scrolled{background:rgba(8,12,8,.94);backdrop-filter:blur(18px);border-color
 .hero-circle::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(200px,28vw);height:min(200px,28vw);border:1.5px solid rgba(34,197,94,.15);border-radius:50%}
 .glow-l{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(34,197,94,.07) 0%,transparent 70%);top:10%;left:-8%;pointer-events:none}
 .glow-r{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(245,200,66,.05) 0%,transparent 70%);top:20%;right:-5%;pointer-events:none}
+/* Hero above-fold : animation CSS pure (indépendante du JS) */
+@keyframes heroUp{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+.hero-anim{opacity:0;animation:heroUp .7s cubic-bezier(.22,1,.36,1) forwards}
+#hero .hero-pill, #hero h1, #hero .hero-sub, #hero .hero-actions, #hero .hero-stats{position:relative;z-index:2}
 .hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.22);color:var(--green);padding:6px 18px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px}
 .live-dot{width:7px;height:7px;border-radius:50%;background:var(--green-n);animation:pulse 1.5s infinite}
 @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(22,255,110,.5)}70%{opacity:.8;box-shadow:0 0 0 6px rgba(22,255,110,0)}}
@@ -322,14 +326,14 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:56px 0 28px}
   <div class="hero-photo"></div>
   <div class="hero-circle"></div>
   <div class="glow-l"></div><div class="glow-r"></div>
-  <div class="hero-pill reveal"><span class="live-dot"></span>Oracle IA · Données temps réel</div>
-  <h1 class="reveal rd1"><span class="l1">PARIS</span><br><span class="l2">SPORT</span><br><span class="l3">INTELLIGENTS</span></h1>
-  <p class="hero-sub reveal rd2">Coupons générés par IA chaque matin. <strong>Oracle prédictif.</strong> Value Bet. Kelly Calculator. Tout pour parier avec méthode.</p>
-  <div class="hero-actions reveal rd3">
+  <div class="hero-pill hero-anim" style="animation-delay:0s"><span class="live-dot"></span>Oracle IA · Données temps réel</div>
+  <h1 class="hero-anim" style="animation-delay:.1s"><span class="l1">PARIS</span><br><span class="l2">SPORT</span><br><span class="l3">INTELLIGENTS</span></h1>
+  <p class="hero-sub hero-anim" style="animation-delay:.2s">Coupons générés par IA chaque matin. <strong>Oracle prédictif.</strong> Value Bet. Kelly Calculator. Tout pour parier avec méthode.</p>
+  <div class="hero-actions hero-anim" style="animation-delay:.3s">
     <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-rocket"></i> Commencer gratuitement</a>
     <a href="#coupon" class="btn btn-outline btn-lg"><i class="ti ti-receipt"></i> Coupon du jour</a>
   </div>
-  <div class="hero-stats reveal rd4">
+  <div class="hero-stats hero-anim" style="animation-delay:.4s">
     <div class="stat-c"><div class="stat-v" id="stat-users">—</div><div class="stat-l">Utilisateurs</div></div>
     <div class="stat-c"><div class="stat-v">55<span>+</span></div><div class="stat-l">Championnats</div></div>
     <div class="stat-c"><div class="stat-v" id="stat-wr">—<span>%</span></div><div class="stat-l">Win Rate</div></div>
