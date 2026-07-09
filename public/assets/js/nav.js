@@ -93,7 +93,7 @@
     <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:#3a5a3a;padding:0 8px 5px">Navigation</div>
     ${drLink('index.html','ti-home','Accueil','home')}
     ${drLink('analyse.html','ti-brain','Analyser un match','analyse')}
-    ${drLink('analyse.html#coupon','ti-ticket','Coupon du jour')}
+    ${drLink('coupons.html','ti-ticket','Coupons du jour')}
     <a href="index.html#plans" onclick="window.__closeDr()" style="display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;text-decoration:none;color:#9ab89a;font-size:14px;font-weight:600;margin-bottom:2px">
       <i class="ti ti-crown" style="font-size:17px;width:20px;text-align:center"></i>
       <span style="flex:1">Plans & tarifs</span>
@@ -124,7 +124,14 @@
       document.body.style.overflow = ''
     }
     window.__navLogout = () => {
-      ['sb_access_token','sb_refresh_token','sb_user_id','bp_plan'].forEach(k=>localStorage.removeItem(k))
+      const token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+      if (token) {
+        fetch(`${SUPA_URL}/auth/v1/logout`, {
+          method: 'POST',
+          headers: { 'apikey': SUPA_ANON, 'Authorization': `Bearer ${token}` }
+        }).catch(() => {})
+      }
+      ['sb_access_token','sb_refresh_token','sb_user_id','bp_plan','bp_prenom'].forEach(k=>localStorage.removeItem(k))
       sessionStorage.clear()
       window.location.replace('index.html')
     }

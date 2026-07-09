@@ -1747,7 +1747,9 @@ window.copyTgLink = function() {
 }
 
 // ── LOGOUT ──
-window.doLogout = function() {
+window.doLogout = async function() {
+  const _t = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (_t) fetch(`${S}/auth/v1/logout`, { method:'POST', headers:{ apikey:AK, Authorization:`Bearer ${_t}` } }).catch(()=>{})
   ;['sb_access_token','sb_refresh_token','sb_user_id','bp_plan','bp_prenom'].forEach(k => localStorage.removeItem(k))
   sessionStorage.clear()
   window.location.replace('/')

@@ -271,10 +271,10 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
         Bienvenue ! Ton compte gratuit est actif. Explore l'Oracle et passe à un plan payant quand tu veux.
       </div>
       <div class="success-perks">
-        <div class="sp-item"><i class="ti ti-brain"></i>Oracle IA — toutes les analyses débloquées</div>
-        <div class="sp-item"><i class="ti ti-ticket"></i>Coupon du jour complet avec cotes</div>
-        <div class="sp-item"><i class="ti ti-trending-up"></i>Value Bets, Kelly, Stats H2H</div>
-        <div class="sp-item"><i class="ti ti-bell"></i>Alertes matchs et pronostics push</div>
+        <div class="sp-item"><i class="ti ti-brain"></i>Oracle IA — 1 analyse gratuite par jour</div>
+        <div class="sp-item"><i class="ti ti-ticket"></i>Coupon Sûr du jour (gratuit)</div>
+        <div class="sp-item"><i class="ti ti-chart-bar"></i>Statistiques 1X2 de base</div>
+        <div class="sp-item"><i class="ti ti-crown"></i>Débloquer tout avec un plan Starter dès 750F</div>
       </div>
       <a href="/dashboard" class="btn-go" id="btn-go">
         <i class="ti ti-arrow-right"></i> Accéder à mon compte
@@ -405,11 +405,11 @@ async function doSignup(){
       localStorage.setItem('sb_access_token',d.access_token)
       localStorage.setItem('sb_refresh_token',d.refresh_token||'')
       localStorage.setItem('sb_user_id',d.user_id)
-      localStorage.setItem('bp_plan',d.effective_plan||'pro')
+      localStorage.setItem('bp_plan',d.effective_plan||'free')
       sessionStorage.setItem('bp_token',d.access_token)
       const firstName=prenom||email.split('@')[0]
       sessionStorage.setItem('bp_prenom',firstName)
-      sessionStorage.setItem('bp_plan',d.effective_plan||'pro')
+      sessionStorage.setItem('bp_plan',d.effective_plan||'free')
     }
     
     // Afficher success

@@ -355,10 +355,10 @@ async function doLogin(){
     localStorage.setItem('sb_access_token', d.access_token)
     localStorage.setItem('sb_refresh_token', d.refresh_token||'')
     localStorage.setItem('sb_user_id', d.user_id||'')
-    localStorage.setItem('bp_plan', d.effective_plan||'pro')
+    localStorage.setItem('bp_plan', d.effective_plan||'free')
     sessionStorage.setItem('bp_token',  d.access_token)
     sessionStorage.setItem('bp_prenom', d.first_name||email.split('@')[0])
-    sessionStorage.setItem('bp_plan',   d.effective_plan||'pro')
+    sessionStorage.setItem('bp_plan',   d.effective_plan||'free')
     showMsg(`Bienvenue ${d.first_name||email.split('@')[0]} ! 🏆`, true)
     setTimeout(()=>{
       // Admin → /admin, sinon dashboard
