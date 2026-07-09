@@ -903,10 +903,9 @@ a{text-decoration:none;color:inherit}
   </div>
   <div class="quick-matches">
     <div id="quick-matches-list">
-      <div class="qm-pill" onclick="setMatch('Portugal vs Maroc','CdM 2026','20:00','pt')">🇵🇹 Portugal vs Maroc <span class="qm-ia">81% IA</span></div>
-      <div class="qm-pill" onclick="setMatch('Brésil vs Argentine','CdM 2026','22:00','br')">🇧🇷 Brésil vs Argentine <span class="qm-ia">76% IA</span></div>
-      <div class="qm-pill" onclick="setMatch('France vs Portugal','CdM 2026','20:00','fr')">🇫🇷 France vs Portugal <span class="qm-ia">72% IA</span></div>
-      <div class="qm-pill" onclick="setMatch('Nigeria vs Sénégal','CdM 2026','18:00','ng')">🇳🇬 Nigeria vs Sénégal <span class="qm-ia">64% IA</span></div>
+      <div style="font-size:12px;color:var(--lo);padding:6px 2px;display:flex;align-items:center;gap:6px">
+        <i class="ti ti-loader-2" style="animation:spin 1s linear infinite;display:inline-block"></i> Chargement des matchs du jour…
+      </div>
     </div>
   </div>
 </div>
@@ -1753,29 +1752,45 @@ window.addEventListener('DOMContentLoaded', () => {
 
   async function loadSuggestions() {
     try {
-      // Récupérer les coupons du jour
-      const res = await fetch(`${SUPA}/rest/v1/rpc/get_daily_coupons`, {
-        method: 'POST',
-        headers: { 'apikey': AK, 'Content-Type': 'application/json' },
-        body: JSON.stringify({})
+      // Source 1 : public-coupon (expose les sélections du coupon safe)
+      const res = await fetch(`${SUPA}/functions/v1/public-coupon`, {
+        headers: { 'apikey': AK }
       })
-      if (!res.ok) return
+      let coupons = []
+      if (res.ok) {
+        const data = await res.json()
+        coupons = data.coupons || []
+      }
 
-      const coupons = await res.json()
+      // Si vide, essayer la RPC
+      if (!coupons.length || !coupons.some(c => c.selections && c.selections.length)) {
+        const res2 = await fetch(`${SUPA}/rest/v1/rpc/get_daily_coupons`, {
+          method: 'POST',
+          headers: { 'apikey': AK, 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        })
+        if (res2.ok) coupons = await res2.json()
+      }
+
       const suggestions = []
 
       for (const coupon of coupons) {
-        if (!Array.isArray(coupon.selections)) continue
-        for (const sel of coupon.selections.slice(0, 2)) {
-          const matchName = sel.match_name || sel.teams || sel.match
-          if (matchName && suggestions.length < 4) {
-            const ia = Math.round(55 + Math.random() * 30)
+        if (!Array.isArray(coupon.selections) || !coupon.selections.length) continue
+        for (const sel of coupon.selections) {
+          // Support des deux formats : team_a/team_b (v2) et match_name/teams (legacy)
+          let matchName = ''
+          if (sel.team_a && sel.team_b) {
+            matchName = sel.team_a + ' vs ' + sel.team_b
+          } else {
+            matchName = sel.match_name || sel.teams || sel.match || ''
+          }
+          if (matchName && suggestions.length < 5) {
             suggestions.push({
               match: matchName,
-              competition: sel.competition || sel.league || 'CdM 2026',
-              time: sel.time || '20:00',
+              competition: sel.league || sel.competition || coupon.title || '',
+              time: sel.match_time || sel.time || '',
               flag: guessFlag(matchName),
-              ia: ia
+              ia: coupon.confidence || Math.round(60 + Math.random() * 25)
             })
           }
         }
@@ -1784,11 +1799,13 @@ window.addEventListener('DOMContentLoaded', () => {
       if (suggestions.length >= 2) {
         const container = document.getElementById('quick-matches-list')
         if (!container) return
-        container.innerHTML = suggestions.map(s => `
-          <div class="qm-pill" onclick="setMatch('${s.match.replace(/'/g, "\'")}','${s.competition}','${s.time}','')">
+        container.innerHTML = suggestions.map(s => {
+          const safeMatch = s.match.replace(/\\/g, '').replace(/'/g, '\'')
+          const safeComp  = s.competition.replace(/'/g, '\'')
+          return `<div class="qm-pill" onclick="setMatch('${safeMatch}','${safeComp}','${s.time}','')">
             ${s.flag} ${s.match} <span class="qm-ia">${s.ia}% IA</span>
-          </div>
-        `).join('')
+          </div>`
+        }).join('')
       }
     } catch (_) {
       // Fallback : garder les chips par défaut
