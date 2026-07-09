@@ -558,6 +558,42 @@ function highlightCurrentPlan() {
       const proEl = $('plan-pro'); if(proEl && !proEl.querySelector('.pop-tag')) { const t=document.createElement('div');t.className='pop-tag';t.textContent='⭐ POPULAIRE';proEl.insertBefore(t,proEl.firstChild) }
     }
   }
+
+  // ── Griser les plans inférieurs si abonnement actif ──
+  if (userExpires && new Date(userExpires) > new Date() && userPlan !== 'free') {
+    const PLAN_ORDER = { free: 0, starter: 1, pro: 2, elite: 3 }
+    const currentOrder = PLAN_ORDER[userPlan] || 0
+    const expiresStr = new Date(userExpires).toLocaleDateString('fr-FR', { day:'numeric', month:'long', year:'numeric' })
+
+    ;['free','starter','pro','elite'].forEach(p => {
+      const order = PLAN_ORDER[p] || 0
+      if (order < currentOrder) {
+        const btn = $('cta-' + p)
+        const card = $('plan-' + p)
+        if (btn) {
+          btn.textContent = '🔒 Disponible le ' + expiresStr
+          btn.className = 'plan-cta'
+          btn.style.cssText = 'background:rgba(255,255,255,.04);color:var(--lo);border:1px solid var(--b1);cursor:not-allowed;font-size:11px'
+          btn.disabled = true
+          // Retirer l'onclick pour être sûr
+          btn.onclick = (e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            const alertEl = document.getElementById('downgrade-alert')
+            const msgEl   = document.getElementById('downgrade-msg')
+            if (alertEl && msgEl) {
+              msgEl.innerHTML = `<strong>Rétrogradation impossible.</strong> Ton abonnement <strong>${{starter:'Starter',pro:'Pro',elite:'Elite'}[userPlan]||userPlan}</strong> est actif jusqu'au <strong>${expiresStr}</strong>.`
+              alertEl.classList.add('show')
+              alertEl.scrollIntoView({ behavior: 'smooth', block: 'center' })
+              setTimeout(() => alertEl.classList.remove('show'), 6000)
+            }
+            return false
+          }
+        }
+        if (card) card.style.opacity = '0.45'
+      }
+    })
+  }
 }
 
 // ── TOGGLE SEMAINE / MOIS ──
