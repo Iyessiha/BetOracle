@@ -1228,6 +1228,24 @@ function teamLogoImg(logo, alt) {
     ? `<img src="${logo}" style="width:22px;height:22px;border-radius:50%;object-fit:contain;background:rgba(255,255,255,.06);padding:2px" alt="${alt}" loading="lazy" onerror="this.style.display='none'"> `
     : ''
 }
+// Calcule le label + classe CSS depuis la form string (ex: "VVNVD")
+function formLabel(formStr) {
+  if (!formStr) return { text: '— Inconnu', cls: 'fb-mid' }
+  const chars = formStr.toUpperCase().split('')
+  // Convertir D (défaite) et L en perte, N en nul, V/W en victoire
+  const wins   = chars.filter(c => c === 'V' || c === 'W').length
+  const losses = chars.filter(c => c === 'D' || c === 'L').length
+  const total  = chars.length || 1
+  const pts    = wins * 3 + (total - wins - losses) * 1  // points sur total*3 possibles
+  const maxPts = total * 3
+  const ratio  = pts / maxPts
+
+  if (ratio >= 0.78)  return { text: '🔥 Grande forme',    cls: 'fb-good' }
+  if (ratio >= 0.55)  return { text: '✅ Bonne forme',      cls: 'fb-good' }
+  if (ratio >= 0.35)  return { text: '⚡ Instable',         cls: 'fb-mid'  }
+  return               { text: '❌ Mauvaise forme',         cls: 'fb-bad'  }
+}
+
 function renderFormDots(formStr) {
   if (!formStr) return ''
   return formStr.split('').map(c => {
@@ -1536,7 +1554,11 @@ function renderResult(d, leagueLabel) {
     const dotsA = document.querySelectorAll('.form-rows .fr')[0]?.querySelector('.fr-dots')
     if (dotsA) dotsA.innerHTML = renderFormDots(d.form_a.form_str)
     const badgeA = document.querySelectorAll('.form-rows .fr')[0]?.querySelector('.fr-badge')
-    if (badgeA && d.form_a.form_label) badgeA.textContent = d.form_a.form_label
+    if (badgeA) {
+      const la = formLabel(d.form_a?.form_str || '')
+      badgeA.textContent = la.text
+      badgeA.className = 'fr-badge ' + la.cls
+    }
   }
   if (d.form_b) {
     const frB = document.getElementById('fr-team-b')
@@ -1544,7 +1566,11 @@ function renderResult(d, leagueLabel) {
     const dotsB = document.querySelectorAll('.form-rows .fr')[1]?.querySelector('.fr-dots')
     if (dotsB) dotsB.innerHTML = renderFormDots(d.form_b.form_str)
     const badgeB = document.querySelectorAll('.form-rows .fr')[1]?.querySelector('.fr-badge')
-    if (badgeB && d.form_b.form_label) badgeB.textContent = d.form_b.form_label
+    if (badgeB) {
+      const lb = formLabel(d.form_b?.form_str || '')
+      badgeB.textContent = lb.text
+      badgeB.className = 'fr-badge ' + lb.cls
+    }
   }
 
   // Confiance Oracle
