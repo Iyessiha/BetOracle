@@ -903,9 +903,7 @@ a{text-decoration:none;color:inherit}
   </div>
   <div class="quick-matches">
     <div id="quick-matches-list">
-      <div style="font-size:12px;color:var(--lo);padding:6px 2px;display:flex;align-items:center;gap:6px">
-        <i class="ti ti-loader-2" style="animation:spin 1s linear infinite;display:inline-block"></i> Chargement des matchs du jour…
-      </div>
+      <!-- Rempli par JS statique selon le jour -->
     </div>
   </div>
 </div>
@@ -1722,100 +1720,57 @@ window.addEventListener('DOMContentLoaded', () => {
       if (btn) btn.style.display = 'none'
     })
   
-// Charger les suggestions depuis les coupons du jour
 ;(function() {
-  const SUPA = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
-  const AK   = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+  // Suggestions statiques — rotatifs par jour de semaine, 0 token, 0 API
+  const POOL = [
+    // Ligue des Champions / Coupes
+    { m:'Real Madrid vs PSG',          c:'Ligue des Champions', f:'🏆', ia:78 },
+    { m:'Bayern Munich vs Arsenal',    c:'Ligue des Champions', f:'🏆', ia:71 },
+    { m:'Manchester City vs Barcelona',c:'Ligue des Champions', f:'🏆', ia:74 },
+    { m:'Inter vs Atletico Madrid',    c:'Ligue des Champions', f:'🏆', ia:68 },
+    // Premier League
+    { m:'Arsenal vs Chelsea',          c:'Premier League', f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ia:73 },
+    { m:'Liverpool vs Manchester City',c:'Premier League', f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ia:76 },
+    { m:'Manchester United vs Tottenham',c:'Premier League', f:'🏴󠁧󠁢󠁥󠁮󠁧󠁿', ia:65 },
+    // Ligue 1
+    { m:'PSG vs Marseille',            c:'Ligue 1', f:'🇫🇷', ia:82 },
+    { m:'Lyon vs Monaco',              c:'Ligue 1', f:'🇫🇷', ia:67 },
+    // La Liga
+    { m:'Real Madrid vs Barcelona',    c:'La Liga', f:'🇪🇸', ia:85 },
+    { m:'Atletico Madrid vs Sevilla',  c:'La Liga', f:'🇪🇸', ia:69 },
+    // Serie A
+    { m:'Juventus vs Inter',           c:'Serie A', f:'🇮🇹', ia:72 },
+    { m:'AC Milan vs Napoli',          c:'Serie A', f:'🇮🇹', ia:70 },
+    // Coupe du Monde 2026
+    { m:'France vs Maroc',             c:'Coupe du Monde 2026', f:'🌍', ia:79 },
+    { m:'Brésil vs Argentine',         c:'Coupe du Monde 2026', f:'🌍', ia:77 },
+    { m:'Portugal vs Espagne',         c:'Coupe du Monde 2026', f:'🌍', ia:81 },
+    { m:'Nigeria vs Sénégal',          c:'Coupe du Monde 2026', f:'🌍', ia:64 },
+    { m:'Maroc vs Côte d\'Ivoire',    c:'Coupe du Monde 2026', f:'🌍', ia:71 },
+    { m:'Cameroun vs Ghana',           c:'Coupe du Monde 2026', f:'🌍', ia:66 },
+    { m:'USA vs Mexique',              c:'Coupe du Monde 2026', f:'🌍', ia:73 },
+    // Bundesliga
+    { m:'Bayern Munich vs Dortmund',   c:'Bundesliga', f:'🇩🇪', ia:80 },
+  ]
 
-  const FLAGS = {
-    fr: '🇫🇷', en: '🏴󠁧󠁢󠁥󠁮󠁧󠁿', es: '🇪🇸', de: '🇩🇪', it: '🇮🇹',
-    pt: '🇵🇹', br: '🇧🇷', ci: '🇨🇮', ng: '🇳🇬', gh: '🇬🇭',
-    sn: '🇸🇳', ma: '🇲🇦', dz: '🇩🇿', cm: '🇨🇲', ml: '🇲🇱',
-    default: '⚽'
-  }
-
-  function guessFlag(match) {
-    const m = match.toLowerCase()
-    if (m.includes('psg') || m.includes('france') || m.includes('ligue')) return '🇫🇷'
-    if (m.includes('arsenal') || m.includes('chelsea') || m.includes('premier')) return '🏴󠁧󠁢󠁥󠁮󠁧󠁿'
-    if (m.includes('real') || m.includes('barça') || m.includes('liga')) return '🇪🇸'
-    if (m.includes('inter') || m.includes('juventus') || m.includes('serie')) return '🇮🇹'
-    if (m.includes('portugal') || m.includes('porto') || m.includes('benfica')) return '🇵🇹'
-    if (m.includes('brésil') || m.includes('brasil')) return '🇧🇷'
-    if (m.includes('asec') || m.includes('africa') || m.includes("côte d'ivoire")) return '🇨🇮'
-    if (m.includes('nigeria')) return '🇳🇬'
-    if (m.includes('sénégal')) return '🇸🇳'
-    if (m.includes('ghana')) return '🇬🇭'
-    if (m.includes('maroc')) return '🇲🇦'
-    return '⚽'
-  }
-
-  async function loadSuggestions() {
-    try {
-      // Source 1 : public-coupon (expose les sélections du coupon safe)
-      const res = await fetch(`${SUPA}/functions/v1/public-coupon`, {
-        headers: { 'apikey': AK }
-      })
-      let coupons = []
-      if (res.ok) {
-        const data = await res.json()
-        coupons = data.coupons || []
-      }
-
-      // Si vide, essayer la RPC
-      if (!coupons.length || !coupons.some(c => c.selections && c.selections.length)) {
-        const res2 = await fetch(`${SUPA}/rest/v1/rpc/get_daily_coupons`, {
-          method: 'POST',
-          headers: { 'apikey': AK, 'Content-Type': 'application/json' },
-          body: JSON.stringify({})
-        })
-        if (res2.ok) coupons = await res2.json()
-      }
-
-      const suggestions = []
-
-      for (const coupon of coupons) {
-        if (!Array.isArray(coupon.selections) || !coupon.selections.length) continue
-        for (const sel of coupon.selections) {
-          // Support des deux formats : team_a/team_b (v2) et match_name/teams (legacy)
-          let matchName = ''
-          if (sel.team_a && sel.team_b) {
-            matchName = sel.team_a + ' vs ' + sel.team_b
-          } else {
-            matchName = sel.match_name || sel.teams || sel.match || ''
-          }
-          if (matchName && suggestions.length < 5) {
-            suggestions.push({
-              match: matchName,
-              competition: sel.league || sel.competition || coupon.title || '',
-              time: sel.match_time || sel.time || '',
-              flag: guessFlag(matchName),
-              ia: coupon.confidence || Math.round(60 + Math.random() * 25)
-            })
-          }
-        }
-      }
-
-      if (suggestions.length >= 2) {
-        const container = document.getElementById('quick-matches-list')
-        if (!container) return
-        container.innerHTML = suggestions.map(s => {
-          const safeMatch = s.match.replace(/\\/g, '').replace(/'/g, '\'')
-          const safeComp  = s.competition.replace(/'/g, '\'')
-          return `<div class="qm-pill" onclick="setMatch('${safeMatch}','${safeComp}','${s.time}','')">
-            ${s.flag} ${s.match} <span class="qm-ia">${s.ia}% IA</span>
-          </div>`
-        }).join('')
-      }
-    } catch (_) {
-      // Fallback : garder les chips par défaut
+  function loadSuggestions() {
+    const container = document.getElementById('quick-matches-list')
+    if (!container) return
+    // Rotation par jour de la semaine (7 rotations) + heure pour varier
+    const seed = new Date().getDay() * 3 + Math.floor(new Date().getHours() / 8)
+    const start = (seed * 4) % POOL.length
+    const picks = []
+    for (let i = 0; i < 4; i++) {
+      picks.push(POOL[(start + i) % POOL.length])
     }
+    container.innerHTML = picks.map(s =>
+      `<div class="qm-pill" onclick="setMatch('${s.m.replace(/'/g,"\\'")}','${s.c}','','')">
+        ${s.f} ${s.m} <span class="qm-ia">${s.ia}% IA</span>
+      </div>`
+    ).join('')
   }
 
-  // Charger après l'auth
-  window.addEventListener('DOMContentLoaded', () => {
-    setTimeout(loadSuggestions, 1500)
-  })
+  window.addEventListener('DOMContentLoaded', loadSuggestions)
 })()
 
 
