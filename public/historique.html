@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Historique des coupons — Betoracl Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','AW-536531182');</script>
+<style>
+:root{
+  --g:#22c55e;--gl:#4ade80;--gd:#16a34a;
+  --gold:#F5C842;--red:#f87171;--orange:#fb923c;--purple:#a78bfa;
+  --ink:#060906;--ink2:#0a0f0a;
+  --s1:#121912;--s2:#181f18;
+  --l1:#1e2c1e;--l2:#263626;
+  --hi:#e6f0e6;--mid:#8aaa8a;--lo:#4a6a4a;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--hi);font-family:var(--ff);min-height:100dvh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(6,9,6,.94);backdrop-filter:blur(16px);border-bottom:1px solid var(--l1);height:58px;display:flex;align-items:center;padding:0 20px;gap:14px}
+.tb-back{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--mid);transition:color .15s}
+.tb-back:hover{color:var(--g)}
+.tb-logo{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-size:18px;letter-spacing:.04em;margin-left:auto}
+.tb-logo-badge{width:30px;height:30px;border-radius:8px;background:var(--gd);border:1.5px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--gold)}
+.tb-logo span{color:var(--gold)}
+
+.page{max-width:860px;margin:0 auto;padding:28px 20px 80px}
+
+/* ── HERO STATS ── */
+.hero{text-align:center;padding:20px 0 28px}
+.hero-eye{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:10px}
+.hero h1{font-family:var(--fd);font-size:clamp(36px,7vw,60px);line-height:.97;letter-spacing:.02em;margin-bottom:10px}
+.hero p{font-size:14px;color:var(--mid);max-width:480px;margin:0 auto;line-height:1.65}
+
+/* ── KPIs GLOBAUX ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:24px 0}
+.kpi{background:var(--s1);border:1px solid var(--l1);border-radius:14px;padding:18px 14px;text-align:center;position:relative;overflow:hidden}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.kpi.win::before{background:var(--g)}
+.kpi.loss::before{background:var(--red)}
+.kpi.rate::before{background:var(--gold)}
+.kpi.roi::before{background:var(--purple)}
+.kpi-val{font-family:var(--fd);font-size:32px;line-height:1;margin-bottom:5px}
+.kpi.win .kpi-val{color:var(--g)}
+.kpi.loss .kpi-val{color:var(--red)}
+.kpi.rate .kpi-val{color:var(--gold)}
+.kpi.roi .kpi-val{color:var(--purple)}
+.kpi-lbl{font-size:11px;color:var(--lo);text-transform:uppercase;letter-spacing:.07em}
+
+/* ── FILTRES ── */
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;align-items:center}
+.filter-btn{padding:7px 16px;border-radius:20px;border:1px solid var(--l1);background:var(--s1);color:var(--mid);font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;font-family:var(--ff)}
+.filter-btn:hover{border-color:var(--g);color:var(--g)}
+.filter-btn.on{background:var(--g);color:#000;border-color:var(--g)}
+.filter-btn.on.gold{background:var(--gold);color:#000;border-color:var(--gold)}
+.filter-btn.on.red{background:var(--red);color:#000;border-color:var(--red)}
+.month-sel{background:var(--s1);border:1px solid var(--l1);color:var(--hi);border-radius:20px;padding:7px 14px;font-size:12px;font-family:var(--ff);cursor:pointer;outline:none;margin-left:auto}
+
+/* ── COUPON CARDS ── */
+.coupon-list{display:flex;flex-direction:column;gap:14px}
+.coupon-card{background:var(--s2);border:1px solid var(--l2);border-radius:16px;overflow:hidden;transition:border-color .2s}
+.coupon-card.win{border-color:rgba(34,197,94,.35)}
+.coupon-card.loss{border-color:rgba(248,113,113,.3)}
+.coupon-card.partial{border-color:rgba(245,200,66,.3)}
+.coupon-card.pending{border-color:var(--l1);opacity:.7}
+
+.cc-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--l1);cursor:pointer;user-select:none}
+.cc-result-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.win .cc-result-badge{background:rgba(34,197,94,.15)}
+.loss .cc-result-badge{background:rgba(248,113,113,.1)}
+.partial .cc-result-badge{background:rgba(245,200,66,.1)}
+.pending .cc-result-badge{background:rgba(138,170,138,.08)}
+
+.cc-info{flex:1;min-width:0}
+.cc-title{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cc-meta{display:flex;align-items:center;gap:10px;font-size:11px;color:var(--lo);margin-top:2px;flex-wrap:wrap}
+.cc-tier{padding:2px 8px;border-radius:5px;font-weight:700;font-size:10px;text-transform:uppercase;letter-spacing:.06em}
+.tier-safe{background:rgba(34,197,94,.12);color:var(--g)}
+.tier-balanced{background:rgba(245,200,66,.12);color:var(--gold)}
+.tier-bold{background:rgba(251,146,60,.12);color:var(--orange)}
+.cc-right{text-align:right;flex-shrink:0}
+.cc-odds{font-family:var(--fd);font-size:20px;color:var(--gold)}
+.cc-score-str{font-size:11px;font-weight:700;margin-top:2px}
+.win .cc-score-str{color:var(--g)}
+.loss .cc-score-str{color:var(--red)}
+.partial .cc-score-str{color:var(--gold)}
+.pending .cc-score-str{color:var(--lo)}
+.cc-toggle{font-size:11px;color:var(--lo);display:flex;align-items:center;gap:4px;flex-shrink:0}
+
+/* ── SÉLECTIONS DÉTAILLÉES ── */
+.cc-sels{display:none;border-top:1px solid var(--l1)}
+.cc-sels.open{display:block}
+.sel-row{display:flex;align-items:center;gap:12px;padding:11px 18px;border-bottom:1px solid rgba(30,44,30,.6)}
+.sel-row:last-child{border-bottom:none}
+.sel-status{width:22px;height:22px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sel-w{background:rgba(34,197,94,.15);color:var(--g)}
+.sel-l{background:rgba(248,113,113,.12);color:var(--red)}
+.sel-p{background:rgba(138,170,138,.08);color:var(--lo)}
+.sel-info{flex:1;min-width:0}
+.sel-match{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sel-pick{font-size:11px;color:var(--mid);margin-top:1px}
+.sel-right{text-align:right;flex-shrink:0}
+.sel-odds{font-family:var(--fd);font-size:15px;color:var(--gold)}
+.sel-score{font-size:10px;color:var(--lo);margin-top:2px}
+
+/* ── EMPTY / LOADING ── */
+.empty{text-align:center;padding:60px 20px;color:var(--lo)}
+.empty i{font-size:40px;display:block;margin-bottom:12px}
+.empty p{font-size:13px;line-height:1.6}
+.skel{background:var(--s1);border-radius:14px;animation:sk 1.4s infinite}
+@keyframes sk{0%,100%{opacity:.4}50%{opacity:.8}}
+
+/* ── DISCLAIMER ── */
+.disclaimer{font-size:11px;color:var(--lo);text-align:center;line-height:1.7;margin-top:28px;padding:14px;background:rgba(245,200,66,.03);border:1px solid rgba(245,200,66,.1);border-radius:10px}
+
+@media(max-width:520px){
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .cc-head{flex-wrap:wrap;gap:8px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html" class="tb-back"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  <div class="tb-logo"><div class="tb-logo-badge">B</div>BET<span>ORACLE</span></div>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eye"><i class="ti ti-history"></i> Historique vérifiable</div>
+    <h1>Nos coupons.<br>Nos vrais résultats.</h1>
+    <p>Transparence totale : chaque coupon, chaque sélection, le score réel. Vérifié automatiquement après chaque match.</p>
+  </div>
+
+  <!-- KPIs globaux -->
+  <div class="kpi-grid" id="kpi-grid">
+    <div class="skel" style="height:88px"></div>
+    <div class="skel" style="height:88px"></div>
+    <div class="skel" style="height:88px"></div>
+    <div class="skel" style="height:88px"></div>
+  </div>
+
+  <!-- Filtres -->
+  <div class="filters">
+    <button class="filter-btn on" data-f="all" onclick="setFilter('all',this)">Tous</button>
+    <button class="filter-btn" data-f="win" onclick="setFilter('win',this)">✅ Gagnés</button>
+    <button class="filter-btn" data-f="partial" onclick="setFilter('partial',this)">⚡ Partiels</button>
+    <button class="filter-btn" data-f="loss" onclick="setFilter('loss',this)">❌ Perdus</button>
+    <button class="filter-btn" data-f="safe" onclick="setFilter('safe',this)">🛡️ Sûr</button>
+    <button class="filter-btn" data-f="balanced" onclick="setFilter('balanced',this)">⚖️ Équilibré</button>
+    <button class="filter-btn" data-f="bold" onclick="setFilter('bold',this)">🔥 Audacieux</button>
+    <select class="month-sel" id="month-sel" onchange="loadCoupons()"></select>
+  </div>
+
+  <!-- Liste des coupons -->
+  <div class="coupon-list" id="coupon-list">
+    <div class="skel" style="height:72px"></div>
+    <div class="skel" style="height:72px"></div>
+    <div class="skel" style="height:72px"></div>
+    <div class="skel" style="height:72px"></div>
+  </div>
+
+  <div class="disclaimer">
+    📊 Les résultats sont vérifiés automatiquement après chaque match via notre Oracle IA. En cas de désaccord, tu peux nous contacter. Les coupons "Pendants" correspondent à des matchs dont les résultats ne sont pas encore disponibles.
+  </div>
+
+</div>
+
+<script>
+const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
+
+let allCoupons = []
+let activeFilter = 'all'
+
+// ── Initialiser sélecteur de mois ──
+function initMonthSel() {
+  const sel = document.getElementById('month-sel')
+  const now = new Date()
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1)
+    const val = d.toISOString().slice(0, 7)
+    const lbl = d.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' })
+    const opt = document.createElement('option')
+    opt.value = val; opt.textContent = lbl
+    if (i === 0) opt.selected = true
+    sel.appendChild(opt)
+  }
+}
+
+// ── Charger les coupons ──
+async function loadCoupons() {
+  const month = document.getElementById('month-sel').value
+  const from = month + '-01'
+  const to   = month + '-31'
+
+  document.getElementById('coupon-list').innerHTML =
+    [1,2,3,4].map(() => '<div class="skel" style="height:72px;margin-bottom:12px"></div>').join('')
+
+  try {
+    const res = await fetch(
+      `${S}/rest/v1/coupons?match_date=gte.${from}&match_date=lte.${to}&status=eq.published&select=id,match_date,tier,title,total_odds,result,wins_count,total_picks,result_checked_at,selections,result_detail&order=match_date.desc,tier.asc`,
+      { headers: { apikey: AK } }
+    )
+    allCoupons = await res.json()
+    if (!Array.isArray(allCoupons)) allCoupons = []
+    renderKPIs()
+    renderList()
+  } catch(e) {
+    document.getElementById('coupon-list').innerHTML =
+      '<div class="empty"><i class="ti ti-wifi-off"></i><p>Impossible de charger l\'historique.</p></div>'
+  }
+}
+
+// ── KPIs globaux ──
+function renderKPIs() {
+  const done = allCoupons.filter(c => c.result !== 'pending')
+  const wins = allCoupons.filter(c => c.result === 'win').length
+  const losses = allCoupons.filter(c => c.result === 'loss').length
+  const partials = allCoupons.filter(c => c.result === 'partial').length
+  const rate = done.length ? Math.round((wins / done.length) * 100) : 0
+
+  // ROI théorique : si on misait 1000 FCFA sur chaque coupon sûr gagné
+  const safeDone = allCoupons.filter(c => c.tier === 'safe' && c.result !== 'pending')
+  const safeWins = allCoupons.filter(c => c.tier === 'safe' && c.result === 'win')
+  const avgOddsW = safeWins.length
+    ? safeWins.reduce((s,c) => s + Number(c.total_odds), 0) / safeWins.length
+    : 0
+  const roi = safeDone.length
+    ? Math.round(((safeWins.length * avgOddsW - safeDone.length) / safeDone.length) * 100)
+    : 0
+
+  document.getElementById('kpi-grid').innerHTML = `
+    <div class="kpi win">
+      <div class="kpi-val">${wins}</div>
+      <div class="kpi-lbl">Coupons gagnés</div>
+    </div>
+    <div class="kpi loss">
+      <div class="kpi-val">${losses}</div>
+      <div class="kpi-lbl">Coupons perdus</div>
+    </div>
+    <div class="kpi rate">
+      <div class="kpi-val">${rate}%</div>
+      <div class="kpi-lbl">Taux de réussite</div>
+    </div>
+    <div class="kpi roi">
+      <div class="kpi-val">${roi > 0 ? '+' : ''}${roi}%</div>
+      <div class="kpi-lbl">ROI Coupon Sûr</div>
+    </div>
+  `
+}
+
+// ── Filtres ──
+function setFilter(f, btn) {
+  activeFilter = f
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('on'))
+  btn.classList.add('on')
+  renderList()
+}
+
+function matchFilter(c) {
+  if (activeFilter === 'all') return true
+  if (['win','loss','partial','pending'].includes(activeFilter)) return c.result === activeFilter
+  if (['safe','balanced','bold'].includes(activeFilter)) return c.tier === activeFilter
+  return true
+}
+
+// ── Résultat emoji + texte ──
+function resultLabel(c) {
+  const s = c.result
+  if (s === 'win') return { icon: '✅', text: `Gagné (${c.wins_count}/${c.total_picks})`, cls: 'sel-w' }
+  if (s === 'loss') return { icon: '❌', text: `Perdu (${c.wins_count}/${c.total_picks})`, cls: 'sel-l' }
+  if (s === 'partial') return { icon: '⚡', text: `Partiel (${c.wins_count}/${c.total_picks})`, cls: 'sel-p' }
+  return { icon: '⏳', text: 'En attente', cls: 'sel-p' }
+}
+
+function tierLabel(tier) {
+  if (tier === 'safe')     return `<span class="cc-tier tier-safe">🛡️ Sûr</span>`
+  if (tier === 'balanced') return `<span class="cc-tier tier-balanced">⚖️ Équilibré</span>`
+  if (tier === 'bold')     return `<span class="cc-tier tier-bold">🔥 Audacieux</span>`
+  return `<span class="cc-tier">${tier}</span>`
+}
+
+function fmtDate(d) {
+  return new Date(d).toLocaleDateString('fr-FR', { weekday:'short', day:'numeric', month:'short' })
+}
+
+function esc(s) { return (s||'').replace(/</g,'&lt;').replace(/>/g,'&gt;') }
+
+// ── Rendu liste ──
+function renderList() {
+  const filtered = allCoupons.filter(matchFilter)
+  if (!filtered.length) {
+    document.getElementById('coupon-list').innerHTML =
+      '<div class="empty"><i class="ti ti-search"></i><p>Aucun coupon pour ce filtre.</p></div>'
+    return
+  }
+
+  document.getElementById('coupon-list').innerHTML = filtered.map((c, ci) => {
+    const rl = resultLabel(c)
+    const sels = Array.isArray(c.result_detail) && c.result_detail.length
+      ? c.result_detail
+      : (Array.isArray(c.selections) ? c.selections : [])
+
+    const selsHtml = sels.map(s => {
+      const won = s.result_won === true
+      const lost = s.result_won === false
+      const stCls = won ? 'sel-w' : lost ? 'sel-l' : 'sel-p'
+      const stIcon = won ? '✅' : lost ? '❌' : '⏳'
+      const matchName = (s.team_a && s.team_b) ? `${esc(s.team_a)} vs ${esc(s.team_b)}` : esc(s.match || s.match_name || '—')
+      return `<div class="sel-row">
+        <div class="sel-status ${stCls}">${stIcon}</div>
+        <div class="sel-info">
+          <div class="sel-match">${matchName}</div>
+          <div class="sel-pick">${esc(s.pick)} ${s.league ? '· ' + esc(s.league) : ''}</div>
+        </div>
+        <div class="sel-right">
+          <div class="sel-odds">×${Number(s.odds||1).toFixed(2)}</div>
+          ${s.result_score ? `<div class="sel-score">${esc(s.result_score)}</div>` : ''}
+        </div>
+      </div>`
+    }).join('')
+
+    return `<div class="coupon-card ${c.result || 'pending'}">
+      <div class="cc-head" onclick="toggleSels(${ci})">
+        <div class="cc-result-badge">${rl.icon}</div>
+        <div class="cc-info">
+          <div class="cc-title">${esc(c.title || 'Coupon du ' + c.match_date)}</div>
+          <div class="cc-meta">
+            ${tierLabel(c.tier)}
+            <span>${fmtDate(c.match_date)}</span>
+            ${c.result_checked_at ? `<span>Vérifié ${fmtDate(c.result_checked_at)}</span>` : ''}
+          </div>
+        </div>
+        <div class="cc-right">
+          <div class="cc-odds">×${Number(c.total_odds||1).toFixed(2)}</div>
+          <div class="cc-score-str">${rl.text}</div>
+        </div>
+        <div class="cc-toggle"><i class="ti ti-chevron-down" id="chv-${ci}"></i></div>
+      </div>
+      <div class="cc-sels" id="sels-${ci}">
+        ${selsHtml || '<div style="padding:14px 18px;font-size:12px;color:var(--lo)">Sélections non disponibles</div>'}
+      </div>
+    </div>`
+  }).join('')
+}
+
+function toggleSels(ci) {
+  const el = document.getElementById('sels-' + ci)
+  const ic = document.getElementById('chv-' + ci)
+  const open = el.classList.toggle('open')
+  ic.style.transform = open ? 'rotate(180deg)' : ''
+}
+
+// ── Init ──
+initMonthSel()
+loadCoupons()
+</script>
+</body>
+</html>
