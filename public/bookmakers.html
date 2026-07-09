@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Bookmakers partenaires — Betoracl Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-536531182');
+</script>
+<style>
+:root{
+  --g:#22c55e;--gl:#4ade80;--gd:#16a34a;
+  --gold:#F5C842;
+  --ink:#060906;--ink2:#0a0f0a;
+  --s1:#121912;--s2:#181f18;
+  --l1:#1e2c1e;--l2:#263626;
+  --hi:#e6f0e6;--mid:#8aaa8a;--lo:#4a6a4a;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink);color:var(--hi);font-family:var(--ff);min-height:100dvh}
+a{text-decoration:none;color:inherit}
+
+.topbar{position:sticky;top:0;z-index:50;background:rgba(6,9,6,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--l1);height:58px;display:flex;align-items:center;padding:0 20px;gap:14px}
+.tb-back{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--mid)}
+.tb-back:hover{color:var(--g)}
+.tb-logo{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-size:18px;letter-spacing:.04em;margin-left:auto}
+.tb-logo-badge{width:30px;height:30px;border-radius:8px;background:var(--gd);border:1.5px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--gold);font-family:var(--fd)}
+.tb-logo span{color:var(--gold)}
+
+.page{max-width:800px;margin:0 auto;padding:32px 20px 80px}
+
+.hero-bk{text-align:center;padding:24px 0 32px}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.25);color:var(--g);padding:5px 14px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px}
+.hero-bk h1{font-family:var(--fd);font-size:clamp(34px,7vw,54px);line-height:.97;letter-spacing:.02em;margin-bottom:10px}
+.hero-bk h1 span{color:var(--g)}
+.hero-bk p{font-size:14px;color:var(--mid);max-width:460px;margin:0 auto;line-height:1.65}
+
+/* ── BOOKMAKER CARDS ── */
+.bk-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:8px}
+.bk-card{background:var(--s2);border:1px solid var(--l2);border-radius:16px;overflow:hidden;transition:transform .2s,border-color .2s;display:flex;flex-direction:column}
+.bk-card:hover{transform:translateY(-3px);border-color:var(--g)}
+.bk-head{padding:20px 18px 14px;position:relative}
+.bk-head::before{content:'';position:absolute;top:0;left:0;right:0;height:3px}
+.bk-card.bk-1xbet .bk-head::before{background:linear-gradient(90deg,#1a9ef5,#0069b4)}
+.bk-card.bk-bw .bk-head::before{background:linear-gradient(90deg,#e7332a,#f5a623)}
+.bk-card.bk-mega .bk-head::before{background:linear-gradient(90deg,#7b2ff7,#e040fb)}
+.bk-card.bk-1win .bk-head::before{background:linear-gradient(90deg,#1565c0,#26c6da)}
+.bk-card.bk-888 .bk-head::before{background:linear-gradient(90deg,#e74c3c,#c0392b)}
+.bk-name{font-family:var(--fd);font-size:26px;letter-spacing:.04em;margin-bottom:4px}
+.bk-tagline{font-size:12px;color:var(--mid);line-height:1.5;margin-bottom:12px}
+.bk-bonus-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(245,200,66,.12);border:1px solid rgba(245,200,66,.25);color:var(--gold);font-size:12px;font-weight:700;padding:4px 10px;border-radius:8px}
+.bk-body{padding:0 18px 16px;flex:1;display:flex;flex-direction:column;gap:8px}
+.bk-features{display:flex;flex-direction:column;gap:5px}
+.bk-feat{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--mid)}
+.bk-feat i{font-size:13px;color:var(--g);flex-shrink:0}
+.bk-foot{padding:14px 18px;border-top:1px solid var(--l1);background:var(--ink2)}
+.bk-cta{display:flex;align-items:center;justify-content:center;gap:7px;background:var(--g);color:#000;font-weight:800;font-size:13px;padding:11px;border-radius:9px;transition:all .15s;width:100%}
+.bk-cta:hover{background:var(--gl);transform:translateY(-1px)}
+.bk-rating{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--gold);margin-bottom:8px}
+
+/* ── DISCLAIMER ── */
+.disclaimer{background:rgba(245,200,66,.04);border:1px solid rgba(245,200,66,.12);border-radius:12px;padding:14px 18px;font-size:11px;color:var(--lo);line-height:1.7;margin-top:28px}
+
+/* ── TIPS SECTION ── */
+.tips-section{margin-top:32px}
+.sec-title{font-family:var(--fd);font-size:22px;letter-spacing:.04em;margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.tips-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tip-card{background:var(--s1);border:1px solid var(--l1);border-radius:12px;padding:14px}
+.tip-icon{font-size:20px;margin-bottom:8px}
+.tip-title{font-weight:700;font-size:13px;margin-bottom:4px}
+.tip-text{font-size:12px;color:var(--lo);line-height:1.55}
+
+@media(max-width:580px){
+  .bk-grid{grid-template-columns:1fr}
+  .tips-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html" class="tb-back"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  <div class="tb-logo">
+    <div class="tb-logo-badge">B</div>
+    BET<span>ORACLE</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="hero-bk">
+    <div class="hero-badge"><i class="ti ti-building-bank"></i> Bookmakers partenaires</div>
+    <h1>Parie nos coupons sur<br><span>les meilleures plateformes</span></h1>
+    <p>Sélectionnés pour leur fiabilité, leurs bonus et leur disponibilité en Afrique de l'Ouest. Toutes ces plateformes acceptent le dépôt en FCFA ou en devise locale.</p>
+  </div>
+
+  <div class="bk-grid">
+
+    <!-- 1XBET -->
+    <div class="bk-card bk-1xbet">
+      <div class="bk-head">
+        <div class="bk-name">1XBET</div>
+        <div class="bk-tagline">Le bookmaker N°1 en Afrique — large couverture de matchs</div>
+        <div class="bk-bonus-pill"><i class="ti ti-percentage"></i> Bonus 100% jusqu'à 50 000 FCFA</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-rating">★★★★★ <span style="color:var(--mid);font-size:11px">4.8/5</span></div>
+        <div class="bk-features">
+          <div class="bk-feat"><i class="ti ti-check"></i>Dépôt & retrait Mobile Money</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Paris live avec streaming</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Coupons combinés illimités</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Application mobile iOS & Android</div>
+        </div>
+      </div>
+      <div class="bk-foot">
+        <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" rel="noopener" class="bk-cta">
+          <i class="ti ti-external-link"></i> S'inscrire sur 1XBET
+        </a>
+      </div>
+    </div>
+
+    <!-- BETWINNER -->
+    <div class="bk-card bk-bw">
+      <div class="bk-head">
+        <div class="bk-name">BETWINNER</div>
+        <div class="bk-tagline">Cotes compétitives et retrait ultra-rapide</div>
+        <div class="bk-bonus-pill"><i class="ti ti-percentage"></i> Bonus 130% jusqu'à 75 000 FCFA</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-rating">★★★★☆ <span style="color:var(--mid);font-size:11px">4.5/5</span></div>
+        <div class="bk-features">
+          <div class="bk-feat"><i class="ti ti-check"></i>Meilleure cote garantie</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Cash out en temps réel</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Retrait sous 24h</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>+500 000 événements/an</div>
+        </div>
+      </div>
+      <div class="bk-foot">
+        <a href="https://bwredir.com/2gdj" target="_blank" rel="noopener" class="bk-cta">
+          <i class="ti ti-external-link"></i> S'inscrire sur BETWINNER
+        </a>
+      </div>
+    </div>
+
+    <!-- MEGAPARI -->
+    <div class="bk-card bk-mega">
+      <div class="bk-head">
+        <div class="bk-name">MEGAPARI</div>
+        <div class="bk-tagline">Multi-sports & freebets généreux pour les nouveaux</div>
+        <div class="bk-bonus-pill"><i class="ti ti-percentage"></i> 100% + Freebets offerts</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-rating">★★★★☆ <span style="color:var(--mid);font-size:11px">4.3/5</span></div>
+        <div class="bk-features">
+          <div class="bk-feat"><i class="ti ti-check"></i>Freebets sans dépôt disponibles</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Paris e-sport & virtuel</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Interface en français</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Casino intégré</div>
+        </div>
+      </div>
+      <div class="bk-foot">
+        <a href="https://refpaiozdg.top/L?" target="_blank" rel="noopener" class="bk-cta">
+          <i class="ti ti-external-link"></i> S'inscrire sur MEGAPARI
+        </a>
+      </div>
+    </div>
+
+    <!-- 1WIN -->
+    <div class="bk-card bk-1win">
+      <div class="bk-head">
+        <div class="bk-name">1WIN</div>
+        <div class="bk-tagline">Le bonus le plus généreux du marché — ×4 dépôts</div>
+        <div class="bk-bonus-pill"><i class="ti ti-percentage"></i> 500% sur 4 premiers dépôts</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-rating">★★★★☆ <span style="color:var(--mid);font-size:11px">4.2/5</span></div>
+        <div class="bk-features">
+          <div class="bk-feat"><i class="ti ti-check"></i>500% de bonus bienvenue</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Cotes parmi les plus hautes</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Paris rapides & instantanés</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Support 24h/24 en français</div>
+        </div>
+      </div>
+      <div class="bk-foot">
+        <a href="https://1wync.com/?p=3qq3" target="_blank" rel="noopener" class="bk-cta">
+          <i class="ti ti-external-link"></i> S'inscrire sur 1WIN
+        </a>
+      </div>
+    </div>
+
+    <!-- 888STARZ -->
+    <div class="bk-card bk-888" style="grid-column:1/-1">
+      <div class="bk-head">
+        <div class="bk-name">888STARZ</div>
+        <div class="bk-tagline">Bookmaker en croissance rapide — spécialiste football africain</div>
+        <div class="bk-bonus-pill"><i class="ti ti-percentage"></i> Bonus 100% jusqu'à 30 000 FCFA</div>
+      </div>
+      <div class="bk-body">
+        <div class="bk-rating">★★★★☆ <span style="color:var(--mid);font-size:11px">4.1/5</span></div>
+        <div class="bk-features" style="display:grid;grid-template-columns:1fr 1fr;gap:5px">
+          <div class="bk-feat"><i class="ti ti-check"></i>Championnats africains couverts</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Paiement Wave & OM</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Statistiques live intégrées</div>
+          <div class="bk-feat"><i class="ti ti-check"></i>Bonus rechargement mensuel</div>
+        </div>
+      </div>
+      <div class="bk-foot">
+        <a href="https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159" target="_blank" rel="noopener" class="bk-cta" style="max-width:320px;margin:0 auto">
+          <i class="ti ti-external-link"></i> S'inscrire sur 888STARZ
+        </a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONSEILS -->
+  <div class="tips-section">
+    <div class="sec-title"><i class="ti ti-bulb" style="color:var(--gold)"></i> Conseils Betoracl</div>
+    <div class="tips-grid">
+      <div class="tip-card">
+        <div class="tip-icon"><i class="ti ti-scale" style="color:var(--g)"></i></div>
+        <div class="tip-title">Compare les cotes</div>
+        <div class="tip-text">Pour un même match, les cotes varient d'un bookmaker à l'autre. Utilise notre comparateur de cotes pour toujours parier au meilleur prix.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon"><i class="ti ti-wallet" style="color:var(--gold)"></i></div>
+        <div class="tip-title">Gère ta bankroll</div>
+        <div class="tip-text">Ne mise jamais plus de 5% de ta bankroll sur un seul coupon. L'outil Kelly de Betoracl calcule ta mise optimale automatiquement.</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon"><i class="ti ti-gift" style="color:var(--purple)"></i></div>
+        <div class="tip-title">Profite des bonus</div>
+        <div class="tip-text">Inscris-toi sur plusieurs plateformes pour cumuler les bonus de bienvenue. Lis bien les conditions de mise (x5 à x35 généralement).</div>
+      </div>
+      <div class="tip-card">
+        <div class="tip-icon"><i class="ti ti-shield-check" style="color:var(--g)"></i></div>
+        <div class="tip-title">Jeu responsable</div>
+        <div class="tip-text">Fixe-toi des limites journalières avant de jouer. Tous ces bookmakers proposent des outils d'auto-exclusion si nécessaire.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="disclaimer">
+    ⚠️ <strong>Jeu responsable :</strong> Les liens ci-dessus sont des liens d'affiliation. Betoracl Pro perçoit une commission sur les inscriptions, sans coût supplémentaire pour toi. Les paris sportifs comportent des risques financiers. Ne mise que ce que tu peux te permettre de perdre. Interdit aux mineurs.
+  </div>
+
+</div>
+
+</body>
+</html>

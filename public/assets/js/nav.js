@@ -99,7 +99,7 @@
       <span style="flex:1">Plans & tarifs</span>
       <span style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:7px;background:rgba(245,200,66,.1);color:#F5C842">Dès 750F</span>
     </a>
-    ${isLogged ? drLink('welcome.html','ti-gift','Parrainage','welcome') : ''}
+    ${isLogged ? drLink('parrainage.html','ti-gift','Parrainage','welcome') : ''}
     <div style="height:1px;background:#1c2a1c;margin:6px 0"></div>
     ${drLink('index.html#tools','ti-tools','Outils d\'analyse')}
     ${drLink('index.html#bookmakers','ti-building-bank','Bookmakers partenaires')}
