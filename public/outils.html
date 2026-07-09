@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Outils d'analyse — Betoracl Pro</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-536531182');
+</script>
+<style>
+:root{
+  --g:#22c55e;--gl:#4ade80;--gd:#16a34a;--gn:#16ff6e;
+  --gold:#F5C842;--violet:#8b5cf6;--teal:#14b8a6;--blue:#3b82f6;--red:#ef4444;
+  --ink:#060906;--ink2:#0a0f0a;
+  --s1:#121912;--s2:#181f18;--s3:#1e271e;
+  --l1:#1e2c1e;--l2:#263626;--l3:#304830;
+  --hi:#e6f0e6;--mid:#8aaa8a;--lo:#4a6a4a;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--hi);font-family:var(--ff);min-height:100dvh;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+/* ── TOP BAR ── */
+.topbar{position:sticky;top:0;z-index:50;background:rgba(6,9,6,.92);backdrop-filter:blur(16px);border-bottom:1px solid var(--l1);height:58px;display:flex;align-items:center;padding:0 20px;gap:14px}
+.tb-back{display:flex;align-items:center;gap:7px;font-size:13px;color:var(--mid);cursor:pointer;transition:color .15s}
+.tb-back:hover{color:var(--g)}
+.tb-logo{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-size:18px;letter-spacing:.04em;margin-left:auto}
+.tb-logo-badge{width:30px;height:30px;border-radius:8px;background:var(--gd);border:1.5px solid var(--g);display:flex;align-items:center;justify-content:center;font-size:15px;color:var(--gold);font-family:var(--fd)}
+.tb-logo span{color:var(--gold)}
+
+/* ── PAGE ── */
+.page{max-width:1100px;margin:0 auto;padding:32px 20px 80px}
+
+/* ── HERO ── */
+.hero{padding:20px 0 28px}
+.hero-eye{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--g);margin-bottom:10px}
+.hero h1{font-family:var(--fd);font-size:clamp(44px,8vw,72px);line-height:.95;letter-spacing:.02em;margin-bottom:10px}
+.hero p{font-size:14px;color:var(--mid);max-width:480px;line-height:1.65}
+
+/* ── LAYOUT OUTILS ── */
+.tools-layout{display:grid;grid-template-columns:1fr 1.15fr;gap:24px;align-items:start}
+
+/* ── TOOL BUTTONS ── */
+.tool-list{display:flex;flex-direction:column;gap:4px}
+.tool-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:13px;cursor:pointer;transition:all .18s;border:1px solid transparent;background:transparent}
+.tool-btn:hover{background:var(--s1);border-color:var(--l2)}
+.tool-btn.active{background:var(--s2);border-color:var(--g)}
+.tool-ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.tool-info{flex:1;min-width:0}
+.tool-name{font-family:var(--fd);font-size:17px;letter-spacing:.04em;margin-bottom:1px}
+.tool-desc{font-size:12px;color:var(--mid)}
+.tool-plan{margin-left:auto;font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:20px;flex-shrink:0}
+.plan-free{background:rgba(34,197,94,.15);color:var(--g)}
+.plan-starter{background:rgba(20,184,166,.15);color:var(--teal)}
+.plan-pro{background:rgba(245,200,66,.15);color:var(--gold)}
+.plan-elite{background:rgba(139,92,246,.15);color:var(--violet)}
+
+/* ── PREVIEW BOX ── */
+.preview-box{background:var(--s1);border:1px solid var(--l2);border-radius:20px;padding:26px;min-height:360px;position:relative;overflow:hidden;position:sticky;top:72px}
+.preview-box::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 29px,rgba(34,197,94,.018) 30px);pointer-events:none}
+
+/* ── PANELS ── */
+.pv-panel{display:none;position:relative;z-index:1}
+.pv-panel.on{display:block}
+.pv-title{font-family:var(--fd);font-size:26px;letter-spacing:.04em;margin-bottom:4px}
+.pv-sub{font-size:12px;color:var(--mid);margin-bottom:20px}
+
+/* ── STATS ── */
+.big3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:18px}
+.b3{background:var(--ink2);border-radius:10px;padding:14px;text-align:center}
+.b3-v{font-family:var(--fd);font-size:28px;margin-bottom:3px}
+.b3-l{font-size:11px;color:var(--mid)}
+.sr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--l1);font-size:13px}
+.sr:last-child{border-bottom:none}
+.sr .lbl{color:var(--mid)}
+.sr .val{font-weight:700}
+.bar-row{display:flex;align-items:center;gap:9px;margin-bottom:7px}
+.bar-lbl{font-size:11px;color:var(--mid);min-width:100px}
+.bar-track{flex:1;height:9px;background:var(--ink2);border-radius:5px;overflow:hidden}
+.bar-fill{height:100%;border-radius:5px}
+.bar-num{font-weight:800;font-family:var(--fd);font-size:16px;min-width:18px;text-align:right}
+
+/* ── INPUTS ── */
+.ci-g{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.ci-l{font-size:11px;color:var(--mid);margin-bottom:5px}
+.ci{width:100%;background:var(--ink2);border:1px solid var(--l2);border-radius:8px;padding:10px 13px;font-size:14px;color:var(--hi);font-family:var(--ff);outline:none;transition:border-color .15s}
+.ci:focus{border-color:var(--g)}
+.ci-full{margin-bottom:12px}
+.ci-full .ci{width:100%}
+
+/* ── RESULT PILL ── */
+.res{border-radius:11px;padding:14px;text-align:center;margin-top:10px}
+.res-val{font-family:var(--fd);font-size:30px;letter-spacing:.04em;margin-bottom:3px}
+.res-sub{font-size:12px;color:var(--mid);font-weight:400}
+
+/* ── ORACLE CTA ── */
+.oracle-preview{background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:12px;padding:16px;margin-bottom:14px}
+.oracle-big3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:0}
+.oracle-cta-block{background:var(--ink2);border-radius:9px;padding:12px;font-size:12px;color:var(--mid);line-height:1.6;margin-bottom:16px}
+.oracle-cta-btn{display:flex;align-items:center;justify-content:center;gap:8px;background:var(--violet);color:#fff;font-weight:800;font-size:14px;padding:13px;border-radius:10px;cursor:pointer;border:none;font-family:var(--ff);transition:all .15s;width:100%}
+.oracle-cta-btn:hover{background:#7c3aed;transform:translateY(-1px)}
+
+/* ── LOCK BADGE ── */
+.lock-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(245,200,66,.1);border:1px solid rgba(245,200,66,.2);color:var(--gold);font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;margin-top:14px}
+
+/* ── REDIRECT PANEL ── */
+.redir-panel{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 20px;min-height:300px}
+.redir-panel i{font-size:48px;margin-bottom:16px}
+.redir-panel h3{font-family:var(--fd);font-size:26px;letter-spacing:.04em;margin-bottom:8px}
+.redir-panel p{font-size:13px;color:var(--mid);max-width:300px;line-height:1.6;margin-bottom:22px}
+.redir-btn{display:inline-flex;align-items:center;gap:8px;padding:13px 28px;border-radius:10px;font-weight:800;font-size:14px;cursor:pointer;border:none;font-family:var(--ff);transition:all .15s}
+.redir-btn.green{background:var(--g);color:#000}
+.redir-btn.green:hover{background:var(--gl)}
+
+/* ── MOBILE ── */
+@media(max-width:768px){
+  .tools-layout{grid-template-columns:1fr;gap:16px}
+  .preview-box{position:static;min-height:300px}
+  .tool-btn{padding:11px 12px}
+  .tool-ic{width:36px;height:36px;font-size:17px}
+  .tool-name{font-size:15px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="dashboard.html" class="tb-back"><i class="ti ti-arrow-left"></i> Dashboard</a>
+  <div class="tb-logo">
+    <div class="tb-logo-badge">B</div>
+    BET<span>ORACLE</span>
+  </div>
+</div>
+
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eye"><i class="ti ti-tools"></i> Outils d'analyse</div>
+    <h1>5 OUTILS.<br>0 HASARD.</h1>
+    <p>Clique sur un outil pour l'utiliser. Value Bet et Kelly sont interactifs — entre tes données et calcule instantanément.</p>
+  </div>
+
+  <div class="tools-layout">
+
+    <!-- LISTE DES OUTILS -->
+    <div class="tool-list">
+
+      <div class="tool-btn active" onclick="showTool(this,'stats')">
+        <div class="tool-ic" style="background:rgba(59,130,246,.15)"><i class="ti ti-chart-bar" style="color:var(--blue)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Stats 1X2</div>
+          <div class="tool-desc">Probabilités 55+ championnats</div>
+        </div>
+        <span class="tool-plan plan-starter">Starter</span>
+      </div>
+
+      <div class="tool-btn" onclick="showTool(this,'value')">
+        <div class="tool-ic" style="background:rgba(245,200,66,.15)"><i class="ti ti-diamond" style="color:var(--gold)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Value Bet</div>
+          <div class="tool-desc">Détection de cotes sous-évaluées</div>
+        </div>
+        <span class="tool-plan plan-pro">Pro</span>
+      </div>
+
+      <div class="tool-btn" onclick="showTool(this,'kelly')">
+        <div class="tool-ic" style="background:rgba(34,197,94,.15)"><i class="ti ti-percentage" style="color:var(--g)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Kelly Calculator</div>
+          <div class="tool-desc">Mise optimale bankroll</div>
+        </div>
+        <span class="tool-plan plan-pro">Pro</span>
+      </div>
+
+      <div class="tool-btn" onclick="showTool(this,'h2h')">
+        <div class="tool-ic" style="background:rgba(139,92,246,.15)"><i class="ti ti-arrows-right-left" style="color:var(--violet)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Head-to-Head</div>
+          <div class="tool-desc">Confrontations directes</div>
+        </div>
+        <span class="tool-plan plan-pro">Pro</span>
+      </div>
+
+      <div class="tool-btn" onclick="showTool(this,'oracle')">
+        <div class="tool-ic" style="background:rgba(139,92,246,.15)"><i class="ti ti-brain" style="color:var(--violet)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Oracle IA</div>
+          <div class="tool-desc">Analyse quantitative complète</div>
+        </div>
+        <span class="tool-plan plan-elite">Elite</span>
+      </div>
+
+      <!-- Lien comparateur -->
+      <a href="comparateur.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:13px;border:1px solid var(--l1);background:var(--s1);margin-top:8px;transition:border-color .15s" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='var(--l1)'">
+        <div class="tool-ic" style="background:rgba(20,184,166,.15)"><i class="ti ti-scale" style="color:var(--teal)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Comparateur de cotes</div>
+          <div class="tool-desc">Comparer sur 5 bookmakers</div>
+        </div>
+        <i class="ti ti-external-link" style="color:var(--lo);font-size:14px;margin-left:auto"></i>
+      </a>
+
+      <a href="bankroll.html" style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:13px;border:1px solid var(--l1);background:var(--s1);transition:border-color .15s" onmouseover="this.style.borderColor='var(--g)'" onmouseout="this.style.borderColor='var(--l1)'">
+        <div class="tool-ic" style="background:rgba(34,197,94,.15)"><i class="ti ti-chart-line" style="color:var(--g)"></i></div>
+        <div class="tool-info">
+          <div class="tool-name">Bankroll Manager</div>
+          <div class="tool-desc">Suivi & historique des paris</div>
+        </div>
+        <i class="ti ti-external-link" style="color:var(--lo);font-size:14px;margin-left:auto"></i>
+      </a>
+
+    </div>
+
+    <!-- PREVIEW BOX -->
+    <div class="preview-box">
+
+      <!-- STATS 1X2 -->
+      <div class="pv-panel on" id="pv-stats">
+        <div class="pv-title">Stats 1X2</div>
+        <div class="pv-sub">Exemple · Mexique vs Brésil · CdM 2026</div>
+        <div class="big3">
+          <div class="b3"><div class="b3-v" style="color:var(--g)">31%</div><div class="b3-l">Mexique</div></div>
+          <div class="b3"><div class="b3-v" style="color:var(--gold)">24%</div><div class="b3-l">Nul</div></div>
+          <div class="b3"><div class="b3-v" style="color:var(--blue)">45%</div><div class="b3-l">Brésil</div></div>
+        </div>
+        <div class="sr"><span class="lbl">BTTS (les 2 marquent)</span><span class="val" style="color:var(--g)">62%</span></div>
+        <div class="sr"><span class="lbl">Over 2.5 buts</span><span class="val" style="color:var(--g)">58%</span></div>
+        <div class="sr"><span class="lbl">Score probable</span><span class="val">1 - 2</span></div>
+        <div class="sr"><span class="lbl">Confiance Oracle</span><span class="val" style="color:var(--g)">71%</span></div>
+        <div style="margin-top:18px">
+          <a href="analyse.html" class="redir-btn green" style="width:100%;justify-content:center">
+            <i class="ti ti-brain"></i> Analyser un vrai match
+          </a>
+        </div>
+      </div>
+
+      <!-- VALUE BET -->
+      <div class="pv-panel" id="pv-value">
+        <div class="pv-title">Value Bet</div>
+        <div class="pv-sub">Calcul en temps réel · Entre tes données</div>
+        <div class="ci-g">
+          <div>
+            <div class="ci-l">Cote bookmaker</div>
+            <input class="ci" type="number" value="2.10" id="vc" oninput="vbc()" step="0.01" min="1">
+          </div>
+          <div>
+            <div class="ci-l">Ta probabilité (%)</div>
+            <input class="ci" type="number" value="55" id="vp" oninput="vbc()" min="1" max="99">
+          </div>
+        </div>
+        <div class="res" id="vr" style="background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.25)">
+          <div class="res-val" style="color:var(--g)" id="vrtxt">+15.5% VALUE BET ✓</div>
+          <div class="res-sub">Mise conseillée : 3–5% bankroll</div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--lo);line-height:1.6">
+          <strong style="color:var(--mid)">Comment ça marche :</strong> Si ta probabilité estimée × la cote &gt; 1, il y a de la valeur.<br>
+          Ex : 55% × 2.10 = 1.155 → +15.5% d'espérance de gain.
+        </div>
+      </div>
+
+      <!-- KELLY CALCULATOR -->
+      <div class="pv-panel" id="pv-kelly">
+        <div class="pv-title">Kelly Calculator</div>
+        <div class="pv-sub">Mise optimale selon ta bankroll</div>
+        <div class="ci-g">
+          <div>
+            <div class="ci-l">Bankroll (FCFA)</div>
+            <input class="ci" type="number" value="50000" id="kb" oninput="kc()">
+          </div>
+          <div>
+            <div class="ci-l">Cote</div>
+            <input class="ci" type="number" value="2.10" step="0.01" id="kc2" oninput="kc()">
+          </div>
+        </div>
+        <div class="ci-full">
+          <div class="ci-l">Probabilité estimée (%)</div>
+          <input class="ci" type="number" value="55" id="kp" oninput="kc()">
+        </div>
+        <div class="res" style="background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.25)">
+          <div class="res-val" style="color:var(--g)" id="kr">3 438 FCFA</div>
+          <div class="res-sub" id="kpct">Kelly 13.8% → fraction ¼ = 3.4%</div>
+        </div>
+        <div style="margin-top:14px;font-size:12px;color:var(--lo);line-height:1.6">
+          <strong style="color:var(--mid)">Fraction ¼ appliquée</strong> pour limiter le risque. Formule : f = (p×b − q) / b
+        </div>
+      </div>
+
+      <!-- HEAD-TO-HEAD -->
+      <div class="pv-panel" id="pv-h2h">
+        <div class="pv-title">Head-to-Head</div>
+        <div class="pv-sub">Exemple · Brésil vs Argentine · 10 derniers matchs</div>
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:16px">
+          <div class="bar-row">
+            <span class="bar-lbl">Victoires Brésil</span>
+            <div class="bar-track"><div class="bar-fill" style="width:40%;background:var(--g)"></div></div>
+            <span class="bar-num" style="color:var(--g)">4</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-lbl">Nuls</span>
+            <div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--mid)"></div></div>
+            <span class="bar-num" style="color:var(--mid)">3</span>
+          </div>
+          <div class="bar-row">
+            <span class="bar-lbl">Victoires Argentine</span>
+            <div class="bar-track"><div class="bar-fill" style="width:30%;background:var(--blue)"></div></div>
+            <span class="bar-num" style="color:var(--blue)">3</span>
+          </div>
+        </div>
+        <div class="sr"><span class="lbl">Buts moyens / match</span><span class="val">2.7</span></div>
+        <div class="sr"><span class="lbl">BTTS sur H2H</span><span class="val" style="color:var(--g)">70%</span></div>
+        <div class="sr"><span class="lbl">Plus récent</span><span class="val">Brésil 2-1 Argentine</span></div>
+        <div style="margin-top:16px">
+          <a href="analyse.html" class="redir-btn green" style="width:100%;justify-content:center">
+            <i class="ti ti-brain"></i> Analyser avec l'Oracle IA
+          </a>
+        </div>
+      </div>
+
+      <!-- ORACLE IA -->
+      <div class="pv-panel" id="pv-oracle">
+        <div class="pv-title">Oracle IA</div>
+        <div class="pv-sub">Analyse quantitative · Recherche web · Données structurées</div>
+        <div class="oracle-preview">
+          <div style="font-size:11px;color:var(--mid);margin-bottom:10px">Exemple · France vs Brésil · CdM 2026</div>
+          <div class="oracle-big3" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+            <div class="b3"><div class="b3-v" style="color:var(--g)">40%</div><div class="b3-l">France</div></div>
+            <div class="b3"><div class="b3-v" style="color:var(--gold)">28%</div><div class="b3-l">Nul</div></div>
+            <div class="b3"><div class="b3-v" style="color:var(--blue)">32%</div><div class="b3-l">Brésil</div></div>
+          </div>
+        </div>
+        <div class="oracle-cta-block">
+          <strong style="color:var(--violet)">Recommandation Oracle :</strong> Double chance 1X · Confiance 72% · Value bet détecté sur X à cote 3.20 (impl. 31% vs estimé 28%) · Mise conseillée 2% BK · Absences : Camavinga, Militão
+        </div>
+        <button class="oracle-cta-btn" onclick="window.location.href='analyse.html'">
+          <i class="ti ti-brain"></i> Lancer une analyse Oracle IA
+        </button>
+        <div style="text-align:center;margin-top:10px;font-size:11px;color:var(--lo)">Analyse complète avec recherche web · 30-60s · Plan Starter requis</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<script>
+function showTool(btn, id) {
+  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('active'))
+  document.querySelectorAll('.pv-panel').forEach(p => p.classList.remove('on'))
+  btn.classList.add('active')
+  document.getElementById('pv-' + id).classList.add('on')
+  // Sur mobile, scroller vers le preview
+  if (window.innerWidth <= 768) {
+    document.querySelector('.preview-box').scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+  }
+}
+
+// ── VALUE BET ──
+function vbc() {
+  const c = parseFloat(document.getElementById('vc').value) || 2.1
+  const p = parseFloat(document.getElementById('vp').value) / 100 || .55
+  const v = (p * c - 1) * 100
+  const r = document.getElementById('vr')
+  const t = document.getElementById('vrtxt')
+  if (v > 0) {
+    r.style.background = 'rgba(34,197,94,.09)'; r.style.borderColor = 'rgba(34,197,94,.25)'
+    t.style.color = 'var(--g)'; t.textContent = '+' + v.toFixed(1) + '% VALUE BET ✓'
+  } else {
+    r.style.background = 'rgba(239,68,68,.09)'; r.style.borderColor = 'rgba(239,68,68,.25)'
+    t.style.color = 'var(--red)'; t.textContent = v.toFixed(1) + '% — Pas de value ✗'
+  }
+}
+
+// ── KELLY ──
+function kc() {
+  const b = parseFloat(document.getElementById('kb').value) || 50000
+  const c = parseFloat(document.getElementById('kc2').value) || 2.1
+  const p = parseFloat(document.getElementById('kp').value) / 100 || .55
+  const k = Math.max(0, p - (1 - p) / (c - 1))
+  const m = Math.round(b * k * .25)
+  document.getElementById('kr').textContent = m.toLocaleString('fr-FR') + ' FCFA'
+  document.getElementById('kpct').textContent = 'Kelly ' + (k * 100).toFixed(1) + '% → fraction ¼ = ' + (k * 25).toFixed(1) + '%'
+}
+</script>
+</body>
+</html>
