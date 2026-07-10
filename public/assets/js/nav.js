@@ -160,7 +160,7 @@
       ${bnItem('analyse.html','ti-brain','Oracle',page==='analyse')}
       ${bnCta('checkout.html','ti-bolt','Plans')}
       ${bnItem(accountHref,accountIcon,accountLabel,page==='welcome'||isLogged&&page==='home')}
-      <button onclick="window.__openDr()" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;padding-top:9px;color:#3a5a3a;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:none;border:none;cursor:pointer;font-family:'Barlow',sans-serif;-webkit-tap-highlight-color:transparent">
+      <button onclick="window.__openDr()" id="g-menu-btn" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;padding-top:9px;color:#8aaa8a;font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;background:none;border:none;cursor:pointer;font-family:'Barlow',sans-serif;-webkit-tap-highlight-color:transparent">
         <i class="ti ti-menu-2" style="font-size:20px;line-height:1"></i>Menu
       </button>
     `
@@ -169,7 +169,7 @@
   }
 
   function bnItem(href, icon, label, active) {
-    return `<a href="${href}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;padding-top:9px;color:${active?'#22c55e':'#3a5a3a'};font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;-webkit-tap-highlight-color:transparent;min-width:44px">
+    return `<a href="${href}" style="display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:1;padding-top:9px;color:${active?'#22c55e':'#8aaa8a'};font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-decoration:none;-webkit-tap-highlight-color:transparent;min-width:44px">
       <i class="ti ${icon}" style="font-size:20px;line-height:1"></i>${label}
     </a>`
   }
