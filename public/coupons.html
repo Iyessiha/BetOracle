@@ -441,6 +441,50 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 .btn-tg:hover  { background: rgba(36,161,222,.25); }
 .btn-cp:hover  { border-color: var(--gb); color: var(--gb); }
 
+/* ── HISTORIQUE ── */
+.hist-filter-btn {
+  font-size: 12px; font-weight: 700; padding: 7px 14px; border-radius: 20px;
+  background: var(--surf1); border: 1px solid var(--line2); color: var(--mid);
+  transition: all .15s; font-family: var(--ff);
+}
+.hist-filter-btn:hover { border-color: var(--green); color: var(--green-l); }
+.hist-filter-btn.on { background: rgba(34,197,94,.14); border-color: var(--green); color: var(--green-l); }
+
+.hist-card {
+  background: var(--surf1); border: 1px solid var(--line2); border-radius: 14px;
+  margin-bottom: 12px; overflow: hidden; transition: border-color .15s;
+}
+.hist-card:hover { border-color: var(--line3); }
+.hist-row {
+  display: flex; align-items: center; gap: 14px; padding: 14px 18px;
+  cursor: pointer; user-select: none;
+}
+.hist-tier-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.hist-tier-dot.safe { background: var(--green); }
+.hist-tier-dot.balanced { background: var(--gold); }
+.hist-tier-dot.bold { background: var(--orange); }
+.hist-main { flex: 1; min-width: 0; }
+.hist-date { font-size: 13px; font-weight: 700; color: var(--hi); }
+.hist-sub { font-size: 11px; color: var(--lo); margin-top: 2px; }
+.hist-odds { font-family: var(--fd); font-size: 18px; color: var(--mid); flex-shrink: 0; }
+.hist-chevron { color: var(--lo); font-size: 16px; transition: transform .2s; flex-shrink: 0; }
+.hist-card.open .hist-chevron { transform: rotate(180deg); }
+.hist-detail { display: none; border-top: 1px solid var(--line1); }
+.hist-card.open .hist-detail { display: block; }
+.hist-sel {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  padding: 10px 18px; border-bottom: 1px solid var(--line1); font-size: 12.5px;
+}
+.hist-sel:last-child { border-bottom: none; }
+.hist-sel-teams { font-weight: 600; }
+.hist-sel-pick { color: var(--lo); font-size: 11px; margin-top: 1px; }
+.hist-empty { text-align: center; padding: 40px 20px; color: var(--mid); font-size: 13px; }
+.hist-load-more {
+  display: block; margin: 16px auto 0; background: var(--surf2); border: 1px solid var(--line2);
+  color: var(--mid); font-size: 13px; font-weight: 700; padding: 10px 24px; border-radius: 9px;
+}
+.hist-load-more:hover { border-color: var(--green); color: var(--green-l); }
+
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
@@ -478,11 +522,52 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 </section>
 
 <main class="wrap">
+  <div class="perf-banner" id="perf-banner" style="display:none">
+    <div class="perf-stat">
+      <div class="perf-val" style="color:var(--hi)" id="perf-total">—</div>
+      <div class="perf-lbl">Coupons Sûr</div>
+    </div>
+    <div class="perf-divider"></div>
+    <div class="perf-stat">
+      <div class="perf-val" style="color:var(--green)" id="perf-wins">—</div>
+      <div class="perf-lbl">Gagnés</div>
+    </div>
+    <div class="perf-divider"></div>
+    <div class="perf-stat">
+      <div class="perf-val" style="color:var(--gold)" id="perf-rate">—</div>
+      <div class="perf-lbl">Taux de réussite</div>
+    </div>
+    <div class="perf-divider"></div>
+    <div class="perf-stat">
+      <div class="perf-val" style="color:var(--teal)" id="perf-odds">—</div>
+      <div class="perf-lbl">Cote moy. gagnante</div>
+    </div>
+  </div>
   <div class="coupons" id="coupons">
     <div class="skel"></div>
     <div class="skel"></div>
     <div class="skel"></div>
   </div>
+
+  <!-- ═══ HISTORIQUE DES COUPONS ═══ -->
+  <section id="history-section" style="margin-top:40px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+      <div>
+        <div class="eyebrow" style="margin-bottom:6px"><i class="ti ti-history"></i> Historique</div>
+        <h2 style="font-family:var(--fd);font-size:28px;letter-spacing:.03em">Coupons passés</h2>
+      </div>
+      <div style="display:flex;gap:6px" id="history-filter">
+        <button class="hist-filter-btn on" data-tier="all" onclick="setHistFilter('all',this)">Tous</button>
+        <button class="hist-filter-btn" data-tier="safe" onclick="setHistFilter('safe',this)">🛡️ Sûr</button>
+        <button class="hist-filter-btn" data-tier="balanced" onclick="setHistFilter('balanced',this)">⚖️ Équilibré</button>
+        <button class="hist-filter-btn" data-tier="bold" onclick="setHistFilter('bold',this)">🔥 Audacieux</button>
+      </div>
+    </div>
+    <div id="history-list">
+      <div class="skel" style="height:80px"></div>
+      <div class="skel" style="height:80px;margin-top:12px"></div>
+    </div>
+  </section>
 </main>
 
 <p class="disclaimer">
@@ -729,7 +814,7 @@ async function load() {
   lastCouponData = coupons[0]; showState(coupons.map(c => renderCoupon(c, plan)).join(''))
 }
 
-load(); loadPerformanceStats()
+load(); loadPerformanceStats(); loadHistory()
 </script>
 
   <script>
@@ -916,6 +1001,101 @@ function selResultBadge(sel) {
 }
 
 
+// ── HISTORIQUE DES COUPONS ────────────────────────
+let histTierFilter = 'all'
+let histLoaded = []
+let histShown = 0
+const HIST_PAGE = 10
+
+function tierLabel(t) {
+  return { safe: '🛡️ Sûr', balanced: '⚖️ Équilibré', bold: '🔥 Audacieux' }[t] || t
+}
+
+function renderHistSel(s) {
+  const badge = selResultBadge(s)
+  return `
+    <div class="hist-sel">
+      <div>
+        <div class="hist-sel-teams">${esc(s.team_a || s.home || '?')} <span style="color:var(--lo)">vs</span> ${esc(s.team_b || s.away || '?')}</div>
+        <div class="hist-sel-pick">${esc(s.pick || '')} · cote ${Number(s.odds || 0).toFixed(2)}</div>
+      </div>
+      <div>${badge}</div>
+    </div>`
+}
+
+function renderHistCard(c, idx) {
+  const sels = Array.isArray(c.result_detail) && c.result_detail.length ? c.result_detail : (c.selections || [])
+  const d = c.match_date ? new Date(c.match_date + 'T12:00:00') : null
+  const dateLabel = d ? d.toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'short' }) : c.match_date
+  const badge = resultBadge(c.result)
+  const nWon = sels.filter(s => s.result_won === true).length
+  const nDone = sels.filter(s => s.result_status === 'completed').length
+  const subLabel = nDone > 0 ? `${nWon}/${nDone} sélections gagnées` : `${sels.length} sélection${sels.length>1?'s':''}`
+
+  return `
+    <div class="hist-card" id="hist-card-${idx}">
+      <div class="hist-row" onclick="toggleHist(${idx})">
+        <span class="hist-tier-dot ${c.tier}"></span>
+        <div class="hist-main">
+          <div class="hist-date">${tierLabel(c.tier)} · ${esc(dateLabel)}</div>
+          <div class="hist-sub">${subLabel}</div>
+        </div>
+        <div class="hist-odds">×${Number(c.total_odds || 0).toFixed(2)}</div>
+        ${badge}
+        <i class="ti ti-chevron-down hist-chevron"></i>
+      </div>
+      <div class="hist-detail">
+        ${sels.map(renderHistSel).join('')}
+      </div>
+    </div>`
+}
+
+function toggleHist(idx) {
+  document.getElementById('hist-card-' + idx)?.classList.toggle('open')
+}
+
+window.setHistFilter = function(tier, btn) {
+  histTierFilter = tier
+  document.querySelectorAll('.hist-filter-btn').forEach(b => b.classList.remove('on'))
+  btn.classList.add('on')
+  histShown = 0
+  renderHistList()
+}
+
+function renderHistList() {
+  const container = document.getElementById('history-list')
+  if (!container) return
+  const filtered = histTierFilter === 'all' ? histLoaded : histLoaded.filter(c => c.tier === histTierFilter)
+  if (!filtered.length) {
+    container.innerHTML = `<div class="hist-empty">Aucun coupon passé pour l'instant.</div>`
+    return
+  }
+  histShown = histShown || HIST_PAGE
+  const toShow = filtered.slice(0, histShown)
+  let html = toShow.map((c, i) => renderHistCard(c, i)).join('')
+  if (filtered.length > histShown) {
+    html += `<button class="hist-load-more" onclick="histShown += ${HIST_PAGE}; renderHistList()">Voir plus (${filtered.length - histShown} restants)</button>`
+  }
+  container.innerHTML = html
+}
+
+async function loadHistory() {
+  const container = document.getElementById('history-list')
+  try {
+    const today = new Date().toISOString().slice(0, 10)
+    const res = await fetch(
+      `${S}/rest/v1/coupons?select=match_date,tier,result,total_odds,confidence,selections,result_detail&status=eq.published&match_date=lt.${today}&order=match_date.desc&limit=60`,
+      { headers: { apikey: AK } }
+    )
+    if (!res.ok) throw new Error('fetch failed')
+    const data = await res.json()
+    histLoaded = Array.isArray(data) ? data : []
+    renderHistList()
+  } catch (_) {
+    if (container) container.innerHTML = `<div class="hist-empty">Impossible de charger l'historique pour l'instant.</div>`
+  }
+}
+
 // ── PARTAGE COUPON ────────────────────────────────
 function buildShareText(coupon) {
   if (!coupon) return ''
@@ -961,6 +1141,7 @@ let lastCouponData = null
 
 load();
 loadPerformanceStats();
+loadHistory();
 </script>
 </body>
 </html>
