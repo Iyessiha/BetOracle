@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mentions légales — Betoracl Pro</title>
+<meta name="description" content="Mentions légales de Betoracl Pro, produit édité par MonWe Infinity LLC.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --green-pitch:#1a5c2a;
+  --green-bright:#22c55e;
+  --green-light:#4ade80;
+  --gold:#F5C842;
+  --white:#f8faf8;
+  --bg:#080c08;
+  --bg2:#0d120d;
+  --s1:#161e16;
+  --s2:#1c271c;
+  --b1:#2a3a2a;
+  --b2:#344834;
+  --text:#e8f0e8;
+  --muted:#7a9a7a;
+  --sub:#3a5a3a;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 max(24px,calc((100vw - 1100px)/2));
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(8,12,8,.96);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--b1);
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.logo-badge{width:36px;height:36px;border-radius:9px;overflow:hidden;flex-shrink:0}
+.logo-badge img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
+.logo-name{font-family:var(--font-display);font-size:20px;letter-spacing:.04em}
+.logo-name span{color:var(--gold)}
+.nav-back{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  padding:8px 18px;border-radius:8px;border:1px solid var(--b1);transition:all .2s;
+}
+.nav-back:hover{border-color:var(--green-bright);color:var(--green-bright)}
+
+.doc-hero{padding:110px 0 60px;text-align:center;border-bottom:1px solid var(--b1);position:relative;overflow:hidden}
+.doc-hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(34,197,94,.03) 80px);
+  pointer-events:none;
+}
+.doc-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  color:var(--green-bright);padding:5px 16px;border-radius:30px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;
+}
+.doc-hero h1{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);letter-spacing:.03em;line-height:1.05;margin-bottom:14px}
+.doc-hero h1 span{color:var(--green-bright)}
+.doc-meta{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:18px}
+.doc-meta span{display:inline-flex;align-items:center;gap:6px}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 max(24px,calc((100vw - 1100px)/2))}
+.doc-layout{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start;padding:60px 0 100px}
+
+.toc{position:sticky;top:90px;background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:22px}
+.toc-title{font-family:var(--font-display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:2px}
+.toc ul li a{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);padding:7px 10px;border-radius:8px;transition:all .15s}
+.toc ul li a:hover{background:var(--s2);color:var(--green-bright)}
+.toc ul li a .art-num{font-family:var(--font-display);font-size:11px;color:var(--sub);min-width:22px}
+.toc-footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--b1);font-size:11px;color:var(--sub);line-height:1.6}
+
+.doc-content{display:flex;flex-direction:column;gap:0}
+.article{padding:36px 0;border-bottom:1px solid var(--b1)}
+.article:last-child{border-bottom:none}
+.art-header{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.art-num-big{
+  font-family:var(--font-display);font-size:13px;letter-spacing:.12em;
+  color:var(--green-bright);text-transform:uppercase;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  padding:3px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+.article h2{font-family:var(--font-display);font-size:clamp(20px,2.5vw,28px);letter-spacing:.03em;line-height:1.1}
+.article p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.article p:last-child{margin-bottom:0}
+.article p strong{color:var(--text)}
+.article ul,.article ol{margin:12px 0 14px 0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.article ul li,.article ol li{font-size:15px;color:var(--muted);line-height:1.7}
+.article ul li::marker{color:var(--green-bright)}
+.article ol li::marker{color:var(--green-bright);font-weight:700}
+.article ul li strong,.article ol li strong{color:var(--text)}
+
+.art-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.art-table th{background:var(--s1);color:var(--text);font-weight:700;padding:10px 16px;text-align:left;border:1px solid var(--b1);font-family:var(--font-display);letter-spacing:.04em;font-size:13px}
+.art-table td{padding:10px 16px;border:1px solid var(--b1);color:var(--muted);vertical-align:top}
+.art-table tr:hover td{background:var(--s1)}
+
+.callout{border-radius:10px;padding:16px 20px;margin:18px 0;font-size:14px;line-height:1.75;display:flex;gap:12px;align-items:flex-start}
+.callout i{font-size:18px;flex-shrink:0;margin-top:2px}
+.callout.warn{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);color:var(--muted)}
+.callout.warn i{color:var(--gold)}
+.callout.info{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);color:var(--muted)}
+.callout.info i{color:var(--green-bright)}
+.callout.danger{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:var(--muted)}
+.callout.danger i{color:#ef4444}
+.callout div strong{color:var(--text)}
+
+.sign-block{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:28px 32px;margin-top:20px}
+.sign-title{font-family:var(--font-display);font-size:18px;letter-spacing:.04em;margin-bottom:16px;color:var(--text)}
+.sign-line{font-size:14px;color:var(--muted);padding:5px 0;display:flex;gap:10px}
+.sign-line strong{color:var(--text);min-width:180px;flex-shrink:0}
+
+footer{background:var(--bg2);border-top:1px solid var(--b1);padding:36px 0;text-align:center;font-size:13px;color:var(--sub)}
+footer a{color:var(--sub);text-decoration:underline;text-underline-offset:3px}
+footer a:hover{color:var(--green-bright)}
+
+@media(max-width:860px){.doc-layout{grid-template-columns:1fr}.toc{display:none}}
+@media(max-width:560px){.doc-meta{gap:14px}.art-header{flex-direction:column;gap:6px}.sign-line{flex-direction:column;gap:2px}.sign-line strong{min-width:0}}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-536531182');
+</script>
+<!-- Vercel Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-badge"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
+    <div class="logo-name">BET<span>ORACL</span> PRO</div>
+  </div>
+  <a href="/" class="nav-back"><i class="ti ti-arrow-left"></i> Retour à l'accueil</a>
+</nav>
+
+<div class="doc-hero">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="doc-eyebrow"><i class="ti ti-building-bank"></i> Document légal</div>
+    <h1>Mentions<br><span>légales</span></h1>
+    <p style="font-size:15px;color:var(--muted);max-width:540px;margin:0 auto">
+      Informations relatives à l'éditeur, à l'hébergement et aux conditions d'utilisation du site
+      <strong style="color:var(--text)">betoracl.com</strong>.
+    </p>
+    <div class="doc-meta">
+      <span><i class="ti ti-calendar"></i> Version du 31 juillet 2026</span>
+      <span><i class="ti ti-building"></i> MonWe Infinity LLC</span>
+      <span><i class="ti ti-world"></i> betoracl.com</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="doc-layout">
+
+    <aside class="toc">
+      <div class="toc-title"><i class="ti ti-list"></i> Sommaire</div>
+      <ul>
+        <li><a href="#art1"><span class="art-num">01</span>Éditeur du site</a></li>
+        <li><a href="#art2"><span class="art-num">02</span>Direction de publication</a></li>
+        <li><a href="#art3"><span class="art-num">03</span>Hébergement</a></li>
+        <li><a href="#art4"><span class="art-num">04</span>Objet du site</a></li>
+        <li><a href="#art5"><span class="art-num">05</span>Propriété intellectuelle</a></li>
+        <li><a href="#art6"><span class="art-num">06</span>Données personnelles</a></li>
+        <li><a href="#art7"><span class="art-num">07</span>Cookies et traceurs</a></li>
+        <li><a href="#art8"><span class="art-num">08</span>Liens et partenaires</a></li>
+        <li><a href="#art9"><span class="art-num">09</span>Responsabilité</a></li>
+        <li><a href="#art10"><span class="art-num">10</span>Accès aux mineurs</a></li>
+        <li><a href="#art11"><span class="art-num">11</span>Droit applicable</a></li>
+        <li><a href="#art12"><span class="art-num">12</span>Contact</a></li>
+      </ul>
+      <div class="toc-footer">
+        Betoracl Pro est un produit de<br>
+        <strong style="color:var(--muted)">MonWe Infinity LLC</strong><br>
+        Albuquerque, NM — USA
+      </div>
+    </aside>
+
+    <main class="doc-content">
+
+      <div class="article" id="art1">
+        <div class="art-header">
+          <span class="art-num-big">Article 01</span>
+          <h2>Éditeur du site</h2>
+        </div>
+        <p>
+          Le site <strong>betoracl.com</strong> et le service <strong>Betoracl Pro</strong> sont édités par :
+        </p>
+        <div class="sign-block" style="margin:16px 0 20px">
+          <div class="sign-line"><strong>Raison sociale</strong> MonWe Infinity LLC</div>
+          <div class="sign-line"><strong>Forme juridique</strong> Limited Liability Company (LLC), société à responsabilité limitée de droit américain, mono-membre</div>
+          <div class="sign-line"><strong>État de constitution</strong> Nouveau-Mexique (New Mexico), États-Unis</div>
+          <div class="sign-line"><strong>Date de constitution</strong> 20 avril 2026</div>
+          <div class="sign-line"><strong>N° de dépôt (SOS filing)</strong> 3213688</div>
+          <div class="sign-line"><strong>Identifiant entité SOS NM</strong> 0008097113</div>
+          <div class="sign-line"><strong>Siège social</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, États-Unis</div>
+          <div class="sign-line"><strong>Loi applicable à la société</strong> Chapter 53, Article 19 NMSA 1978 — « Limited Liability Company Act »</div>
+          <div class="sign-line"><strong>E-mail</strong> monweci@gmail.com</div>
+          <div class="sign-line"><strong>Téléphone</strong> +225 05 00 44 64 64</div>
+        </div>
+        <p>
+          Adresse opérationnelle pour la correspondance en Afrique de l'Ouest : Bingerville, Abidjan, Lagunes, Côte d'Ivoire, 00225.
+        </p>
+      </div>
+
+      <div class="article" id="art2">
+        <div class="art-header">
+          <span class="art-num-big">Article 02</span>
+          <h2>Direction de la publication</h2>
+        </div>
+        <p>
+          La directrice de la publication du site est <strong>Yessiha Ilboudo</strong>, gérante et membre unique de MonWe Infinity LLC.
+        </p>
+        <p>
+          Toute demande relative au contenu éditorial du site peut lui être adressée à l'adresse <strong>monweci@gmail.com</strong>.
+        </p>
+      </div>
+
+      <div class="article" id="art3">
+        <div class="art-header">
+          <span class="art-num-big">Article 03</span>
+          <h2>Hébergement et infrastructure technique</h2>
+        </div>
+        <p>Le site et ses services reposent sur les prestataires techniques suivants :</p>
+        <table class="art-table">
+          <thead>
+            <tr><th>Prestataire</th><th>Rôle</th><th>Site</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Vercel Inc.</strong></td><td>Hébergement du site web et diffusion du contenu</td><td>vercel.com</td></tr>
+            <tr><td><strong>Supabase</strong></td><td>Base de données, authentification et fonctions applicatives</td><td>supabase.com</td></tr>
+            <tr><td><strong>Anthropic</strong></td><td>Moteur d'intelligence artificielle utilisé par l'Oracle</td><td>anthropic.com</td></tr>
+            <tr><td><strong>API-Football (API-Sports)</strong></td><td>Fourniture des données sportives et des cotes</td><td>api-football.com</td></tr>
+            <tr><td><strong>Telegram</strong></td><td>Diffusion des coupons et notifications</td><td>telegram.org</td></tr>
+          </tbody>
+        </table>
+        <p>
+          Les données applicatives sont hébergées dans l'Union européenne (région <strong>eu-west-3</strong>). Certains prestataires étant établis aux États-Unis, des transferts de données hors Union européenne peuvent intervenir dans les conditions décrites par notre <a href="/confidentialite" style="color:var(--green-bright);text-decoration:underline;text-underline-offset:3px">Politique de confidentialité</a>.
+        </p>
+      </div>
+
+      <div class="article" id="art4">
+        <div class="art-header">
+          <span class="art-num-big">Article 04</span>
+          <h2>Objet du site</h2>
+        </div>
+        <p>
+          Betoracl Pro est une plateforme d'analyse quantitative appliquée aux paris sportifs. Elle propose des coupons générés automatiquement, des outils statistiques (probabilités 1X2, BTTS, Over/Under, value bet, critère de Kelly, confrontations directes), un moteur de prédiction par intelligence artificielle et un suivi de bankroll.
+        </p>
+        <div class="callout danger">
+          <i class="ti ti-alert-circle"></i>
+          <div>
+            <strong>Betoracl Pro n'est pas un opérateur de jeux d'argent.</strong> Le service ne collecte aucune mise, n'organise aucun pari et ne garantit aucun gain. Il constitue exclusivement un outil d'aide à la décision. L'utilisateur place ses paris auprès des bookmakers de son choix, sous sa seule responsabilité.
+          </div>
+        </div>
+      </div>
+
+      <div class="article" id="art5">
+        <div class="art-header">
+          <span class="art-num-big">Article 05</span>
+          <h2>Propriété intellectuelle</h2>
+        </div>
+        <p>
+          L'ensemble des éléments composant le site — marque et dénomination <strong>Betoracl</strong> et <strong>Betoracl Pro</strong>, logo, nom de domaine, architecture, interface, textes, graphismes, algorithmes, modèles d'analyse, bases de données et coupons générés — est la propriété exclusive de MonWe Infinity LLC ou de ses concédants de licence.
+        </p>
+        <p>
+          Toute reproduction, représentation, adaptation, extraction ou réutilisation, totale ou partielle, par quelque procédé que ce soit et sur quelque support que ce soit, sans autorisation écrite préalable de MonWe Infinity LLC, est interdite et constitue une contrefaçon.
+        </p>
+        <p>
+          Les marques, logos et dénominations des bookmakers partenaires, des compétitions et des clubs cités demeurent la propriété de leurs titulaires respectifs et ne sont utilisés qu'à des fins d'identification.
+        </p>
+      </div>
+
+      <div class="article" id="art6">
+        <div class="art-header">
+          <span class="art-num-big">Article 06</span>
+          <h2>Données personnelles</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC collecte et traite des données à caractère personnel dans le cadre de la fourniture du service. Les finalités, bases légales, durées de conservation, destinataires et modalités d'exercice des droits sont détaillés dans notre <a href="/confidentialite" style="color:var(--green-bright);text-decoration:underline;text-underline-offset:3px">Politique de confidentialité</a>.
+        </p>
+        <p>
+          Toute demande relative aux données personnelles peut être adressée à <strong>monweci@gmail.com</strong>.
+        </p>
+      </div>
+
+      <div class="article" id="art7">
+        <div class="art-header">
+          <span class="art-num-big">Article 07</span>
+          <h2>Cookies et traceurs</h2>
+        </div>
+        <p>
+          Le site utilise des cookies et technologies similaires nécessaires à son fonctionnement (maintien de session, authentification) ainsi que des traceurs de mesure d'audience et de publicité :
+        </p>
+        <ul>
+          <li><strong>Cookies techniques</strong> — indispensables à la connexion et au maintien de la session utilisateur ;</li>
+          <li><strong>Vercel Analytics</strong> — mesure d'audience du site ;</li>
+          <li><strong>Google Ads / Google Tag</strong> — mesure de performance des campagnes publicitaires ;</li>
+          <li><strong>Meta Pixel</strong> — mesure de performance des campagnes publicitaires sur les plateformes Meta.</li>
+        </ul>
+        <p>
+          L'utilisateur peut à tout moment configurer son navigateur pour refuser les cookies non essentiels. Le refus des cookies techniques peut toutefois empêcher l'accès à certaines fonctionnalités du service. Le détail de ces traceurs figure dans la <a href="/confidentialite" style="color:var(--green-bright);text-decoration:underline;text-underline-offset:3px">Politique de confidentialité</a>.
+        </p>
+      </div>
+
+      <div class="article" id="art8">
+        <div class="art-header">
+          <span class="art-num-big">Article 08</span>
+          <h2>Liens externes et partenariats d'affiliation</h2>
+        </div>
+        <p>
+          Le site comporte des liens vers des sites tiers, notamment des opérateurs de paris sportifs. Ces liens peuvent constituer des <strong>liens d'affiliation</strong> : MonWe Infinity LLC est susceptible de percevoir une rémunération lorsqu'un utilisateur s'inscrit ou joue auprès de ces opérateurs.
+        </p>
+        <div class="callout warn">
+          <i class="ti ti-external-link"></i>
+          <div>
+            MonWe Infinity LLC n'exerce aucun contrôle sur le contenu, les conditions, les cotes ni les pratiques des sites tiers et décline toute responsabilité à leur égard. La relation contractuelle liée à un pari est établie exclusivement entre l'utilisateur et l'opérateur concerné.
+          </div>
+        </div>
+        <p>
+          Il appartient à l'utilisateur de vérifier que l'opérateur qu'il choisit est autorisé à exercer dans son pays de résidence et qu'il respecte la réglementation locale applicable aux jeux d'argent.
+        </p>
+      </div>
+
+      <div class="article" id="art9">
+        <div class="art-header">
+          <span class="art-num-big">Article 09</span>
+          <h2>Responsabilité et disponibilité</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC met en œuvre les moyens raisonnables pour assurer l'exactitude des informations diffusées et la disponibilité du service, sans pouvoir garantir une accessibilité ininterrompue ni l'absence totale d'erreurs.
+        </p>
+        <p>
+          Les données sportives, cotes et statistiques proviennent de fournisseurs tiers et sont susceptibles de comporter des inexactitudes ou des délais de mise à jour. Les probabilités, prédictions et recommandations affichées sont fournies à titre <strong>purement indicatif</strong> et ne constituent ni un conseil financier, ni une garantie de résultat.
+        </p>
+        <p>
+          Les performances passées, y compris les taux de réussite historiques affichés sur le site, ne préjugent en rien des résultats futurs.
+        </p>
+      </div>
+
+      <div class="article" id="art10">
+        <div class="art-header">
+          <span class="art-num-big">Article 10</span>
+          <h2>Accès interdit aux mineurs</h2>
+        </div>
+        <div class="callout danger">
+          <i class="ti ti-shield-x"></i>
+          <div>
+            <strong>Service strictement réservé aux personnes majeures.</strong> L'accès à Betoracl Pro est interdit aux personnes de moins de 18 ans, ou n'ayant pas atteint l'âge légal requis pour les jeux d'argent dans leur pays de résidence lorsque celui-ci est supérieur.
+          </div>
+        </div>
+        <p>
+          Les paris sportifs comportent un risque de dépendance et de perte financière. Ne misez que des sommes que vous pouvez vous permettre de perdre. En cas de difficulté liée au jeu, il est recommandé de solliciter l'aide d'un professionnel ou d'un organisme spécialisé de votre pays de résidence.
+        </p>
+      </div>
+
+      <div class="article" id="art11">
+        <div class="art-header">
+          <span class="art-num-big">Article 11</span>
+          <h2>Droit applicable</h2>
+        </div>
+        <p>
+          Les présentes mentions légales sont régies par le droit de l'État du <strong>Nouveau-Mexique, États-Unis d'Amérique</strong>, sans préjudice des dispositions impératives protectrices des consommateurs applicables dans le pays de résidence de l'utilisateur.
+        </p>
+        <p>
+          Les conditions contractuelles régissant l'utilisation du service figurent dans les <a href="/cgu" style="color:var(--green-bright);text-decoration:underline;text-underline-offset:3px">Conditions Générales d'Utilisation</a>.
+        </p>
+      </div>
+
+      <div class="article" id="art12">
+        <div class="art-header">
+          <span class="art-num-big">Article 12</span>
+          <h2>Contact</h2>
+        </div>
+        <p>Pour toute question relative au site ou aux présentes mentions légales :</p>
+        <div class="sign-block">
+          <div class="sign-title">MonWe Infinity LLC — Betoracl Pro</div>
+          <div class="sign-line"><strong>E-mail</strong> monweci@gmail.com</div>
+          <div class="sign-line"><strong>Téléphone</strong> +225 05 00 44 64 64</div>
+          <div class="sign-line"><strong>Courrier</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, USA</div>
+          <div class="sign-line"><strong>Gérante</strong> Yessiha Ilboudo</div>
+        </div>
+        <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--b1)">
+          <p style="font-size:13px;color:var(--sub);line-height:1.8">
+            <strong style="color:var(--muted)">Éditeur :</strong> MonWe Infinity LLC, société à responsabilité limitée immatriculée dans l'État du Nouveau-Mexique (États-Unis), n° de dépôt 3213688.<br>
+            <strong style="color:var(--muted)">Date de mise en vigueur :</strong> 31 juillet 2026.<br>
+            <strong style="color:var(--muted)">Version :</strong> 1.0<br>
+            <strong style="color:var(--muted)">Langue de référence :</strong> Français. En cas de traduction, la version française prévaut.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 MonWe Infinity LLC · Betoracl Pro. Tous droits réservés.</p>
+    <p style="margin-top:8px">
+      MonWe Infinity LLC — 1209 Mountain Road PL NE, STE R, Albuquerque, NM 87110, USA — N° 3213688<br>
+      <a href="/">Accueil</a> ·
+      <a href="/cgu">CGU</a> ·
+      <a href="/confidentialite">Politique de confidentialité</a> ·
+      <a href="mailto:monweci@gmail.com">monweci@gmail.com</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+const articles = document.querySelectorAll('.article');
+const tocLinks = document.querySelectorAll('.toc a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      tocLinks.forEach(l => { l.style.background = ''; l.style.color = ''; });
+      const active = document.querySelector('.toc a[href="#'+entry.target.id+'"]');
+      if(active){
+        active.style.background = 'rgba(34,197,94,.1)';
+        active.style.color = 'var(--green-bright)';
+      }
+    }
+  });
+}, {rootMargin:'-20% 0px -70% 0px'});
+articles.forEach(a => obs.observe(a));
+</script>
+
+</body>
+</html>

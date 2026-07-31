@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Politique de confidentialité — Betoracl Pro</title>
+<meta name="description" content="Politique de confidentialité et de protection des données personnelles de Betoracl Pro, produit de MonWe Infinity LLC.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<style>
+:root{
+  --green-pitch:#1a5c2a;
+  --green-bright:#22c55e;
+  --green-light:#4ade80;
+  --gold:#F5C842;
+  --white:#f8faf8;
+  --bg:#080c08;
+  --bg2:#0d120d;
+  --s1:#161e16;
+  --s2:#1c271c;
+  --b1:#2a3a2a;
+  --b2:#344834;
+  --text:#e8f0e8;
+  --muted:#7a9a7a;
+  --sub:#3a5a3a;
+  --font-display:'Bebas Neue',sans-serif;
+  --font-body:'Barlow',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:16px;line-height:1.7;overflow-x:hidden}
+a{text-decoration:none;color:inherit}
+
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  padding:0 max(24px,calc((100vw - 1100px)/2));
+  height:66px;display:flex;align-items:center;justify-content:space-between;
+  background:rgba(8,12,8,.96);backdrop-filter:blur(18px);
+  border-bottom:.5px solid var(--b1);
+}
+.nav-logo{display:flex;align-items:center;gap:10px}
+.logo-badge{width:36px;height:36px;border-radius:9px;overflow:hidden;flex-shrink:0}
+.logo-badge img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
+.logo-name{font-family:var(--font-display);font-size:20px;letter-spacing:.04em}
+.logo-name span{color:var(--gold)}
+.nav-back{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:13px;font-weight:600;color:var(--muted);
+  padding:8px 18px;border-radius:8px;border:1px solid var(--b1);transition:all .2s;
+}
+.nav-back:hover{border-color:var(--green-bright);color:var(--green-bright)}
+
+.doc-hero{padding:110px 0 60px;text-align:center;border-bottom:1px solid var(--b1);position:relative;overflow:hidden}
+.doc-hero::before{
+  content:'';position:absolute;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 79px,rgba(34,197,94,.03) 80px);
+  pointer-events:none;
+}
+.doc-eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  color:var(--green-bright);padding:5px 16px;border-radius:30px;
+  font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:20px;
+}
+.doc-hero h1{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);letter-spacing:.03em;line-height:1.05;margin-bottom:14px}
+.doc-hero h1 span{color:var(--green-bright)}
+.doc-meta{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;font-size:13px;color:var(--muted);margin-top:18px}
+.doc-meta span{display:inline-flex;align-items:center;gap:6px}
+
+.wrap{max-width:1100px;margin:0 auto;padding:0 max(24px,calc((100vw - 1100px)/2))}
+.doc-layout{display:grid;grid-template-columns:240px 1fr;gap:48px;align-items:start;padding:60px 0 100px}
+
+.toc{position:sticky;top:90px;background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:22px}
+.toc-title{font-family:var(--font-display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;gap:7px}
+.toc ul{list-style:none;display:flex;flex-direction:column;gap:2px}
+.toc ul li a{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--muted);padding:7px 10px;border-radius:8px;transition:all .15s}
+.toc ul li a:hover{background:var(--s2);color:var(--green-bright)}
+.toc ul li a .art-num{font-family:var(--font-display);font-size:11px;color:var(--sub);min-width:22px}
+.toc-footer{margin-top:18px;padding-top:14px;border-top:1px solid var(--b1);font-size:11px;color:var(--sub);line-height:1.6}
+
+.doc-content{display:flex;flex-direction:column;gap:0}
+.article{padding:36px 0;border-bottom:1px solid var(--b1)}
+.article:last-child{border-bottom:none}
+.art-header{display:flex;align-items:baseline;gap:14px;margin-bottom:18px}
+.art-num-big{
+  font-family:var(--font-display);font-size:13px;letter-spacing:.12em;
+  color:var(--green-bright);text-transform:uppercase;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  padding:3px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0;
+}
+.article h2{font-family:var(--font-display);font-size:clamp(20px,2.5vw,28px);letter-spacing:.03em;line-height:1.1}
+.article p{font-size:15px;color:var(--muted);line-height:1.8;margin-bottom:14px}
+.article p:last-child{margin-bottom:0}
+.article p strong{color:var(--text)}
+.article ul,.article ol{margin:12px 0 14px 0;padding-left:20px;display:flex;flex-direction:column;gap:8px}
+.article ul li,.article ol li{font-size:15px;color:var(--muted);line-height:1.7}
+.article ul li::marker{color:var(--green-bright)}
+.article ol li::marker{color:var(--green-bright);font-weight:700}
+.article ul li strong,.article ol li strong{color:var(--text)}
+
+.art-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+.art-table th{background:var(--s1);color:var(--text);font-weight:700;padding:10px 16px;text-align:left;border:1px solid var(--b1);font-family:var(--font-display);letter-spacing:.04em;font-size:13px}
+.art-table td{padding:10px 16px;border:1px solid var(--b1);color:var(--muted);vertical-align:top}
+.art-table tr:hover td{background:var(--s1)}
+.table-scroll{overflow-x:auto;margin:16px 0}
+.table-scroll .art-table{margin:0;min-width:520px}
+
+.callout{border-radius:10px;padding:16px 20px;margin:18px 0;font-size:14px;line-height:1.75;display:flex;gap:12px;align-items:flex-start}
+.callout i{font-size:18px;flex-shrink:0;margin-top:2px}
+.callout.warn{background:rgba(245,200,66,.06);border:1px solid rgba(245,200,66,.2);color:var(--muted)}
+.callout.warn i{color:var(--gold)}
+.callout.info{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);color:var(--muted)}
+.callout.info i{color:var(--green-bright)}
+.callout.danger{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);color:var(--muted)}
+.callout.danger i{color:#ef4444}
+.callout div strong{color:var(--text)}
+
+.sign-block{background:var(--s1);border:1px solid var(--b2);border-radius:14px;padding:28px 32px;margin-top:20px}
+.sign-title{font-family:var(--font-display);font-size:18px;letter-spacing:.04em;margin-bottom:16px;color:var(--text)}
+.sign-line{font-size:14px;color:var(--muted);padding:5px 0;display:flex;gap:10px}
+.sign-line strong{color:var(--text);min-width:180px;flex-shrink:0}
+
+footer{background:var(--bg2);border-top:1px solid var(--b1);padding:36px 0;text-align:center;font-size:13px;color:var(--sub)}
+footer a{color:var(--sub);text-decoration:underline;text-underline-offset:3px}
+footer a:hover{color:var(--green-bright)}
+
+@media(max-width:860px){.doc-layout{grid-template-columns:1fr}.toc{display:none}}
+@media(max-width:560px){.doc-meta{gap:14px}.art-header{flex-direction:column;gap:6px}.sign-line{flex-direction:column;gap:2px}.sign-line strong{min-width:0}}
+</style>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'AW-536531182');
+</script>
+<!-- Vercel Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">
+    <div class="logo-badge"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
+    <div class="logo-name">BET<span>ORACL</span> PRO</div>
+  </div>
+  <a href="/" class="nav-back"><i class="ti ti-arrow-left"></i> Retour à l'accueil</a>
+</nav>
+
+<div class="doc-hero">
+  <div class="wrap" style="position:relative;z-index:1">
+    <div class="doc-eyebrow"><i class="ti ti-lock"></i> Protection des données</div>
+    <h1>Politique de<br><span>confidentialité</span></h1>
+    <p style="font-size:15px;color:var(--muted);max-width:560px;margin:0 auto">
+      Comment <strong style="color:var(--text)">MonWe Infinity LLC</strong> collecte, utilise et protège
+      vos données personnelles dans le cadre du service Betoracl Pro.
+    </p>
+    <div class="doc-meta">
+      <span><i class="ti ti-calendar"></i> Version du 31 juillet 2026</span>
+      <span><i class="ti ti-building"></i> MonWe Infinity LLC</span>
+      <span><i class="ti ti-shield-check"></i> Conforme RGPD</span>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="doc-layout">
+
+    <aside class="toc">
+      <div class="toc-title"><i class="ti ti-list"></i> Sommaire</div>
+      <ul>
+        <li><a href="#art1"><span class="art-num">01</span>Responsable du traitement</a></li>
+        <li><a href="#art2"><span class="art-num">02</span>Données collectées</a></li>
+        <li><a href="#art3"><span class="art-num">03</span>Finalités et bases légales</a></li>
+        <li><a href="#art4"><span class="art-num">04</span>Cookies et traceurs</a></li>
+        <li><a href="#art5"><span class="art-num">05</span>Destinataires et sous-traitants</a></li>
+        <li><a href="#art6"><span class="art-num">06</span>Transferts hors UE</a></li>
+        <li><a href="#art7"><span class="art-num">07</span>Durées de conservation</a></li>
+        <li><a href="#art8"><span class="art-num">08</span>Vos droits</a></li>
+        <li><a href="#art9"><span class="art-num">09</span>Sécurité des données</a></li>
+        <li><a href="#art10"><span class="art-num">10</span>Données des mineurs</a></li>
+        <li><a href="#art11"><span class="art-num">11</span>Décisions automatisées</a></li>
+        <li><a href="#art12"><span class="art-num">12</span>Modifications</a></li>
+        <li><a href="#art13"><span class="art-num">13</span>Contact et réclamation</a></li>
+      </ul>
+      <div class="toc-footer">
+        Betoracl Pro est un produit de<br>
+        <strong style="color:var(--muted)">MonWe Infinity LLC</strong><br>
+        Albuquerque, NM — USA
+      </div>
+    </aside>
+
+    <main class="doc-content">
+
+      <div class="article" id="art1">
+        <div class="art-header">
+          <span class="art-num-big">Article 01</span>
+          <h2>Responsable du traitement</h2>
+        </div>
+        <p>
+          Le responsable du traitement des données personnelles collectées via le site <strong>betoracl.com</strong> et le service Betoracl Pro est :
+        </p>
+        <div class="sign-block" style="margin:16px 0 20px">
+          <div class="sign-line"><strong>Raison sociale</strong> MonWe Infinity LLC</div>
+          <div class="sign-line"><strong>Forme juridique</strong> Limited Liability Company (LLC) de droit américain</div>
+          <div class="sign-line"><strong>N° de dépôt (SOS)</strong> 3213688 — État du Nouveau-Mexique, États-Unis</div>
+          <div class="sign-line"><strong>Siège social</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, USA</div>
+          <div class="sign-line"><strong>Représentante</strong> Yessiha Ilboudo, gérante</div>
+          <div class="sign-line"><strong>Contact données</strong> monweci@gmail.com · +225 05 00 44 64 64</div>
+        </div>
+        <p>
+          La présente politique s'applique à l'ensemble des utilisateurs du service, qu'ils disposent d'un compte gratuit ou d'un abonnement payant.
+        </p>
+      </div>
+
+      <div class="article" id="art2">
+        <div class="art-header">
+          <span class="art-num-big">Article 02</span>
+          <h2>Données collectées</h2>
+        </div>
+        <p>Nous collectons uniquement les données nécessaires au fonctionnement du service :</p>
+        <div class="table-scroll">
+          <table class="art-table">
+            <thead>
+              <tr><th>Catégorie</th><th>Données concernées</th><th>Origine</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Identification</strong></td>
+                <td>Adresse e-mail, mot de passe (chiffré), identifiant Telegram le cas échéant</td>
+                <td>Fournies par l'utilisateur</td>
+              </tr>
+              <tr>
+                <td><strong>Compte et abonnement</strong></td>
+                <td>Plan souscrit, date d'expiration, solde de crédits, historique des transactions</td>
+                <td>Générées par le service</td>
+              </tr>
+              <tr>
+                <td><strong>Paiement</strong></td>
+                <td>Référence de transaction, montant, opérateur utilisé, statut</td>
+                <td>Prestataire de paiement</td>
+              </tr>
+              <tr>
+                <td><strong>Utilisation</strong></td>
+                <td>Analyses lancées, équipes recherchées, coupons consultés, suivi de bankroll, paris enregistrés</td>
+                <td>Générées par le service</td>
+              </tr>
+              <tr>
+                <td><strong>Techniques</strong></td>
+                <td>Adresse IP, type de navigateur et d'appareil, pages consultées, horodatage, journaux de connexion</td>
+                <td>Collecte automatique</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout info">
+          <i class="ti ti-credit-card-off"></i>
+          <div>
+            <strong>Aucune coordonnée bancaire n'est stockée par MonWe Infinity LLC.</strong> Les numéros de carte et identifiants Mobile Money sont traités directement par les prestataires de paiement agréés. Nous ne conservons que la référence et le statut de la transaction.
+          </div>
+        </div>
+        <p>
+          Nous ne collectons aucune donnée sensible au sens de l'article 9 du RGPD (origine ethnique, opinions politiques, données de santé, orientation sexuelle, etc.).
+        </p>
+      </div>
+
+      <div class="article" id="art3">
+        <div class="art-header">
+          <span class="art-num-big">Article 03</span>
+          <h2>Finalités et bases légales</h2>
+        </div>
+        <p>Chaque traitement repose sur une base légale identifiée :</p>
+        <div class="table-scroll">
+          <table class="art-table">
+            <thead>
+              <tr><th>Finalité</th><th>Base légale</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Création et gestion du compte utilisateur</td><td>Exécution du contrat</td></tr>
+              <tr><td>Fourniture des analyses, coupons et outils</td><td>Exécution du contrat</td></tr>
+              <tr><td>Gestion des abonnements, paiements et crédits</td><td>Exécution du contrat</td></tr>
+              <tr><td>Assistance et support utilisateur</td><td>Exécution du contrat</td></tr>
+              <tr><td>Prévention de la fraude et des abus</td><td>Intérêt légitime</td></tr>
+              <tr><td>Amélioration et sécurisation du service</td><td>Intérêt légitime</td></tr>
+              <tr><td>Mesure d'audience du site</td><td>Intérêt légitime / consentement selon la juridiction</td></tr>
+              <tr><td>Publicité et mesure des campagnes (Meta, Google)</td><td>Consentement</td></tr>
+              <tr><td>Envoi de notifications liées au service</td><td>Exécution du contrat</td></tr>
+              <tr><td>Respect des obligations légales et comptables</td><td>Obligation légale</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Les données ne sont utilisées que pour les finalités décrites ci-dessus. <strong>Elles ne sont ni vendues, ni louées, ni cédées à des tiers</strong> à des fins commerciales.
+        </p>
+      </div>
+
+      <div class="article" id="art4">
+        <div class="art-header">
+          <span class="art-num-big">Article 04</span>
+          <h2>Cookies et traceurs</h2>
+        </div>
+        <p>Le site utilise les catégories de traceurs suivantes :</p>
+        <div class="table-scroll">
+          <table class="art-table">
+            <thead>
+              <tr><th>Traceur</th><th>Finalité</th><th>Nature</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Session et authentification</strong></td>
+                <td>Maintien de la connexion, sécurisation du compte</td>
+                <td>Strictement nécessaire</td>
+              </tr>
+              <tr>
+                <td><strong>Vercel Analytics</strong></td>
+                <td>Mesure d'audience agrégée (pages vues, visiteurs)</td>
+                <td>Mesure d'audience</td>
+              </tr>
+              <tr>
+                <td><strong>Google Tag / Google Ads</strong></td>
+                <td>Mesure de performance des campagnes publicitaires</td>
+                <td>Publicitaire — soumis au consentement</td>
+              </tr>
+              <tr>
+                <td><strong>Meta Pixel</strong></td>
+                <td>Mesure de performance des campagnes sur Facebook et Instagram</td>
+                <td>Publicitaire — soumis au consentement</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          Les traceurs strictement nécessaires ne peuvent être désactivés sans empêcher le fonctionnement du service (connexion impossible, session non maintenue).
+        </p>
+        <p>
+          Les traceurs publicitaires et de mesure d'audience peuvent être refusés à tout moment via les paramètres de votre navigateur, ou via les outils proposés par les éditeurs concernés :
+        </p>
+        <ul>
+          <li><strong>Google</strong> — paramètres publicitaires accessibles depuis votre compte Google ;</li>
+          <li><strong>Meta</strong> — préférences publicitaires accessibles depuis votre compte Facebook ou Instagram ;</li>
+          <li><strong>Navigateur</strong> — blocage des cookies tiers dans les réglages de confidentialité.</li>
+        </ul>
+      </div>
+
+      <div class="article" id="art5">
+        <div class="art-header">
+          <span class="art-num-big">Article 05</span>
+          <h2>Destinataires et sous-traitants</h2>
+        </div>
+        <p>
+          Vos données peuvent être traitées par des prestataires techniques agissant en qualité de sous-traitants, exclusivement pour les besoins du service et selon nos instructions :
+        </p>
+        <div class="table-scroll">
+          <table class="art-table">
+            <thead>
+              <tr><th>Sous-traitant</th><th>Traitement effectué</th><th>Localisation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><strong>Supabase</strong></td><td>Hébergement de la base de données, authentification</td><td>Union européenne (eu-west-3)</td></tr>
+              <tr><td><strong>Vercel Inc.</strong></td><td>Hébergement du site, mesure d'audience</td><td>États-Unis</td></tr>
+              <tr><td><strong>Anthropic</strong></td><td>Traitement des requêtes d'analyse par IA</td><td>États-Unis</td></tr>
+              <tr><td><strong>API-Football (API-Sports)</strong></td><td>Fourniture des données sportives et cotes</td><td>Union européenne</td></tr>
+              <tr><td><strong>Prestataires de paiement</strong><br>(GeniusPay, Wave, Orange Money)</td><td>Traitement sécurisé des paiements</td><td>Afrique de l'Ouest / UE</td></tr>
+              <tr><td><strong>Telegram</strong></td><td>Diffusion des coupons et notifications</td><td>Hors UE</td></tr>
+              <tr><td><strong>Google / Meta</strong></td><td>Mesure publicitaire (si consentement)</td><td>États-Unis</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warn">
+          <i class="ti ti-robot"></i>
+          <div>
+            <strong>Traitement par intelligence artificielle.</strong> Lorsque vous lancez une analyse, le nom des équipes concernées et les données sportives associées sont transmis au fournisseur du modèle d'IA afin de générer le résultat. Aucune donnée d'identification personnelle (nom, e-mail, coordonnées de paiement) n'est transmise dans ce cadre.
+          </div>
+        </div>
+      </div>
+
+      <div class="article" id="art6">
+        <div class="art-header">
+          <span class="art-num-big">Article 06</span>
+          <h2>Transferts hors Union européenne</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC étant établie aux États-Unis et certains sous-traitants y étant également situés, des transferts de données hors de l'Union européenne peuvent intervenir.
+        </p>
+        <p>
+          Ces transferts sont encadrés par les garanties appropriées prévues par le chapitre V du RGPD, notamment les <strong>clauses contractuelles types</strong> de la Commission européenne intégrées aux contrats conclus avec nos sous-traitants, ainsi que, le cas échéant, les mécanismes de certification applicables.
+        </p>
+        <p>
+          Les données applicatives principales (comptes, coupons, historique) sont hébergées au sein de l'Union européenne, dans la région <strong>eu-west-3</strong>.
+        </p>
+      </div>
+
+      <div class="article" id="art7">
+        <div class="art-header">
+          <span class="art-num-big">Article 07</span>
+          <h2>Durées de conservation</h2>
+        </div>
+        <div class="table-scroll">
+          <table class="art-table">
+            <thead>
+              <tr><th>Donnée</th><th>Durée de conservation</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Compte utilisateur actif</td><td>Toute la durée d'utilisation du service</td></tr>
+              <tr><td>Compte inactif</td><td>3 ans à compter du dernier accès, puis suppression</td></tr>
+              <tr><td>Historique des analyses et coupons</td><td>3 ans</td></tr>
+              <tr><td>Données de facturation et transactions</td><td>10 ans (obligation comptable)</td></tr>
+              <tr><td>Journaux de connexion techniques</td><td>12 mois</td></tr>
+              <tr><td>Traceurs publicitaires et d'audience</td><td>13 mois maximum</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>
+          À l'expiration de ces durées, les données sont supprimées ou anonymisées de manière irréversible, sauf obligation légale de conservation plus longue.
+        </p>
+      </div>
+
+      <div class="article" id="art8">
+        <div class="art-header">
+          <span class="art-num-big">Article 08</span>
+          <h2>Vos droits</h2>
+        </div>
+        <p>Conformément à la réglementation applicable, vous disposez des droits suivants :</p>
+        <ul>
+          <li><strong>Droit d'accès</strong> — obtenir la confirmation que vos données sont traitées et en recevoir une copie ;</li>
+          <li><strong>Droit de rectification</strong> — corriger des données inexactes ou incomplètes ;</li>
+          <li><strong>Droit à l'effacement</strong> — demander la suppression de vos données, sous réserve de nos obligations légales de conservation ;</li>
+          <li><strong>Droit à la limitation</strong> — demander le gel temporaire d'un traitement contesté ;</li>
+          <li><strong>Droit à la portabilité</strong> — recevoir vos données dans un format structuré et lisible par machine ;</li>
+          <li><strong>Droit d'opposition</strong> — vous opposer à un traitement fondé sur l'intérêt légitime ;</li>
+          <li><strong>Retrait du consentement</strong> — retirer à tout moment un consentement donné, sans effet rétroactif ;</li>
+          <li><strong>Directives post-mortem</strong> — définir le sort de vos données après votre décès.</li>
+        </ul>
+        <p>
+          Pour exercer ces droits, adressez votre demande à <strong>monweci@gmail.com</strong> en précisant l'objet de votre demande. Une preuve d'identité pourra être requise afin d'éviter toute divulgation à un tiers non autorisé.
+        </p>
+        <div class="callout info">
+          <i class="ti ti-clock"></i>
+          <div>Nous nous engageons à répondre à toute demande dans un délai maximum d'<strong>un mois</strong> à compter de sa réception, prolongeable de deux mois en cas de demande complexe, avec information préalable.</div>
+        </div>
+      </div>
+
+      <div class="article" id="art9">
+        <div class="art-header">
+          <span class="art-num-big">Article 09</span>
+          <h2>Sécurité des données</h2>
+        </div>
+        <p>
+          MonWe Infinity LLC met en œuvre des mesures techniques et organisationnelles appropriées afin de protéger vos données contre la destruction, la perte, l'altération, la divulgation ou l'accès non autorisés :
+        </p>
+        <ul>
+          <li>Chiffrement des communications par protocole <strong>HTTPS/TLS</strong> ;</li>
+          <li>Chiffrement des mots de passe par fonction de hachage à sens unique ;</li>
+          <li>Cloisonnement des accès aux données par politiques de sécurité au niveau de la base de données ;</li>
+          <li>Authentification par jetons à durée de validité limitée ;</li>
+          <li>Restriction des accès administrateur au strict nécessaire ;</li>
+          <li>Journalisation des accès et des opérations sensibles.</li>
+        </ul>
+        <p>
+          En cas de violation de données susceptible d'engendrer un risque élevé pour vos droits et libertés, vous en serez informé dans les meilleurs délais, conformément à la réglementation applicable.
+        </p>
+      </div>
+
+      <div class="article" id="art10">
+        <div class="art-header">
+          <span class="art-num-big">Article 10</span>
+          <h2>Données des mineurs</h2>
+        </div>
+        <div class="callout danger">
+          <i class="ti ti-shield-x"></i>
+          <div>
+            <strong>Le service est strictement interdit aux personnes de moins de 18 ans</strong>, ou n'ayant pas atteint l'âge légal requis pour les jeux d'argent dans leur pays de résidence lorsque celui-ci est supérieur.
+          </div>
+        </div>
+        <p>
+          Nous ne collectons pas sciemment de données concernant des personnes mineures. Si nous constatons qu'un compte a été créé par un mineur, il sera immédiatement supprimé ainsi que les données associées.
+        </p>
+        <p>
+          Si vous êtes titulaire de l'autorité parentale et constatez qu'un mineur dont vous avez la charge a créé un compte, contactez-nous à <strong>monweci@gmail.com</strong> pour en obtenir la suppression immédiate.
+        </p>
+      </div>
+
+      <div class="article" id="art11">
+        <div class="art-header">
+          <span class="art-num-big">Article 11</span>
+          <h2>Traitements automatisés et intelligence artificielle</h2>
+        </div>
+        <p>
+          Le service repose sur des traitements algorithmiques et des modèles d'intelligence artificielle pour générer des probabilités, des coupons et des recommandations de paris.
+        </p>
+        <p>
+          Ces traitements portent sur des <strong>données sportives</strong> (forme des équipes, cotes du marché, statistiques de matchs) et non sur un profilage de votre personne. Ils ne produisent aucune décision juridique ni effet significatif vous concernant au sens de l'article 22 du RGPD : les résultats affichés sont de simples aides à la décision que vous restez libre de suivre ou d'ignorer.
+        </p>
+        <div class="callout warn">
+          <i class="ti ti-chart-dots"></i>
+          <div>
+            Aucune décision automatisée n'est prise concernant l'attribution ou le refus d'un abonnement, hormis la vérification technique du statut de paiement.
+          </div>
+        </div>
+      </div>
+
+      <div class="article" id="art12">
+        <div class="art-header">
+          <span class="art-num-big">Article 12</span>
+          <h2>Modifications de la politique</h2>
+        </div>
+        <p>
+          La présente politique peut être modifiée afin de refléter l'évolution du service, des technologies employées ou de la réglementation applicable.
+        </p>
+        <p>
+          Toute modification substantielle vous sera notifiée par e-mail ou par un message dans l'application, et prendra effet <strong>7 jours</strong> après sa publication, sauf disposition légale imposant une application immédiate.
+        </p>
+        <p>
+          La date de dernière mise à jour figure en haut de cette page. Nous vous invitons à la consulter périodiquement.
+        </p>
+      </div>
+
+      <div class="article" id="art13">
+        <div class="art-header">
+          <span class="art-num-big">Article 13</span>
+          <h2>Contact et réclamation</h2>
+        </div>
+        <p>
+          Pour toute question relative à la présente politique ou pour exercer vos droits :
+        </p>
+        <div class="sign-block">
+          <div class="sign-title">MonWe Infinity LLC — Betoracl Pro</div>
+          <div class="sign-line"><strong>E-mail</strong> monweci@gmail.com</div>
+          <div class="sign-line"><strong>Téléphone</strong> +225 05 00 44 64 64</div>
+          <div class="sign-line"><strong>Courrier</strong> 1209 Mountain Road PL NE, STE R — Albuquerque, NM 87110, USA</div>
+          <div class="sign-line"><strong>Responsable</strong> Yessiha Ilboudo, gérante</div>
+        </div>
+        <p style="margin-top:20px">
+          Si vous estimez, après nous avoir contactés, que vos droits ne sont pas respectés, vous disposez du droit d'introduire une réclamation auprès de l'autorité de protection des données compétente de votre pays de résidence.
+        </p>
+
+        <div style="margin-top:36px;padding-top:28px;border-top:1px solid var(--b1)">
+          <p style="font-size:13px;color:var(--sub);line-height:1.8">
+            <strong style="color:var(--muted)">Responsable du traitement :</strong> MonWe Infinity LLC, société à responsabilité limitée immatriculée dans l'État du Nouveau-Mexique (États-Unis), n° de dépôt 3213688.<br>
+            <strong style="color:var(--muted)">Date de mise en vigueur :</strong> 31 juillet 2026.<br>
+            <strong style="color:var(--muted)">Version :</strong> 1.0<br>
+            <strong style="color:var(--muted)">Langue de référence :</strong> Français. En cas de traduction, la version française prévaut.
+          </p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p>© 2026 MonWe Infinity LLC · Betoracl Pro. Tous droits réservés.</p>
+    <p style="margin-top:8px">
+      MonWe Infinity LLC — 1209 Mountain Road PL NE, STE R, Albuquerque, NM 87110, USA — N° 3213688<br>
+      <a href="/">Accueil</a> ·
+      <a href="/cgu">CGU</a> ·
+      <a href="/mentions-legales">Mentions légales</a> ·
+      <a href="mailto:monweci@gmail.com">monweci@gmail.com</a>
+    </p>
+  </div>
+</footer>
+
+<script>
+const articles = document.querySelectorAll('.article');
+const tocLinks = document.querySelectorAll('.toc a');
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if(entry.isIntersecting){
+      tocLinks.forEach(l => { l.style.background = ''; l.style.color = ''; });
+      const active = document.querySelector('.toc a[href="#'+entry.target.id+'"]');
+      if(active){
+        active.style.background = 'rgba(34,197,94,.1)';
+        active.style.color = 'var(--green-bright)';
+      }
+    }
+  });
+}, {rootMargin:'-20% 0px -70% 0px'});
+articles.forEach(a => obs.observe(a));
+</script>
+
+</body>
+</html>
