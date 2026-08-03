@@ -35,7 +35,6 @@
   <link rel="apple-touch-icon" sizes="144x144" href="/icons/icon-144.png">
   <link rel="apple-touch-icon" sizes="128x128" href="/icons/icon-128.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
   <meta name="msapplication-TileColor" content="#060906">
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
 <title>Connexion — Betoracl Pro</title>
@@ -65,7 +64,7 @@ body{
 /* PAGE WRAPPER */
 .page{
   min-height:100vh;
-  min-height:100dvh; /* dynamic viewport */
+  min-height:100dvh;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -116,6 +115,16 @@ h1{
   font-size:13px;color:var(--muted);text-align:center;
   margin-bottom:26px;line-height:1.5;
 }
+
+/* ETAT DE VERIFICATION DE SESSION */
+.session-check{
+  display:none;
+  align-items:center;justify-content:center;gap:9px;
+  padding:11px 15px;margin-bottom:14px;
+  background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.2);
+  border-radius:10px;font-size:13px;color:var(--gb);
+}
+.session-check.show{display:flex}
 
 /* CHAMPS */
 .field{margin-bottom:15px}
@@ -197,13 +206,13 @@ h1{
 
 /* MOBILE OVERRIDES */
 @media(max-width:480px){
-  .page{padding:16px;padding-top:max(20px,calc(var(--safe-t) + 20px));padding-bottom:max(16px,calc(var(--safe-b) + 16px));justify-content:flex-start;padding-top:max(40px,calc(var(--safe-t) + 40px))}
+  .page{padding:16px;padding-bottom:max(16px,calc(var(--safe-b) + 16px));justify-content:flex-start;padding-top:max(40px,calc(var(--safe-t) + 40px))}
   .card{border-radius:16px}
   .card-inner{padding:28px 22px 24px}
   .logo{margin-bottom:24px}
   h1{font-size:26px}
   .sub{font-size:12px;margin-bottom:20px}
-  .field input{padding:12px 14px;font-size:16px} /* 16px évite le zoom iOS */
+  .field input{padding:12px 14px;font-size:16px}
   .btn-login{padding:15px;font-size:16px}
 }
 
@@ -228,6 +237,25 @@ h1{
   gtag('js', new Date());
   gtag('config', 'AW-536531182');
 </script>
+<!-- Vercel Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1734737427724152');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body data-page="login">
 
@@ -242,6 +270,10 @@ h1{
 
       <h1>CONNEXION</h1>
       <p class="sub">Accède à tes analyses et ton coupon du jour</p>
+
+      <div class="session-check" id="session-check">
+        <i class="ti ti-loader-2 spin"></i><span>Vérification de ta session…</span>
+      </div>
 
       <div class="err" id="msg"><i class="ti ti-alert-circle"></i><span id="msg-txt"></span></div>
 
@@ -275,7 +307,7 @@ h1{
       <div class="divider"><span>ou</span></div>
 
       <div class="links">
-        <span>Pas de compte ? <a href="/signup">Créer mon compte gratuit →</a></span>
+        <span>Pas de compte ? <a href="/signup" id="signup-link">Créer mon compte gratuit →</a></span>
       </div>
 
     </div>
@@ -290,21 +322,88 @@ h1{
 const SUPA_URL  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
 const SUPA_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 
-// Vérifier session existante
-;(async()=>{
-  const t=localStorage.getItem('sb_access_token')
-  if(!t)return
-  try{
-    const r=await fetch(`${SUPA_URL}/auth/v1/user`,{headers:{'apikey':SUPA_ANON,'Authorization':`Bearer ${t}`}})
-    const d=await r.json()
-    // Redirection selon rôle
-    if(d.is_admin) {
-      window.location.replace('/admin')
-    } else {
-      const next = new URLSearchParams(location.search).get('next') || '/dashboard'
-      window.location.replace(next)
-    }
-  }catch{}
+// ── Helpers session ────────────────────────────────────────────────
+function clearSession() {
+  ;['sb_access_token','sb_refresh_token','sb_user_id','bp_plan','bp_is_admin']
+    .forEach(k => localStorage.removeItem(k))
+  ;['bp_token','bp_prenom','bp_plan'].forEach(k => sessionStorage.removeItem(k))
+}
+
+function nextTarget(isAdmin) {
+  if (isAdmin) return '/admin'
+  const next = new URLSearchParams(location.search).get('next')
+  // N'accepte qu'un chemin interne (evite une redirection ouverte vers un site tiers)
+  if (next && next.startsWith('/') && !next.startsWith('//')) return next
+  return '/dashboard'
+}
+
+// Tente de rafraichir le token via le refresh_token stocke
+async function tryRefresh() {
+  const rt = localStorage.getItem('sb_refresh_token')
+  if (!rt) return null
+  try {
+    const r = await fetch(`${SUPA_URL}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', apikey: SUPA_ANON },
+      body: JSON.stringify({ refresh_token: rt })
+    })
+    if (!r.ok) return null
+    const d = await r.json()
+    if (!d.access_token) return null
+    localStorage.setItem('sb_access_token', d.access_token)
+    if (d.refresh_token) localStorage.setItem('sb_refresh_token', d.refresh_token)
+    sessionStorage.setItem('bp_token', d.access_token)
+    return d.access_token
+  } catch { return null }
+}
+
+// Verifie qu'un token est reellement valide (teste le statut HTTP, pas seulement le corps)
+async function isTokenValid(token) {
+  try {
+    const r = await fetch(`${SUPA_URL}/auth/v1/user`, {
+      headers: { apikey: SUPA_ANON, Authorization: `Bearer ${token}` }
+    })
+    return r.ok === true
+  } catch {
+    // Panne reseau : on ne conclut pas a une session invalide
+    return null
+  }
+}
+
+// ── Verification de session au chargement ──────────────────────────
+;(async () => {
+  const token = localStorage.getItem('sb_access_token')
+  if (!token) return
+
+  const box = document.getElementById('session-check')
+  if (box) box.classList.add('show')
+
+  let valid = await isTokenValid(token)
+
+  // Token expire -> on tente un rafraichissement avant d'abandonner
+  if (valid === false) {
+    const fresh = await tryRefresh()
+    valid = fresh ? await isTokenValid(fresh) : false
+  }
+
+  if (box) box.classList.remove('show')
+
+  if (valid === true) {
+    const isAdmin = localStorage.getItem('bp_is_admin') === 'true'
+    window.location.replace(nextTarget(isAdmin))
+    return
+  }
+
+  // Session morte ou irrecuperable : on purge et on laisse l'utilisateur se reconnecter
+  if (valid === false) clearSession()
+})()
+
+// Conserve le parametre ?next= vers la page d'inscription
+;(() => {
+  const next = new URLSearchParams(location.search).get('next')
+  if (!next) return
+  const link = document.getElementById('signup-link')
+  if (link) link.href = '/signup?next=' + encodeURIComponent(next)
 })()
 
 function clearMsg(){document.getElementById('msg').style.display='none'}
@@ -339,53 +438,61 @@ async function doLogin(){
   if(!pwd)return showMsg('Entre ton mot de passe.')
   setBtn(true)
   try{
-    // Utiliser l'Edge Function sécurisée (rate limit + track event + refresh token)
-    const EDGE='https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/auth-secure'
+    // Edge Function securisee (rate limit + tracking + refresh token)
+    const EDGE=`${SUPA_URL}/functions/v1/auth-secure`
     const r=await fetch(EDGE+'?action=login',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({email:email.toLowerCase(),password:pwd})
     })
-    const d=await r.json()
-    if(!d.success||!d.access_token){
+    const d=await r.json().catch(()=>({}))
+    if(!r.ok || !d.success || !d.access_token){
       setBtn(false)
       return showMsg(d.error||'Email ou mot de passe incorrect.')
     }
-    // Stocker token + refresh token
+    // Stocke la session
     localStorage.setItem('sb_access_token', d.access_token)
     localStorage.setItem('sb_refresh_token', d.refresh_token||'')
     localStorage.setItem('sb_user_id', d.user_id||'')
     localStorage.setItem('bp_plan', d.effective_plan||'free')
+    localStorage.setItem('bp_is_admin', d.is_admin === true ? 'true' : 'false')
     sessionStorage.setItem('bp_token',  d.access_token)
     sessionStorage.setItem('bp_prenom', d.first_name||email.split('@')[0])
     sessionStorage.setItem('bp_plan',   d.effective_plan||'free')
     showMsg(`Bienvenue ${d.first_name||email.split('@')[0]} ! 🏆`, true)
+    if (window.fbq) fbq('track', 'Lead', { content_name: 'login' })
     setTimeout(()=>{
-      // Admin → /admin, sinon dashboard
-      const isAdmin = d.is_admin === true
-      if (isAdmin) { window.location.replace('/admin'); return }
-      const next = new URLSearchParams(location.search).get('next') || '/dashboard'
-      window.location.replace(next)
+      window.location.replace(nextTarget(d.is_admin === true))
     }, 600)
-  }catch(e){setBtn(false);showMsg('Erreur réseau. Vérifie ta connexion.')}
+  }catch(e){
+    setBtn(false)
+    console.error('[login]', e)
+    showMsg('Erreur réseau. Vérifie ta connexion.')
+  }
 }
 
 async function resetPwd(){
   const email=document.getElementById('email').value.trim()
   if(!email)return showMsg('Entre ton email d\'abord.')
   try{
-    await fetch(`${SUPA_URL}/auth/v1/recover`,{
+    const r = await fetch(`${SUPA_URL}/auth/v1/recover`,{
       method:'POST',
       headers:{'Content-Type':'application/json','apikey':SUPA_ANON},
       body:JSON.stringify({email})
     })
-    showMsg('Email de réinitialisation envoyé !',true)
+    if(!r.ok){
+      return showMsg("Impossible d'envoyer l'email pour le moment. Réessaie dans quelques instants.")
+    }
+    showMsg('Si un compte existe pour cette adresse, un email de réinitialisation vient d\'être envoyé.',true)
   }catch{showMsg('Erreur réseau.')}
 }
 
-window.addEventListener('load',()=>document.getElementById('email').focus())
+window.addEventListener('load',()=>{
+  const el = document.getElementById('email')
+  if (el) el.focus()
+})
 </script>
-<script src="./assets/js/nav.js"></script>
+<script src="/assets/js/nav.js"></script>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -401,7 +508,6 @@ window.addEventListener('load',()=>document.getElementById('email').focus())
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault()
       deferredPrompt = e
-      // Afficher le bouton d'install si présent dans la page
       const btn = document.getElementById('pwa-install-btn')
       if (btn) {
         btn.style.display = 'flex'
