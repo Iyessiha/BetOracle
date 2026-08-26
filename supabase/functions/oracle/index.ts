@@ -34,10 +34,27 @@ const cors = {
   "Access-Control-Allow-Origin":  "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
 function json(d: unknown, s = 200) {
   return new Response(JSON.stringify(d), {
     status: s, headers: { ...cors, "Content-Type": "application/json" },
   });
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// HELPER TIMEOUT RESILIENT
+// ══════════════════════════════════════════════════════════════════════
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(id);
+  }
 }
 
 // ══════════════════════════════════════════════════════════════════════
@@ -81,13 +98,14 @@ function smartbetsPredict(p: {
 async function apiSports(endpoint: string) {
   if (!API_SPORTS_KEY) return null;
   try {
-    const r = await fetch(`https://v3.football.api-sports.io/${endpoint}`, {
+    const r = await fetchWithTimeout(`https://v3.football.api-sports.io/${endpoint}`, {
       headers: { "x-apisports-key": API_SPORTS_KEY },
-    });
+    }, 8000);
     const d = await r.json();
     return d.response ?? null;
   } catch { return null; }
 }
+
 function extractStats(s: any) {
   const f = s?.fixtures;
   return {
@@ -100,6 +118,7 @@ function extractStats(s: any) {
     teamLogo: s?.team?.logo ?? "",
   };
 }
+
 function getPos(standings: any, teamId: number): number {
   if (!standings?.[0]?.league?.standings) return 10;
   for (const g of standings[0].league.standings) {
@@ -114,9 +133,9 @@ function getPos(standings: any, teamId: number): number {
 // ══════════════════════════════════════════════════════════════════════
 async function fetchSofascore(teamId: number) {
   try {
-    const r = await fetch(`${SOFASCORE_BASE}/team/${teamId}/events/last/0`, {
-      headers: { "User-Agent": "Mozilla/5.0" },
-    });
+    const r = await fetchWithTimeout(`${SOFASCORE_BASE}/team/${teamId}/events/last/0`, {
+      headers: { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)" },
+    }, 6000);
     const d = await r.json();
     const events = (d?.events ?? []).slice(-6);
     const form = events.map((e: any) => {
@@ -152,11 +171,12 @@ const LEAGUE_FILES: Record<number, string> = {
   61: "ligue-1/2024-2025", 140: "la-liga/2024-2025",
   135: "serie-a/2024-2025", 78: "bundesliga/2024-2025",
 };
+
 async function fetchFBDB(leagueId: number, teamName: string) {
   const path = LEAGUE_FILES[leagueId];
   if (!path) return null;
   try {
-    const r = await fetch(`${FBDB_BASE}/${path}/standings.json`);
+    const r = await fetchWithTimeout(`${FBDB_BASE}/${path}/standings.json`, {}, 6000);
     if (!r.ok) return null;
     const data = await r.json();
     const entry = data?.standings?.find((t: any) =>
@@ -178,8 +198,10 @@ async function fetchNews(teamA: string, teamB: string): Promise<any[]> {
   if (!NEWS_API_KEY || !teamA || !teamB) return [];
   try {
     const q = encodeURIComponent(`"${teamA}" OR "${teamB}"`);
-    const r = await fetch(
-      `https://newsapi.org/v2/everything?q=${q}&language=fr&pageSize=4&sortBy=publishedAt&apiKey=${NEWS_API_KEY}`
+    const r = await fetchWithTimeout(
+      `https://newsapi.org/v2/everything?q=${q}&language=fr&pageSize=4&sortBy=publishedAt&apiKey=${NEWS_API_KEY}`,
+      {},
+      6000
     );
     const d = await r.json();
     return (d.articles ?? []).slice(0, 4).map((a: any) => ({
@@ -206,6 +228,7 @@ async function fetchOdds(fixtureId: number) {
     };
   } catch { return null; }
 }
+
 function detectValueBets(p1: number, px: number, p2: number, odds: any) {
   if (!odds) return [];
   const res: any[] = [];
@@ -239,9 +262,10 @@ async function claudeAnalysis(data: {
 }): Promise<{ narrative: string; recommendation: string; risk_warning: string } | null> {
   if (!ANTHROPIC_KEY) return null;
 
-  const prompt = `Tu es l'Oracle de Betoracl Pro, expert en analyse de paris sportifs pour l'Afrique de l'Ouest.
+  const prompt = `Tu es l'analyste principal de Betoracl Pro, expert en football et mathématiques des paris sportifs.
+Analyse ce match avec précision chirurgicale pour un parieur professionnel.
 
-MATCH : ${data.teamA} vs ${data.teamB} — ${data.league}
+MATCH : ${data.teamA} vs ${data.teamB} (${data.league})
 
 DONNÉES :
 - Probabilités : 1=${data.smart.p1}%, X=${data.smart.px}%, 2=${data.smart.p2}%
@@ -264,7 +288,7 @@ Réponds UNIQUEMENT en JSON valide (pas de markdown, pas d'explication) :
 }`;
 
   try {
-    const r = await fetch(ANTHROPIC_BASE, {
+    const r = await fetchWithTimeout(ANTHROPIC_BASE, {
       method: "POST",
       headers: {
         "Content-Type":      "application/json",
@@ -276,12 +300,11 @@ Réponds UNIQUEMENT en JSON valide (pas de markdown, pas d'explication) :
         max_tokens: 600,
         messages:   [{ role: "user", content: prompt }],
       }),
-    });
+    }, 12000);
 
     const d = await r.json();
     const text = d.content?.[0]?.text ?? "";
 
-    // Parser la réponse JSON de Claude
     const cleaned = text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
     return JSON.parse(cleaned);
   } catch (e) {
@@ -314,7 +337,7 @@ serve(async (req) => {
     const { team_a_id, team_b_id, league_id = 2, fixture_id } = await req.json();
     if (!team_a_id || !team_b_id) return json({ error: "team_a_id et team_b_id requis" }, 400);
 
-    // ── COLLECTE PARALLÈLE — toutes sources ──
+    // ── COLLECTE PARALLÈLE — toutes sources avec timeout ──
     const [rawA, rawB, rawH2H, rawStand, rawOdds, sofaA, sofaB] = await Promise.all([
       apiSports(`teams/statistics?team=${team_a_id}&league=${league_id}&season=2024`),
       apiSports(`teams/statistics?team=${team_b_id}&league=${league_id}&season=2024`),

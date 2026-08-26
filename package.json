@@ -1,12 +1,14 @@
 {
   "name": "betoracl-pro",
   "version": "1.0.0",
+  "type": "module",
   "description": "Betoracl Pro — L'oracle des paris foot · Produit de MonWe Infinity LLC",
   "main": "public/index.html",
   "scripts": {
     "start": "npx serve public -p 3000",
     "dev": "npx live-server public --port=3000 --open=/index.html",
-    "lint": "echo 'No linter configured yet'",
+    "test": "node --test test/*.test.js",
+    "lint": "node -c api/*.js test/*.js && echo '✓ All JavaScript files pass syntax check'",
     "deploy:netlify": "npx netlify deploy --prod --dir=public",
     "deploy:vercel": "npx vercel --prod public",
     "deploy:pages": "git subtree push --prefix public origin gh-pages",
@@ -24,10 +26,10 @@
   ],
   "author": "MonWe Infinity LLC <monweci@gmail.com>",
   "license": "MIT",
-  "homepage": "https://github.com/TON_USERNAME/betoracl-pro",
+  "homepage": "https://github.com/Iyessiha/BetOracle",
   "repository": {
     "type": "git",
-    "url": "https://github.com/TON_USERNAME/betoracl-pro.git"
+    "url": "https://github.com/Iyessiha/BetOracle.git"
   },
   "devDependencies": {
     "live-server": "^1.2.2",

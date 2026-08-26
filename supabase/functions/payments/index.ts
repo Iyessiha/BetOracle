@@ -5,7 +5,7 @@
 // Actions :
 //   initiate → POST /api/v1/merchant/payments → checkout_url GeniusPay
 //   verify   → GET  /api/v1/merchant/payments/{reference} → activer abonnement
-//   webhook  → reçoit les events GeniusPay (payment.completed, payment.failed)
+//   webhook  → reçoit les events GeniusPay (payment.completed, payment.failed) avec vérification HMAC-SHA256
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
@@ -33,7 +33,7 @@ const DURATIONS: Record<string, number> = {
 
 const cors = {
   "Access-Control-Allow-Origin":  "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-geniuspay-signature",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-geniuspay-signature, x-signature",
 };
 
 function json(d: unknown, s = 200) {
@@ -51,17 +51,71 @@ function gpHeaders() {
   };
 }
 
+// ══════════════════════════════════════════════
+// VÉRIFICATION CRYPTOGRAPHIQUE SIGNATURE WEBHOOK
+// ══════════════════════════════════════════════
+async function verifyWebhookSignature(rawBody: string, signatureHeader: string | null, secret: string): Promise<boolean> {
+  if (!secret) return true; // En mode démo sans secret configuré, on autorise
+  if (!signatureHeader) return false;
+
+  try {
+    const encoder = new TextEncoder();
+    const keyData = encoder.encode(secret);
+    const key = await crypto.subtle.importKey(
+      "raw",
+      keyData,
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign", "verify"]
+    );
+
+    const cleanSig = signatureHeader.replace(/^sha256=/i, "").trim().toLowerCase();
+    const sigBytes = new Uint8Array(
+      cleanSig.match(/.{1,2}/g)?.map((byte) => parseInt(byte, 16)) ?? []
+    );
+
+    const bodyBytes = encoder.encode(rawBody);
+    return await crypto.subtle.verify("HMAC", key, sigBytes, bodyBytes);
+  } catch (err) {
+    console.error("[Webhook Signature] Erreur de vérification:", err);
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: cors });
 
-  const url    = new URL(req.url);
-  const body   = req.method === "POST" ? await req.json().catch(() => ({})) : {};
+  const url = new URL(req.url);
+  let rawBody = "";
+  let body: any = {};
+
+  if (req.method === "POST") {
+    try {
+      rawBody = await req.text();
+      body = rawBody ? JSON.parse(rawBody) : {};
+    } catch {
+      body = {};
+    }
+  }
+
   const action = body.action ?? url.searchParams.get("action") ?? "";
 
   // ══════════════════════════════════════════════
-  // WEBHOOK GeniusPay (pas d'auth Supabase requise)
+  // WEBHOOK GeniusPay
   // ══════════════════════════════════════════════
   if (action === "webhook" || url.pathname.endsWith("/webhook")) {
+    const sigHeader = req.headers.get("x-geniuspay-signature")
+      ?? req.headers.get("x-signature")
+      ?? req.headers.get("x-gp-signature");
+
+    if (GP_API_SECRET) {
+      const isValid = await verifyWebhookSignature(rawBody, sigHeader, GP_API_SECRET);
+      if (!isValid) {
+        console.warn("[Webhook] ⚠️ Signature invalide rejetée");
+        return json({ error: "Signature webhook invalide" }, 401);
+      }
+    }
+
     return handleWebhook(req, body);
   }
 
@@ -128,7 +182,7 @@ serve(async (req) => {
       success_url: `${APP_URL}/payment-success.html?ref=${tx_reference}&sub=${sub.id}`,
       error_url:   `${APP_URL}/payment-error.html?ref=${tx_reference}`,
       metadata: {
-        user_id:       user.id,
+        user_id:         user.id,
         subscription_id: sub.id,
         tx_reference,
         plan,
@@ -136,7 +190,6 @@ serve(async (req) => {
       },
     };
 
-    // Si téléphone fourni → paiement direct (Wave auto-détecté par GeniusPay)
     if (phone) gpPayload.customer = { ...gpPayload.customer as object, phone };
 
     let gpData: any = null;
@@ -144,17 +197,22 @@ serve(async (req) => {
 
     if (GP_API_KEY && GP_API_SECRET) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+
         const gpRes = await fetch(GP_BASE, {
           method:  "POST",
           headers: gpHeaders(),
           body:    JSON.stringify(gpPayload),
+          signal:  controller.signal,
         });
+        clearTimeout(timeoutId);
 
         const gpJson = await gpRes.json();
         console.log("[GeniusPay] Réponse:", JSON.stringify(gpJson));
 
         if (gpJson.success && gpJson.data) {
-          gpData      = gpJson.data;
+          gpData       = gpJson.data;
           checkout_url = gpData.checkout_url || gpData.payment_url || "";
 
           // Stocker la référence GeniusPay
@@ -211,9 +269,15 @@ serve(async (req) => {
 
     if (GP_API_KEY && GP_API_SECRET && refToCheck) {
       try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 8000);
+
         const gpRes = await fetch(`${GP_BASE}/${refToCheck}`, {
           headers: gpHeaders(),
+          signal:  controller.signal,
         });
+        clearTimeout(timeoutId);
+
         const gpJson = await gpRes.json();
         console.log("[GeniusPay] Verify:", JSON.stringify(gpJson?.data?.status));
 
@@ -253,13 +317,11 @@ serve(async (req) => {
 // ══════════════════════════════════════════════
 // WEBHOOK GeniusPay
 // ══════════════════════════════════════════════
-async function handleWebhook(req: Request, body: any) {
+async function handleWebhook(_req: Request, body: any) {
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Extraire les données de l'événement GeniusPay
-  // Format webhook : { event: "payment.completed", data: { reference, metadata, status, amount } }
-  const event    = body.event ?? body.type ?? "";
-  const data     = body.data ?? body;
+  const event     = body.event ?? body.type ?? "";
+  const data      = body.data ?? body;
   const reference = data.reference ?? data.tx_reference ?? "";
   const metadata  = data.metadata ?? {};
 
@@ -282,6 +344,12 @@ async function handleWebhook(req: Request, body: any) {
     return new Response("OK", { status: 200 });
   }
 
+  // Idempotence : si déjà active, ne pas retraiter
+  if (sub.status === "active" && (event === "payment.completed" || data.status === "completed")) {
+    console.log("[Webhook] Transaction déjà active:", reference);
+    return new Response("OK", { status: 200 });
+  }
+
   if (event === "payment.completed" || data.status === "completed") {
     await activateSubscription(supabase, sub, sub.user_id);
     console.log("[Webhook] ✅ Abonnement activé pour user:", sub.user_id);
@@ -301,6 +369,11 @@ async function handleWebhook(req: Request, body: any) {
 // ACTIVER UN ABONNEMENT
 // ══════════════════════════════════════════════
 async function activateSubscription(supabase: any, sub: any, userId: string) {
+  // Idempotence : vérifier si la subscription est déjà active
+  if (sub.status === "active") {
+    return json({ status: "already_active", subscription: sub });
+  }
+
   const starts_at = new Date();
   const ends_at   = new Date(starts_at.getTime() + DURATIONS[sub.period]);
 

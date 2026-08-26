@@ -25,6 +25,19 @@ const BOOKMAKERS = [
   { name: "1Win",      url: "https://1wync.com/?p=3qq3" },
 ];
 
+async function fetchWithTimeout(url: string, options: RequestInit = {}, timeoutMs = 8000): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(id);
+  }
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
 
@@ -121,9 +134,10 @@ async function fetchTodayFixtures() {
 
   const results = await Promise.all(leagues.map(async (league) => {
     try {
-      const r = await fetch(
+      const r = await fetchWithTimeout(
         `https://v3.football.api-sports.io/fixtures?date=${today}&league=${league}&season=2024`,
-        { headers: { "x-apisports-key": API_SPORTS_KEY } }
+        { headers: { "x-apisports-key": API_SPORTS_KEY } },
+        8000
       );
       const data = await r.json();
       return data.response ?? [];
@@ -149,9 +163,7 @@ async function selectBestPicks(fixtures: any[]) {
     const awayId   = fixture.teams?.away?.id;
     const leagueId = fixture.league?.id;
 
-    // Choisir le type de pari selon les stats
     let pick, odds, confidence;
-
     const totalXG = parseFloat(homeGoalsAvg) + parseFloat(awayGoalsAvg);
 
     if (totalXG > 3.0) {
@@ -205,7 +217,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
     ? JSON.parse(coupon.selections)
     : coupon.selections;
 
-  // Formater le message Telegram (Markdown V2)
   const dateStr = new Date(coupon.match_date).toLocaleDateString("fr-FR", {
     weekday: "long", day: "numeric", month: "long"
   });
@@ -227,7 +238,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
   msg += `🎯 *COTE TOTALE : ×${coupon.total_odds}*\n`;
   msg += `💵 Mise recommandée : 3\\-5% de ta bankroll\n\n`;
 
-  // Liens bookmakers
   msg += `📌 *Parier maintenant :*\n`;
   for (const bk of BOOKMAKERS) {
     msg += `• [${bk.name}](${bk.url})\n`;
@@ -236,7 +246,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
   msg += `\n⚠️ _Jeu responsable — L'Oracle est un outil d'aide, pas une garantie\\._\n`;
   msg += `🔗 [Voir l'analyse complète](https://betoracl\\.pro/analyse)`;
 
-  // Inline keyboard avec liens bookmakers
   const keyboard = {
     inline_keyboard: [
       BOOKMAKERS.slice(0, 2).map(bk => ({ text: `🎲 ${bk.name}`, url: bk.url })),
@@ -245,11 +254,10 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
     ]
   };
 
-  // Envoyer sur Telegram
   let telegramMsgId = null;
   if (TELEGRAM_TOKEN && TELEGRAM_CHAN) {
     try {
-      const r = await fetch(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
+      const r = await fetchWithTimeout(`https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -259,7 +267,7 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
           reply_markup: keyboard,
           disable_web_page_preview: false,
         }),
-      });
+      }, 8000);
       const data = await r.json();
       telegramMsgId = data.result?.message_id;
     } catch (e) {
@@ -267,7 +275,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
     }
   }
 
-  // Mettre à jour le coupon comme publié
   await supabase
     .from("coupons")
     .update({
@@ -277,7 +284,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
     })
     .eq("id", coupon_id);
 
-  // Notifier tous les utilisateurs avec plan actif
   await notifyActiveUsers(supabase, coupon);
 
   return json({
@@ -292,7 +298,6 @@ async function publishToTelegram(supabase: any, coupon_id: string) {
 // 5. NOTIFICATIONS PUSH UTILISATEURS
 // ─────────────────────────────────────────────────────────
 async function notifyActiveUsers(supabase: any, coupon: any) {
-  // Récupérer tous les users avec plan actif
   const { data: users } = await supabase
     .from("profiles")
     .select("id, plan")
@@ -309,7 +314,6 @@ async function notifyActiveUsers(supabase: any, coupon: any) {
     data:    { coupon_id: coupon.id },
   }));
 
-  // Insérer en batch
   await supabase.from("notifications").insert(notifications);
 }
 
