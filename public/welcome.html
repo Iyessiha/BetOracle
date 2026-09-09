@@ -2,252 +2,159 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Betoracl Pro — Analyse quantitative des paris sportifs</title>
-<meta name="description" content="Coupons générés par IA, Oracle prédictif, outils Value Bet & Kelly. La plateforme quant des parieurs sérieux d'Afrique de l'Ouest.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Bienvenue — Betoracl Pro</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#22c55e">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/icons/icon-32.png">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <style>
-:root {
-  --green:#22c55e;--green-l:#4ade80;--green-d:#16a34a;--green-n:#16ff6e;
-  --gold:#F5C842;--gold-d:#D4A017;
-  --white:#f8faf8;--bg:#080c08;--bg2:#0d120d;--bg3:#111711;
-  --s1:#161e16;--s2:#1c271c;--b1:#2a3a2a;--b2:#344834;
-  --text:#e8f0e8;--muted:#7a9a7a;--lo:#4a6a4a;--red:#ef4444;
-  --violet:#8b5cf6;--teal:#14b8a6;
-  --display:'Bebas Neue',sans-serif;--body:'Barlow',sans-serif;
+:root{
+  --gb:#22c55e;--gl:#4ade80;--gp:#1a5c2a;--gold:#F5C842;
+  --bg:#10160f;--bg2:#171f16;--s1:#212b20;--s2:#2a3628;
+  --b1:#3d4f3a;--b2:#4a5f46;--violet:#8b5cf6;--teal:#14b8a6;
+  --text:#f2f7f1;--muted:#9dbb9a;--red:#ef4444;
+  --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
+  --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
 }
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden}
-a{text-decoration:none;color:inherit}
-img{max-width:100%}
+*{box-sizing:border-box;margin:0;padding:0}
+html{height:100%;-webkit-text-size-adjust:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100%;
+  background-image:radial-gradient(ellipse at 15% 20%,rgba(34,197,94,.08) 0%,transparent 55%),radial-gradient(ellipse at 85% 80%,rgba(245,200,66,.06) 0%,transparent 55%)}
+.page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;padding:24px 20px;
+  padding-top:max(32px,calc(var(--safe-t) + 32px));padding-bottom:max(24px,calc(var(--safe-b) + 24px))}
+.wrap{width:100%;max-width:480px;display:flex;flex-direction:column;gap:16px}
 
-/* ── UTILS ── */
-.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,48px)}
-.reveal{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
-.reveal.visible{opacity:1;transform:none}
-.rd1{transition-delay:.08s}.rd2{transition-delay:.16s}.rd3{transition-delay:.24s}.rd4{transition-delay:.32s}
-.pitch-bg{position:absolute;inset:0;background-image:repeating-linear-gradient(90deg,transparent,transparent 59px,rgba(255,255,255,.015) 60px),repeating-linear-gradient(0deg,transparent,transparent 59px,rgba(255,255,255,.015) 60px);pointer-events:none}
+.logo{display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:6px}
+.logo-orb{width:36px;height:36px;border-radius:9px;overflow:hidden;flex-shrink:0}
+.logo-orb img{width:100%;height:100%;object-fit:cover;display:block;border-radius:8px}
+.logo-name{font-family:var(--fd);font-size:19px;letter-spacing:.05em}
+.logo-name span{color:var(--gold)}
 
-/* ── BUTTONS ── */
-.btn{display:inline-flex;align-items:center;gap:8px;padding:11px 24px;border-radius:8px;font-size:14px;font-weight:700;font-family:var(--body);cursor:pointer;transition:all .2s;border:none;letter-spacing:.02em}
-.btn-green{background:var(--green);color:#000}.btn-green:hover{background:var(--green-l);transform:translateY(-1px)}
-.btn-gold{background:var(--gold);color:#000}.btn-gold:hover{background:#ffe066;transform:translateY(-1px)}
-.btn-outline{background:transparent;color:var(--text);border:1.5px solid var(--b2)}.btn-outline:hover{border-color:var(--green);color:var(--green)}
-.btn-lg{padding:15px 36px;font-size:16px;border-radius:10px}
+/* HERO BIENVENUE */
+.hero-card{
+  background:var(--s1);border:1px solid var(--b2);border-radius:20px;
+  padding:32px 26px 26px;text-align:center;position:relative;overflow:hidden;
+}
+.hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gb),var(--gold))}
+.hero-orb{
+  width:64px;height:64px;border-radius:18px;margin:0 auto 16px;
+  background:rgba(34,197,94,.12);border:2px solid var(--gb);
+  display:flex;align-items:center;justify-content:center;font-size:32px;
+  animation:pulse 2.2s infinite;
+}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,.3)}50%{box-shadow:0 0 0 12px rgba(34,197,94,0)}}
+.hero-title{font-family:var(--fd);font-size:clamp(26px,6vw,34px);letter-spacing:.04em;margin-bottom:8px}
+.hero-title span{color:var(--gb)}
+.hero-sub{font-size:14px;color:var(--muted);line-height:1.6;max-width:360px;margin:0 auto}
+.hero-sub strong{color:var(--text)}
 
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 clamp(16px,4vw,48px);height:64px;display:flex;align-items:center;justify-content:space-between;transition:background .3s,border-color .3s;border-bottom:.5px solid transparent}
-nav.scrolled{background:rgba(8,12,8,.94);backdrop-filter:blur(18px);border-color:var(--b1)}
-.logo{display:flex;align-items:center;gap:10px}
-.logo-badge{width:36px;height:36px;border-radius:9px;background:var(--green-d);border:1.5px solid var(--green);display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:18px;color:var(--gold);overflow:hidden;padding:0}
-.logo-badge img{width:100%;height:100%;object-fit:cover;display:block;border-radius:7px}
-.logo-name{font-family:var(--display);font-size:20px;letter-spacing:.06em;color:var(--white)}
-.logo-name span{color:var(--green)}
-.nav-links{display:flex;align-items:center;gap:24px;font-size:14px;font-weight:500;color:var(--muted)}
-.nav-links a:hover{color:var(--green)}
-.nav-ctas{display:flex;gap:10px;align-items:center}
-@media(max-width:900px){.nav-links{display:none}}
+/* CREDITS OFFERTS */
+.credits-row{display:flex;gap:8px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.credit-pill{
+  display:flex;align-items:center;gap:6px;
+  background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);
+  color:var(--gb);font-size:12px;font-weight:700;
+  padding:6px 13px;border-radius:20px;
+}
 
-/* ── HERO ── */
-#hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 16px 0;position:relative;overflow:hidden}
-.hero-circle{position:absolute;width:min(680px,90vw);height:min(680px,90vw);border:1.5px solid rgba(34,197,94,.1);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
-.hero-circle::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(200px,28vw);height:min(200px,28vw);border:1.5px solid rgba(34,197,94,.15);border-radius:50%}
-.glow-l{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(34,197,94,.07) 0%,transparent 70%);top:10%;left:-8%;pointer-events:none}
-.glow-r{position:absolute;width:400px;height:400px;background:radial-gradient(circle,rgba(245,200,66,.05) 0%,transparent 70%);top:20%;right:-5%;pointer-events:none}
-.hero-pill{display:inline-flex;align-items:center;gap:8px;background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.22);color:var(--green);padding:6px 18px;border-radius:30px;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:28px}
-.live-dot{width:7px;height:7px;border-radius:50%;background:var(--green-n);animation:pulse 1.5s infinite}
-@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(22,255,110,.5)}70%{opacity:.8;box-shadow:0 0 0 6px rgba(22,255,110,0)}}
-h1{font-family:var(--display);font-size:clamp(58px,10vw,118px);line-height:.93;letter-spacing:.02em;margin-bottom:14px}
-.l1{color:var(--white)}.l2{color:var(--green)}.l3{-webkit-text-stroke:2px var(--gold);color:transparent}
-.hero-sub{font-size:clamp(15px,2vw,19px);color:var(--muted);font-weight:400;max-width:520px;margin:0 auto 36px;line-height:1.7}
-.hero-sub strong{color:var(--text);font-weight:600}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
-.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
-.stat-c{text-align:center}
-.stat-v{font-family:var(--display);font-size:clamp(36px,5vw,54px);line-height:1;color:var(--green)}
-.stat-v span{color:var(--gold)}
-.stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
+/* PARRAINAGE */
+.ref-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:22px 22px 20px}
+.ref-head{display:flex;align-items:center;gap:9px;margin-bottom:6px}
+.ref-head i{font-size:18px;color:var(--gold)}
+.ref-title{font-family:var(--fd);font-size:18px;letter-spacing:.03em}
+.ref-sub{font-size:13px;color:var(--muted);line-height:1.55;margin-bottom:16px}
+.ref-sub strong{color:var(--gold)}
+.ref-box{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1.5px solid var(--b2);border-radius:12px;
+  padding:6px 6px 6px 16px;margin-bottom:10px;
+}
+.ref-link{
+  flex:1;font-size:13px;color:var(--text);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:monospace;
+}
+.ref-copy-btn{
+  flex-shrink:0;background:var(--gb);color:#000;border:none;border-radius:9px;
+  padding:11px 16px;font-size:13px;font-weight:800;font-family:var(--ff);
+  cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .2s;
+  -webkit-tap-highlight-color:transparent;
+}
+.ref-copy-btn:active{background:var(--gl);transform:scale(.97)}
+.ref-copy-btn.copied{background:var(--gold)}
+.ref-share-row{display:flex;gap:8px}
+.ref-share-btn{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:7px;
+  background:var(--s2);border:1px solid var(--b2);border-radius:10px;
+  padding:10px;font-size:12.5px;font-weight:700;color:var(--text);
+  cursor:pointer;transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.ref-share-btn:active{border-color:var(--gb)}
+.ref-share-btn.wa{color:#25D366}
+.ref-share-btn.tg{color:#24A1DE}
+.ref-stat{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--b1);
+  display:flex;align-items:center;justify-content:center;gap:8px;
+  font-size:12.5px;color:var(--muted);
+}
+.ref-stat strong{color:var(--gold);font-family:var(--fd);font-size:16px;letter-spacing:.02em}
 
-/* ── SCORE CARDS ── */
-.score-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:0}
-.sc{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:16px 18px;min-width:190px;position:relative;overflow:hidden;animation:floatY 4s ease-in-out infinite}
-.sc:nth-child(2){animation-delay:.8s}.sc:nth-child(3){animation-delay:1.6s}
-@keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
-.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),var(--gold))}
-.sc-league{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px}
-.sc-teams{display:flex;align-items:center;justify-content:space-between;gap:8px;font-family:var(--display);font-size:16px;letter-spacing:.04em}
-.sc-score{font-family:var(--display);font-size:20px;color:var(--gold);background:rgba(245,200,66,.1);padding:3px 9px;border-radius:6px}
-.sc-pick{margin-top:7px;font-size:11px;font-weight:600;color:var(--green);display:flex;align-items:center;gap:4px}
-.sc-cote{margin-left:auto;background:rgba(34,197,94,.12);color:var(--green);font-size:12px;font-weight:700;padding:2px 8px;border-radius:5px}
-.sc-skel{min-height:90px;background:linear-gradient(90deg,var(--s1) 25%,var(--s2) 50%,var(--s1) 75%);background-size:200% 100%;animation:shim 1.4s infinite}
-@keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
+/* UPSELL PRO */
+.upsell-card{
+  background:linear-gradient(160deg,rgba(245,200,66,.08) 0%,var(--s1) 55%);
+  border:1.5px solid var(--gold);border-radius:18px;padding:22px;position:relative;
+}
+.upsell-tag{
+  position:absolute;top:-11px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#000;font-size:10px;font-weight:800;
+  font-family:var(--fd);letter-spacing:.08em;padding:2px 14px;border-radius:20px;white-space:nowrap;
+}
+.upsell-head{display:flex;align-items:baseline;justify-content:space-between;margin-top:6px;margin-bottom:12px;flex-wrap:wrap;gap:6px}
+.upsell-title{font-family:var(--fd);font-size:22px;letter-spacing:.03em;color:var(--gold)}
+.upsell-price{font-family:var(--fd);font-size:15px;color:var(--muted)}
+.upsell-price b{font-size:22px;color:var(--text)}
+.upsell-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:18px}
+.uf-item{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--text)}
+.uf-item i{color:var(--gb);font-size:15px;flex-shrink:0}
+.btn-upsell{
+  width:100%;padding:14px;border-radius:11px;border:none;
+  background:var(--gold);color:#000;font-size:14.5px;font-weight:800;
+  font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;
+}
+.btn-upsell:active{background:#ffe066;transform:scale(.98)}
 
-/* ── TICKER ── */
-.ticker-wrap{background:var(--s1);border-top:1px solid var(--b1);overflow:hidden;height:40px;display:flex;align-items:center;margin-top:48px;width:100vw;margin-left:calc(-50vw + 50%)}
-.ticker{display:flex;animation:tick 36s linear infinite;white-space:nowrap}
-@keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-.ti{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:12px;font-weight:500;color:var(--muted);border-right:1px solid var(--b1)}
-.ti-up{color:var(--green)}.ti-dn{color:var(--red)}
+/* CTA PRINCIPAL */
+.btn-main{
+  width:100%;padding:16px;border-radius:13px;border:none;
+  background:var(--gb);color:#000;font-size:16px;font-weight:800;
+  font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;
+  transition:all .2s;-webkit-tap-highlight-color:transparent;text-decoration:none;
+}
+.btn-main:active{background:var(--gl);transform:scale(.98)}
+.main-sub{text-align:center;font-size:11.5px;color:var(--muted);margin-top:8px}
 
-/* ── LEAGUES ── */
-#leagues{padding:40px 0;background:var(--bg2);border-top:1px solid var(--b1);border-bottom:1px solid var(--b1)}
-.leagues-scroll{display:flex;gap:16px;align-items:center;overflow-x:auto;padding:0 clamp(16px,4vw,48px);scrollbar-width:none}
-.leagues-scroll::-webkit-scrollbar{display:none}
-.lp{display:flex;align-items:center;gap:9px;background:var(--s1);border:1px solid var(--b1);border-radius:40px;padding:9px 18px;white-space:nowrap;cursor:default;transition:all .2s;flex-shrink:0;font-size:13px;font-weight:600}
-.lp:hover{border-color:var(--green);color:var(--green)}
-.lp-flag{font-size:18px}
+.skip-link{text-align:center;font-size:12.5px;color:var(--muted);margin-top:2px;text-decoration:none}
+.skip-link:hover{color:var(--text)}
 
-/* ── SECTIONS ── */
-.sec{position:relative;z-index:1}
-.sec-eye{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin-bottom:12px}
-h2{font-family:var(--display);font-size:clamp(36px,5vw,62px);letter-spacing:.03em;line-height:1.05;margin-bottom:14px}
-.sec-sub{font-size:17px;color:var(--muted);font-weight:400;max-width:540px;line-height:1.7}
+.toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);
+  background:var(--s2);border:1px solid var(--b2);border-radius:10px;
+  padding:11px 22px;font-size:13px;font-weight:600;color:var(--text);
+  z-index:999;opacity:0;transition:all .3s;white-space:nowrap;
+}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── FEATURES ── */
-#features{padding:100px 0}
-.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--b1);border:1px solid var(--b1);border-radius:18px;overflow:hidden;margin-top:52px}
-.feat{background:var(--bg2);padding:36px 28px;transition:background .2s;position:relative;overflow:hidden}
-.feat:hover{background:var(--s1)}
-.feat::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--green),transparent);transform:scaleX(0);transform-origin:left;transition:transform .3s}
-.feat:hover::after{transform:scaleX(1)}
-.feat-ic{width:48px;height:48px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:18px}
-.feat h3{font-family:var(--display);font-size:21px;letter-spacing:.03em;margin-bottom:9px}
-.feat p{font-size:14px;color:var(--muted);line-height:1.7}
-@media(max-width:900px){.feats{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.feats{grid-template-columns:1fr}}
-
-/* ── TOOLS ── */
-#tools{padding:100px 0;background:var(--bg2)}
-.tools-wrap{display:grid;grid-template-columns:1fr 1.1fr;gap:52px;align-items:start;margin-top:52px}
-.tool-btn{display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:11px;cursor:pointer;transition:all .2s;border:1px solid transparent;margin-bottom:3px}
-.tool-btn:hover{background:var(--s1);border-color:var(--b2)}.tool-btn.on{background:var(--s2);border-color:var(--green)}
-.tool-ic{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
-.tool-name{font-weight:700;font-size:14px;margin-bottom:2px;font-family:var(--display);letter-spacing:.04em}
-.tool-desc{font-size:12px;color:var(--muted)}
-.plan-tag{margin-left:auto;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;padding:3px 10px;border-radius:20px;flex-shrink:0}
-.pv-box{background:var(--s1);border:1px solid var(--b2);border-radius:18px;padding:26px;min-height:360px;position:relative;overflow:hidden}
-.pv-title{font-family:var(--display);font-size:22px;letter-spacing:.04em;margin-bottom:3px}
-.pv-sub{font-size:12px;color:var(--muted);margin-bottom:20px}
-.pv-panel{display:none;position:relative;z-index:1}.pv-panel.on{display:block}
-.sr{display:flex;align-items:center;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--b1);font-size:13px}
-.sr:last-child{border-bottom:none}.sr .lbl{color:var(--muted)}.sr .val{font-weight:700}
-.big3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:18px}
-.b3{background:var(--bg2);border-radius:9px;padding:13px;text-align:center}
-.b3-v{font-family:var(--display);font-size:24px;margin-bottom:3px}.b3-l{font-size:11px;color:var(--muted)}
-.ci{background:var(--bg2);border:1px solid var(--b2);border-radius:7px;padding:9px 13px;font-size:13px;color:var(--text);font-family:var(--body);outline:none;width:100%}
-.ci:focus{border-color:var(--green)}
-.ci-l{font-size:11px;color:var(--muted);margin-bottom:4px}
-.ci-g{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:10px}
-.res{border-radius:9px;padding:13px;text-align:center;margin-top:9px;font-family:var(--display);font-size:26px;letter-spacing:.04em}
-@media(max-width:900px){.tools-wrap{grid-template-columns:1fr;gap:28px}}
-
-/* ── COUPON DU JOUR ── */
-#coupon{padding:100px 0}
-.coupon-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:52px}
-.cc-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;overflow:hidden}
-.cc-head{background:var(--green-d);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
-.cc-head::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 14px,rgba(255,255,255,.04) 15px)}
-.cc-htitle{font-family:var(--display);font-size:20px;letter-spacing:.05em;color:var(--white);position:relative;z-index:1}
-.cc-total{font-family:var(--display);font-size:32px;color:var(--gold);position:relative;z-index:1}
-.cc-body{padding:6px 0}
-.cc-match{display:flex;align-items:center;padding:13px 22px;border-bottom:1px solid var(--b1);gap:10px}
-.cc-match:last-child{border-bottom:none}
-.cc-flag{font-size:17px;flex-shrink:0}
-.cc-info{flex:1;min-width:0}
-.cc-teams{font-weight:700;font-size:13px}
-.cc-league{font-size:10px;color:var(--muted);margin-top:1px}
-.cc-right{text-align:right;flex-shrink:0}
-.cc-pick{font-size:11px;color:var(--green);font-weight:600}
-.cc-score{font-size:10px;color:var(--muted);margin-top:1px}
-.cc-cote{display:inline-block;background:rgba(34,197,94,.13);color:var(--green);font-size:13px;font-weight:800;font-family:var(--display);letter-spacing:.04em;padding:2px 9px;border-radius:5px;margin-top:3px}
-.cc-locked{display:flex;align-items:center;gap:10px;padding:13px 22px;border-bottom:1px solid var(--b1);opacity:.5}
-.cc-locked-label{font-size:12px;color:var(--muted);font-style:italic}
-.cc-foot{background:var(--bg2);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;border-top:1px solid var(--b1)}
-.cc-bks{display:flex;gap:7px;flex-wrap:wrap}
-.cc-bk{font-size:11px;font-weight:700;padding:5px 11px;border-radius:6px;border:1px solid var(--b2);color:var(--muted);background:var(--s1);transition:all .15s}
-.cc-bk:hover{border-color:var(--gold);color:var(--gold)}
-.cc-skel{padding:60px;text-align:center;color:var(--muted);font-size:14px}
-@media(max-width:900px){.coupon-layout{grid-template-columns:1fr;gap:36px}}
-
-/* ── PRICING ── */
-#plans{padding:100px 0;background:var(--bg2)}
-.billing-wrap{display:inline-flex;background:var(--s1);border-radius:30px;padding:4px;border:1px solid var(--b1);margin-bottom:44px}
-.bill-btn{padding:8px 24px;border-radius:26px;border:none;background:transparent;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--body);transition:all .2s;display:flex;align-items:center;gap:7px}
-.bill-btn.on{background:var(--s2);color:var(--text)}
-.save-tag{background:rgba(34,197,94,.14);color:var(--green);font-size:10px;padding:1px 7px;border-radius:10px;font-weight:700}
-.plans-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
-.plan{background:var(--s1);border:1px solid var(--b1);border-radius:16px;padding:22px 18px;position:relative;transition:transform .2s,border-color .2s}
-.plan:hover{transform:translateY(-4px)}
-.plan.hot{border-color:var(--gold);background:linear-gradient(160deg,rgba(245,200,66,.06) 0%,var(--s1) 50%)}
-.plan.vip{border-color:var(--violet);background:linear-gradient(160deg,rgba(139,92,246,.06) 0%,var(--s1) 50%)}
-.hot-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--gold);color:#000;font-size:10px;font-weight:800;font-family:var(--display);letter-spacing:.08em;padding:2px 14px;border-radius:20px;white-space:nowrap}
-.vip-tag{position:absolute;top:-11px;left:50%;transform:translateX(-50%);background:var(--violet);color:#fff;font-size:10px;font-weight:800;font-family:var(--display);letter-spacing:.08em;padding:2px 14px;border-radius:20px;white-space:nowrap}
-.plan-tier{font-family:var(--display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:5px}
-.plan-price{font-family:var(--display);font-size:38px;line-height:1;margin:8px 0 2px}
-.plan-per{font-size:12px;color:var(--muted);margin-bottom:16px}
-.plan-feats{list-style:none;margin-bottom:20px}
-.plan-feats li{display:flex;align-items:flex-start;gap:7px;font-size:12px;padding:5px 0;border-bottom:1px solid var(--b1);color:var(--muted)}
-.plan-feats li:last-child{border-bottom:none}
-.plan-feats li.y{color:var(--text)}
-.plan-feats li .ck{flex-shrink:0;margin-top:1px}
-.plan-feats li.y .ck{color:var(--green)}
-.plan-feats li:not(.y) .ck{color:var(--lo)}
-.plan-alt{font-size:10px;color:var(--muted);text-align:center;margin-top:8px}
-@media(max-width:1100px){.plans-grid{grid-template-columns:repeat(3,1fr)}}
-@media(max-width:700px){.plans-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:440px){.plans-grid{grid-template-columns:1fr}}
-
-/* ── TESTI ── */
-#testi{padding:100px 0}
-.testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px}
-.testi{background:var(--s1);border:1px solid var(--b1);border-radius:15px;padding:26px;transition:border-color .2s,transform .2s}
-.testi:hover{border-color:var(--green);transform:translateY(-3px)}
-.stars{color:var(--gold);font-size:14px;letter-spacing:3px;margin-bottom:12px}
-.quote{font-size:14px;color:var(--muted);line-height:1.75;margin-bottom:18px;font-style:italic}
-.testi-foot{display:flex;align-items:center;gap:10px}
-.av{width:40px;height:40px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:17px;flex-shrink:0}
-.t-name{font-weight:700;font-size:13px}.t-city{font-size:11px;color:var(--muted)}
-.t-gain{margin-left:auto;font-family:var(--display);font-size:17px;color:var(--green)}
-@media(max-width:900px){.testi-grid{grid-template-columns:1fr 1fr}}
-@media(max-width:560px){.testi-grid{grid-template-columns:1fr}}
-
-/* ── BOOKMAKERS ── */
-#bk{padding:70px 0;background:var(--bg2);border-top:1px solid var(--b1)}
-.bk-row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:36px}
-.bk{background:var(--s1);border:1px solid var(--b1);border-radius:13px;padding:18px 24px;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:140px;transition:all .2s;cursor:pointer}
-.bk:hover{border-color:var(--gold);transform:translateY(-3px)}
-.bk-name{font-family:var(--display);font-size:17px;letter-spacing:.04em}
-.bk-bonus{font-size:11px;color:var(--green);font-weight:600}
-.bk-link{font-size:10px;color:var(--gold);margin-top:2px}
-
-/* ── CTA ── */
-#cta{padding:110px 0;text-align:center;position:relative;overflow:hidden}
-.cta-big{font-family:var(--display);font-size:clamp(46px,8vw,92px);line-height:.93;letter-spacing:.02em;margin-bottom:20px}
-.cta-sub{font-size:17px;color:var(--muted);margin-bottom:36px}
-.cta-note{font-size:12px;color:var(--lo);margin-top:16px}
-
-/* ── FOOTER ── */
-footer{background:var(--bg2);border-top:1px solid var(--b1);padding:56px 0 28px}
-.footer-cols{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:48px;margin-bottom:44px}
-.footer-logo p{font-size:13px;color:var(--muted);margin-top:10px;max-width:260px;line-height:1.7}
-.footer-col h5{font-family:var(--display);font-size:13px;letter-spacing:.1em;text-transform:uppercase;margin-bottom:14px;color:var(--text)}
-.footer-col ul{list-style:none}
-.footer-col ul li{margin-bottom:9px}
-.footer-col ul li a{font-size:13px;color:var(--muted);transition:color .15s}
-.footer-col ul li a:hover{color:var(--green)}
-.footer-bot{border-top:1px solid var(--b1);padding-top:22px;display:flex;align-items:center;justify-content:space-between;font-size:12px;color:var(--lo);flex-wrap:wrap;gap:8px}
-.warn-box{background:rgba(245,200,66,.04);border:1px solid rgba(245,200,66,.12);border-radius:9px;padding:14px 18px;font-size:11px;color:var(--muted);line-height:1.6;margin-top:32px}
-@media(max-width:900px){.footer-cols{grid-template-columns:1fr 1fr;gap:28px}}
-@media(max-width:560px){.footer-cols{grid-template-columns:1fr}}
-
-/* ── CREDITS BADGE ── */
-.credit-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);color:var(--green);font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;letter-spacing:.04em}
+@media(max-width:420px){
+  .hero-card{padding:26px 20px 22px}
+  .ref-card,.upsell-card{padding:18px}
+  .credits-row{gap:6px}
+}
 </style>
-<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -255,751 +162,218 @@ footer{background:var(--bg2);border-top:1px solid var(--b1);padding:56px 0 28px}
   gtag('js', new Date());
   gtag('config', 'AW-536531182');
 </script>
+<script defer src="/_vercel/insights/script.js"></script>
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1734737427724152');
+fbq('track', 'PageView');
+</script>
 </head>
-<body>
+<body data-page="welcome">
 
-<!-- NAV -->
-<nav id="nav">
-  <div class="logo">
-    <div class="logo-badge"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
-    <div class="logo-name">BET<span>ORACL</span> PRO</div>
-  </div>
-  <div class="nav-links">
-    <a href="#features">Fonctionnalités</a>
-    <a href="#tools">Outils</a>
-    <a href="#coupon">Coupon</a>
-    <a href="#plans">Tarifs</a>
-    <a href="#testi">Avis</a>
-  </div>
-  <div class="nav-ctas">
-    <a href="/login" class="btn btn-outline">Connexion</a>
-    <a href="/signup" class="btn btn-green">Commencer gratuit</a>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section id="hero">
-  <div class="hero-circle"></div>
-  <div class="glow-l"></div><div class="glow-r"></div>
-  <div class="hero-pill reveal"><span class="live-dot"></span>Oracle IA · Données temps réel</div>
-  <h1 class="reveal rd1"><span class="l1">PARIS</span><br><span class="l2">SPORT</span><br><span class="l3">INTELLIGENTS</span></h1>
-  <p class="hero-sub reveal rd2">Coupons générés par IA chaque matin. <strong>Oracle prédictif.</strong> Value Bet. Kelly Calculator. Tout pour parier avec méthode.</p>
-  <div class="hero-actions reveal rd3">
-    <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-rocket"></i> Commencer gratuitement</a>
-    <a href="#coupon" class="btn btn-outline btn-lg"><i class="ti ti-receipt"></i> Coupon du jour</a>
-  </div>
-  <div class="hero-stats reveal rd4">
-    <div class="stat-c"><div class="stat-v" id="stat-users">—</div><div class="stat-l">Utilisateurs</div></div>
-    <div class="stat-c"><div class="stat-v">55<span>+</span></div><div class="stat-l">Championnats</div></div>
-    <div class="stat-c"><div class="stat-v" id="stat-wr">—<span>%</span></div><div class="stat-l">Win Rate</div></div>
-    <div class="stat-c"><div class="stat-v">750<span>F</span></div><div class="stat-l">Dès / semaine</div></div>
-  </div>
-  <!-- Score cards dynamiques -->
-  <div class="score-row reveal" id="scoreCards">
-    <div class="sc sc-skel" style="min-width:190px;min-height:90px"></div>
-    <div class="sc sc-skel" style="min-width:190px;min-height:90px;animation-delay:.3s"></div>
-    <div class="sc sc-skel" style="min-width:190px;min-height:90px;animation-delay:.6s"></div>
-  </div>
-  <!-- Ticker dynamique -->
-  <div class="ticker-wrap">
-    <div class="ticker" id="ticker">
-      <div class="ti"><span>🏆</span><span>Betoracl Pro — Analyse quantitative</span><span class="ti-up">Coupons générés par IA</span></div>
-      <div class="ti"><span>⚡</span><span>Oracle prédictif</span><span class="ti-up">Forme · Cotes Pinnacle · Value Bet</span></div>
-      <div class="ti"><span>📊</span><span>Kelly Calculator</span><span class="ti-up">Mise optimale / bankroll</span></div>
-      <div class="ti"><span>🏆</span><span>Betoracl Pro — Analyse quantitative</span><span class="ti-up">Coupons générés par IA</span></div>
-      <div class="ti"><span>⚡</span><span>Oracle prédictif</span><span class="ti-up">Forme · Cotes Pinnacle · Value Bet</span></div>
-      <div class="ti"><span>📊</span><span>Kelly Calculator</span><span class="ti-up">Mise optimale / bankroll</span></div>
-    </div>
-  </div>
-</section>
-
-<!-- LEAGUES -->
-<section id="leagues" class="sec">
-  <div class="leagues-scroll">
-    <div class="lp"><span class="lp-flag">🏆</span><span>Champions League</span></div>
-    <div class="lp"><span class="lp-flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span><span>Premier League</span></div>
-    <div class="lp"><span class="lp-flag">🇫🇷</span><span>Ligue 1</span></div>
-    <div class="lp"><span class="lp-flag">🇪🇸</span><span>La Liga</span></div>
-    <div class="lp"><span class="lp-flag">🇩🇪</span><span>Bundesliga</span></div>
-    <div class="lp"><span class="lp-flag">🇮🇹</span><span>Serie A</span></div>
-    <div class="lp"><span class="lp-flag">🌍</span><span>Europa League</span></div>
-    <div class="lp"><span class="lp-flag">🏀</span><span>NBA</span></div>
-    <div class="lp"><span class="lp-flag">🇳🇬</span><span>NPFL Nigeria</span></div>
-    <div class="lp"><span class="lp-flag">🇨🇮</span><span>MTN Ligue 1 CI</span></div>
-    <div class="lp"><span class="lp-flag">🌍</span><span>CAN / CHAN</span></div>
-    <div class="lp"><span class="lp-flag">🌐</span><span>Coupe du Monde</span></div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section id="features" class="sec">
+<div class="page">
   <div class="wrap">
-    <div class="reveal"><div class="sec-eye"><i class="ti ti-sparkles"></i> Fonctionnalités</div></div>
-    <h2 class="reveal rd1">La plateforme quant<br>des vrais parieurs</h2>
-    <p class="sec-sub reveal rd2">De l'Oracle IA aux coupons automatiques — Betoracl Pro te donne les outils des analystes professionnels.</p>
-    <div class="feats">
-      <div class="feat reveal">
-        <div class="feat-ic" style="background:rgba(245,200,66,.1);color:var(--gold)"><i class="ti ti-receipt"></i></div>
-        <h3>Coupons automatiques</h3>
-        <p>Générés chaque matin à 08h00 via IA. 3 niveaux de risque. Sélections vérifiées sur vrais matchs depuis TheStatsAPI. Publiés sur Telegram sans intervention.</p>
-      </div>
-      <div class="feat reveal rd1">
-        <div class="feat-ic" style="background:rgba(139,92,246,.1);color:var(--violet)"><i class="ti ti-brain"></i></div>
-        <h3>Oracle IA Prédictif</h3>
-        <p>Analyse quantitative sur données structurées : forme réelle, moyennes de buts, cotes Pinnacle (bookmaker sharp). Probabilités implicites et détection value bet.</p>
-      </div>
-      <div class="feat reveal rd2">
-        <div class="feat-ic" style="background:rgba(34,197,94,.1);color:var(--green)"><i class="ti ti-wallet"></i></div>
-        <h3>Gestion bankroll</h3>
-        <p>Critère de Kelly fractionné. Courbe ROI, historique W/L, bilan par type de pari. La gestion du capital comme les pros.</p>
-      </div>
-      <div class="feat reveal rd1">
-        <div class="feat-ic" style="background:rgba(34,197,94,.1);color:var(--green)"><i class="ti ti-chart-bar"></i></div>
-        <h3>Stats & analyses</h3>
-        <p>Probabilités 1X2, BTTS, Over/Under. Cotes Pinnacle, Bet365, Betfair. Forme sur 5 matchs, confrontations directes, contexte de match.</p>
-      </div>
-      <div class="feat reveal rd2">
-        <div class="feat-ic" style="background:rgba(239,68,68,.1);color:var(--red)"><i class="ti ti-bell"></i></div>
-        <h3>Alertes live</h3>
-        <p>Notifications instantanées : but, carton rouge, changement de composition. Opportunités de paris en cours identifiées en temps réel.</p>
-      </div>
-      <div class="feat reveal rd3">
-        <div class="feat-ic" style="background:rgba(20,184,166,.1);color:var(--teal)"><i class="ti ti-brand-telegram"></i></div>
-        <h3>Canal Telegram</h3>
-        <p>Coupons du jour publiés automatiquement. Accès aux analyses et résultats. Communauté de parieurs sérieux.</p>
+
+    <div class="logo">
+      <div class="logo-orb"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
+      <div class="logo-name">BET<span>ORACL</span></div>
+    </div>
+
+    <!-- HERO BIENVENUE -->
+    <div class="hero-card">
+      <div class="hero-orb">🎉</div>
+      <div class="hero-title">Bienvenue <span id="firstname">!</span></div>
+      <p class="hero-sub">Ton compte <strong>Betoracl Pro</strong> est actif. L'Oracle est prêt à analyser tes matchs.</p>
+      <div class="credits-row">
+        <div class="credit-pill"><i class="ti ti-coin"></i> 3 crédits Oracle offerts</div>
+        <div class="credit-pill"><i class="ti ti-ticket"></i> Coupon Sûr du jour</div>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- TOOLS -->
-<section id="tools" class="sec">
-  <div class="wrap">
-    <div class="reveal"><div class="sec-eye"><i class="ti ti-tools"></i> Outils d'analyse</div></div>
-    <h2 class="reveal rd1">5 outils.<br>0 hasard.</h2>
-    <p class="sec-sub reveal rd2">Clique pour voir la démo.</p>
-    <div class="tools-wrap">
-      <div class="reveal">
-        <div class="tool-btn on" onclick="showT(this,'stats')">
-          <div class="tool-ic" style="background:rgba(59,130,246,.12)"><i class="ti ti-chart-bar" style="color:#3b82f6"></i></div>
-          <div><div class="tool-name">Stats 1X2</div><div class="tool-desc">Probabilités 55+ championnats</div></div>
-          <span class="plan-tag" style="background:rgba(20,184,166,.12);color:var(--teal)">Starter</span>
-        </div>
-        <div class="tool-btn" onclick="showT(this,'value')">
-          <div class="tool-ic" style="background:rgba(245,200,66,.12)"><i class="ti ti-calculate" style="color:var(--gold)"></i></div>
-          <div><div class="tool-name">Value Bet</div><div class="tool-desc">Cotes sous-évaluées</div></div>
-          <span class="plan-tag" style="background:rgba(245,200,66,.12);color:var(--gold)">Pro</span>
-        </div>
-        <div class="tool-btn" onclick="showT(this,'kelly')">
-          <div class="tool-ic" style="background:rgba(34,197,94,.12)"><i class="ti ti-percentage" style="color:var(--green)"></i></div>
-          <div><div class="tool-name">Kelly Calculator</div><div class="tool-desc">Mise optimale bankroll</div></div>
-          <span class="plan-tag" style="background:rgba(245,200,66,.12);color:var(--gold)">Pro</span>
-        </div>
-        <div class="tool-btn" onclick="showT(this,'h2h')">
-          <div class="tool-ic" style="background:rgba(139,92,246,.12)"><i class="ti ti-arrows-right-left" style="color:var(--violet)"></i></div>
-          <div><div class="tool-name">Head-to-Head</div><div class="tool-desc">Confrontations directes</div></div>
-          <span class="plan-tag" style="background:rgba(245,200,66,.12);color:var(--gold)">Pro</span>
-        </div>
-        <div class="tool-btn" onclick="showT(this,'oracle')">
-          <div class="tool-ic" style="background:rgba(139,92,246,.12)"><i class="ti ti-brain" style="color:var(--violet)"></i></div>
-          <div><div class="tool-name">Oracle IA</div><div class="tool-desc">Analyse quantitative</div></div>
-          <span class="plan-tag" style="background:rgba(139,92,246,.12);color:var(--violet)">Elite</span>
-        </div>
+    <!-- PARRAINAGE -->
+    <div class="ref-card">
+      <div class="ref-head">
+        <i class="ti ti-gift"></i>
+        <div class="ref-title">Parraine un ami</div>
       </div>
-      <div class="pv-box reveal rd2">
-        <!-- STATS -->
-        <div class="pv-panel on" id="pv-stats">
-          <div class="pv-title">Stats 1X2</div>
-          <div class="pv-sub">Tchéquie vs Mexique · CdM 2026 — Groupe A</div>
-          <div class="big3">
-            <div class="b3"><div class="b3-v" style="color:var(--green)">22%</div><div class="b3-l">Tchéquie</div></div>
-            <div class="b3"><div class="b3-v" style="color:var(--gold)">27%</div><div class="b3-l">Nul</div></div>
-            <div class="b3"><div class="b3-v" style="color:#3b82f6">51%</div><div class="b3-l">Mexique</div></div>
-          </div>
-          <div class="sr"><span class="lbl">BTTS (les 2 marquent)</span><span class="val" style="color:var(--muted)">38%</span></div>
-          <div class="sr"><span class="lbl">Over 2.5 buts</span><span class="val" style="color:var(--muted)">35%</span></div>
-          <div class="sr"><span class="lbl">Score probable</span><span class="val">2 - 1</span></div>
-          <div class="sr"><span class="lbl">Confiance Oracle</span><span class="val" style="color:var(--green)">64%</span></div>
-        </div>
-        <!-- VALUE BET -->
-        <div class="pv-panel" id="pv-value">
-          <div class="pv-title">Value Bet</div>
-          <div class="pv-sub">Détection de cotes sous-évaluées</div>
-          <div class="ci-g">
-            <div><div class="ci-l">Cote bookmaker</div><input class="ci" type="number" value="2.10" id="vc" oninput="vbc()"></div>
-            <div><div class="ci-l">Ta probabilité (%)</div><input class="ci" type="number" value="55" id="vp" oninput="vbc()"></div>
-          </div>
-          <div class="res" id="vr" style="background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.25)">
-            <div style="color:var(--green)" id="vrtxt">+15.5% VALUE BET ✓</div>
-            <div style="font-size:12px;color:var(--muted);font-family:var(--body);font-weight:400;margin-top:4px">Mise conseillée : 3–5% bankroll</div>
-          </div>
-        </div>
-        <!-- KELLY -->
-        <div class="pv-panel" id="pv-kelly">
-          <div class="pv-title">Kelly Calculator</div>
-          <div class="pv-sub">Mise optimale selon ta bankroll</div>
-          <div class="ci-g">
-            <div><div class="ci-l">Bankroll (FCFA)</div><input class="ci" type="number" value="50000" id="kb" oninput="kc()"></div>
-            <div><div class="ci-l">Cote</div><input class="ci" type="number" value="2.10" step="0.01" id="kc2" oninput="kc()"></div>
-          </div>
-          <div style="margin-bottom:10px"><div class="ci-l">Probabilité estimée (%)</div><input class="ci" type="number" value="55" id="kp" oninput="kc()"></div>
-          <div class="res" style="background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.25)">
-            <div style="color:var(--green)" id="kr">3 438 FCFA</div>
-            <div style="font-size:12px;color:var(--muted);font-family:var(--body);font-weight:400;margin-top:4px" id="kpct">Kelly 13.8% → fraction ¼ = 3.4%</div>
-          </div>
-        </div>
-        <!-- H2H -->
-        <div class="pv-panel" id="pv-h2h">
-          <div class="pv-title">Head-to-Head</div>
-          <div class="pv-sub">Tchéquie vs Mexique · 10 derniers matchs</div>
-          <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
-            <div style="display:flex;align-items:center;gap:9px">
-              <span style="font-size:11px;color:var(--muted);min-width:95px">Victoires Mexique</span>
-              <div style="flex:1;height:9px;background:var(--bg2);border-radius:5px;overflow:hidden"><div style="width:30%;height:100%;background:var(--green);border-radius:5px"></div></div>
-              <span style="font-weight:800;font-family:var(--display);color:var(--green);min-width:18px">3</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:9px">
-              <span style="font-size:11px;color:var(--muted);min-width:95px">Nuls</span>
-              <div style="flex:1;height:9px;background:var(--bg2);border-radius:5px;overflow:hidden"><div style="width:20%;height:100%;background:var(--muted);border-radius:5px"></div></div>
-              <span style="font-weight:800;font-family:var(--display);color:var(--muted);min-width:18px">2</span>
-            </div>
-            <div style="display:flex;align-items:center;gap:9px">
-              <span style="font-size:11px;color:var(--muted);min-width:95px">Victoires Tchéquie</span>
-              <div style="flex:1;height:9px;background:var(--bg2);border-radius:5px;overflow:hidden"><div style="width:20%;height:100%;background:#3b82f6;border-radius:5px"></div></div>
-              <span style="font-weight:800;font-family:var(--display);color:#3b82f6;min-width:18px">2</span>
-            </div>
-          </div>
-          <div class="sr"><span class="lbl">Buts moyens / match</span><span class="val">2.9</span></div>
-          <div class="sr"><span class="lbl">BTTS sur H2H</span><span class="val" style="color:var(--green)">65%</span></div>
-        </div>
-        <!-- ORACLE -->
-        <div class="pv-panel" id="pv-oracle">
-          <div class="pv-title">Oracle IA</div>
-          <div class="pv-sub">Analyse quantitative · Données structurées</div>
-          <div style="background:rgba(139,92,246,.08);border:1px solid rgba(139,92,246,.2);border-radius:11px;padding:14px;margin-bottom:12px">
-            <div style="font-size:11px;color:var(--muted);margin-bottom:9px">Tchéquie vs Mexique · CdM 2026 — Groupe A</div>
-            <div class="big3">
-              <div class="b3"><div class="b3-v" style="color:var(--muted)">22%</div><div class="b3-l">Tchéquie</div></div>
-              <div class="b3"><div class="b3-v" style="color:var(--gold)">27%</div><div class="b3-l">Nul</div></div>
-              <div class="b3"><div class="b3-v" style="color:var(--green)">51%</div><div class="b3-l">Mexique</div></div>
-            </div>
-          </div>
-          <div style="background:var(--bg2);border-radius:9px;padding:11px;font-size:12px;color:var(--muted)">
-            <strong style="color:var(--violet)">Recommandation Oracle :</strong> Victoire Mexique · Confiance <strong style="color:var(--green)">64%</strong> · Under 2.5 buts à ~1.74 (impl. 57%) vs proba estimée <strong style="color:var(--gold)">65%</strong> → value +8pt · Mise conseillée 2% BK
-          </div>
-        </div>
+      <p class="ref-sub">Chaque ami inscrit avec ton lien te rapproche du <strong>jackpot mensuel de 500 000 FCFA</strong>. Partage-le maintenant :</p>
+      <div class="ref-box">
+        <span class="ref-link" id="ref-link">betoracl.com/signup?ref=…</span>
+        <button class="ref-copy-btn" id="ref-copy-btn" onclick="copyRefLink()">
+          <i class="ti ti-copy" id="ref-copy-icon"></i> <span id="ref-copy-txt">Copier</span>
+        </button>
+      </div>
+      <div class="ref-share-row">
+        <button class="ref-share-btn wa" onclick="shareRef('wa')"><i class="ti ti-brand-whatsapp"></i> WhatsApp</button>
+        <button class="ref-share-btn tg" onclick="shareRef('tg')"><i class="ti ti-brand-telegram"></i> Telegram</button>
+      </div>
+      <div class="ref-stat" id="ref-stat" style="display:none">
+        <i class="ti ti-users" style="color:var(--gb)"></i>
+        <strong id="ref-count">0</strong> ami<span id="ref-plural"></span> déjà parrainé<span id="ref-plural2"></span>
       </div>
     </div>
-  </div>
-</section>
 
-<!-- COUPON DU JOUR -->
-<section id="coupon" class="sec">
-  <div class="wrap">
-    <div class="reveal"><div class="sec-eye"><i class="ti ti-receipt"></i> Coupon du jour</div></div>
-    <div class="coupon-layout">
-      <div class="reveal">
-        <h2>Coupon généré<br><span style="color:var(--green)">chaque matin</span><br>à 08h00</h2>
-        <p style="font-size:15px;color:var(--muted);margin:18px 0 24px;line-height:1.7">Sélections sur vrais matchs vérifiés via TheStatsAPI. 3 niveaux de risque. Publié sur Telegram automatiquement.</p>
-        <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:28px">
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> Matchs réels vérifiés (TheStatsAPI)</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> Score probable par sélection</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> Justification factuelle chiffrée</div>
-          <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> 3 niveaux : Sûr · Équilibré · Audacieux</div>
-        </div>
-        <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-brand-telegram"></i> Rejoindre le canal</a>
-        <div class="credit-badge" style="margin-top:16px"><i class="ti ti-coin"></i> 3 crédits Oracle offerts à l'inscription</div>
+    <!-- UPSELL PRO -->
+    <div class="upsell-card">
+      <div class="upsell-tag">⭐ Le plus populaire</div>
+      <div class="upsell-head">
+        <div class="upsell-title">Passe Pro</div>
+        <div class="upsell-price"><b>1 500</b> F/sem</div>
       </div>
-      <div class="reveal rd2" id="couponCard">
-        <div class="cc-card">
-          <div class="cc-skel" style="padding:48px;text-align:center;color:var(--muted);font-size:14px">
-            <i class="ti ti-loader-2" style="font-size:24px;animation:spin 1s linear infinite"></i>
-            <div style="margin-top:8px">Chargement du coupon du jour…</div>
-          </div>
-        </div>
+      <div class="upsell-feats">
+        <div class="uf-item"><i class="ti ti-check"></i> Coupons 3 niveaux + 40 crédits Oracle/mois</div>
+        <div class="uf-item"><i class="ti ti-check"></i> Value Bet & Kelly Calculator</div>
+        <div class="uf-item"><i class="ti ti-check"></i> Alertes live + Head-to-Head</div>
+        <div class="uf-item"><i class="ti ti-check"></i> Comparateur de cotes</div>
       </div>
+      <button class="btn-upsell" onclick="goCheckout('pro')">
+        <i class="ti ti-bolt"></i> Débloquer le plan Pro
+      </button>
     </div>
-  </div>
-</section>
 
-<!-- PLANS -->
-<section id="plans" class="sec">
-  <div class="wrap">
-    <div style="text-align:center">
-      <div class="reveal"><div class="sec-eye" style="justify-content:center"><i class="ti ti-crown"></i> Tarifs</div></div>
-      <h2 class="reveal rd1">Commence à 750 FCFA</h2>
-      <p class="sec-sub reveal rd2" style="margin:0 auto 24px">Plans semaine sans engagement. Plans mois pour économiser 15%.</p>
-      <div class="billing-wrap reveal rd3">
-        <button class="bill-btn on" onclick="setBill('w',this)"><i class="ti ti-calendar-week"></i> Semaine</button>
-        <button class="bill-btn" onclick="setBill('m',this)"><i class="ti ti-calendar-month"></i> Mois <span class="save-tag">-15%</span></button>
-      </div>
-    </div>
-    <div class="plans-grid reveal rd1">
-
-      <!-- FREE -->
-      <div class="plan">
-        <div class="plan-tier" style="color:var(--muted)">Free</div>
-        <div class="plan-price">0</div>
-        <div class="plan-per">Toujours gratuit</div>
-        <ul class="plan-feats">
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Coupon Sûr du jour</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 3 crédits Oracle/mois</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Bankroll basique</li>
-          <li><span class="ck"><i class="ti ti-x" style="font-size:12px"></i></span> Stats complètes</li>
-          <li><span class="ck"><i class="ti ti-x" style="font-size:12px"></i></span> Value Bet & Kelly</li>
-        </ul>
-        <a href="/signup" class="btn btn-outline" style="width:100%;justify-content:center">Commencer</a>
-      </div>
-
-      <!-- STARTER -->
-      <div class="plan">
-        <div class="plan-tier" style="color:var(--teal)">Starter</div>
-        <div class="plan-price" style="color:var(--teal)" id="sp">750</div>
-        <div class="plan-per" id="sper">FCFA / semaine</div>
-        <ul class="plan-feats">
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Coupons 3 niveaux</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 15 crédits Oracle/mois</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Bankroll + ROI Tracker</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Stats 1X2 + forme</li>
-          <li><span class="ck"><i class="ti ti-x" style="font-size:12px"></i></span> Value Bet & Kelly</li>
-        </ul>
-        <a href="/signup?plan=starter" class="btn" style="width:100%;justify-content:center;background:var(--teal);color:#000">Choisir Starter</a>
-        <div class="plan-alt" id="salt">ou 2 500 F/mois</div>
-      </div>
-
-      <!-- PRO -->
-      <div class="plan hot">
-        <div class="hot-tag">POPULAIRE</div>
-        <div class="plan-tier" style="color:var(--gold)">Pro</div>
-        <div class="plan-price" style="color:var(--gold)" id="pp">1 500</div>
-        <div class="plan-per" id="pper">FCFA / semaine</div>
-        <ul class="plan-feats">
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Tout Starter</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 40 crédits Oracle/mois</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Value Bet & Kelly</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Alertes live + H2H</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Comparateur cotes</li>
-        </ul>
-        <a href="/signup?plan=pro" class="btn btn-gold" style="width:100%;justify-content:center">Choisir Pro</a>
-        <div class="plan-alt" id="palt">ou 5 000 F/mois</div>
-      </div>
-
-      <!-- ELITE -->
-      <div class="plan">
-        <div class="plan-tier" style="color:var(--violet)">Elite</div>
-        <div class="plan-price" style="color:var(--violet)" id="ep">3 000</div>
-        <div class="plan-per" id="eper">FCFA / semaine</div>
-        <ul class="plan-feats">
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Tout Pro</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 90 crédits Oracle/mois</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Coaching personnalisé</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Stats joueurs avancées</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Support prioritaire</li>
-        </ul>
-        <a href="/signup?plan=elite" class="btn" style="width:100%;justify-content:center;background:rgba(139,92,246,.18);color:var(--violet);border:1px solid rgba(139,92,246,.35)">Choisir Elite</a>
-        <div class="plan-alt" id="ealt">ou 10 000 F/mois</div>
-      </div>
-
-      <!-- VIP -->
-      <div class="plan vip">
-        <div class="vip-tag">VIP</div>
-        <div class="plan-tier" style="color:var(--violet)">VIP</div>
-        <div class="plan-price" style="color:var(--violet);font-size:28px" id="vp2">25 000</div>
-        <div class="plan-per" id="vper">FCFA / mois</div>
-        <ul class="plan-feats">
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Tout Elite</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 300 crédits Oracle/mois</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Analyses illimitées*</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Accès bêta anticipé</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Hotline WhatsApp</li>
-        </ul>
-        <a href="/signup?plan=vip" class="btn" style="width:100%;justify-content:center;background:rgba(139,92,246,.25);color:var(--violet);border:1px solid rgba(139,92,246,.5)">Choisir VIP</a>
-        <div class="plan-alt">*300 crédits inclus/mois</div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section id="testi" class="sec">
-  <div class="wrap">
-    <div class="reveal"><div class="sec-eye"><i class="ti ti-star"></i> Témoignages</div></div>
-    <h2 class="reveal rd1">Ils gagnent avec<br><span style="color:var(--green)">Betoracl Pro</span></h2>
-    <div class="testi-grid">
-      <div class="testi reveal">
-        <div class="stars">★★★★★</div>
-        <p class="quote">"Le coupon automatique à 08h00 m'a changé la vie. Plus besoin de chercher les matchs. En 3 semaines ma bankroll a progressé grâce au suivi Kelly."</p>
-        <div class="testi-foot">
-          <div class="av" style="background:rgba(245,200,66,.15);color:var(--gold)">K</div>
-          <div><div class="t-name">Kofi Mensah</div><div class="t-city">🇨🇮 Abidjan</div></div>
-          <div class="t-gain">+85 000 F</div>
-        </div>
-      </div>
-      <div class="testi reveal rd1">
-        <div class="stars">★★★★★</div>
-        <p class="quote">"Le Value Bet m'a ouvert les yeux. Je compare la proba implicite Pinnacle à mon estimation. Mon ROI est passé de -8% à +22% en un mois."</p>
-        <div class="testi-foot">
-          <div class="av" style="background:rgba(34,197,94,.15);color:var(--green)">A</div>
-          <div><div class="t-name">Ama Diallo</div><div class="t-city">🇸🇳 Dakar</div></div>
-          <div class="t-gain">+142 000 F</div>
-        </div>
-      </div>
-      <div class="testi reveal rd2">
-        <div class="stars">★★★★★</div>
-        <p class="quote">"L'Oracle IA me donne la forme réelle des équipes et les cotes sharp. Je comprends enfin pourquoi je mise. Le calcul Kelly me protège ma bankroll."</p>
-        <div class="testi-foot">
-          <div class="av" style="background:rgba(59,130,246,.15);color:#3b82f6">J</div>
-          <div><div class="t-name">Junior Traoré</div><div class="t-city">🇹🇬 Lomé</div></div>
-          <div class="t-gain">+67 000 F</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- BOOKMAKERS -->
-<section id="bk" class="sec">
-  <div class="wrap">
-    <div style="text-align:center">
-      <div class="reveal"><div class="sec-eye" style="justify-content:center"><i class="ti ti-building-bank"></i> Bookmakers partenaires</div></div>
-      <p class="reveal rd1" style="color:var(--muted);font-size:14px;margin-bottom:0">Parie nos coupons sur les meilleures plateformes disponibles en Afrique de l'Ouest</p>
-    </div>
-    <div class="bk-row reveal rd2">
-      <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" rel="noopener" class="bk"><div class="bk-name">1XBET</div><div class="bk-bonus">Bonus 100%</div><div class="bk-link">S'inscrire →</div></a>
-      <a href="https://bwredir.com/2gdj" target="_blank" rel="noopener" class="bk"><div class="bk-name">BETWINNER</div><div class="bk-bonus">Bonus 130%</div><div class="bk-link">S'inscrire →</div></a>
-      <a href="https://refpaiozdg.top/L?" target="_blank" rel="noopener" class="bk"><div class="bk-name">MEGAPARI</div><div class="bk-bonus">100% + Freebets</div><div class="bk-link">S'inscrire →</div></a>
-      <a href="https://1wync.com/?p=3qq3" target="_blank" rel="noopener" class="bk"><div class="bk-name">1Win</div><div class="bk-bonus">500% × 4 dépôts</div><div class="bk-link">S'inscrire →</div></a>
-      <a href="https://bonusweb.org/L?tag=d_3757489m_45159c_&site=3757489&ad=45159" target="_blank" rel="noopener" class="bk"><div class="bk-name">888starz</div><div class="bk-bonus">Bonus 100%</div><div class="bk-link">S'inscrire →</div></a>
-    </div>
-  </div>
-</section>
-
-<!-- CTA -->
-<section id="cta" class="sec">
-  <div class="pitch-bg" style="opacity:.35"></div>
-  <div class="wrap" style="text-align:center;position:relative;z-index:1">
-    <div class="reveal"><div class="sec-eye" style="justify-content:center"><i class="ti ti-rocket"></i> Rejoindre</div></div>
-    <h2 class="cta-big reveal rd1">PARIE<br><span style="color:var(--green)">AVEC</span><br><span style="color:var(--gold)">MÉTHODE</span></h2>
-    <p class="cta-sub reveal rd2">Rejoins les parieurs qui utilisent les données, pas l'instinct.<br>Commence gratuitement. Upgrade quand tu veux.</p>
-    <div class="reveal rd3">
-      <a href="/signup" id="signup" class="btn btn-green btn-lg" style="font-size:17px;padding:17px 40px">
-        <i class="ti ti-rocket"></i> Créer mon compte gratuitement
+    <!-- CTA PRINCIPAL -->
+    <div>
+      <a href="/analyse" class="btn-main" id="btn-analyse">
+        <i class="ti ti-brain"></i> Lancer ma première analyse gratuite
       </a>
+      <div class="main-sub">10 secondes · Probabilités, forme, score prédit</div>
     </div>
-    <p class="cta-note reveal rd4">Sans carte bancaire · 3 crédits Oracle offerts · Résiliation à tout moment</p>
-  </div>
-</section>
 
-<!-- FOOTER -->
-<footer>
-  <div class="wrap">
-    <div class="footer-cols">
-      <div class="footer-logo">
-        <div class="logo" style="margin-bottom:10px">
-          <div class="logo-badge"><img src="/icons/icon-192.png" alt="Betoracl Pro"></div>
-          <div class="logo-name">BET<span>ORACL</span> PRO</div>
-        </div>
-        <p>Plateforme d'analyse quantitative des paris sportifs. Éditée par <strong>MonWe Infinity LLC</strong>. Outil d'aide à la décision — pas de garantie de gains.</p>
-      </div>
-      <div class="footer-col">
-        <h5>Produit</h5>
-        <ul>
-          <li><a href="#features">Fonctionnalités</a></li>
-          <li><a href="#tools">Outils d'analyse</a></li>
-          <li><a href="#plans">Tarifs</a></li>
-          <li><a href="/coupons">Coupons du jour</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Ressources</h5>
-        <ul>
-          <li><a href="/guide">Guide du parieur</a></li>
-          <li><a href="/bankroll">Gestion bankroll</a></li>
-          <li><a href="/value-betting">Value Betting</a></li>
-          <li><a href="/faq">FAQ</a></li>
-        </ul>
-      </div>
-      <div class="footer-col">
-        <h5>Légal</h5>
-        <ul>
-          <li><a href="/cgu">CGU</a></li>
-          <li><a href="/confidentialite">Confidentialité</a></li>
-          <li><a href="/mentions-legales">Mentions légales</a></li>
-          <li><a href="mailto:contact@betoracl.com">Contact</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="warn-box">
-      ⚠️ <strong>Jeu responsable :</strong> Les paris sportifs comportent des risques de perte financière. Ne misez jamais plus que ce que vous pouvez vous permettre de perdre. Les analyses et coupons proposés par Betoracl Pro sont des outils d'aide à la décision fondés sur des données statistiques — ils ne constituent pas une garantie de gains. Les performances passées ne préjugent pas des résultats futurs. Si le jeu devient problématique, contactez une ligne d'aide nationale. <strong>Interdit aux mineurs de moins de 18 ans.</strong>
-    </div>
-    <div class="footer-bot">
-      <span>© 2026 Betoracl Pro — MonWe Infinity LLC. Tous droits réservés.</span>
-      <span style="display:flex;gap:16px">
-        <a href="/cgu" style="color:inherit">CGU</a>
-        <a href="/confidentialite" style="color:inherit">Confidentialité</a>
-        <a href="/mentions-legales" style="color:inherit">Mentions légales</a>
-      </span>
-    </div>
-  </div>
-</footer>
+    <a href="/dashboard" class="skip-link">Aller directement à mon tableau de bord →</a>
 
-<style>
-@keyframes spin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
-</style>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
 
 <script>
-// ─── CONFIG ───────────────────────────────────────────────────────────────────
-const API = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1'
+const S  = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
+const AK = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 
-// ─── INIT ─────────────────────────────────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  // Scroll reveal
-  const obs = new IntersectionObserver(ee => ee.forEach(e => {
-    if (e.isIntersecting) e.target.classList.add('visible')
-  }), { threshold: .08 })
-  document.querySelectorAll('.reveal').forEach(e => obs.observe(e))
+let refCode = ''
 
-  // Nav scroll
-  window.addEventListener('scroll', () => {
-    document.getElementById('nav').classList.toggle('scrolled', scrollY > 20)
-  })
+function showToast(msg){
+  const t = document.getElementById('toast')
+  t.textContent = msg
+  t.classList.add('show')
+  clearTimeout(t._timer)
+  t._timer = setTimeout(() => t.classList.remove('show'), 2200)
+}
 
-  // Charger données dynamiques
-  loadPublicData()
-})
+function copyRefLink(){
+  const link = 'https://betoracl.com/signup?ref=' + (refCode || '')
+  navigator.clipboard.writeText(link).then(() => {
+    const btn = document.getElementById('ref-copy-btn')
+    const icon = document.getElementById('ref-copy-icon')
+    const txt = document.getElementById('ref-copy-txt')
+    btn.classList.add('copied')
+    icon.className = 'ti ti-check'
+    txt.textContent = 'Copié !'
+    showToast('Lien copié dans le presse-papier 🎉')
+    setTimeout(() => {
+      btn.classList.remove('copied')
+      icon.className = 'ti ti-copy'
+      txt.textContent = 'Copier'
+    }, 2000)
+  }).catch(() => showToast("Impossible de copier — copie-le manuellement"))
+}
 
-// ─── DONNÉES DYNAMIQUES ────────────────────────────────────────────────────────
-async function loadPublicData() {
+function shareRef(channel){
+  const link = 'https://betoracl.com/signup?ref=' + (refCode || '')
+  const text = `Je viens de rejoindre Betoracl Pro — l'Oracle IA qui analyse tes matchs en 10 secondes. Inscris-toi avec mon lien et profite d'un compte gratuit : ${link}`
+  if (channel === 'wa') window.open('https://wa.me/?text=' + encodeURIComponent(text), '_blank')
+  else if (channel === 'tg') window.open('https://t.me/share/url?url=' + encodeURIComponent(link) + '&text=' + encodeURIComponent('Je viens de rejoindre Betoracl Pro — l\'Oracle IA des parieurs.'), '_blank')
+}
+
+function goCheckout(plan){
+  if (window.fbq) fbq('track', 'Lead', { content_name: 'welcome_upsell_' + plan })
+  window.location.href = '/checkout?plan=' + plan
+}
+
+async function tryRefresh() {
+  const r = localStorage.getItem('sb_refresh_token')
+  if (!r) return null
   try {
-    const [couponRes, statsRes] = await Promise.all([
-      fetch(`${API}/public-data?type=coupon`).then(r => r.json()).catch(() => null),
-      fetch(`${API}/public-data?type=stats`).then(r => r.json()).catch(() => null),
-    ])
-    if (statsRes) renderStats(statsRes)
-    if (couponRes?.coupons?.length) {
-      renderScoreCards(couponRes.coupons)
-      renderTicker(couponRes.coupons)
-      renderCouponCard(couponRes.coupons, couponRes.date)
-    } else {
-      renderCouponFallback()
+    const res = await fetch(`${S}/auth/v1/token?grant_type=refresh_token`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json', apikey: AK },
+      body: JSON.stringify({ refresh_token: r })
+    })
+    if (!res.ok) return null
+    const d = await res.json()
+    if (!d.access_token) return null
+    localStorage.setItem('sb_access_token', d.access_token)
+    if (d.refresh_token) localStorage.setItem('sb_refresh_token', d.refresh_token)
+    return d.access_token
+  } catch { return null }
+}
+
+async function loadProfile(){
+  let token = localStorage.getItem('sb_access_token') || sessionStorage.getItem('bp_token')
+  if (!token) {
+    // Pas de session : renvoyer vers l'inscription plutôt que d'afficher une page cassée
+    window.location.href = '/signup'
+    return
+  }
+  try {
+    let r = await fetch(`${S}/functions/v1/auth-secure?action=verify`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ token })
+    })
+    let d = await r.json()
+    if (!d.valid) {
+      const fresh = await tryRefresh()
+      if (fresh) {
+        r = await fetch(`${S}/functions/v1/auth-secure?action=verify`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: fresh })
+        })
+        d = await r.json()
+      }
     }
-  } catch(e) {
-    console.error('[loadPublicData]', e)
-    renderCouponFallback()
+    if (!d.valid) { window.location.href = '/login?next=/welcome'; return }
+
+    const firstName = d.first_name || 'sur Betoracl'
+    document.getElementById('firstname').textContent = d.first_name ? d.first_name + ' !' : '!'
+    document.title = `Bienvenue ${d.first_name || ''} — Betoracl Pro`
+
+    refCode = d.ref_code || ''
+    document.getElementById('ref-link').textContent = 'betoracl.com/signup?ref=' + (refCode || '…')
+
+    const refCount = d.referral_count || 0
+    if (refCount > 0) {
+      const statEl = document.getElementById('ref-stat')
+      statEl.style.display = 'flex'
+      document.getElementById('ref-count').textContent = refCount
+      document.getElementById('ref-plural').textContent = refCount > 1 ? 's' : ''
+      document.getElementById('ref-plural2').textContent = refCount > 1 ? 's' : ''
+    }
+
+    // Déjà abonné payant : pas besoin de pousser l'upsell Pro
+    if (d.effective_plan && d.effective_plan !== 'free') {
+      const upsell = document.querySelector('.upsell-card')
+      if (upsell) upsell.style.display = 'none'
+    }
+  } catch (e) {
+    console.error('[welcome]', e)
   }
 }
 
-function renderStats(data) {
-  const u = document.getElementById('stat-users')
-  const w = document.getElementById('stat-wr')
-  if (u) animCount('stat-users', data.users || 0)
-  if (w && data.win_rate) {
-    document.getElementById('stat-wr').innerHTML = `${data.win_rate}<span>%</span>`
+loadProfile()
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' }).catch(() => {})
+    })
   }
-}
-
-function animCount(id, target) {
-  const el = document.getElementById(id)
-  if (!el) return
-  const dur = 900, start = performance.now()
-  const tick = now => {
-    const p = Math.min((now - start) / dur, 1)
-    const e = 1 - Math.pow(1 - p, 3)
-    el.textContent = Math.round(target * e)
-    if (p < 1) requestAnimationFrame(tick)
-  }
-  requestAnimationFrame(tick)
-}
-
-// Score cards héro
-function renderScoreCards(coupons) {
-  const safe = coupons.find(c => c.tier === 'safe')
-  const sels = safe?.selections || []
-  const cards = document.getElementById('scoreCards')
-  if (!cards || !sels.length) return
-  cards.innerHTML = sels.slice(0, 3).map(s => `
-    <div class="sc">
-      <div class="sc-league">${esc(s.league || '')}</div>
-      <div class="sc-teams">
-        <span>${esc(s.team_a || '?')}</span>
-        <div class="sc-score">${s.score_probable ? esc(s.score_probable) : '— vs —'}</div>
-        <span>${esc(s.team_b || '?')}</span>
-      </div>
-      <div class="sc-pick">
-        ${esc(s.pick || '')} <span class="sc-cote">${s.odds}</span>
-      </div>
-    </div>
-  `).join('')
-}
-
-// Ticker dynamique
-function renderTicker(coupons) {
-  const safe = coupons.find(c => c.tier === 'safe')
-  const all = coupons.flatMap(c => c.selections || [])
-  if (!all.length) return
-  const ticker = document.getElementById('ticker')
-  if (!ticker) return
-  const items = all.map(s =>
-    `<div class="ti"><span>⚽</span><span>${esc(s.team_a || '?')} vs ${esc(s.team_b || '?')}</span><span class="ti-up">${esc(s.pick || '')} × ${s.odds}</span></div>`
-  ).join('')
-  ticker.innerHTML = items + items // duplique pour loop infini
-}
-
-// Coupon card principale
-function renderCouponCard(coupons, date) {
-  const safe = coupons.find(c => c.tier === 'safe')
-  const container = document.getElementById('couponCard')
-  if (!container || !safe) { renderCouponFallback(); return }
-
-  const sels = safe.selections || []
-  const dateLabel = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Aujourd\'hui'
-
-  // Afficher coupon safe complet + autres plans bloqués
-  const matches = sels.map(s => `
-    <div class="cc-match">
-      <span class="cc-flag">⚽</span>
-      <div class="cc-info">
-        <div class="cc-teams">${esc(s.team_a || '?')} vs ${esc(s.team_b || '?')}</div>
-        <div class="cc-league">${esc(s.league || '')}${s.match_time ? ' · ' + formatTime(s.match_time) : ''}</div>
-      </div>
-      <div class="cc-right">
-        <div class="cc-pick">${esc(s.pick || '')}</div>
-        ${s.score_probable ? `<div class="cc-score">Score prob. ${esc(s.score_probable)}</div>` : ''}
-        <div class="cc-cote">${s.odds}</div>
-      </div>
-    </div>
-  `).join('')
-
-  // Slots bloqués pour les autres plans
-  const lockedSlots = `
-    <div class="cc-locked">
-      <span style="font-size:14px">🔒</span>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--muted)">Coupon Équilibré</div>
-        <div class="cc-locked-label">Disponible dès le plan Starter</div>
-      </div>
-      <a href="/signup?plan=starter" style="margin-left:auto;font-size:11px;color:var(--gold);white-space:nowrap">Débloquer →</a>
-    </div>
-    <div class="cc-locked">
-      <span style="font-size:14px">🔒</span>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--muted)">Coupon Audacieux</div>
-        <div class="cc-locked-label">Disponible dès le plan Pro</div>
-      </div>
-      <a href="/signup?plan=pro" style="margin-left:auto;font-size:11px;color:var(--gold);white-space:nowrap">Débloquer →</a>
-    </div>
-  `
-
-  container.innerHTML = `
-    <div class="cc-card">
-      <div class="cc-head">
-        <div>
-          <div class="cc-htitle">🛡️ COUPON SÛR</div>
-          <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;position:relative;z-index:1">${esc(dateLabel)} · Confiance ${safe.confidence}%</div>
-        </div>
-        <div>
-          <div style="font-size:10px;color:rgba(255,255,255,.5);text-align:right;position:relative;z-index:1">COTE TOTALE</div>
-          <div class="cc-total">×${Number(safe.total_odds).toFixed(2)}</div>
-        </div>
-      </div>
-      <div class="cc-body">
-        ${matches}
-        ${lockedSlots}
-      </div>
-      <div class="cc-foot">
-        <div class="cc-bks">
-          <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="cc-bk">1XBET</a>
-          <a href="https://bwredir.com/2gdj" target="_blank" class="cc-bk">BETWINNER</a>
-          <a href="https://refpaiozdg.top/L?" target="_blank" class="cc-bk">MEGAPARI</a>
-          <a href="https://1wync.com/?p=3qq3" target="_blank" class="cc-bk">1Win</a>
-        </div>
-        <div style="font-size:10px;color:var(--muted)">Mise : 3-5% BK</div>
-      </div>
-    </div>
-  `
-}
-
-function renderCouponFallback() {
-  const container = document.getElementById('couponCard')
-  if (!container) return
-  container.innerHTML = `
-    <div class="cc-card">
-      <div class="cc-head">
-        <div><div class="cc-htitle">🛡️ COUPON DU JOUR</div></div>
-        <div><div class="cc-total" style="font-size:16px;color:rgba(255,255,255,.4)">Disponible à 08h00</div></div>
-      </div>
-      <div class="cc-skel" style="padding:40px;text-align:center;color:var(--muted);font-size:14px">
-        <i class="ti ti-clock" style="font-size:24px;color:var(--lo)"></i>
-        <div style="margin-top:8px">Le coupon du jour sera disponible dès 08h00.</div>
-        <a href="/signup" class="btn btn-green" style="margin-top:16px;display:inline-flex">S'inscrire pour être notifié</a>
-      </div>
-    </div>
-  `
-}
-
-function formatTime(mt) {
-  const m = (mt || '').match(/(\d{4}-\d{2}-\d{2})\s*(\d{1,2}:\d{2})/)
-  return m ? `${m[1]} ${m[2]}` : (mt || '').slice(11, 16) || ''
-}
-
-function esc(s) {
-  return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
-}
-
-// ─── TOOLS DÉMO ────────────────────────────────────────────────────────────────
-function showT(el, id) {
-  document.querySelectorAll('.tool-btn').forEach(b => b.classList.remove('on'))
-  document.querySelectorAll('.pv-panel').forEach(p => p.classList.remove('on'))
-  el.classList.add('on')
-  document.getElementById('pv-' + id).classList.add('on')
-}
-
-function vbc() {
-  const c = parseFloat(document.getElementById('vc').value) || 2.1
-  const p = parseFloat(document.getElementById('vp').value) / 100 || .55
-  const v = (p * c - 1) * 100
-  const r = document.getElementById('vr'), t = document.getElementById('vrtxt')
-  if (v > 0) {
-    r.style.background = 'rgba(34,197,94,.09)'; r.style.borderColor = 'rgba(34,197,94,.25)'
-    t.style.color = '#22c55e'; t.textContent = `+${v.toFixed(1)}% VALUE BET ✓`
-  } else {
-    r.style.background = 'rgba(239,68,68,.09)'; r.style.borderColor = 'rgba(239,68,68,.25)'
-    t.style.color = '#ef4444'; t.textContent = `${v.toFixed(1)}% — Pas de value ✗`
-  }
-}
-
-function kc() {
-  const b = parseFloat(document.getElementById('kb').value) || 50000
-  const c = parseFloat(document.getElementById('kc2').value) || 2.1
-  const p = parseFloat(document.getElementById('kp').value) / 100 || .55
-  const k = Math.max(0, p - (1 - p) / (c - 1))
-  const m = Math.round(b * k * .25)
-  document.getElementById('kr').textContent = m.toLocaleString('fr-FR') + ' FCFA'
-  document.getElementById('kpct').textContent = `Kelly ${(k*100).toFixed(1)}% → fraction ¼ = ${(k*25).toFixed(1)}%`
-}
-
-// ─── BILLING TOGGLE ────────────────────────────────────────────────────────────
-function setBill(t, btn) {
-  document.querySelectorAll('.bill-btn').forEach(b => b.classList.remove('on'))
-  btn.classList.add('on')
-  const w = t === 'w'
-  // Starter
-  document.getElementById('sp').textContent   = w ? '750' : '2 500'
-  document.getElementById('sper').textContent  = w ? 'FCFA / semaine' : 'FCFA / mois'
-  document.getElementById('salt').textContent  = w ? 'ou 2 500 F/mois' : 'ou 750 F/semaine'
-  // Pro
-  document.getElementById('pp').textContent    = w ? '1 500' : '5 000'
-  document.getElementById('pper').textContent   = w ? 'FCFA / semaine' : 'FCFA / mois'
-  document.getElementById('palt').textContent   = w ? 'ou 5 000 F/mois' : 'ou 1 500 F/semaine'
-  // Elite
-  document.getElementById('ep').textContent    = w ? '3 000' : '10 000'
-  document.getElementById('eper').textContent   = w ? 'FCFA / semaine' : 'FCFA / mois'
-  document.getElementById('ealt').textContent   = w ? 'ou 10 000 F/mois' : 'ou 3 000 F/semaine'
-  // VIP (mensuel uniquement)
-  document.getElementById('vp2').textContent   = '25 000'
-  document.getElementById('vper').textContent   = 'FCFA / mois'
-}
 </script>
 </body>
 </html>
