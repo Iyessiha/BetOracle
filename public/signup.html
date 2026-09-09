@@ -40,12 +40,12 @@
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
 <title>Inscription gratuite — Betoracl Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <style>
 :root{
-  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;
-  --bg:#060a06;--s1:#0e140e;--b1:#1a2a1a;--b2:#243424;
-  --text:#e8f0e8;--muted:#6a8a6a;--red:#ef4444;
+  --gb:#22c55e;--gl:#4ade80;--gold:#F5C842;--teal:#14b8a6;--violet:#8b5cf6;
+  --bg:#10160f;--s1:#171f16;--b1:#2a3a26;--b2:#374a33;
+  --text:#f2f7f1;--muted:#9dbb9a;--red:#ef4444;
   --ff:'Barlow',sans-serif;--fd:'Bebas Neue',sans-serif;
   --safe-t:env(safe-area-inset-top,0px);--safe-b:env(safe-area-inset-bottom,0px);
 }
@@ -56,10 +56,8 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 /* PAGE */
 .page{min-height:100vh;min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;padding-top:max(28px,calc(var(--safe-t) + 28px));padding-bottom:max(20px,calc(var(--safe-b) + 20px))}
 
-
-
 /* CARD */
-.card{width:100%;max-width:440px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+.card{width:100%;max-width:460px;background:var(--s1);border:1px solid var(--b2);border-radius:20px;overflow:hidden;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gb),var(--gold))}
 .card-inner{padding:30px 28px 28px}
 
@@ -72,6 +70,30 @@ body{background:var(--bg);color:var(--text);font-family:var(--ff);min-height:100
 h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;margin-bottom:4px}
 .sub{font-size:13px;color:var(--muted);text-align:center;margin-bottom:20px;line-height:1.4}
 .sub strong{color:var(--gb)}
+
+/* ── SÉLECTEUR DE PLAN ── */
+.plan-select-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+.plan-select{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-bottom:18px}
+.plan-opt{
+  position:relative;background:rgba(0,0,0,.2);border:1.5px solid var(--b2);border-radius:11px;
+  padding:11px 6px 9px;text-align:center;cursor:pointer;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.plan-opt:active{transform:scale(.97)}
+.plan-opt.sel{border-color:var(--gb);background:rgba(34,197,94,.08)}
+.plan-opt[data-plan="pro"].sel{border-color:var(--gold);background:rgba(245,200,66,.08)}
+.plan-opt[data-plan="starter"].sel{border-color:var(--teal);background:rgba(20,184,166,.08)}
+.plan-opt[data-plan="elite"].sel{border-color:var(--violet);background:rgba(139,92,246,.08)}
+.po-tag{
+  position:absolute;top:-8px;left:50%;transform:translateX(-50%);
+  background:var(--gold);color:#000;font-size:8px;font-weight:800;
+  letter-spacing:.04em;padding:1px 7px;border-radius:10px;white-space:nowrap;
+}
+.po-name{font-size:11.5px;font-weight:700;margin-bottom:3px}
+.po-price{font-family:var(--fd);font-size:15px;letter-spacing:.02em;line-height:1}
+.po-per{font-size:8.5px;color:var(--muted);margin-top:2px}
+.plan-hint{font-size:11px;color:var(--muted);text-align:center;margin:-10px 0 16px;line-height:1.5}
+.plan-hint strong{color:var(--gold)}
 
 /* FIELDS */
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
@@ -119,8 +141,6 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
 .btn-signup{width:100%;padding:15px;border-radius:12px;border:none;background:var(--gb);color:#000;font-size:16px;font-weight:800;font-family:var(--ff);cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:9px;-webkit-tap-highlight-color:transparent}
 .btn-signup:active{background:var(--gl);transform:scale(.98)}
 .btn-signup:disabled{opacity:.5;cursor:not-allowed;transform:none}
-.btn-social{width:100%;padding:12px;border-radius:10px;border:1px solid var(--b2);background:transparent;color:var(--muted);font-size:14px;font-weight:600;font-family:var(--ff);cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:10px;transition:border-color .2s;-webkit-tap-highlight-color:transparent}
-.btn-social:active{border-color:var(--gb);color:var(--text)}
 
 /* LINKS */
 .links{text-align:center;margin-top:18px;font-size:13px;color:var(--muted)}
@@ -150,7 +170,9 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
   .card-inner{padding:24px 18px 22px}
   .row{grid-template-columns:1fr}
   .perks{grid-template-columns:1fr}
-
+  .plan-select{gap:5px}
+  .po-name{font-size:10.5px}
+  .po-price{font-size:13px}
 }
 
 /* Fix logo overflow mobile */
@@ -174,6 +196,25 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
   gtag('js', new Date());
   gtag('config', 'AW-536531182');
 </script>
+<!-- Vercel Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1734737427724152');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body data-page="signup">
 
@@ -191,6 +232,33 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
       <p class="sub">Crée ton compte en 30 secondes · <strong>Plan gratuit à vie</strong></p>
 
       <div class="msg" id="msg"><i class="ti ti-alert-circle"></i><span id="msg-txt"></span></div>
+
+      <!-- Sélecteur de plan -->
+      <div class="plan-select-label">Choisis ton plan</div>
+      <div class="plan-select" id="plan-select">
+        <div class="plan-opt sel" data-plan="free" onclick="selectPlan('free')">
+          <div class="po-name" style="color:var(--muted)">Free</div>
+          <div class="po-price">0</div>
+          <div class="po-per">à vie</div>
+        </div>
+        <div class="plan-opt" data-plan="starter" onclick="selectPlan('starter')">
+          <div class="po-name" style="color:var(--teal)">Starter</div>
+          <div class="po-price" style="color:var(--teal)">750</div>
+          <div class="po-per">F/sem</div>
+        </div>
+        <div class="plan-opt" data-plan="pro" onclick="selectPlan('pro')">
+          <span class="po-tag">Populaire</span>
+          <div class="po-name" style="color:var(--gold)">Pro</div>
+          <div class="po-price" style="color:var(--gold)">1500</div>
+          <div class="po-per">F/sem</div>
+        </div>
+        <div class="plan-opt" data-plan="elite" onclick="selectPlan('elite')">
+          <div class="po-name" style="color:var(--violet)">Elite</div>
+          <div class="po-price" style="color:var(--violet)">3000</div>
+          <div class="po-per">F/sem</div>
+        </div>
+      </div>
+      <p class="plan-hint" id="plan-hint">Commence <strong>gratuit</strong> — tu pourras passer à un plan payant à tout moment après ta première analyse.</p>
 
       <div class="row">
         <div class="field">
@@ -250,7 +318,7 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
       <div class="consent">
         <input type="checkbox" id="consent" checked>
         <label for="consent">
-          J'accepte les <a href="cgu.html" target="_blank">Conditions d'utilisation</a> et je consens à recevoir les analyses et offres Betoracl Pro
+          J'accepte les <a href="/cgu" target="_blank">Conditions d'utilisation</a> et je consens à recevoir les analyses et offres Betoracl Pro
         </label>
       </div>
 
@@ -276,8 +344,8 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
         <div class="sp-item"><i class="ti ti-chart-bar"></i>Statistiques 1X2 de base</div>
         <div class="sp-item"><i class="ti ti-crown"></i>Débloquer tout avec un plan Starter dès 750F</div>
       </div>
-      <a href="/dashboard" class="btn-go" id="btn-go">
-        <i class="ti ti-arrow-right"></i> Accéder à mon compte
+      <a href="/welcome" class="btn-go" id="btn-go">
+        <i class="ti ti-arrow-right"></i> Continuer
       </a>
     </div>
   </div>
@@ -289,6 +357,20 @@ h1{font-family:var(--fd);font-size:28px;letter-spacing:.04em;text-align:center;m
 
 <script>
 const EDGE = 'https://ovulcqsrzkwlnhnyllij.supabase.co/functions/v1/auth-secure'
+
+let selectedPlan = 'free'
+const PLAN_HINTS = {
+  free:    'Commence <strong>gratuit</strong> — tu pourras passer à un plan payant à tout moment après ta première analyse.',
+  starter: '<strong>Starter</strong> débloque les coupons 3 niveaux et 15 crédits Oracle/mois. Paiement après inscription.',
+  pro:     '<strong>Pro</strong> débloque Value Bet, Kelly Calculator et les alertes live. Paiement après inscription.',
+  elite:   '<strong>Elite</strong> débloque le coaching personnalisé et 90 crédits Oracle/mois. Paiement après inscription.'
+}
+function selectPlan(p){
+  selectedPlan = p
+  document.querySelectorAll('.plan-opt').forEach(el => el.classList.toggle('sel', el.dataset.plan === p))
+  const hint = document.getElementById('plan-hint')
+  if (hint) hint.innerHTML = PLAN_HINTS[p] || PLAN_HINTS.free
+}
 
 function clearMsg(){
   const el=document.getElementById('msg')
@@ -359,9 +441,11 @@ async function checkEmailLive(){
   }catch{hint.style.display='block'}
 }
 
-// Lire code parrainage depuis URL
+// Lire code parrainage + plan depuis URL
 const urlRef=new URLSearchParams(location.search).get('ref')
 if(urlRef) document.getElementById('ref').value=urlRef.toUpperCase()
+const urlPlan=new URLSearchParams(location.search).get('plan')
+if(urlPlan && PLAN_HINTS[urlPlan]) selectPlan(urlPlan)
 
 async function doSignup(){
   clearMsg()
@@ -387,7 +471,8 @@ async function doSignup(){
         email:email.toLowerCase(),
         password:pwd,
         full_name:[prenom,nom].filter(Boolean).join(' ')||email.split('@')[0],
-        ref_code:ref||null
+        ref_code:ref||null,
+        intended_plan:selectedPlan
       })
     })
     const d=await r.json()
@@ -406,11 +491,14 @@ async function doSignup(){
       localStorage.setItem('sb_refresh_token',d.refresh_token||'')
       localStorage.setItem('sb_user_id',d.user_id)
       localStorage.setItem('bp_plan',d.effective_plan||'free')
+      localStorage.setItem('bp_intended_plan',selectedPlan)
       sessionStorage.setItem('bp_token',d.access_token)
       const firstName=prenom||email.split('@')[0]
       sessionStorage.setItem('bp_prenom',firstName)
       sessionStorage.setItem('bp_plan',d.effective_plan||'free')
     }
+
+    if (window.fbq) fbq('track', 'CompleteRegistration', { content_name: 'signup', plan: selectedPlan })
     
     // Afficher success
     document.getElementById('form-screen').style.display='none'
@@ -418,6 +506,14 @@ async function doSignup(){
     s.style.display='flex'
     const firstName=prenom||email.split('@')[0]
     document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${firstName}</strong> ! Ton compte gratuit est actif. Explore l'Oracle et passe à un plan payant quand tu veux.`
+
+    // Si un plan payant a été choisi, on l'emmène directement continuer vers welcome
+    // (le paiement se fait plus tard, après avoir vu la valeur de l'Oracle — cf. tunnel)
+    const btnGo = document.getElementById('btn-go')
+    if (btnGo) btnGo.href = '/welcome'
+
+    // Petite redirection automatique après un court délai, sans bloquer le clic manuel
+    setTimeout(() => { window.location.href = '/welcome' }, 3500)
     
   }catch(e){
     setBtn(false)
@@ -432,7 +528,7 @@ window.addEventListener('load',()=>{
   else document.getElementById('prenom').focus()
 })
 </script>
-<script src="./assets/js/nav.js"></script>
+<script src="/assets/js/nav.js"></script>
 
   <script>
     if ('serviceWorker' in navigator) {
@@ -448,7 +544,6 @@ window.addEventListener('load',()=>{
     window.addEventListener('beforeinstallprompt', e => {
       e.preventDefault()
       deferredPrompt = e
-      // Afficher le bouton d'install si présent dans la page
       const btn = document.getElementById('pwa-install-btn')
       if (btn) {
         btn.style.display = 'flex'
