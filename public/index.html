@@ -8,18 +8,19 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:ital,wght@0,300;0,400;0,500;0,600;0,700;0,900;1,700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <style>
 :root {
   --green:#22c55e;--green-l:#4ade80;--green-d:#16a34a;--green-n:#16ff6e;
   --gold:#F5C842;--gold-d:#D4A017;
-  --white:#f8faf8;--bg:#080c08;--bg2:#0d120d;--bg3:#111711;
-  --s1:#161e16;--s2:#1c271c;--b1:#2a3a2a;--b2:#344834;
-  --text:#e8f0e8;--muted:#7a9a7a;--lo:#4a6a4a;--red:#ef4444;
+  --white:#f8faf8;--bg:#10160f;--bg2:#171f16;--bg3:#1c251b;
+  --s1:#212b20;--s2:#2a3628;--b1:#3d4f3a;--b2:#4a5f46;
+  --text:#f2f7f1;--muted:#9dbb9a;--lo:#6d8a69;--red:#ef4444;
   --violet:#8b5cf6;--teal:#14b8a6;
   --display:'Bebas Neue',sans-serif;--body:'Barlow',sans-serif;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+.icn{width:1em;height:1em;stroke:currentColor;flex-shrink:0;vertical-align:-2px}
 html{scroll-behavior:smooth}
 body{background:var(--bg);color:var(--text);font-family:var(--body);font-size:16px;line-height:1.6;overflow-x:hidden}
 a{text-decoration:none;color:inherit}
@@ -67,7 +68,9 @@ nav.scrolled{background:rgba(8,12,8,.94);backdrop-filter:blur(18px);border-color
 
 /* ── HERO ── */
 #hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:100px 16px 0;position:relative;overflow:hidden}
-.hero-photo{position:absolute;inset:0;z-index:0;background:linear-gradient(180deg,var(--bg) 0%,rgba(8,12,8,.72) 22%,rgba(8,12,8,.55) 55%,var(--bg) 100%),url('https://images.unsplash.com/photo-1693164586646-f3f877aec626?fm=jpg&q=70&w=1920&auto=format&fit=crop') center 38%/cover no-repeat;filter:saturate(.65);pointer-events:none}
+.hero-photo{position:absolute;inset:0;z-index:0;pointer-events:none;background:linear-gradient(180deg,var(--bg) 0%,rgba(16,22,15,.72) 22%,rgba(16,22,15,.55) 55%,var(--bg) 100%)}
+.hero-photo-layer{position:absolute;inset:0;background-position:center 38%;background-size:cover;background-repeat:no-repeat;filter:saturate(.7);opacity:0;transition:opacity 1.6s ease-in-out}
+.hero-photo-layer.on{opacity:1}
 .hero-circle{position:absolute;width:min(680px,90vw);height:min(680px,90vw);border:1.5px solid rgba(34,197,94,.1);border-radius:50%;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none}
 .hero-circle::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:min(200px,28vw);height:min(200px,28vw);border:1.5px solid rgba(34,197,94,.15);border-radius:50%}
 .glow-l{position:absolute;width:500px;height:500px;background:radial-gradient(circle,rgba(34,197,94,.07) 0%,transparent 70%);top:10%;left:-8%;pointer-events:none}
@@ -334,6 +337,18 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
 </head>
 <body>
 
+<!-- Sprite SVG interne : icônes des boutons critiques, aucune dépendance réseau -->
+<svg style="position:absolute;width:0;height:0;overflow:hidden" aria-hidden="true">
+<symbol id="ic-rocket" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09zM12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 19 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2zM9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
+<symbol id="ic-ticket" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 5v2M15 11v2M15 17v2M5 5a2 2 0 0 0 2 2H5a2 2 0 0 1 2-2zm14 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></symbol>
+<symbol id="ic-x" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M18 6L6 18M6 6l12 12"/></symbol>
+<symbol id="ic-chevron-left" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 6l-6 6 6 6"/></symbol>
+<symbol id="ic-chevron-right" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></symbol>
+<symbol id="ic-telegram" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M21 5L2 12.5l6 2m13-9.5l-4 16-7-6m11-10L8 14.5m0 0v5.5"/></symbol>
+</svg>
+
+
+
 <!-- NAV -->
 <nav id="nav">
   <div class="logo">
@@ -358,7 +373,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
 
 <!-- MENU MOBILE OVERLAY -->
 <div id="mob-menu" role="dialog" aria-modal="true">
-  <button class="mob-close" onclick="toggleMob()"><i class="ti ti-x"></i></button>
+  <button class="mob-close" onclick="toggleMob()"><svg class="icn" style="width:20px;height:20px"><use href="#ic-x"/></svg></button>
   <a href="#features" class="mob-link" onclick="toggleMob()">Fonctionnalités</a>
   <a href="#tools"    class="mob-link" onclick="toggleMob()">Outils</a>
   <a href="#coupon"   class="mob-link" onclick="toggleMob()">Coupon</a>
@@ -371,15 +386,18 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
 
 <!-- HERO -->
 <section id="hero">
-  <div class="hero-photo"></div>
+  <div class="hero-photo" id="heroPhoto">
+    <div class="hero-photo-layer on" id="heroLayerA"></div>
+    <div class="hero-photo-layer" id="heroLayerB"></div>
+  </div>
   <div class="hero-circle"></div>
   <div class="glow-l"></div><div class="glow-r"></div>
   <div class="hero-pill hero-anim" style="animation-delay:0s"><span class="live-dot"></span>Oracle IA · Données temps réel</div>
   <h1 class="hero-anim" style="animation-delay:.1s"><span class="l1">PARIS</span><br><span class="l2">SPORT</span><br><span class="l3">INTELLIGENTS</span></h1>
   <p class="hero-sub hero-anim" style="animation-delay:.2s">Coupons générés par IA chaque matin. <strong>Oracle prédictif.</strong> Value Bet. Kelly Calculator. Tout pour parier avec méthode.</p>
   <div class="hero-actions hero-anim" style="animation-delay:.3s">
-    <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-rocket"></i> Commencer gratuitement</a>
-    <a href="#coupon" class="btn btn-outline btn-lg"><i class="ti ti-receipt"></i> Coupon du jour</a>
+    <a href="/signup" class="btn btn-green btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-rocket"/></svg> Commencer gratuitement</a>
+    <a href="#coupon" class="btn btn-outline btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-ticket"/></svg> Coupon du jour</a>
   </div>
   <div class="hero-stats hero-anim" style="animation-delay:.4s">
     <div class="stat-c"><div class="stat-v" id="stat-users">—</div><div class="stat-l">Utilisateurs</div></div>
@@ -600,7 +618,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
           <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> Justification factuelle chiffrée</div>
           <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> 3 niveaux : Sûr · Équilibré · Audacieux</div>
         </div>
-        <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-brand-telegram"></i> Rejoindre le canal</a>
+        <a href="/signup" class="btn btn-green btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-telegram"/></svg> Rejoindre le canal</a>
         <div class="credit-badge" style="margin-top:16px"><i class="ti ti-coin"></i> 3 crédits Oracle offerts à l'inscription</div>
       </div>
       <div class="reveal rd2" id="couponCard">
@@ -771,9 +789,9 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
       </div>
     </div>
     <div class="testi-nav">
-      <button class="testi-arrow" onclick="testiMove(-1)" aria-label="Avis précédent"><i class="ti ti-chevron-left"></i></button>
+      <button class="testi-arrow" onclick="testiMove(-1)" aria-label="Avis précédent"><svg class="icn" style="width:18px;height:18px"><use href="#ic-chevron-left"/></svg></button>
       <div class="testi-dots" id="testiDots"></div>
-      <button class="testi-arrow" onclick="testiMove(1)" aria-label="Avis suivant"><i class="ti ti-chevron-right"></i></button>
+      <button class="testi-arrow" onclick="testiMove(1)" aria-label="Avis suivant"><svg class="icn" style="width:18px;height:18px"><use href="#ic-chevron-right"/></svg></button>
     </div>
   </div>
 </section>
@@ -818,7 +836,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
       </div>
     </div>
     <div class="howto-cta reveal rd3">
-      <a href="/signup" class="btn btn-green btn-lg"><i class="ti ti-rocket"></i> Créer mon compte gratuitement</a>
+      <a href="/signup" class="btn btn-green btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-rocket"/></svg> Créer mon compte gratuitement</a>
     </div>
   </div>
 </section>
@@ -832,7 +850,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
     <p class="cta-sub reveal rd2">Rejoins déjà <strong id="stat-users-cta" style="color:var(--green)">—</strong> parieurs qui utilisent les données, pas l'instinct.<br>Commence gratuitement. Upgrade quand tu veux.</p>
     <div class="reveal rd3">
       <a href="/signup" id="signup" class="btn btn-green btn-lg" style="font-size:17px;padding:17px 40px">
-        <i class="ti ti-rocket"></i> Créer mon compte gratuitement
+        <svg class="icn" style="width:18px;height:18px"><use href="#ic-rocket"/></svg> Créer mon compte gratuitement
       </a>
     </div>
     <p class="cta-note reveal rd4">Sans carte bancaire · 3 crédits Oracle offerts · Résiliation à tout moment</p>
@@ -945,11 +963,46 @@ window.addEventListener('DOMContentLoaded', () => {
   // Charger données dynamiques
   loadPublicData()
 
+  // Rotation continue des photos du hero
+  initHeroRotation()
+
   // Carrousel témoignages
   testiRender()
   window.addEventListener('resize', testiRender)
   setInterval(() => testiMove(1), 6000)
 })
+
+// ─── ROTATION PHOTOS HERO ───────────────────────────────────────────────────────
+const HERO_PHOTOS = [
+  'https://images.unsplash.com/photo-1693164586646-f3f877aec626?fm=jpg&q=70&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1781152791873-ced9456b14ac?fm=jpg&q=70&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1745997645080-941f962f1392?fm=jpg&q=70&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1549333580-4cb2c5c8e421?fm=jpg&q=70&w=1920&auto=format&fit=crop'
+]
+function initHeroRotation() {
+  const layerA = document.getElementById('heroLayerA')
+  const layerB = document.getElementById('heroLayerB')
+  if (!layerA || !layerB || !HERO_PHOTOS.length) return
+
+  // Précharge toutes les images pour un fondu sans à-coup
+  HERO_PHOTOS.forEach(src => { const img = new Image(); img.src = src })
+
+  let idx = 0
+  layerA.style.backgroundImage = `url('${HERO_PHOTOS[0]}')`
+  let showingA = true
+
+  if (HERO_PHOTOS.length < 2) return
+
+  setInterval(() => {
+    idx = (idx + 1) % HERO_PHOTOS.length
+    const next = showingA ? layerB : layerA
+    const current = showingA ? layerA : layerB
+    next.style.backgroundImage = `url('${HERO_PHOTOS[idx]}')`
+    next.classList.add('on')
+    current.classList.remove('on')
+    showingA = !showingA
+  }, 6000)
+}
 
 // ─── CARROUSEL TÉMOIGNAGES ─────────────────────────────────────────────────────
 let testiIdx = 0, testiPerView = 3
