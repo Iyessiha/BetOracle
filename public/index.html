@@ -171,7 +171,18 @@ h2{font-family:var(--display);font-size:clamp(36px,5vw,62px);letter-spacing:.03e
 /* ── COUPON DU JOUR ── */
 #coupon{padding:100px 0}
 .coupon-layout{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:52px}
-.cc-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;overflow:hidden}
+.cc-card{background:var(--s1);border:1px solid var(--b2);border-radius:18px;overflow:hidden;position:relative}
+.cc-blur{filter:blur(5px);user-select:none;pointer-events:none;opacity:.75}
+.cc-teaser-overlay{
+  position:absolute;left:0;right:0;bottom:0;top:170px;z-index:5;
+  display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+  padding:22px 20px 20px;text-align:center;gap:8px;
+  background:linear-gradient(180deg,transparent 0%,rgba(16,22,15,.75) 30%,rgba(16,22,15,.97) 65%);
+}
+.cc-teaser-overlay .ct-lock{font-size:22px;color:var(--gold)}
+.cc-teaser-overlay .ct-title{font-family:var(--display);font-size:19px;letter-spacing:.03em;color:var(--white)}
+.cc-teaser-overlay .ct-sub{font-size:12.5px;color:var(--muted);max-width:280px;line-height:1.5}
+.cc-teaser-overlay .ct-cta{margin-top:6px}
 .cc-head{background:var(--green-d);padding:18px 22px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden}
 .cc-head::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent,transparent 14px,rgba(255,255,255,.04) 15px)}
 .cc-htitle{font-family:var(--display);font-size:20px;letter-spacing:.05em;color:var(--white);position:relative;z-index:1}
@@ -619,7 +630,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
           <div style="display:flex;align-items:center;gap:10px;font-size:13px"><i class="ti ti-check" style="color:var(--green);font-size:16px"></i> 3 niveaux : Sûr · Équilibré · Audacieux</div>
         </div>
         <a href="/signup" class="btn btn-green btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-telegram"/></svg> Rejoindre le canal</a>
-        <div class="credit-badge" style="margin-top:16px"><i class="ti ti-coin"></i> 3 crédits Oracle offerts à l'inscription</div>
+        <div class="credit-badge" style="margin-top:16px"><i class="ti ti-coin"></i> 1 crédit Oracle offert dès l'inscription, +1/jour</div>
       </div>
       <div class="reveal rd2" id="couponCard">
         <div class="cc-card">
@@ -654,7 +665,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
         <div class="plan-per">Toujours gratuit</div>
         <ul class="plan-feats">
           <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Coupon Sûr du jour</li>
-          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 3 crédits Oracle/mois</li>
+          <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> 1 crédit Oracle/jour (jusqu'à 3)</li>
           <li class="y"><span class="ck"><i class="ti ti-check" style="font-size:12px"></i></span> Bankroll basique</li>
           <li><span class="ck"><i class="ti ti-x" style="font-size:12px"></i></span> Stats complètes</li>
           <li><span class="ck"><i class="ti ti-x" style="font-size:12px"></i></span> Value Bet & Kelly</li>
@@ -827,7 +838,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
       <div class="howto-step reveal rd1">
         <div class="howto-num">2</div>
         <h3>Reçois tes crédits</h3>
-        <p>3 crédits Oracle offerts à l'inscription pour tester l'analyse IA gratuitement.</p>
+        <p>1 crédit Oracle offert dès l'inscription, +1 crédit chaque jour pour tester l'analyse IA gratuitement.</p>
       </div>
       <div class="howto-step reveal rd2">
         <div class="howto-num">3</div>
@@ -853,7 +864,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
         <svg class="icn" style="width:18px;height:18px"><use href="#ic-rocket"/></svg> Créer mon compte gratuitement
       </a>
     </div>
-    <p class="cta-note reveal rd4">Sans carte bancaire · 3 crédits Oracle offerts · Résiliation à tout moment</p>
+    <p class="cta-note reveal rd4">Sans carte bancaire · 1 crédit Oracle offert/jour · Résiliation à tout moment</p>
   </div>
 </section>
 
@@ -912,7 +923,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
 
 <!-- STICKY MOBILE CTA -->
 <div class="sticky-cta" id="stickyCta">
-  <div class="sticky-cta-text"><strong>Commence gratuitement</strong>3 crédits Oracle offerts</div>
+  <div class="sticky-cta-text"><strong>Commence gratuitement</strong>1 crédit Oracle offert/jour</div>
   <a href="/signup" class="btn btn-green" style="flex-shrink:0">S'inscrire</a>
 </div>
 
@@ -1125,7 +1136,7 @@ function renderCouponCard(coupons, date) {
   const sels = safe.selections || []
   const dateLabel = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Aujourd\'hui'
 
-  // Afficher coupon safe complet + autres plans bloqués
+  // Équipes + heure visibles (teasing), pick/score/cote floutés — il faut un compte pour voir le pari exact
   const matches = sels.map(s => `
     <div class="cc-match">
       <span class="cc-flag">⚽</span>
@@ -1133,7 +1144,7 @@ function renderCouponCard(coupons, date) {
         <div class="cc-teams">${esc(s.team_a || '?')} vs ${esc(s.team_b || '?')}</div>
         <div class="cc-league">${esc(s.league || '')}${s.match_time ? ' · ' + formatTime(s.match_time) : ''}</div>
       </div>
-      <div class="cc-right">
+      <div class="cc-right cc-blur">
         <div class="cc-pick">${esc(s.pick || '')}</div>
         ${s.score_probable ? `<div class="cc-score">Score prob. ${esc(s.score_probable)}</div>` : ''}
         <div class="cc-cote">${s.odds}</div>
@@ -1141,25 +1152,13 @@ function renderCouponCard(coupons, date) {
     </div>
   `).join('')
 
-  // Slots bloqués pour les autres plans
-  const lockedSlots = `
-    <div class="cc-locked">
-      <span style="font-size:14px">🔒</span>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--muted)">Coupon Équilibré</div>
-        <div class="cc-locked-label">Disponible dès le plan Starter</div>
-      </div>
-      <a href="/signup?plan=starter" style="margin-left:auto;font-size:11px;color:var(--gold);white-space:nowrap">Débloquer →</a>
-    </div>
-    <div class="cc-locked">
-      <span style="font-size:14px">🔒</span>
-      <div>
-        <div style="font-size:12px;font-weight:600;color:var(--muted)">Coupon Audacieux</div>
-        <div class="cc-locked-label">Disponible dès le plan Pro</div>
-      </div>
-      <a href="/signup?plan=pro" style="margin-left:auto;font-size:11px;color:var(--gold);white-space:nowrap">Débloquer →</a>
-    </div>
-  `
+  const teaserOverlay = `
+    <div class="cc-teaser-overlay">
+      <span class="ct-lock">🔒</span>
+      <div class="ct-title">Coupon complet réservé aux membres</div>
+      <div class="ct-sub">Crée ton compte gratuit pour voir les picks, scores probables et cotes de chaque sélection.</div>
+      <a href="/signup" class="btn btn-green btn-lg ct-cta"><svg class="icn" style="width:16px;height:16px"><use href="#ic-rocket"/></svg> Voir le coupon gratuitement</a>
+    </div>`
 
   container.innerHTML = `
     <div class="cc-card">
@@ -1175,16 +1174,7 @@ function renderCouponCard(coupons, date) {
       </div>
       <div class="cc-body">
         ${matches}
-        ${lockedSlots}
-      </div>
-      <div class="cc-foot">
-        <div class="cc-bks">
-          <a href="https://affpa.top/L?tag=d_1666879m_97c_&site=1666879&ad=97" target="_blank" class="cc-bk">1XBET</a>
-          <a href="https://bwredir.com/2gdj" target="_blank" class="cc-bk">BETWINNER</a>
-          <a href="https://refpaiozdg.top/L?" target="_blank" class="cc-bk">MEGAPARI</a>
-          <a href="https://1wync.com/?p=3qq3" target="_blank" class="cc-bk">1Win</a>
-        </div>
-        <div style="font-size:10px;color:var(--muted)">Mise : 3-5% BK</div>
+        ${teaserOverlay}
       </div>
     </div>
   `
