@@ -40,7 +40,7 @@
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
 <title>Coupons du jour — Betoracl Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <style>
 :root {
   --green: #22c55e; --green-l: #4ade80; --green-d: #16a34a;
@@ -485,6 +485,10 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
 }
 .hist-load-more:hover { border-color: var(--green); color: var(--green-l); }
 
+/* Section historique repositionnée en zone de confiance (avant le coupon du jour) */
+.trust-intro { font-size: 13px; color: var(--mid); margin-bottom: 16px; line-height: 1.6; max-width: 560px; }
+.trust-intro strong { color: var(--hi); }
+
 </style>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=AW-536531182"></script>
@@ -494,6 +498,25 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
   gtag('js', new Date());
   gtag('config', 'AW-536531182');
 </script>
+<!-- Vercel Analytics -->
+<script defer src="/_vercel/insights/script.js"></script>
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '1734737427724152');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 </head>
 <body>
 
@@ -543,18 +566,13 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
       <div class="perf-lbl">Cote moy. gagnante</div>
     </div>
   </div>
-  <div class="coupons" id="coupons">
-    <div class="skel"></div>
-    <div class="skel"></div>
-    <div class="skel"></div>
-  </div>
 
-  <!-- ═══ HISTORIQUE DES COUPONS ═══ -->
-  <section id="history-section" style="margin-top:40px">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap">
+  <!-- ═══ ZONE DE CONFIANCE : résultats vérifiés, placés avant le coupon du jour ═══ -->
+  <section id="history-section" style="margin-bottom:32px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px;flex-wrap:wrap">
       <div>
-        <div class="eyebrow" style="margin-bottom:6px"><i class="ti ti-history"></i> Historique</div>
-        <h2 style="font-family:var(--fd);font-size:28px;letter-spacing:.03em">Coupons passés</h2>
+        <div class="eyebrow" style="margin-bottom:6px"><i class="ti ti-shield-check"></i> Résultats vérifiés</div>
+        <h2 style="font-family:var(--fd);font-size:26px;letter-spacing:.03em">Nos coupons, gagnés ou perdus</h2>
       </div>
       <div style="display:flex;gap:6px" id="history-filter">
         <button class="hist-filter-btn on" data-tier="all" onclick="setHistFilter('all',this)">Tous</button>
@@ -563,11 +581,18 @@ button { cursor: pointer; font-family: var(--ff); border: none; }
         <button class="hist-filter-btn" data-tier="bold" onclick="setHistFilter('bold',this)">🔥 Audacieux</button>
       </div>
     </div>
+    <p class="trust-intro">Chaque soir, l'Oracle vérifie automatiquement le score réel de chaque match et met à jour le résultat — <strong>gagné, perdu ou partiel</strong>. Rien n'est caché, y compris les échecs.</p>
     <div id="history-list">
       <div class="skel" style="height:80px"></div>
       <div class="skel" style="height:80px;margin-top:12px"></div>
     </div>
   </section>
+
+  <div class="coupons" id="coupons">
+    <div class="skel"></div>
+    <div class="skel"></div>
+    <div class="skel"></div>
+  </div>
 </main>
 
 <p class="disclaimer">
@@ -1001,7 +1026,7 @@ function selResultBadge(sel) {
 }
 
 
-// ── HISTORIQUE DES COUPONS ────────────────────────
+// ── HISTORIQUE DES COUPONS (zone de confiance) ────────────────────────
 let histTierFilter = 'all'
 let histLoaded = []
 let histShown = 0
@@ -1067,7 +1092,7 @@ function renderHistList() {
   if (!container) return
   const filtered = histTierFilter === 'all' ? histLoaded : histLoaded.filter(c => c.tier === histTierFilter)
   if (!filtered.length) {
-    container.innerHTML = `<div class="hist-empty">Aucun coupon passé pour l'instant.</div>`
+    container.innerHTML = `<div class="hist-empty">Aucun coupon vérifié pour l'instant. Reviens un peu plus tard.</div>`
     return
   }
   histShown = histShown || HIST_PAGE
@@ -1083,13 +1108,27 @@ async function loadHistory() {
   const container = document.getElementById('history-list')
   try {
     const today = new Date().toISOString().slice(0, 10)
-    const res = await fetch(
-      `${S}/rest/v1/coupons?select=match_date,tier,result,total_odds,confidence,selections,result_detail&status=eq.published&match_date=lt.${today}&order=match_date.desc&limit=60`,
-      { headers: { apikey: AK } }
-    )
-    if (!res.ok) throw new Error('fetch failed')
-    const data = await res.json()
-    histLoaded = Array.isArray(data) ? data : []
+    // Zone de confiance : uniquement des résultats réellement vérifiables.
+    //  - tous les coupons déjà résolus (gagné/perdu/partiel), quelle que soit leur ancienneté
+    //  - + les coupons très récents encore en cours (matchs pas encore joués/vérifiés)
+    // Exclut l'arriéré de coupons anciens devenus impossibles à vérifier
+    // (l'API sportive limite désormais l'historique consultable à quelques jours).
+    const [resolvedRes, recentPendingRes] = await Promise.all([
+      fetch(
+        `${S}/rest/v1/coupons?select=match_date,tier,result,total_odds,confidence,selections,result_detail&status=eq.published&result=in.(win,loss,partial)&order=match_date.desc&limit=60`,
+        { headers: { apikey: AK } }
+      ),
+      fetch(
+        `${S}/rest/v1/coupons?select=match_date,tier,result,total_odds,confidence,selections,result_detail&status=eq.published&result=eq.pending&match_date=gte.${new Date(Date.now() - 2*86400000).toISOString().slice(0,10)}&order=match_date.desc&limit=10`,
+        { headers: { apikey: AK } }
+      )
+    ])
+    if (!resolvedRes.ok && !recentPendingRes.ok) throw new Error('fetch failed')
+    const resolved = resolvedRes.ok ? await resolvedRes.json() : []
+    const recentPending = recentPendingRes.ok ? await recentPendingRes.json() : []
+    const merged = [...resolved, ...recentPending]
+    merged.sort((a, b) => (b.match_date || '').localeCompare(a.match_date || ''))
+    histLoaded = merged
     renderHistList()
   } catch (_) {
     if (container) container.innerHTML = `<div class="hist-empty">Impossible de charger l'historique pour l'instant.</div>`
