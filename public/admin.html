@@ -6,7 +6,7 @@
 <title>Admin — Betoracl Pro</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <link rel="stylesheet" href="./assets/css/mobile.css">
 <style>
 :root {
@@ -233,6 +233,8 @@ button { cursor: pointer; font-family: var(--fb); }
 .btn-blue:hover { background: var(--blue); color: #fff; }
 .btn-gold  { background: rgba(245,200,66,.15); color: var(--gold); }
 .btn-gold:hover { background: var(--gold); color: #000; }
+.btn-purple { background: rgba(139,92,246,.15); color: var(--purple); }
+.btn-purple:hover { background: var(--purple); color: #fff; }
 .btn-primary {
   display: inline-flex; align-items: center; gap: 7px;
   padding: 8px 18px; border-radius: 9px; border: none;
@@ -1071,6 +1073,10 @@ function getH(extra = {}) {
   }
 }
 
+function getToken() {
+  return localStorage.getItem('admin_token') || localStorage.getItem('sb_access_token') || token || ''
+}
+
 // Compatibilité legacy
 const H = getH()
 
@@ -1413,6 +1419,9 @@ function renderUsersTable(users) {
             <td><span style="font-size:12px;color:var(--muted)">${fmtDateShort(u.created_at)}</span></td>
             <td>
               <div style="display:flex;gap:6px">
+                <button class="btn-act btn-purple" onclick="impersonateUser('${u.id}','${(u.full_name||u.email||'').replace(/'/g,"\\'")}')" title="Voir comme cet utilisateur">
+                  <i class="ti ti-eye"></i> Voir comme
+                </button>
                 <button class="btn-act btn-blue" onclick="editPlan('${u.id}','${u.email}','${u.full_name||''}','${u.plan}','${u.plan_expires_at||''}')">
                   <i class="ti ti-edit"></i> Plan
                 </button>
@@ -1437,6 +1446,23 @@ function filterUsers() {
     return matchQ && matchP
   })
   renderUsersTable(filtered)
+}
+
+// ── Voir comme cet utilisateur (impersonation admin) ──
+async function impersonateUser(userId, displayName) {
+  if (!confirm(`Ouvrir le tableau de bord de ${displayName} dans un nouvel onglet ?\n\nTa session admin reste active dans cet onglet.`)) return
+  try {
+    toast('⏳ Génération du lien...', 'success')
+    const r = await fetch(`${SUPA_URL}/functions/v1/admin-impersonate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': SUPA_ANON, 'Authorization': `Bearer ${getToken()}` },
+      body: JSON.stringify({ target_user_id: userId })
+    })
+    const d = await r.json()
+    if (!r.ok || !d.ok) { toast('❌ ' + (d.error || 'Erreur'), 'error'); return }
+    window.open(d.action_link, '_blank')
+    toast(`✅ Ouverture du tableau de bord de ${d.target_name || d.target_email}`)
+  } catch(e) { toast('Erreur : ' + e.message, 'error') }
 }
 
 // ── Modifier plan ──
@@ -1983,7 +2009,7 @@ async function loadEventsTable() {
   try {
     const data = await sb('user_events?select=id,user_id,event_name,event_data,created_at&order=created_at.desc&limit=50')
     if (!data.length) { el.innerHTML = '<div class="empty"><i class="ti ti-calendar-event"></i><p>Aucun événement</p></div>'; return }
-    const evtColor = { login:'var(--gb)', signup:'var(--gold)', upgrade:'#8b5cf6', analyse:'var(--gb)', payment:'#3b82f6' }
+    const evtColor = { login:'var(--gb)', signup:'var(--gold)', upgrade:'#8b5cf6', analyse:'var(--gb)', payment:'#3b82f6', admin_impersonate:'#ef4444' }
     el.innerHTML = `<table class="tbl"><thead><tr><th>Date</th><th>Événement</th><th>User</th><th>Données</th></tr></thead><tbody>
       ${data.map(e => {
         const col = evtColor[e.event_name] || 'var(--muted)'
