@@ -20,7 +20,7 @@
   <meta name="msapplication-TileImage" content="/icons/icon-144.png">
 <title>Mon espace — Betoracl Pro</title>
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.46.0/dist/tabler-icons.min.css">
 <style>
 /* ── TOKENS ── */
 :root {
@@ -488,6 +488,48 @@ button { cursor: pointer; font-family: var(--ff); }
 .fu2 { animation-delay: .1s; }
 .fu3 { animation-delay: .15s; }
 
+/* ── ORACLE ANALYSES STRIP ── */
+.oracle-strip {
+  display: flex; gap: 10px; overflow-x: auto; padding: 2px 2px 12px;
+  -webkit-overflow-scrolling: touch; scrollbar-width: thin;
+  margin-bottom: 20px;
+}
+.oracle-strip::-webkit-scrollbar { height: 5px; }
+.oracle-strip::-webkit-scrollbar-thumb { background: var(--line2); border-radius: 3px; }
+.oracle-chip {
+  flex: 0 0 240px; background: var(--surf1); border: 1px solid var(--line2);
+  border-radius: 14px; padding: 14px 16px; transition: border-color .15s;
+}
+.oracle-chip:hover { border-color: var(--line3); }
+.oracle-chip-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; gap: 6px; }
+.oracle-chip-date { font-size: 10px; color: var(--lo); }
+.oracle-chip-conf {
+  font-size: 10px; font-weight: 800; padding: 2px 9px; border-radius: 20px;
+  background: rgba(139,92,246,.12); color: var(--purple);
+  border: 1px solid rgba(139,92,246,.25); white-space: nowrap;
+}
+.oracle-chip-teams {
+  font-size: 13px; font-weight: 700; line-height: 1.3; margin-bottom: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.oracle-chip-pick {
+  font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.oracle-chip-row {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 10.5px; color: var(--lo); padding-top: 8px; border-top: 1px solid var(--line1);
+}
+.oracle-chip-row b { color: var(--mid); font-weight: 700; }
+.oracle-empty {
+  flex: 0 0 auto; width: 100%; text-align: center; padding: 24px 16px; color: var(--mid); font-size: 13px;
+}
+.oracle-empty a {
+  display: inline-flex; align-items: center; gap: 6px; margin-top: 10px;
+  padding: 9px 18px; border-radius: 9px; background: var(--purple); color: #fff;
+  font-size: 12px; font-weight: 800;
+}
+
 /* ════════════════════════════════
    MOBILE — < 768px
 ════════════════════════════════ */
@@ -598,6 +640,7 @@ button { cursor: pointer; font-family: var(--ff); }
   .rs-num { font-size: 18px; }
   .ci-match { font-size: 11px; }
   .ci-cote { font-size: 14px; }
+  .oracle-chip { flex: 0 0 210px; }
 
   /* ── DRAWER ── */
   .drawer-bg {
@@ -1185,6 +1228,12 @@ button { cursor: pointer; font-family: var(--ff); }
     <!-- CONTENT -->
     <div class="content">
 
+      <!-- Bannière d'impersonation admin -->
+      <div id="impersonate-banner" style="display:none;margin-bottom:16px;padding:11px 16px;border-radius:10px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);color:#f87171;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px">
+        <i class="ti ti-eye" style="font-size:16px"></i>
+        <span id="impersonate-banner-text">Vue admin — connecté en tant qu'un autre utilisateur</span>
+      </div>
+
       <!-- ═══ BANDE PROFIL ═══ -->
       <div class="pband fu">
         <div class="pband-av-wrap">
@@ -1269,6 +1318,14 @@ button { cursor: pointer; font-family: var(--ff); }
           <div class="push-banner-sub">Reçois les coupons, alertes buts et récompenses parrainage</div>
         </div>
         <button class="push-btn" id="push-btn">Activer</button>
+      </div>
+
+      <!-- Mes dernières analyses Oracle -->
+      <div class="sec-head fu fu2"><i class="ti ti-brain" style="color:var(--purple)"></i> Mes dernières analyses Oracle</div>
+      <div class="oracle-strip fu fu2" id="oracle-strip">
+        <div class="oracle-chip skel" style="width:240px;height:110px;flex-shrink:0"></div>
+        <div class="oracle-chip skel" style="width:240px;height:110px;flex-shrink:0"></div>
+        <div class="oracle-chip skel" style="width:240px;height:110px;flex-shrink:0"></div>
       </div>
 
       <!-- Two columns -->
@@ -1588,9 +1645,75 @@ async function loadCoupon(token, plan) {
   }
 }
 
+// ── MES DERNIÈRES ANALYSES ORACLE ──
+function escH(s) { return String(s == null ? '' : s).replace(/</g, '&lt;').replace(/>/g, '&gt;') }
+
+function renderOracleChip(row) {
+  const r = row.oracle_result || {}
+  const teamA = r.team_a_name || row.team_a_name || '?'
+  const teamB = r.team_b_name || row.team_b_name || '?'
+  const conf  = Math.round(row.confidence ?? r.confidence ?? 0)
+  const pick  = r.pick || '—'
+  const score = r.score_est || ''
+  const sentiment = r.sentiment
+  const sharpTxt = sentiment && sentiment.sharp_signal && sentiment.sharp_signal !== 'unknown'
+    ? `Signal sharp : ${sentiment.sharp_signal}` : ''
+  const dateLabel = row.created_at ? new Date(row.created_at).toLocaleDateString('fr-FR', { day:'numeric', month:'short' }) : ''
+
+  return `
+    <div class="oracle-chip">
+      <div class="oracle-chip-top">
+        <span class="oracle-chip-date">${escH(dateLabel)}</span>
+        <span class="oracle-chip-conf">${conf}% confiance</span>
+      </div>
+      <div class="oracle-chip-teams">${escH(teamA)} <span style="color:var(--lo)">vs</span> ${escH(teamB)}</div>
+      <div class="oracle-chip-pick"><i class="ti ti-target-arrow" style="font-size:13px"></i> ${escH(pick)}</div>
+      <div class="oracle-chip-row">
+        <span>Score prédit : <b>${escH(score || '—')}</b></span>
+        ${sharpTxt ? `<span>${escH(sharpTxt)}</span>` : ''}
+      </div>
+    </div>`
+}
+
+async function loadOracleHistory(token) {
+  const strip = $('oracle-strip')
+  if (!strip) return
+  try {
+    const r = await fetch(`${S}/rest/v1/analyses?select=team_a_name,team_b_name,confidence,oracle_result,created_at&order=created_at.desc&limit=8`, {
+      headers: { apikey: AK, Authorization: `Bearer ${token}` }
+    })
+    if (!r.ok) throw new Error('HTTP ' + r.status)
+    const rows = await r.json()
+    if (!Array.isArray(rows) || !rows.length) {
+      strip.innerHTML = `<div class="oracle-empty">Tu n'as pas encore lancé d'analyse.<br><a href="/analyse"><i class="ti ti-brain"></i> Lancer ma première analyse</a></div>`
+      return
+    }
+    strip.innerHTML = rows.map(renderOracleChip).join('')
+  } catch (e) {
+    strip.innerHTML = `<div class="oracle-empty">Historique momentanément indisponible.</div>`
+  }
+}
+
+// ── Capture d'une session via hash d'URL (lien magique — utilisé par l'impersonation admin) ──
+function consumeHashSession() {
+  if (!location.hash || !location.hash.includes('access_token')) return false
+  const params = new URLSearchParams(location.hash.slice(1))
+  const at = params.get('access_token')
+  const rt = params.get('refresh_token')
+  if (!at) return false
+  localStorage.setItem('sb_access_token', at)
+  if (rt) localStorage.setItem('sb_refresh_token', rt)
+  sessionStorage.setItem('bp_token', at)
+  // Nettoyer l'URL pour ne pas laisser le token visible/partageable
+  history.replaceState(null, '', location.pathname + location.search)
+  return true
+}
+
 // ── INIT ──
 async function init() {
   if (_done) return; _done = true
+
+  consumeHashSession()
 
   // Afficher cache immédiatement pour éviter le blanc
   const cn = sessionStorage.getItem('bp_prenom') || localStorage.getItem('bp_prenom') || ''
@@ -1621,6 +1744,15 @@ async function init() {
     fillUI(firstName, ePlan, authUser.email || '')
     applyAccessGates(ePlan)
     showTgCard(ePlan)
+
+    // Bannière d'impersonation (vue admin sur un autre compte)
+    if (new URLSearchParams(location.search).get('impersonated') === '1') {
+      const banner = $('impersonate-banner')
+      if (banner) {
+        banner.style.display = 'flex'
+        $('impersonate-banner-text').textContent = `Vue admin — connecté en tant que ${firstName} (${authUser.email})`
+      }
+    }
 
     // Bande profil — expiration + jours
     if (authUser.email && $('pb-email')) $('pb-email').textContent = authUser.email
@@ -1668,6 +1800,9 @@ async function init() {
 
     // Coupon avec le plan résolu
     loadCoupon(token, ePlan)
+
+    // Mes dernières analyses Oracle
+    loadOracleHistory(token)
 
   } catch (e) {
     console.error('Dashboard init error:', e)
