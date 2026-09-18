@@ -71,8 +71,12 @@
       "dest": "/compte.html"
     },
     {
+      "src": "/pronostic/(.*)",
+      "dest": "/api/pronostic/$1"
+    },
+    {
       "src": "/sitemap.xml",
-      "dest": "/sitemap.xml"
+      "dest": "/api/sitemap"
     },
     {
       "src": "/robots.txt",
