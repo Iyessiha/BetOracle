@@ -87,14 +87,14 @@ h1{font-family:var(--display);font-size:clamp(58px,10vw,118px);line-height:.93;l
 .hero-sub{font-size:clamp(15px,2vw,19px);color:var(--muted);font-weight:400;max-width:520px;margin:0 auto 36px;line-height:1.7}
 .hero-sub strong{color:var(--text);font-weight:600}
 .hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:52px}
-.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-bottom:48px}
+.hero-stats{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-bottom:48px;background:rgba(6,9,6,.4);backdrop-filter:blur(8px);border-radius:18px;padding:20px 28px;border:1px solid rgba(255,255,255,.06)}
 .stat-c{text-align:center}
 .stat-v{font-family:var(--display);font-size:clamp(36px,5vw,54px);line-height:1;color:var(--green)}
 .stat-v span{color:var(--gold)}
 .stat-l{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:4px}
 
 /* ── SCORE CARDS ── */
-.score-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:0}
+.score-row{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-bottom:32px}
 .sc{background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:16px 18px;min-width:190px;position:relative;overflow:hidden;animation:floatY 4s ease-in-out infinite}
 .sc:nth-child(2){animation-delay:.8s}.sc:nth-child(3){animation-delay:1.6s}
 @keyframes floatY{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
@@ -110,7 +110,7 @@ h1{font-family:var(--display);font-size:clamp(58px,10vw,118px);line-height:.93;l
 @keyframes shim{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
 /* ── TICKER ── */
-.ticker-wrap{background:var(--s1);border-top:1px solid var(--b1);overflow:hidden;height:40px;display:flex;align-items:center;margin-top:48px;width:100vw;margin-left:calc(-50vw + 50%)}
+.ticker-wrap{background:var(--s1);border-top:1px solid var(--b1);overflow:hidden;height:40px;display:flex;align-items:center;margin-top:8px;width:100vw;margin-left:calc(-50vw + 50%);position:relative;z-index:3}
 .ticker{display:flex;animation:tick 36s linear infinite;white-space:nowrap}
 @keyframes tick{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .ti{display:inline-flex;align-items:center;gap:8px;padding:0 24px;font-size:12px;font-weight:500;color:var(--muted);border-right:1px solid var(--b1)}
@@ -433,22 +433,11 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
     <div class="stat-c"><div class="stat-v" id="stat-wr">—<span>%</span></div><div class="stat-l">Win Rate</div></div>
     <div class="stat-c"><div class="stat-v">750<span>F</span></div><div class="stat-l">Dès / semaine</div></div>
   </div>
-  <!-- Score cards dynamiques -->
+  <!-- Score cards dynamiques — résultats vérifiés (pas les picks du jour) -->
   <div class="score-row reveal" id="scoreCards">
     <div class="sc sc-skel" style="min-width:190px;min-height:90px"></div>
     <div class="sc sc-skel" style="min-width:190px;min-height:90px;animation-delay:.3s"></div>
     <div class="sc sc-skel" style="min-width:190px;min-height:90px;animation-delay:.6s"></div>
-  </div>
-  <!-- Ticker dynamique -->
-  <div class="ticker-wrap">
-    <div class="ticker" id="ticker">
-      <div class="ti"><span>🏆</span><span>Betoracl Pro — Analyse quantitative</span><span class="ti-up">Coupons générés par IA</span></div>
-      <div class="ti"><span>⚡</span><span>Oracle prédictif</span><span class="ti-up">Forme · Cotes Pinnacle · Value Bet</span></div>
-      <div class="ti"><span>📊</span><span>Kelly Calculator</span><span class="ti-up">Mise optimale / bankroll</span></div>
-      <div class="ti"><span>🏆</span><span>Betoracl Pro — Analyse quantitative</span><span class="ti-up">Coupons générés par IA</span></div>
-      <div class="ti"><span>⚡</span><span>Oracle prédictif</span><span class="ti-up">Forme · Cotes Pinnacle · Value Bet</span></div>
-      <div class="ti"><span>📊</span><span>Kelly Calculator</span><span class="ti-up">Mise optimale / bankroll</span></div>
-    </div>
   </div>
 </section>
 
@@ -1025,8 +1014,8 @@ window.addEventListener('DOMContentLoaded', () => {
 const HERO_PHOTOS = [
   'https://images.unsplash.com/photo-1693164586646-f3f877aec626?fm=jpg&q=70&w=1920&auto=format&fit=crop',
   'https://images.unsplash.com/photo-1781152791873-ced9456b14ac?fm=jpg&q=70&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1745997645080-941f962f1392?fm=jpg&q=70&w=1920&auto=format&fit=crop',
-  'https://images.unsplash.com/photo-1549333580-4cb2c5c8e421?fm=jpg&q=70&w=1920&auto=format&fit=crop'
+  'https://images.unsplash.com/photo-1762013315117-1c8005ad2b41?fm=jpg&q=70&w=1920&auto=format&fit=crop',
+  'https://images.unsplash.com/photo-1767916732786-a83902ffc25c?fm=jpg&q=70&w=1920&auto=format&fit=crop'
 ]
 function initHeroRotation() {
   const layerA = document.getElementById('heroLayerA')
@@ -1093,8 +1082,6 @@ async function loadPublicData() {
     ])
     if (statsRes) renderStats(statsRes)
     if (couponRes?.coupons?.length) {
-      renderScoreCards(couponRes.coupons)
-      renderTicker(couponRes.coupons)
       renderCouponCard(couponRes.coupons, couponRes.date)
     } else {
       renderCouponFallback()
@@ -1105,7 +1092,7 @@ async function loadPublicData() {
   }
 }
 
-// ─── RÉSULTATS VÉRIFIÉS (bande de confiance sur la landing) ────────────────────
+// ─── RÉSULTATS VÉRIFIÉS (héros + bande de confiance + bandeau — une seule source, aucune fuite) ────
 const REST_URL = 'https://ovulcqsrzkwlnhnyllij.supabase.co'
 const REST_AK  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw'
 const TRUST_TIER = { safe: { label: 'Sûr', icon: '🛡️' }, balanced: { label: 'Équilibré', icon: '⚖️' }, bold: { label: 'Audacieux', icon: '🔥' } }
@@ -1130,24 +1117,52 @@ function renderTrustCard(c) {
     </div>`
 }
 
+// Cartes flottantes du héros : résultats vérifiés (coupon Sûr), jamais les picks du jour
+function renderScoreCards(historyData) {
+  const cards = document.getElementById('scoreCards')
+  if (!cards) return
+  const safeOnly = historyData.filter(c => c.tier === 'safe')
+  const list = (safeOnly.length ? safeOnly : historyData).slice(0, 3)
+  if (!list.length) { cards.style.display = 'none'; return }
+  const badgeInfo = { win: ['var(--green)', '✅ Gagné'], partial: ['var(--gold)', '⚡ Partiel'], loss: ['var(--red)', '❌ Perdu'] }
+  cards.innerHTML = list.map(c => {
+    const [color, label] = badgeInfo[c.result] || ['var(--muted)', '—']
+    const d = c.match_date ? new Date(c.match_date + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }) : ''
+    return `
+    <div class="sc">
+      <div class="sc-league">🛡️ COUPON SÛR · ${esc(d)}</div>
+      <div class="sc-teams" style="justify-content:center">
+        <span style="color:${color};font-family:var(--display);font-size:20px;letter-spacing:.04em">${label}</span>
+      </div>
+      <div class="sc-pick" style="justify-content:center;margin-top:10px">
+        Cote visée <span class="sc-cote">×${Number(c.total_odds || 0).toFixed(2)}</span>
+      </div>
+    </div>`
+  }).join('')
+}
+
 async function loadTrustHistory() {
   const strip = document.getElementById('trustStrip')
-  if (!strip) return
   try {
     const res = await fetch(
-      `${REST_URL}/rest/v1/coupons?select=match_date,tier,result,total_odds,selections,result_detail&status=eq.published&result=in.(win,loss,partial)&order=match_date.desc&limit=8`,
+      `${REST_URL}/rest/v1/coupons?select=match_date,tier,result,total_odds,selections,result_detail&status=eq.published&result=in.(win,loss,partial)&order=match_date.desc&limit=10`,
       { headers: { apikey: REST_AK } }
     )
     if (!res.ok) throw new Error('fetch failed')
     const data = await res.json()
     if (!Array.isArray(data) || !data.length) {
-      strip.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px">Premiers résultats vérifiés disponibles bientôt.</div>`
+      if (strip) strip.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px">Premiers résultats vérifiés disponibles bientôt.</div>`
+      const cards = document.getElementById('scoreCards')
+      if (cards) cards.style.display = 'none'
       return
     }
-    strip.innerHTML = data.slice(0, 4).map(renderTrustCard).join('')
+    if (strip) strip.innerHTML = data.slice(0, 4).map(renderTrustCard).join('')
+    renderScoreCards(data)
   } catch (e) {
     console.error('[loadTrustHistory]', e)
-    strip.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px">Historique momentanément indisponible.</div>`
+    if (strip) strip.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:20px;color:var(--muted);font-size:13px">Historique momentanément indisponible.</div>`
+    const cards = document.getElementById('scoreCards')
+    if (cards) cards.style.display = 'none'
   }
 }
 
@@ -1174,44 +1189,7 @@ function animCount(id, target) {
   requestAnimationFrame(tick)
 }
 
-// Score cards héro
-function renderScoreCards(coupons) {
-  const safe = coupons.find(c => c.tier === 'safe')
-  const sels = safe?.selections || []
-  const cards = document.getElementById('scoreCards')
-  if (!cards || !sels.length) return
-  cards.innerHTML = sels.slice(0, 3).map(s => `
-    <div class="sc">
-      <div class="sc-league">${esc(s.league || '')}</div>
-      <div class="sc-teams">
-        <span>${esc(s.team_a || '?')}</span>
-        <div class="sc-score-wrap">
-          <div class="sc-score">${s.score_probable ? esc(s.score_probable) : '— vs —'}</div>
-          ${s.score_probable ? '<div class="sc-score-tag">score probable</div>' : ''}
-        </div>
-        <span>${esc(s.team_b || '?')}</span>
-      </div>
-      <div class="sc-pick">
-        ${esc(s.pick || '')} <span class="sc-cote">${s.odds}</span>
-      </div>
-    </div>
-  `).join('')
-}
-
-// Ticker dynamique
-function renderTicker(coupons) {
-  const safe = coupons.find(c => c.tier === 'safe')
-  const all = coupons.flatMap(c => c.selections || [])
-  if (!all.length) return
-  const ticker = document.getElementById('ticker')
-  if (!ticker) return
-  const items = all.map(s =>
-    `<div class="ti"><span>⚽</span><span>${esc(s.team_a || '?')} vs ${esc(s.team_b || '?')}</span><span class="ti-up">${esc(s.pick || '')} × ${s.odds}</span></div>`
-  ).join('')
-  ticker.innerHTML = items + items // duplique pour loop infini
-}
-
-// Coupon card principale
+// Coupon card principale (blurée, gate d'inscription — inchangé)
 function renderCouponCard(coupons, date) {
   const safe = coupons.find(c => c.tier === 'safe')
   const container = document.getElementById('couponCard')
@@ -1220,7 +1198,6 @@ function renderCouponCard(coupons, date) {
   const sels = safe.selections || []
   const dateLabel = date ? new Date(date + 'T12:00:00').toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }) : 'Aujourd\'hui'
 
-  // Équipes + heure visibles (teasing), pick/score/cote floutés — il faut un compte pour voir le pari exact
   const matches = sels.map(s => `
     <div class="cc-match">
       <span class="cc-flag">⚽</span>
