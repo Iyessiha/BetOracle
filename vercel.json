@@ -72,7 +72,7 @@
     },
     {
       "src": "/pronostic/(.*)",
-      "dest": "/api/pronostic/$1"
+      "dest": "/api/$1"
     },
     {
       "src": "/sitemap.xml",
