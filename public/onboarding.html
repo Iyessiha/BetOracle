@@ -430,6 +430,31 @@ function makeFlagImg(cc,cls){
   return `<img src="${FLAG_CDN(cc)}" alt="${cc}" onerror="flagFb(this,'${cc}')" style="width:16px;height:12px;border-radius:2px;object-fit:cover">`;
 }
 
+const NATION_FLAGS={
+  'sénégal':'sn','senegal':'sn','côte d\'ivoire':'ci','cote d\'ivoire':'ci','ivory coast':'ci',
+  'ghana':'gh','mali':'ml','burkina faso':'bf','bénin':'bj','benin':'bj','togo':'tg',
+  'cameroun':'cm','cameroon':'cm','nigeria':'ng','niger':'ne','guinée':'gn','guinea':'gn',
+  'maroc':'ma','morocco':'ma','algérie':'dz','algeria':'dz','tunisie':'tn','tunisia':'tn',
+  'egypte':'eg','egypt':'eg','afrique du sud':'za','south africa':'za','congo':'cd',
+  'rdc':'cd','angola':'ao','mozambique':'mz','zimbabwe':'zw','zambie':'zm','zambia':'zm',
+  'tanzanie':'tz','tanzania':'tz','éthiopie':'et','ethiopia':'et','kenya':'ke',
+  'france':'fr','espagne':'es','spain':'es','portugal':'pt','allemagne':'de','germany':'de',
+  'angleterre':'gb','england':'gb','royaume-uni':'gb','italie':'it','italy':'it',
+  'belgique':'be','belgium':'be','pays-bas':'nl','netherlands':'nl','holland':'nl',
+  'türkiye':'tr','turkey':'tr','turquie':'tr','roumanie':'ro','romania':'ro',
+  'arménie':'am','armenia':'am','monténégro':'me','montenegro':'me',
+  'bosnie':'ba','bosnia':'ba','serbie':'rs','serbia':'rs','croatie':'hr','croatia':'hr',
+  'mexique':'mx','mexico':'mx','brésil':'br','brazil':'br','argentine':'ar','argentina':'ar',
+  'usa':'us','états-unis':'us','chili':'cl','chile':'cl','colombie':'co','colombia':'co',
+};
+function teamBadge(name){
+  const cc=NATION_FLAGS[(name||'').toLowerCase().trim()];
+  if(cc) return makeFlagImg(cc);
+  const init=(name||'?').slice(0,2).toUpperCase();
+  const hue=[...(name||'')].reduce((h,c)=>h+c.charCodeAt(0),0)%360;
+  return `<div style="width:16px;height:16px;border-radius:3px;background:hsl(${hue},45%,20%);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:hsl(${hue},65%,65%);flex-shrink:0">${init}</div>`;
+}
+
 // ── DATA ──
 const CLUBS=[
   {id:'rm',  name:'Real Madrid',   lid:541, bg:'#00529F',fg:'#FEFEFE',init:'RM'},
@@ -500,8 +525,8 @@ function renderHeroRows(matches){
       <div>
         <div class="hmcomp">${m.comp||''}</div>
         <div class="hm-teams">
-          <div class="hm-team">${m.f1?makeFlagImg(m.f1):''} ${m.t1||''}</div>
-          <div class="hm-team">${m.f2?makeFlagImg(m.f2):''} ${m.t2||''}</div>
+          <div class="hm-team">${m.f1?makeFlagImg(m.f1):teamBadge(m.t1)} ${m.t1||''}</div>
+          <div class="hm-team">${m.f2?makeFlagImg(m.f2):teamBadge(m.t2)} ${m.t2||''}</div>
         </div>
         <div class="hmtip">${m.tip||''}</div>
       </div>
