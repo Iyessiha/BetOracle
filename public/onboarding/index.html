@@ -1,0 +1,705 @@
+<title>BetOracle Pro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&family=Space+Mono:wght@700&display=swap">
+<style>
+:root{
+  --bg:#080810;--surf:#12121f;--surf2:#1b1b2e;--surf3:#25253c;
+  --acc:#00e676;--acc-dim:rgba(0,230,118,.1);--acc-bd:rgba(0,230,118,.28);
+  --gold:#f5c518;--gold-dim:rgba(245,197,24,.1);--gold-bd:rgba(245,197,24,.3);
+  --text:#f0f0f8;--muted:#6a6a90;--subtle:#35354e;--bd:rgba(255,255,255,.07);
+  --r:14px;--rs:9px;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+button{font-family:inherit;cursor:pointer;border:none;background:none}
+input{font-family:inherit}
+img{max-width:100%}
+
+#app{min-height:100%;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+
+/* TOP BAR */
+#top-bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:50;padding:14px 20px 0;background:var(--bg);display:none;flex-direction:column;gap:10px}
+#top-bar.vis{display:flex}
+.tb-row{display:flex;align-items:center;justify-content:space-between}
+.btn-back{width:36px;height:36px;border-radius:50%;background:var(--surf);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;color:var(--text);flex-shrink:0}
+.step-lbl{font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.prog-track{height:3px;background:var(--surf3);border-radius:2px;overflow:hidden}
+.prog-fill{height:100%;background:var(--acc);border-radius:2px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+/* STEPS */
+.step{display:none;padding:28px 20px 130px;animation:sIn .22s ease}
+.step.on{display:block}
+#step-0{display:none;flex-direction:column;padding:0 20px 28px;animation:sIn .22s ease}
+#step-0.on{display:flex}
+@keyframes sIn{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+
+/* HERO */
+.hero-top{padding-top:52px;margin-bottom:22px}
+.eyebrow{font-size:10px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);margin-bottom:10px}
+.hero-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(46px,12vw,60px);line-height:.95;margin-bottom:16px;text-wrap:balance}
+.live-pill{display:inline-flex;align-items:center;gap:8px;background:var(--surf);border:1px solid var(--bd);border-radius:20px;padding:6px 12px;font-size:12px;color:var(--muted)}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--acc);box-shadow:0 0 7px var(--acc);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* COMBO CARD */
+.combo-card{background:var(--surf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin:14px 0 22px;flex:1}
+.combo-hd{display:flex;align-items:center;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--bd)}
+.combo-badge{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.combo-valid{display:flex;align-items:center;gap:5px;font-size:10px;font-weight:700;letter-spacing:.07em;color:var(--acc)}
+/* hero match row */
+.hmrow{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;padding:10px 16px;border-bottom:1px solid var(--bd)}
+.hmrow:last-of-type{border-bottom:none}
+.hmtime{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);text-align:center;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;align-items:center;gap:3px}
+.hmcomp{font-size:8px;color:var(--subtle);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+.hm-teams{display:flex;flex-direction:column;gap:3px}
+.hm-team{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600}
+.hm-team img,.hm-team .flag-fb{width:18px;height:13px;border-radius:2px;object-fit:cover;flex-shrink:0}
+.flag-fb{background:var(--surf3);display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:700;color:var(--muted)}
+.hmtip{font-size:10px;color:var(--muted);margin-top:3px;padding-left:24px}
+.hmodd{text-align:right}
+.hmodd-val{font-family:'Space Mono',monospace;font-size:14px;font-weight:700;display:block;font-variant-numeric:tabular-nums}
+.hmodd-prob{font-size:10px;color:var(--muted);display:block}
+.combo-ft{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surf2)}
+.combo-ft-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.combo-cote{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;color:var(--acc);font-variant-numeric:tabular-nums}
+
+/* STEP HEADINGS */
+.step-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,8vw,40px);line-height:1;margin:6px 0;text-wrap:balance}
+.step-sub{font-size:13px;color:var(--muted);margin-bottom:24px}
+
+/* PROFILE */
+.profile-cards{display:flex;flex-direction:column;gap:10px}
+.pcard{background:var(--surf);border:2px solid transparent;border-radius:var(--r);padding:16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:background .15s,border-color .15s}
+.pcard:hover{background:var(--surf2)}
+.pcard.sel{border-color:var(--acc);background:var(--acc-dim)}
+.pcard-info{flex:1}
+.pcard-name{font-size:15px;font-weight:700;margin-bottom:3px}
+.pcard-desc{font-size:12px;color:var(--muted)}
+.rdots{display:flex;gap:3px}
+.rdot{width:8px;height:8px;border-radius:50%}
+.rdot.f{background:var(--acc)}.rdot.e{background:var(--surf3)}
+.radio{width:20px;height:20px;border-radius:50%;border:2px solid var(--surf3);flex-shrink:0;transition:all .15s;position:relative}
+.pcard.sel .radio{border-color:var(--acc);background:var(--acc)}
+.pcard.sel .radio::after{content:'';position:absolute;inset:3px;border-radius:50%;background:var(--bg)}
+
+/* CLUBS */
+.club-search{width:100%;background:var(--surf);border:1px solid var(--bd);border-radius:var(--rs);padding:10px 14px;color:var(--text);font-size:14px;outline:none;transition:border-color .15s;margin-bottom:16px}
+.club-search:focus{border-color:var(--acc)}
+.club-search::placeholder{color:var(--muted)}
+.sec-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+.clubs-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.citem{display:flex;flex-direction:column;align-items:center;gap:7px;padding:14px 6px;background:var(--surf);border:2px solid transparent;border-radius:var(--rs);cursor:pointer;transition:all .15s}
+.citem:hover{background:var(--surf2)}
+.citem.sel{border-color:var(--acc);background:var(--acc-dim)}
+.clogo-wrap{width:44px;height:44px;display:flex;align-items:center;justify-content:center}
+.clogo-wrap img{width:40px;height:40px;object-fit:contain}
+.logo-fb{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:900;letter-spacing:-.01em}
+.cname{font-size:11px;font-weight:600;text-align:center;line-height:1.2;color:var(--text)}
+
+/* LEAGUES */
+.leagues-list{display:flex;flex-direction:column;gap:8px}
+.litem{display:flex;align-items:center;gap:12px;padding:11px 14px;background:var(--surf);border:2px solid transparent;border-radius:var(--rs);cursor:pointer;transition:all .15s}
+.litem:hover{background:var(--surf2)}
+.litem.sel{border-color:var(--acc);background:var(--acc-dim)}
+.lic-wrap{width:36px;height:36px;border-radius:8px;background:var(--surf2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.lic-wrap img{width:28px;height:28px;object-fit:contain}
+.lic-fb{font-size:10px;font-weight:800;color:var(--muted)}
+.lname{font-size:14px;font-weight:500;flex:1}
+.lchk{width:20px;height:20px;border-radius:4px;border:2px solid var(--surf3);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--bg);transition:all .15s}
+.litem.sel .lchk{background:var(--acc);border-color:var(--acc)}
+
+/* MATCHES */
+.filter-row{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.fpill{padding:5px 13px;border-radius:20px;font-size:12px;font-weight:500;background:var(--surf);border:1px solid var(--bd);color:var(--muted);cursor:pointer;transition:all .15s}
+.fpill.on{background:var(--acc-dim);border-color:var(--acc);color:var(--acc)}
+.sel-count{font-size:12px;color:var(--muted);margin-bottom:12px}
+.sel-count b{color:var(--acc)}
+.matches-list{display:flex;flex-direction:column;gap:8px}
+.mitem{background:var(--surf);border:2px solid transparent;border-radius:var(--rs);padding:11px 14px;cursor:pointer;display:grid;grid-template-columns:48px 1fr 26px;align-items:center;gap:10px;transition:all .15s}
+.mitem:hover{background:var(--surf2)}
+.mitem.sel{border-color:var(--acc);background:var(--acc-dim)}
+.mitem.dis{opacity:.38;pointer-events:none}
+.mtime2{text-align:center}
+.mday{font-size:9px;display:block;text-transform:uppercase;letter-spacing:.04em;color:var(--muted);margin-bottom:2px}
+.mhour{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.mcomp2{font-size:9px;color:var(--subtle);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.m-teams-col{display:flex;flex-direction:column;gap:3px}
+.m-team-row{display:flex;align-items:center;gap:6px}
+.m-team-row img,.m-team-row .flag-fb,.m-team-row .tlogo-fb{width:16px;height:16px;border-radius:2px;object-fit:cover;flex-shrink:0}
+.m-team-row .tlogo-fb{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:6px;font-weight:900}
+.m-tname{font-size:12px;font-weight:600;line-height:1}
+.mchk{width:24px;height:24px;border-radius:50%;border:2px solid var(--surf3);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:900;color:var(--bg);transition:all .15s;flex-shrink:0}
+.mitem.sel .mchk{background:var(--acc);border-color:var(--acc)}
+
+/* ORACLE */
+.oracle-loading{display:flex;flex-direction:column;align-items:center;padding:36px 0 28px;gap:14px;text-align:center}
+.orb{width:68px;height:68px;border-radius:50%;background:conic-gradient(from 0deg,var(--acc),var(--gold),var(--acc));animation:spin 2s linear infinite;position:relative}
+.orb::after{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--bg)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ora-txt{font-size:14px;color:var(--muted)}
+.ora-detail{font-size:12px;color:var(--subtle)}
+.coupon-card{background:var(--surf);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;position:relative}
+.coupon-hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:var(--surf2)}
+.coupon-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em}
+.coupon-profile{font-size:10px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--acc)}
+.crow{padding:11px 16px;border-bottom:1px solid var(--bd)}
+.crow:last-of-type{border-bottom:none}
+.crow-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.crow-comp{font-size:9px;color:var(--subtle);text-transform:uppercase;letter-spacing:.05em}
+.crow-odd{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;filter:blur(5px);user-select:none;font-variant-numeric:tabular-nums}
+.crow-teams{display:flex;flex-direction:column;gap:3px;margin-bottom:6px}
+.crow-team{display:flex;align-items:center;gap:6px}
+.crow-team img,.crow-team .flag-fb,.crow-team .tlogo-fb{width:14px;height:14px;border-radius:2px;object-fit:cover;flex-shrink:0}
+.crow-team .tlogo-fb{border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:5px;font-weight:900}
+.crow-tname{font-size:13px;font-weight:600}
+.crow-tip{display:inline-block;padding:2px 10px;border-radius:10px;background:var(--acc-dim);border:1px solid var(--acc-bd);font-size:11px;font-weight:600;color:var(--acc);filter:blur(4px);user-select:none}
+.coupon-ft{display:flex;align-items:center;justify-content:space-between;padding:13px 16px;background:var(--surf2)}
+.coupon-ft-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.coupon-cote{font-family:'Space Mono',monospace;font-size:24px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+.lock-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding-bottom:28px;gap:7px;background:linear-gradient(to bottom,transparent 25%,rgba(8,8,16,.97) 65%)}
+.lock-orb{width:44px;height:44px;border-radius:50%;background:var(--gold-dim);border:1px solid var(--gold-bd);display:flex;align-items:center;justify-content:center;font-size:20px}
+.lock-txt{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--gold)}
+.stake-box{background:var(--surf);border:1px solid var(--bd);border-radius:var(--r);padding:16px;margin-top:14px}
+.stake-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.stake-chips{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.schip{padding:6px 16px;border-radius:20px;font-family:'Space Mono',monospace;font-size:13px;font-weight:700;background:var(--surf2);border:1px solid var(--bd);color:var(--muted);cursor:pointer;transition:all .15s;font-variant-numeric:tabular-nums}
+.schip.on{background:var(--acc-dim);border-color:var(--acc);color:var(--acc)}
+.gain-row{display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--bd)}
+.gain-lbl{font-size:12px;color:var(--muted)}
+.gain-val{font-family:'Space Mono',monospace;font-size:20px;font-weight:700;color:var(--gold);font-variant-numeric:tabular-nums}
+
+/* ACCOUNT */
+.fgrp{margin-bottom:14px}
+.flbl{display:block;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.finput{width:100%;background:var(--surf);border:1px solid var(--bd);border-radius:var(--rs);padding:12px 14px;color:var(--text);font-size:15px;outline:none;transition:border-color .15s}
+.finput:focus{border-color:var(--acc)}
+.finput::placeholder{color:var(--muted)}
+.fhint{font-size:11px;color:var(--muted);text-align:center;margin-top:18px;line-height:1.6}
+
+/* PAYMENT */
+.tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
+.tag{padding:4px 10px;border-radius:12px;background:var(--surf);border:1px solid var(--bd);font-size:11px;color:var(--muted)}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
+.plan{background:var(--surf);border:2px solid var(--bd);border-radius:var(--r);padding:16px;cursor:pointer;position:relative;transition:all .15s}
+.plan:hover{background:var(--surf2)}
+.plan.sel{border-color:var(--gold);background:var(--gold-dim)}
+.plan-best{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#100e00;font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:10px;white-space:nowrap}
+.plan-period{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
+.plan-old{font-size:12px;color:var(--subtle);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.plan-price{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
+.plan-unit{font-size:10px;color:var(--muted)}
+.plan-disc{font-size:11px;font-weight:700;color:var(--acc);margin-top:4px}
+.pay-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.pay-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.pmethod{background:var(--surf);border:2px solid var(--bd);border-radius:var(--rs);padding:9px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s}
+.pmethod:hover{background:var(--surf2)}
+.pmethod.sel{border-color:var(--acc);background:var(--acc-dim)}
+.pmic{font-size:19px}
+.pmname{font-size:9px;font-weight:600;color:var(--muted);text-align:center;line-height:1.2}
+
+/* BOTTOM BAR */
+#bot-bar{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:14px 20px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px));background:linear-gradient(to top,var(--bg) 65%,transparent);z-index:50;display:flex;flex-direction:column;align-items:center;gap:8px}
+.btn-cta{width:100%;padding:15px 24px;border-radius:50px;background:var(--acc);color:var(--bg);font-size:15px;font-weight:700;letter-spacing:.01em;transition:opacity .15s,transform .15s}
+.btn-cta:hover{opacity:.9;transform:translateY(-1px)}
+.btn-cta:active{transform:none}
+.btn-cta:disabled{opacity:.3;transform:none;cursor:default}
+.btn-cta.gold{background:linear-gradient(135deg,#f5c518,#d4a800);color:#0e0900}
+.btn-skip{font-size:12px;color:var(--muted)}
+</style>
+
+<div id="app">
+
+<div id="top-bar">
+  <div class="tb-row">
+    <button class="btn-back" id="btn-back" aria-label="Retour">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9 2L4 7L9 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <span class="step-lbl" id="step-lbl">1 / 7</span>
+  </div>
+  <div class="prog-track"><div class="prog-fill" id="prog" style="width:14%"></div></div>
+</div>
+
+<!-- STEP 0: HERO -->
+<div id="step-0" class="on">
+  <div class="hero-top">
+    <div class="eyebrow">IA · FOOTBALL</div>
+    <h1 class="hero-h1">L'Oracle qui prédit tes matchs.</h1>
+    <div class="live-pill"><span class="dot"></span>82 341 parieurs actifs · CI/BJ/SN/BF</div>
+  </div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Hier soir (LUN. 29 SEPT.), l'Oracle a validé :</p>
+  <div class="combo-card">
+    <div class="combo-hd">
+      <span class="combo-badge">Équilibré</span>
+      <span class="combo-valid">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6.5" fill="currentColor" opacity=".15"/><path d="M3.5 6.5L5.5 8.5L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        VALIDÉ
+      </span>
+    </div>
+    <div id="hero-rows"></div>
+    <div class="combo-ft"><span class="combo-ft-lbl">Cote totale</span><span class="combo-cote">100.87</span></div>
+  </div>
+</div>
+
+<!-- STEP 1: PROFIL -->
+<div id="step-1" class="step">
+  <div class="eyebrow">Personnalisation</div>
+  <h2 class="step-h1">Quel parieur es-tu ?</h2>
+  <p class="step-sub">L'Oracle adaptera ses combinés à ton style.</p>
+  <div class="profile-cards" id="profile-cards">
+    <div class="pcard" data-v="prudent">
+      <div class="pcard-info"><div class="pcard-name">Prudent</div><div class="pcard-desc">Petites cotes, hautes probabilités</div></div>
+      <div class="rdots"><div class="rdot f"></div><div class="rdot f"></div><div class="rdot e"></div><div class="rdot e"></div><div class="rdot e"></div></div>
+      <div class="radio"></div>
+    </div>
+    <div class="pcard" data-v="équilibré">
+      <div class="pcard-info"><div class="pcard-name">Équilibré</div><div class="pcard-desc">Le bon ratio risque / gain</div></div>
+      <div class="rdots"><div class="rdot f"></div><div class="rdot f"></div><div class="rdot f"></div><div class="rdot e"></div><div class="rdot e"></div></div>
+      <div class="radio"></div>
+    </div>
+    <div class="pcard" data-v="audacieux">
+      <div class="pcard-info"><div class="pcard-name">Audacieux</div><div class="pcard-desc">Grosses cotes, gros frissons</div></div>
+      <div class="rdots"><div class="rdot f"></div><div class="rdot f"></div><div class="rdot f"></div><div class="rdot f"></div><div class="rdot f"></div></div>
+      <div class="radio"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STEP 2: CLUB -->
+<div id="step-2" class="step">
+  <div class="eyebrow">Personnalisation</div>
+  <h2 class="step-h1">Ton club préféré ?</h2>
+  <p class="step-sub" style="margin-bottom:14px">Aide l'Oracle à personnaliser tes analyses.</p>
+  <input type="text" class="club-search" id="club-input" placeholder="🔍  Rechercher une équipe…">
+  <div class="sec-lbl" id="clubs-sec-lbl">Populaires</div>
+  <div class="clubs-grid" id="clubs-grid"></div>
+</div>
+
+<!-- STEP 3: LIGUES -->
+<div id="step-3" class="step">
+  <div class="eyebrow">Personnalisation</div>
+  <h2 class="step-h1">Tes terrains de jeu ?</h2>
+  <p class="step-sub">Choisis au moins une ligue.</p>
+  <div class="leagues-list" id="leagues-list"></div>
+</div>
+
+<!-- STEP 4: MATCHS -->
+<div id="step-4" class="step">
+  <div class="eyebrow">Match cible</div>
+  <h2 class="step-h1">Quels matchs prédire ?</h2>
+  <div class="filter-row" id="filter-row">
+    <div class="fpill on" data-f="all">Tous</div>
+    <div class="fpill" data-f="afrique">Afrique</div>
+    <div class="fpill" data-f="europe">Europe</div>
+  </div>
+  <div class="sel-count">Sélectionnés : <b id="sel-cnt">0</b>/5</div>
+  <div class="matches-list" id="matches-list"></div>
+</div>
+
+<!-- STEP 5: ORACLE -->
+<div id="step-5" class="step">
+  <h2 class="step-h1" style="margin-bottom:2px">L'Oracle travaille <span style="color:var(--acc)">déjà</span> pour toi</h2>
+  <p class="step-sub" id="ora-sub">Analyse en cours…</p>
+  <div class="oracle-loading" id="ora-load">
+    <div class="orb"></div>
+    <div class="ora-txt">Analyse des statistiques…</div>
+    <div class="ora-detail" id="ora-detail">Chargement des données de forme</div>
+  </div>
+  <div id="ora-result" style="display:none">
+    <div class="coupon-card">
+      <div class="coupon-hd"><span class="coupon-title">ORACLE</span><span class="coupon-profile" id="coupon-profile">PROFIL ÉQUILIBRÉ</span></div>
+      <div id="coupon-rows"></div>
+      <div class="coupon-ft"><span class="coupon-ft-lbl">Cote totale</span><span class="coupon-cote" id="coupon-cote">—</span></div>
+      <div class="lock-overlay"><div class="lock-orb">🔒</div><div class="lock-txt">Sélections bloquées</div></div>
+    </div>
+    <div class="stake-box">
+      <div class="stake-lbl">Ta mise</div>
+      <div class="stake-chips" id="stake-chips">
+        <div class="schip" data-s="500">500</div>
+        <div class="schip on" data-s="1000">1 000</div>
+        <div class="schip" data-s="2000">2 000</div>
+        <div class="schip" data-s="5000">5 000</div>
+      </div>
+      <div class="gain-row"><span class="gain-lbl">Gain potentiel</span><span class="gain-val" id="gain-val">—</span></div>
+    </div>
+    <p style="font-size:11px;color:var(--muted);text-align:center;margin-top:12px;line-height:1.6">Combiné généré selon ton profil <strong style="color:var(--text)" id="ora-prof-display">Équilibré</strong>.</p>
+  </div>
+</div>
+
+<!-- STEP 6: COMPTE -->
+<div id="step-6" class="step">
+  <div class="eyebrow">Accès</div>
+  <h2 class="step-h1">Crée tes accès pour débloquer</h2>
+  <p class="step-sub">Tu te reconnecteras avec ces identifiants.</p>
+  <div class="fgrp"><label class="flbl" for="f-email">Adresse email</label><input type="email" id="f-email" class="finput" placeholder="ton@email.com" autocomplete="email"></div>
+  <div class="fgrp"><label class="flbl" for="f-pwd">Mot de passe</label><input type="password" id="f-pwd" class="finput" placeholder="8 caractères minimum" autocomplete="new-password"></div>
+  <p class="fhint">Aucune vérification d'email · accès immédiat</p>
+</div>
+
+<!-- STEP 7: PAIEMENT -->
+<div id="step-7" class="step">
+  <div class="eyebrow">Débloque l'Oracle</div>
+  <h2 class="step-h1">Ton Oracle est prêt.</h2>
+  <div class="tags-row" id="tags-row"></div>
+  <div class="plan-grid">
+    <div class="plan" data-p="week">
+      <div class="plan-period">Test rapide</div>
+      <div class="plan-old">7 000 FCFA</div>
+      <div class="plan-price">3 500</div>
+      <div class="plan-unit">FCFA / semaine</div>
+      <div class="plan-disc">−56%</div>
+    </div>
+    <div class="plan sel" data-p="month">
+      <div class="plan-best">Meilleur prix</div>
+      <div class="plan-period">Accès complet</div>
+      <div class="plan-old">24 000 FCFA</div>
+      <div class="plan-price">7 000</div>
+      <div class="plan-unit">FCFA / mois</div>
+      <div class="plan-disc">−72%</div>
+    </div>
+  </div>
+  <div class="pay-lbl">Moyen de paiement</div>
+  <div class="pay-grid">
+    <div class="pmethod sel" data-m="wave"><div class="pmic">🌊</div><div class="pmname">Wave</div></div>
+    <div class="pmethod" data-m="orange"><div class="pmic">🟠</div><div class="pmname">Orange Money</div></div>
+    <div class="pmethod" data-m="mtn"><div class="pmic">🟡</div><div class="pmname">MTN MoMo</div></div>
+    <div class="pmethod" data-m="moov"><div class="pmic">🔵</div><div class="pmname">Moov Money</div></div>
+  </div>
+  <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.7">Accès immédiat · Sans engagement · Aucun prélèvement automatique</p>
+</div>
+
+<div id="bot-bar">
+  <button class="btn-cta" id="btn-cta">Voir ce que l'Oracle prédit pour moi →</button>
+  <button class="btn-skip" id="btn-skip" style="display:none" onclick="skip()">Continuer sans club favori</button>
+</div>
+</div>
+
+<script>
+// ── CDN helpers ──
+const TEAM_CDN  = id => `https://media.api-sports.io/football/teams/${id}.png`;
+const LEAGUE_CDN= id => `https://media.api-sports.io/football/leagues/${id}.png`;
+const FLAG_CDN  = cc => `https://flagcdn.com/24x18/${cc}.png`;
+
+function imgFb(el,txt,bg,fg){
+  const d=document.createElement('div');
+  d.className='logo-fb';
+  d.style.cssText=`background:${bg||'#25253c'};color:${fg||'#6a6a90'}`;
+  d.textContent=txt;
+  el.replaceWith(d);
+}
+function flagFb(el,cc){
+  const d=document.createElement('div');
+  d.className='flag-fb';
+  d.textContent=cc.toUpperCase().slice(0,2);
+  el.replaceWith(d);
+}
+function makeTeamImg(id,initials,bg,fg,cls){
+  if(!id) return `<div class="${cls||'tlogo-fb'}" style="background:${bg};color:${fg}">${initials}</div>`;
+  return `<img src="${TEAM_CDN(id)}" alt="${initials}" onerror="imgFb(this,'${initials}','${bg}','${fg}')" style="width:16px;height:16px;object-fit:contain;border-radius:2px">`;
+}
+function makeFlagImg(cc,cls){
+  return `<img src="${FLAG_CDN(cc)}" alt="${cc}" onerror="flagFb(this,'${cc}')" style="width:16px;height:12px;border-radius:2px;object-fit:cover">`;
+}
+
+// ── DATA ──
+const CLUBS=[
+  {id:'rm',  name:'Real Madrid',   lid:541, bg:'#00529F',fg:'#FEFEFE',init:'RM'},
+  {id:'bar', name:'FC Barcelone',  lid:529, bg:'#A50044',fg:'#F5C518',init:'FCB'},
+  {id:'psg', name:'PSG',           lid:85,  bg:'#003170',fg:'#FFFFFF',init:'PSG'},
+  {id:'lfc', name:'Liverpool',     lid:40,  bg:'#C8102E',fg:'#FFFFFF',init:'LFC'},
+  {id:'mc',  name:'Man City',      lid:50,  bg:'#6CABDD',fg:'#FFFFFF',init:'MCI'},
+  {id:'mu',  name:'Man United',    lid:33,  bg:'#DA291C',fg:'#FBE122',init:'MAN'},
+  {id:'ars', name:'Arsenal',       lid:42,  bg:'#EF0107',fg:'#FFFFFF',init:'ARS'},
+  {id:'che', name:'Chelsea',       lid:49,  bg:'#034694',fg:'#FFFFFF',init:'CFC'},
+  {id:'bay', name:'Bayern Munich', lid:157, bg:'#DC052D',fg:'#FFFFFF',init:'FCB'},
+  {id:'asec',name:'ASEC Mimosas',  lid:null,bg:'#F5C518',fg:'#000000',init:'ASE'},
+  {id:'afc', name:'Africa Sports', lid:null,bg:'#006633',fg:'#FFFFFF',init:'AFS'},
+  {id:'sol', name:'Soleil FC',     lid:null,bg:'#FF6B00',fg:'#FFFFFF',init:'SFC'},
+];
+const LEAGUES=[
+  {id:'pl',   name:'Premier League',        lid:39,  init:'PL'},
+  {id:'l1',   name:'Ligue 1',               lid:61,  init:'L1'},
+  {id:'liga', name:'La Liga',               lid:140, init:'LL'},
+  {id:'bun',  name:'Bundesliga',            lid:78,  init:'BL'},
+  {id:'sa',   name:'Serie A',               lid:135, init:'SA'},
+  {id:'ucl',  name:'Champions League',      lid:2,   init:'UCL'},
+  {id:'afcq', name:'AFCON Qualifications',  lid:6,   init:'AFCQ'},
+  {id:'cafcl',name:'CAF Champions League',  lid:12,  init:'CAFCL'},
+  {id:'caf',  name:'CAF Confédération',     lid:20,  init:'CAF'},
+  {id:'wafu', name:'WAFU Zone A',           lid:null,init:'WAFU'},
+];
+// matches: flags[] for national teams, logoIds[] for clubs
+const MATCHES=[
+  {id:'m1', comp:"AFCON Qualif.", t1:"Côte d'Ivoire",t2:'Ghana',         flags:['ci','gh'],time:'13:00',day:'MAR.',r:'afrique'},
+  {id:'m2', comp:"AFCON Qualif.", t1:'Sénégal',      t2:'Mauritanie',    flags:['sn','mr'],time:'16:00',day:'MAR.',r:'afrique'},
+  {id:'m3', comp:"AFCON Qualif.", t1:'Burkina Faso', t2:'Guinée',        flags:['bf','gn'],time:'16:00',day:'MAR.',r:'afrique'},
+  {id:'m4', comp:"AFCON Qualif.", t1:'Madagascar',   t2:'Tanzanie',      flags:['mg','tz'],time:'13:00',day:'MAR.',r:'afrique'},
+  {id:'m5', comp:"AFCON Qualif.", t1:'Éthiopie',     t2:'Sénégal',       flags:['et','sn'],time:'13:00',day:'MAR.',r:'afrique'},
+  {id:'m6', comp:"AFCON Qualif.", t1:'Zambie',       t2:'Togo',          flags:['zm','tg'],time:'16:00',day:'MAR.',r:'afrique'},
+  {id:'m7', comp:'Premier League',t1:'Arsenal',      t2:'Chelsea',       lids:[42,49],    time:'15:30',day:'SAM.',r:'europe'},
+  {id:'m8', comp:'Premier League',t1:'Man City',     t2:'Liverpool',     lids:[50,40],    time:'17:30',day:'SAM.',r:'europe'},
+  {id:'m9', comp:'Ligue 1',       t1:'PSG',          t2:'Lyon',          lids:[85,80],    time:'21:00',day:'DIM.',r:'europe'},
+  {id:'m10',comp:'Bundesliga',    t1:'Bayern',       t2:'Dortmund',      lids:[157,165],  time:'18:30',day:'SAM.',r:'europe'},
+  {id:'m11',comp:'UCL',           t1:'Real Madrid',  t2:'Man City',      lids:[541,50],   time:'21:00',day:'MER.',r:'europe'},
+  {id:'m12',comp:'CAF CL',        t1:'TP Mazembe',   t2:'Espérance',     flags:['cd','tn'],time:'19:00',day:'VEN.',r:'afrique'},
+];
+const HERO_MATCHES=[
+  {t1:'Arménie',   f1:'am', t2:'Monténégro',f2:'me', comp:'UEFA Nations League',time:'16:00',tip:'Plus de 3,5 buts',odd:'4.00',prob:'34%'},
+  {t1:'Roumanie',  f1:'ro', t2:'Bosnie',    f2:'ba', comp:'UEFA Nations League',time:'18:45',tip:'Plus de 3,5 buts',odd:'3.50',prob:'34%'},
+  {t1:'Türkiye',   f1:'tr', t2:'Italie',    f2:'it', comp:'UEFA Nations League',time:'18:45',tip:'Plus de 3,5 buts',odd:'2.75',prob:'39%'},
+  {t1:'Necaxa',    f1:'mx', t2:'Club América',f2:'mx',comp:'Liga MX',          time:'03:10',tip:'Plus de 3,5 buts',odd:'2.62',prob:'42%'},
+];
+const ODDS={m1:1.85,m2:1.60,m3:2.10,m4:2.40,m5:1.50,m6:2.75,m7:2.20,m8:2.50,m9:1.75,m10:1.90,m11:3.10,m12:2.30};
+const TIPS={m1:'Victoire domicile',m2:'1X2 Sénégal',m3:'Plus de 2.5 buts',m4:'Match nul',m5:'Double chance',m6:'Victoire Zambie',m7:'Plus de 2.5 buts',m8:'Victoire Man City',m9:'Victoire PSG',m10:'Victoire Bayern',m11:'Les 2 équipes marquent',m12:'1 ou N'};
+
+const st={step:0,profile:null,club:null,leagues:[],matches:[],stake:1000,plan:'month',method:'wave'};
+let filter='all';
+
+// ── BUILD HERO ROWS ──
+function buildHero(){
+  document.getElementById('hero-rows').innerHTML=HERO_MATCHES.map(m=>`
+    <div class="hmrow">
+      <div class="hmtime"><span style="font-size:9px;color:var(--subtle);text-transform:uppercase;letter-spacing:.04em">${m.comp.split(' ')[0]}</span>${m.time}</div>
+      <div>
+        <div class="hmcomp">${m.comp}</div>
+        <div class="hm-teams">
+          <div class="hm-team">${makeFlagImg(m.f1)} ${m.t1}</div>
+          <div class="hm-team">${makeFlagImg(m.f2)} ${m.t2}</div>
+        </div>
+        <div class="hmtip">${m.tip}</div>
+      </div>
+      <div class="hmodd"><span class="hmodd-val">${m.odd}</span><span class="hmodd-prob">${m.prob}</span></div>
+    </div>`).join('');
+}
+
+// ── RENDER CLUBS ──
+function renderClubs(list){
+  document.getElementById('clubs-grid').innerHTML=list.map(c=>`
+    <div class="citem${st.club===c.id?' sel':''}" data-id="${c.id}">
+      <div class="clogo-wrap">
+        ${c.lid
+          ? `<img src="${TEAM_CDN(c.lid)}" alt="${c.init}" onerror="imgFb(this,'${c.init}','${c.bg}','${c.fg}')">`
+          : `<div class="logo-fb" style="background:${c.bg};color:${c.fg}">${c.init}</div>`}
+      </div>
+      <div class="cname">${c.name}</div>
+    </div>`).join('');
+  document.getElementById('clubs-grid').querySelectorAll('.citem').forEach(el=>{
+    el.addEventListener('click',()=>{
+      st.club=st.club===el.dataset.id?null:el.dataset.id;
+      renderClubs(list);refreshCTA();
+    });
+  });
+}
+
+// ── RENDER LEAGUES ──
+function renderLeagues(){
+  document.getElementById('leagues-list').innerHTML=LEAGUES.map(l=>`
+    <div class="litem${st.leagues.includes(l.id)?' sel':''}" data-id="${l.id}">
+      <div class="lic-wrap">
+        ${l.lid
+          ? `<img src="${LEAGUE_CDN(l.lid)}" alt="${l.init}" onerror="this.outerHTML='<span class=\\'lic-fb\\'>${l.init}</span>'">`
+          : `<span class="lic-fb">${l.init}</span>`}
+      </div>
+      <span class="lname">${l.name}</span>
+      <div class="lchk">${st.leagues.includes(l.id)?'✓':''}</div>
+    </div>`).join('');
+  document.getElementById('leagues-list').querySelectorAll('.litem').forEach(el=>{
+    el.addEventListener('click',()=>{
+      const id=el.dataset.id;
+      st.leagues.includes(id)?st.leagues.splice(st.leagues.indexOf(id),1):st.leagues.push(id);
+      renderLeagues();refreshCTA();
+    });
+  });
+}
+
+// ── RENDER MATCHES ──
+function teamVisual(m,idx){
+  const name=idx===0?m.t1:m.t2;
+  if(m.flags){
+    const cc=m.flags[idx];
+    return `<div class="m-team-row">${makeFlagImg(cc)}<span class="m-tname">${name}</span></div>`;
+  }
+  if(m.lids){
+    const lid=m.lids[idx];
+    return `<div class="m-team-row"><img src="${TEAM_CDN(lid)}" alt="${name}" onerror="this.outerHTML='<div class=\\'tlogo-fb\\'>${name.slice(0,3).toUpperCase()}</div>'" style="width:16px;height:16px;object-fit:contain;border-radius:2px;flex-shrink:0"><span class="m-tname">${name}</span></div>`;
+  }
+  return `<div class="m-team-row"><span class="m-tname">${name}</span></div>`;
+}
+function renderMatches(){
+  const list=filter==='all'?MATCHES:MATCHES.filter(m=>m.r===filter);
+  document.getElementById('matches-list').innerHTML=list.map(m=>{
+    const sel=st.matches.includes(m.id);
+    const dis=!sel&&st.matches.length>=5;
+    return`<div class="mitem${sel?' sel':''}${dis?' dis':''}" data-id="${m.id}">
+      <div class="mtime2"><span class="mday">${m.day}</span><span class="mhour">${m.time}</span></div>
+      <div><div class="mcomp2">${m.comp}</div><div class="m-teams-col">${teamVisual(m,0)}${teamVisual(m,1)}</div></div>
+      <div class="mchk">${sel?'✓':''}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('matches-list').querySelectorAll('.mitem').forEach(el=>{
+    el.addEventListener('click',()=>{
+      if(el.classList.contains('dis'))return;
+      const id=el.dataset.id;
+      if(st.matches.includes(id))st.matches.splice(st.matches.indexOf(id),1);
+      else if(st.matches.length<5)st.matches.push(id);
+      document.getElementById('sel-cnt').textContent=st.matches.length;
+      renderMatches();refreshCTA();
+    });
+  });
+}
+
+// ── COUPON (blurred) ──
+function teamVisualCoupon(m,idx){
+  const name=idx===0?m.t1:m.t2;
+  if(m.flags){
+    const cc=m.flags[idx];
+    return `<div class="crow-team">${makeFlagImg(cc)}<span class="crow-tname">${name}</span></div>`;
+  }
+  if(m.lids){
+    const lid=m.lids[idx];
+    return `<div class="crow-team"><img src="${TEAM_CDN(lid)}" alt="${name}" onerror="this.outerHTML='<div class=\\'tlogo-fb\\'>${name.slice(0,3).toUpperCase()}</div>'" style="width:14px;height:14px;object-fit:contain;border-radius:2px;flex-shrink:0"><span class="crow-tname">${name}</span></div>`;
+  }
+  return `<div class="crow-team"><span class="crow-tname">${name}</span></div>`;
+}
+
+// ── ORACLE ──
+function startOracle(){
+  document.getElementById('ora-load').style.display='flex';
+  document.getElementById('ora-result').style.display='none';
+  const msgs=['Chargement des données de forme…','Analyse H2H & statistiques…','Calcul des probabilités IA…','Génération du combiné…'];
+  let i=0;
+  const iv=setInterval(()=>{
+    i++;
+    if(i<msgs.length)document.getElementById('ora-detail').textContent=msgs[i];
+    else{
+      clearInterval(iv);
+      document.getElementById('ora-load').style.display='none';
+      document.getElementById('ora-result').style.display='block';
+      buildCoupon();updateGain();refreshCTA();
+    }
+  },900);
+}
+function buildCoupon(){
+  const ids=st.matches.length?st.matches:['m2','m4','m5','m6'];
+  const sel=MATCHES.filter(m=>ids.includes(m.id));
+  const pN=st.profile||'équilibré';
+  document.getElementById('coupon-profile').textContent='PROFIL '+pN.toUpperCase();
+  document.getElementById('ora-prof-display').textContent=pN.charAt(0).toUpperCase()+pN.slice(1);
+  document.getElementById('coupon-rows').innerHTML=sel.map(m=>`
+    <div class="crow">
+      <div class="crow-top"><span class="crow-comp">${m.comp}</span><span class="crow-odd">${(ODDS[m.id]||2).toFixed(2)}</span></div>
+      <div class="crow-teams">${teamVisualCoupon(m,0)}${teamVisualCoupon(m,1)}</div>
+      <div class="crow-tip">${TIPS[m.id]||'Victoire domicile'}</div>
+    </div>`).join('');
+  const cote=ids.reduce((a,id)=>a*(ODDS[id]||2),1);
+  document.getElementById('coupon-cote').textContent=cote.toFixed(2);
+  const names=sel.slice(0,2).map(m=>m.t1).join(', ');
+  const extra=sel.length>2?` + ${sel.length-2} autres`:'';
+  document.getElementById('ora-sub').textContent=`Analyse terminée : ${names}${extra}`;
+}
+function updateGain(){
+  const ids=st.matches.length?st.matches:['m2','m4','m5','m6'];
+  const cote=ids.reduce((a,id)=>a*(ODDS[id]||2),1);
+  const el=document.getElementById('gain-val');
+  if(el)el.textContent=Math.round(st.stake*cote).toLocaleString('fr-FR')+' FCFA';
+}
+
+// ── NAV ──
+function goTo(n){
+  document.getElementById(`step-${st.step}`).classList.remove('on');
+  st.step=n;
+  document.getElementById(`step-${n}`).classList.add('on');
+  window.scrollTo({top:0,behavior:'instant'});
+  updateBar();refreshCTA();
+  if(n===2)renderClubs(CLUBS);
+  if(n===3)renderLeagues();
+  if(n===4)renderMatches();
+  if(n===5)startOracle();
+  if(n===7)buildTags();
+}
+function skip(){goTo(3)}
+function updateBar(){
+  const tb=document.getElementById('top-bar');
+  if(st.step===0){tb.classList.remove('vis');return;}
+  tb.classList.add('vis');
+  document.getElementById('step-lbl').textContent=`${st.step} / 7`;
+  document.getElementById('prog').style.width=(st.step/7*100)+'%';
+  document.getElementById('btn-skip').style.display=st.step===2?'block':'none';
+}
+function buildTags(){
+  const items=[];
+  if(st.club){const c=CLUBS.find(x=>x.id===st.club);if(c)items.push(c.name);}
+  if(st.profile)items.push('Profil '+st.profile.charAt(0).toUpperCase()+st.profile.slice(1));
+  if(st.leagues.length)items.push(st.leagues.length+' ligue'+(st.leagues.length>1?'s':''));
+  if(st.matches.length)items.push(st.matches.length+' match'+(st.matches.length>1?'s ciblés':' ciblé'));
+  document.getElementById('tags-row').innerHTML=items.map(t=>`<span class="tag">${t}</span>`).join('');
+}
+
+// ── CTA ──
+document.getElementById('btn-cta').addEventListener('click',()=>{
+  const s=st.step;
+  if(s===0){goTo(1);return;}
+  if(s===1){if(!st.profile)return;goTo(2);return;}
+  if(s===2){goTo(3);return;}
+  if(s===3){if(!st.leagues.length)return;goTo(4);return;}
+  if(s===4){if(!st.matches.length)return;goTo(5);return;}
+  if(s===5){if(document.getElementById('ora-result').style.display==='none')return;goTo(6);return;}
+  if(s===6){const em=document.getElementById('f-email').value,pw=document.getElementById('f-pwd').value;if(!em||pw.length<8)return;goTo(7);return;}
+  if(s===7){window.location.href='/checkout.html?plan='+st.plan+'&method='+st.method;}
+});
+document.getElementById('btn-back').addEventListener('click',()=>{st.step<=1?goTo(0):goTo(st.step-1)});
+document.getElementById('club-input').addEventListener('input',e=>{
+  const q=e.target.value.toLowerCase().trim();
+  const f=q?CLUBS.filter(c=>c.name.toLowerCase().includes(q)):CLUBS;
+  document.getElementById('clubs-sec-lbl').textContent=q?`Résultats (${f.length})`:'Populaires';
+  renderClubs(f);
+});
+document.getElementById('filter-row').addEventListener('click',e=>{
+  const p=e.target.closest('.fpill');if(!p)return;
+  filter=p.dataset.f;
+  document.querySelectorAll('.fpill').forEach(x=>x.classList.toggle('on',x===p));
+  renderMatches();
+});
+document.getElementById('profile-cards').addEventListener('click',e=>{
+  const c=e.target.closest('.pcard');if(!c)return;
+  document.querySelectorAll('.pcard').forEach(x=>x.classList.remove('sel'));
+  c.classList.add('sel');st.profile=c.dataset.v;refreshCTA();
+});
+document.getElementById('stake-chips').addEventListener('click',e=>{
+  const c=e.target.closest('.schip');if(!c)return;
+  document.querySelectorAll('.schip').forEach(x=>x.classList.remove('on'));
+  c.classList.add('on');st.stake=parseInt(c.dataset.s);updateGain();
+});
+document.querySelector('.plan-grid').addEventListener('click',e=>{
+  const p=e.target.closest('.plan');if(!p)return;
+  document.querySelectorAll('.plan').forEach(x=>x.classList.remove('sel'));
+  p.classList.add('sel');st.plan=p.dataset.p;refreshCTA();
+});
+document.querySelector('.pay-grid').addEventListener('click',e=>{
+  const p=e.target.closest('.pmethod');if(!p)return;
+  document.querySelectorAll('.pmethod').forEach(x=>x.classList.remove('sel'));
+  p.classList.add('sel');st.method=p.dataset.m;refreshCTA();
+});
+
+function refreshCTA(){
+  const btn=document.getElementById('btn-cta');
+  const s=st.step;
+  btn.className='btn-cta';
+  if(s===0){btn.textContent="Voir ce que l'Oracle prédit pour moi →";btn.disabled=false;return;}
+  if(s===1){btn.textContent='Continuer';btn.disabled=!st.profile;return;}
+  if(s===2){btn.textContent='Continuer';btn.disabled=false;return;}
+  if(s===3){const n=st.leagues.length;btn.textContent=n?`Continuer avec ${n} ligue${n>1?'s':''}`:'Sélectionne une ligue';btn.disabled=!n;return;}
+  if(s===4){const n=st.matches.length;btn.textContent=n?`Analyser ${n} match${n>1?'s':''}`:'Sélectionne des matchs';btn.disabled=!n;return;}
+  if(s===5){const done=document.getElementById('ora-result').style.display!=='none';btn.textContent=done?'Débloquer le coupon':'Analyse en cours…';btn.disabled=!done;if(done)btn.classList.add('gold');return;}
+  if(s===6){btn.textContent='Créer mes accès';btn.disabled=false;return;}
+  if(s===7){
+    btn.classList.add('gold');
+    const prices={week:'3 500',month:'7 000'};
+    const methods={wave:'Wave',orange:'Orange Money',mtn:'MTN MoMo',moov:'Moov Money'};
+    btn.textContent=`Payer ${prices[st.plan]} FCFA avec ${methods[st.method]} 🔒`;
+    btn.disabled=false;
+  }
+}
+
+buildHero();
+updateBar();
+</script>

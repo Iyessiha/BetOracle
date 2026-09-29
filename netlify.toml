@@ -20,6 +20,11 @@
     Cache-Control = "public, max-age=3600"
 
 [[redirects]]
+  from = "/onboarding"
+  to = "/onboarding.html"
+  status = 200
+
+[[redirects]]
   from = "/signup"
   to = "/signup.html"
   status = 200
