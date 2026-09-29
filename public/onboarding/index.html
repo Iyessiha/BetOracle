@@ -179,16 +179,24 @@ img{max-width:100%}
 /* PAYMENT */
 .tags-row{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:22px}
 .tag{padding:4px 10px;border-radius:12px;background:var(--surf);border:1px solid var(--bd);font-size:11px;color:var(--muted)}
-.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px}
-.plan{background:var(--surf);border:2px solid var(--bd);border-radius:var(--r);padding:16px;cursor:pointer;position:relative;transition:all .15s}
+.plan-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.plan{background:var(--surf);border:2px solid var(--bd);border-radius:var(--r);padding:14px;cursor:pointer;position:relative;transition:all .15s}
 .plan:hover{background:var(--surf2)}
-.plan.sel{border-color:var(--gold);background:var(--gold-dim)}
+.plan.sel-acc{border-color:var(--acc);background:var(--acc-dim)}
+.plan.sel-teal{border-color:#14b8a6;background:rgba(20,184,166,.1)}
+.plan.sel-gold{border-color:var(--gold);background:var(--gold-dim)}
+.plan.sel-violet{border-color:#8b5cf6;background:rgba(139,92,246,.1)}
 .plan-best{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--gold);color:#100e00;font-size:9px;font-weight:900;letter-spacing:.09em;text-transform:uppercase;padding:3px 10px;border-radius:10px;white-space:nowrap}
-.plan-period{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px}
-.plan-old{font-size:12px;color:var(--subtle);text-decoration:line-through;font-variant-numeric:tabular-nums}
+.plan-tier{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px}
 .plan-price{font-family:'Space Mono',monospace;font-size:22px;font-weight:700;line-height:1.2;font-variant-numeric:tabular-nums}
 .plan-unit{font-size:10px;color:var(--muted)}
-.plan-disc{font-size:11px;font-weight:700;color:var(--acc);margin-top:4px}
+.plan-vip{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between}
+.t-muted{color:var(--muted)}.t-acc{color:var(--acc)}.t-teal{color:#14b8a6}.t-gold{color:var(--gold)}.t-violet{color:#8b5cf6}
+.bill-toggle{display:flex;gap:6px;margin-bottom:12px}
+.btog{flex:1;padding:8px;border-radius:var(--rs);border:1px solid var(--bd);background:var(--surf);color:var(--muted);font-size:12px;font-weight:600;transition:all .15s}
+.btog.on{border-color:var(--acc);background:var(--acc-dim);color:var(--acc)}
+.save-chip{display:inline-block;background:var(--acc-dim);color:var(--acc);font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:3px}
+#pay-section.hidden{display:none}
 .pay-lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .pay-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
 .pmethod{background:var(--surf);border:2px solid var(--bd);border-radius:var(--rs);padding:9px 5px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px;transition:all .15s}
@@ -340,29 +348,51 @@ img{max-width:100%}
   <div class="eyebrow">Débloque l'Oracle</div>
   <h2 class="step-h1">Ton Oracle est prêt.</h2>
   <div class="tags-row" id="tags-row"></div>
+  <div class="bill-toggle" id="bill-toggle">
+    <button class="btog on" data-b="week">Semaine</button>
+    <button class="btog" data-b="month">Mois <span class="save-chip">−15%</span></button>
+  </div>
   <div class="plan-grid">
-    <div class="plan" data-p="week">
-      <div class="plan-period">Test rapide</div>
-      <div class="plan-old">7 000 FCFA</div>
-      <div class="plan-price">3 500</div>
-      <div class="plan-unit">FCFA / semaine</div>
-      <div class="plan-disc">−56%</div>
+    <div class="plan" data-p="free">
+      <div class="plan-tier t-muted">Free</div>
+      <div class="plan-price t-acc">0</div>
+      <div class="plan-unit">Toujours gratuit</div>
     </div>
-    <div class="plan sel" data-p="month">
-      <div class="plan-best">Meilleur prix</div>
-      <div class="plan-period">Accès complet</div>
-      <div class="plan-old">24 000 FCFA</div>
-      <div class="plan-price">7 000</div>
-      <div class="plan-unit">FCFA / mois</div>
-      <div class="plan-disc">−72%</div>
+    <div class="plan" data-p="starter">
+      <div class="plan-tier t-teal">Starter</div>
+      <div class="plan-price t-teal" id="s7-sp">750</div>
+      <div class="plan-unit" id="s7-sper">FCFA / semaine</div>
+    </div>
+    <div class="plan sel-gold" data-p="pro">
+      <div class="plan-best">POPULAIRE</div>
+      <div class="plan-tier t-gold">Pro</div>
+      <div class="plan-price t-gold" id="s7-pp">1 500</div>
+      <div class="plan-unit" id="s7-pper">FCFA / semaine</div>
+    </div>
+    <div class="plan" data-p="elite">
+      <div class="plan-tier t-violet">Elite</div>
+      <div class="plan-price t-violet" id="s7-ep">3 000</div>
+      <div class="plan-unit" id="s7-eper">FCFA / semaine</div>
+    </div>
+    <div class="plan plan-vip" data-p="vip">
+      <div>
+        <div class="plan-tier t-violet">VIP</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px">300 crédits · Coaching · Hotline WhatsApp</div>
+      </div>
+      <div style="text-align:right;flex-shrink:0;margin-left:10px">
+        <div class="plan-price t-violet" style="font-size:18px">25 000</div>
+        <div class="plan-unit">FCFA / mois</div>
+      </div>
     </div>
   </div>
-  <div class="pay-lbl">Moyen de paiement</div>
-  <div class="pay-grid">
-    <div class="pmethod sel" data-m="wave"><div class="pmic">🌊</div><div class="pmname">Wave</div></div>
-    <div class="pmethod" data-m="orange"><div class="pmic">🟠</div><div class="pmname">Orange Money</div></div>
-    <div class="pmethod" data-m="mtn"><div class="pmic">🟡</div><div class="pmname">MTN MoMo</div></div>
-    <div class="pmethod" data-m="moov"><div class="pmic">🔵</div><div class="pmname">Moov Money</div></div>
+  <div id="pay-section">
+    <div class="pay-lbl">Moyen de paiement</div>
+    <div class="pay-grid">
+      <div class="pmethod sel" data-m="wave"><div class="pmic">🌊</div><div class="pmname">Wave</div></div>
+      <div class="pmethod" data-m="orange"><div class="pmic">🟠</div><div class="pmname">Orange Money</div></div>
+      <div class="pmethod" data-m="mtn"><div class="pmic">🟡</div><div class="pmname">MTN MoMo</div></div>
+      <div class="pmethod" data-m="moov"><div class="pmic">🔵</div><div class="pmname">Moov Money</div></div>
+    </div>
   </div>
   <p style="font-size:11px;color:var(--muted);text-align:center;line-height:1.7">Accès immédiat · Sans engagement · Aucun prélèvement automatique</p>
 </div>
@@ -451,7 +481,7 @@ const HERO_MATCHES=[
 const ODDS={m1:1.85,m2:1.60,m3:2.10,m4:2.40,m5:1.50,m6:2.75,m7:2.20,m8:2.50,m9:1.75,m10:1.90,m11:3.10,m12:2.30};
 const TIPS={m1:'Victoire domicile',m2:'1X2 Sénégal',m3:'Plus de 2.5 buts',m4:'Match nul',m5:'Double chance',m6:'Victoire Zambie',m7:'Plus de 2.5 buts',m8:'Victoire Man City',m9:'Victoire PSG',m10:'Victoire Bayern',m11:'Les 2 équipes marquent',m12:'1 ou N'};
 
-const st={step:0,profile:null,club:null,leagues:[],matches:[],stake:1000,plan:'month',method:'wave'};
+const st={step:0,profile:null,club:null,leagues:[],matches:[],stake:1000,plan:'pro',billing:'week',method:'wave'};
 let filter='all';
 
 // ── BUILD HERO ROWS ──
@@ -644,7 +674,10 @@ document.getElementById('btn-cta').addEventListener('click',()=>{
   if(s===4){if(!st.matches.length)return;goTo(5);return;}
   if(s===5){if(document.getElementById('ora-result').style.display==='none')return;goTo(6);return;}
   if(s===6){const em=document.getElementById('f-email').value,pw=document.getElementById('f-pwd').value;if(!em||pw.length<8)return;goTo(7);return;}
-  if(s===7){window.location.href='/checkout.html?plan='+st.plan+'&method='+st.method;}
+  if(s===7){
+    if(st.plan==='free'){window.location.href='/signup';return;}
+    window.location.href='/checkout.html?plan='+st.plan+'&billing='+st.billing+'&method='+st.method;
+  }
 });
 document.getElementById('btn-back').addEventListener('click',()=>{st.step<=1?goTo(0):goTo(st.step-1)});
 document.getElementById('club-input').addEventListener('input',e=>{
@@ -669,10 +702,28 @@ document.getElementById('stake-chips').addEventListener('click',e=>{
   document.querySelectorAll('.schip').forEach(x=>x.classList.remove('on'));
   c.classList.add('on');st.stake=parseInt(c.dataset.s);updateGain();
 });
+const TIER_SEL={free:'sel-acc',starter:'sel-teal',pro:'sel-gold',elite:'sel-violet',vip:'sel-violet'};
 document.querySelector('.plan-grid').addEventListener('click',e=>{
-  const p=e.target.closest('.plan');if(!p)return;
-  document.querySelectorAll('.plan').forEach(x=>x.classList.remove('sel'));
-  p.classList.add('sel');st.plan=p.dataset.p;refreshCTA();
+  const p=e.target.closest('[data-p]');if(!p)return;
+  document.querySelectorAll('[data-p]').forEach(x=>x.classList.remove('sel-acc','sel-teal','sel-gold','sel-violet'));
+  p.classList.add(TIER_SEL[p.dataset.p]||'sel-acc');
+  st.plan=p.dataset.p;
+  document.getElementById('pay-section').classList.toggle('hidden',st.plan==='free');
+  refreshCTA();
+});
+document.getElementById('bill-toggle').addEventListener('click',e=>{
+  const b=e.target.closest('.btog');if(!b)return;
+  document.querySelectorAll('.btog').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on');st.billing=b.dataset.b;
+  const isW=st.billing==='week';
+  const per=isW?'FCFA / semaine':'FCFA / mois';
+  document.getElementById('s7-sp').textContent=isW?'750':'2 500';
+  document.getElementById('s7-sper').textContent=per;
+  document.getElementById('s7-pp').textContent=isW?'1 500':'5 000';
+  document.getElementById('s7-pper').textContent=per;
+  document.getElementById('s7-ep').textContent=isW?'3 000':'10 000';
+  document.getElementById('s7-eper').textContent=per;
+  refreshCTA();
 });
 document.querySelector('.pay-grid').addEventListener('click',e=>{
   const p=e.target.closest('.pmethod');if(!p)return;
@@ -692,10 +743,12 @@ function refreshCTA(){
   if(s===5){const done=document.getElementById('ora-result').style.display!=='none';btn.textContent=done?'Débloquer le coupon':'Analyse en cours…';btn.disabled=!done;if(done)btn.classList.add('gold');return;}
   if(s===6){btn.textContent='Créer mes accès';btn.disabled=false;return;}
   if(s===7){
+    if(st.plan==='free'){btn.textContent='Commencer gratuitement →';btn.classList.remove('gold');btn.disabled=false;return;}
     btn.classList.add('gold');
-    const prices={week:'3 500',month:'7 000'};
+    const PRICES={starter:{week:'750',month:'2 500'},pro:{week:'1 500',month:'5 000'},elite:{week:'3 000',month:'10 000'},vip:{week:'25 000',month:'25 000'}};
     const methods={wave:'Wave',orange:'Orange Money',mtn:'MTN MoMo',moov:'Moov Money'};
-    btn.textContent=`Payer ${prices[st.plan]} FCFA avec ${methods[st.method]} 🔒`;
+    const price=(PRICES[st.plan]||{})[st.billing]||'25 000';
+    btn.textContent=`Payer ${price} FCFA avec ${methods[st.method]} 🔒`;
     btn.disabled=false;
   }
 }
