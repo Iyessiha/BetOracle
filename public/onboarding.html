@@ -234,17 +234,17 @@ img{max-width:100%}
     <h1 class="hero-h1">L'Oracle qui prédit tes matchs.</h1>
     <div class="live-pill"><span class="dot"></span>82 341 parieurs actifs · CI/BJ/SN/BF</div>
   </div>
-  <p style="font-size:12px;color:var(--muted);margin-bottom:8px">Hier soir (LUN. 29 SEPT.), l'Oracle a validé :</p>
+  <p id="hero-date-lbl" style="font-size:12px;color:var(--muted);margin-bottom:8px">Hier soir, l'Oracle a validé :</p>
   <div class="combo-card">
     <div class="combo-hd">
-      <span class="combo-badge">Équilibré</span>
+      <span class="combo-badge" id="hero-tier">Équilibré</span>
       <span class="combo-valid">
         <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6.5" fill="currentColor" opacity=".15"/><path d="M3.5 6.5L5.5 8.5L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        VALIDÉ
+        <span id="hero-badge">VALIDÉ</span>
       </span>
     </div>
     <div id="hero-rows"></div>
-    <div class="combo-ft"><span class="combo-ft-lbl">Cote totale</span><span class="combo-cote">100.87</span></div>
+    <div class="combo-ft"><span class="combo-ft-lbl">Cote totale</span><span class="combo-cote" id="hero-total">—</span></div>
   </div>
 </div>
 
@@ -472,11 +472,12 @@ const MATCHES=[
   {id:'m11',comp:'UCL',           t1:'Real Madrid',  t2:'Man City',      lids:[541,50],   time:'21:00',day:'MER.',r:'europe'},
   {id:'m12',comp:'CAF CL',        t1:'TP Mazembe',   t2:'Espérance',     flags:['cd','tn'],time:'19:00',day:'VEN.',r:'afrique'},
 ];
-const HERO_MATCHES=[
-  {t1:'Arménie',   f1:'am', t2:'Monténégro',f2:'me', comp:'UEFA Nations League',time:'16:00',tip:'Plus de 3,5 buts',odd:'4.00',prob:'34%'},
-  {t1:'Roumanie',  f1:'ro', t2:'Bosnie',    f2:'ba', comp:'UEFA Nations League',time:'18:45',tip:'Plus de 3,5 buts',odd:'3.50',prob:'34%'},
-  {t1:'Türkiye',   f1:'tr', t2:'Italie',    f2:'it', comp:'UEFA Nations League',time:'18:45',tip:'Plus de 3,5 buts',odd:'2.75',prob:'39%'},
-  {t1:'Necaxa',    f1:'mx', t2:'Club América',f2:'mx',comp:'Liga MX',          time:'03:10',tip:'Plus de 3,5 buts',odd:'2.62',prob:'42%'},
+const REST_URL='https://ovulcqsrzkwlnhnyllij.supabase.co';
+const REST_AK='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im92dWxjcXNyemt3bG5obnlsbGlqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODEzNDc1NzgsImV4cCI6MjA5NjkyMzU3OH0.eJvZE2tgYB42CHYyosZGp8YiMZw4YJRJbdR3d_mmvLw';
+const HERO_FALLBACK=[
+  {t1:'Liverpool',  f1:'gb', t2:'Arsenal',    f2:'gb', comp:'Premier League',   time:'17:30',tip:'Victoire Liverpool',    odd:'1.85'},
+  {t1:'Sénégal',    f1:'sn', t2:'Côte d\'Ivoire',f2:'ci',comp:'Qualif. AFCON', time:'17:00',tip:'Victoire Sénégal',      odd:'2.10'},
+  {t1:'Real Madrid',f1:'es', t2:'Atlético',   f2:'es', comp:'La Liga',         time:'21:00',tip:'Les 2 équipes marquent',odd:'1.80'},
 ];
 const ODDS={m1:1.85,m2:1.60,m3:2.10,m4:2.40,m5:1.50,m6:2.75,m7:2.20,m8:2.50,m9:1.75,m10:1.90,m11:3.10,m12:2.30};
 const TIPS={m1:'Victoire domicile',m2:'1X2 Sénégal',m3:'Plus de 2.5 buts',m4:'Match nul',m5:'Double chance',m6:'Victoire Zambie',m7:'Plus de 2.5 buts',m8:'Victoire Man City',m9:'Victoire PSG',m10:'Victoire Bayern',m11:'Les 2 équipes marquent',m12:'1 ou N'};
@@ -485,20 +486,62 @@ const st={step:0,profile:null,club:null,leagues:[],matches:[],stake:1000,plan:'p
 let filter='all';
 
 // ── BUILD HERO ROWS ──
-function buildHero(){
-  document.getElementById('hero-rows').innerHTML=HERO_MATCHES.map(m=>`
+function heroDateLabel(){
+  const d=new Date();d.setDate(d.getDate()-1);
+  const DAYS=['DIM.','LUN.','MAR.','MER.','JEU.','VEN.','SAM.'];
+  const MONTHS=['JAN.','FÉV.','MARS','AVR.','MAI','JUIN','JUIL.','AOÛT','SEPT.','OCT.','NOV.','DÉC.'];
+  return `${DAYS[d.getDay()]} ${d.getDate()} ${MONTHS[d.getMonth()]}`;
+}
+
+function renderHeroRows(matches){
+  document.getElementById('hero-rows').innerHTML=matches.map(m=>`
     <div class="hmrow">
-      <div class="hmtime"><span style="font-size:9px;color:var(--subtle);text-transform:uppercase;letter-spacing:.04em">${m.comp.split(' ')[0]}</span>${m.time}</div>
+      <div class="hmtime"><span style="font-size:9px;color:var(--subtle);text-transform:uppercase;letter-spacing:.04em">${(m.comp||'').split(' ')[0]}</span>${m.time||''}</div>
       <div>
-        <div class="hmcomp">${m.comp}</div>
+        <div class="hmcomp">${m.comp||''}</div>
         <div class="hm-teams">
-          <div class="hm-team">${makeFlagImg(m.f1)} ${m.t1}</div>
-          <div class="hm-team">${makeFlagImg(m.f2)} ${m.t2}</div>
+          <div class="hm-team">${m.f1?makeFlagImg(m.f1):''} ${m.t1||''}</div>
+          <div class="hm-team">${m.f2?makeFlagImg(m.f2):''} ${m.t2||''}</div>
         </div>
-        <div class="hmtip">${m.tip}</div>
+        <div class="hmtip">${m.tip||''}</div>
       </div>
-      <div class="hmodd"><span class="hmodd-val">${m.odd}</span><span class="hmodd-prob">${m.prob}</span></div>
+      <div class="hmodd"><span class="hmodd-val">${m.odd||''}</span>${m.prob?`<span class="hmodd-prob">${m.prob}</span>`:''}</div>
     </div>`).join('');
+}
+
+async function buildHero(){
+  const TIER_LABELS={safe:'Sûr',balanced:'Équilibré',bold:'Audacieux'};
+  const RESULT_LABELS={win:'✅ GAGNÉ',partial:'⚡ PARTIEL',loss:'❌ PERDU'};
+  const dateStr=heroDateLabel();
+  document.getElementById('hero-date-lbl').textContent=`Hier soir (${dateStr}), l'Oracle a validé :`;
+  try{
+    const res=await fetch(
+      `${REST_URL}/rest/v1/coupons?status=eq.published&result=in.(win,loss,partial)&order=match_date.desc&limit=1&select=tier,result,total_odds,selections`,
+      {headers:{apikey:REST_AK}}
+    );
+    const data=await res.json();
+    if(Array.isArray(data)&&data.length&&Array.isArray(data[0].selections)&&data[0].selections.length){
+      const c=data[0];
+      document.getElementById('hero-tier').textContent=TIER_LABELS[c.tier]||'Équilibré';
+      document.getElementById('hero-badge').textContent=RESULT_LABELS[c.result]||'VALIDÉ';
+      document.getElementById('hero-total').textContent=Number(c.total_odds||0).toFixed(2);
+      renderHeroRows(c.selections.slice(0,4).map(s=>({
+        t1:s.team_a||'?', f1:null,
+        t2:s.team_b||'?', f2:null,
+        comp:s.league||'',
+        time:(s.match_time||'').slice(0,5),
+        tip:s.pick||''  ,
+        odd:s.odds!=null?Number(s.odds).toFixed(2):''
+      })));
+      return;
+    }
+  }catch(e){/* fallback */}
+  const fallbackTotal=(1.85*2.10*1.80).toFixed(2);
+  document.getElementById('hero-tier').textContent='Équilibré';
+  document.getElementById('hero-badge').textContent='EXEMPLE';
+  document.getElementById('hero-badge').style.color='var(--muted)';
+  document.getElementById('hero-total').textContent=fallbackTotal;
+  renderHeroRows(HERO_FALLBACK);
 }
 
 // ── RENDER CLUBS ──
