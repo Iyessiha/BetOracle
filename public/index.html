@@ -448,7 +448,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
     <a href="#coupon" class="btn btn-outline btn-lg"><svg class="icn" style="width:16px;height:16px"><use href="#ic-ticket"/></svg> Coupon du jour</a>
   </div>
   <div class="hero-stats hero-anim" style="animation-delay:.4s">
-    <div class="stat-c"><div class="stat-v" id="stat-users">—</div><div class="stat-l">Utilisateurs</div></div>
+    <div class="stat-c"><div class="stat-v" id="stat-coupons">—</div><div class="stat-l">Coupons validés</div></div>
     <div class="stat-c"><div class="stat-v">55<span>+</span></div><div class="stat-l">Championnats</div></div>
     <div class="stat-c"><div class="stat-v" id="stat-wr">—<span>%</span></div><div class="stat-l">Win Rate</div></div>
     <div class="stat-c"><div class="stat-v">750<span>F</span></div><div class="stat-l">Dès / semaine</div></div>
@@ -904,7 +904,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
   <div class="wrap" style="text-align:center;position:relative;z-index:1">
     <div class="reveal"><div class="sec-eye" style="justify-content:center"><i class="ti ti-rocket"></i> Rejoindre</div></div>
     <h2 class="cta-big reveal rd1">PARIE<br><span style="color:var(--green)">AVEC</span><br><span style="color:var(--gold)">MÉTHODE</span></h2>
-    <p class="cta-sub reveal rd2">Rejoins déjà <strong id="stat-users-cta" style="color:var(--green)">—</strong> parieurs qui utilisent les données, pas l'instinct.<br>Commence gratuitement. Upgrade quand tu veux.</p>
+    <p class="cta-sub reveal rd2">Déjà <strong id="stat-coupons-cta" style="color:var(--green)">—</strong> coupons validés par nos membres. Commence gratuitement. Upgrade quand tu veux.</p>
     <div class="reveal rd3">
       <a href="/onboarding" id="signup" class="btn btn-green btn-lg" style="font-size:17px;padding:17px 40px">
         <svg class="icn" style="width:18px;height:18px"><use href="#ic-rocket"/></svg> Créer mon compte gratuitement
@@ -1096,6 +1096,7 @@ function testiGoTo(i) { testiIdx = i; testiRender() }
 // ─── DONNÉES DYNAMIQUES ────────────────────────────────────────────────────────
 async function loadPublicData() {
   try {
+    loadCouponCount()
     const [couponRes, statsRes] = await Promise.all([
       fetch(`${API}/public-data?type=coupon`).then(r => r.json()).catch(() => null),
       fetch(`${API}/public-data?type=stats`).then(r => r.json()).catch(() => null),
@@ -1187,13 +1188,27 @@ async function loadTrustHistory() {
 }
 
 function renderStats(data) {
-  const u = document.getElementById('stat-users')
   const w = document.getElementById('stat-wr')
-  if (u) animCount('stat-users', data.users || 0)
-  if (document.getElementById('stat-users-cta')) animCount('stat-users-cta', data.users || 0)
   if (w && data.win_rate) {
     document.getElementById('stat-wr').innerHTML = `${data.win_rate}<span>%</span>`
   }
+}
+
+async function loadCouponCount() {
+  try {
+    const res = await fetch(
+      `${REST_URL}/rest/v1/coupons?status=eq.published&select=id`,
+      { headers: { apikey: REST_AK, Prefer: 'count=exact' } }
+    )
+    const range = res.headers.get('Content-Range')
+    if (range) {
+      const total = parseInt(range.split('/')[1]) || 0
+      if (total > 0) {
+        animCount('stat-coupons', total)
+        animCount('stat-coupons-cta', total)
+      }
+    }
+  } catch(e) { console.error('[loadCouponCount]', e) }
 }
 
 function animCount(id, target) {
