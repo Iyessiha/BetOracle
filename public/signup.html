@@ -263,7 +263,7 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
       <div class="row">
         <div class="field">
           <label>Prénom</label>
-          <input type="text" id="prenom" placeholder="Ton prénom" autocomplete="given-name">
+          <input type="text" id="prenom" placeholder="Ton prénom" autocomplete="given-name" required>
         </div>
         <div class="field">
           <label>Nom</label>
@@ -438,7 +438,11 @@ async function checkEmailLive(){
       hint.style.color='var(--red)'
       document.getElementById('email').style.borderColor='rgba(239,68,68,.5)'
     }
-  }catch{hint.style.display='block'}
+  }catch{
+    hint.textContent='⚠ Vérification impossible, continue quand même.'
+    hint.style.display='block'
+    hint.style.color='var(--yw, #eab308)'
+  }
 }
 
 // Lire code parrainage + plan depuis URL
@@ -458,6 +462,7 @@ async function doSignup(){
   
   if(!email)return showMsg('Entre ton adresse email.')
   if(!email.includes('@'))return showMsg('Email invalide.')
+  if(!prenom)return showMsg('Ton prénom est requis pour personnaliser ton compte.')
   if(!pwd)return showMsg('Crée un mot de passe.')
   if(pwd.length<8)return showMsg('Mot de passe trop court (minimum 8 caractères).')
   if(!consent)return showMsg('Accepte les conditions pour continuer.')
@@ -495,7 +500,7 @@ async function doSignup(){
       sessionStorage.setItem('bp_token',d.access_token)
       const firstName=prenom||email.split('@')[0]
       sessionStorage.setItem('bp_prenom',firstName)
-      sessionStorage.setItem('bp_plan',d.effective_plan||'free')
+      // bp_plan : source unique dans localStorage — pas de duplication sessionStorage
     }
 
     if (window.fbq) fbq('track', 'CompleteRegistration', { content_name: 'signup', plan: selectedPlan })
@@ -505,7 +510,11 @@ async function doSignup(){
     const s=document.getElementById('success-screen')
     s.style.display='flex'
     const firstName=prenom||email.split('@')[0]
-    document.getElementById('success-msg').innerHTML=`Bienvenue <strong>${firstName}</strong> ! Ton compte gratuit est actif. Explore l'Oracle et passe à un plan payant quand tu veux.`
+    const _msgEl=document.getElementById('success-msg')
+    _msgEl.textContent=''
+    const _b=document.createElement('strong')
+    _b.textContent=firstName
+    _msgEl.append('Bienvenue ',_b,' ! Ton compte gratuit est actif. Explore l\'Oracle et passe à un plan payant quand tu veux.')
 
     // Si un plan payant a été choisi, on l'emmène directement continuer vers welcome
     // (le paiement se fait plus tard, après avoir vu la valeur de l'Oracle — cf. tunnel)
