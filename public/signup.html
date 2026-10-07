@@ -483,7 +483,8 @@ async function doSignup(){
         password:pwd,
         full_name:[prenom,nom].filter(Boolean).join(' ')||email.split('@')[0],
         ref_code:ref||null,
-        intended_plan:selectedPlan
+        intended_plan:selectedPlan,
+        marketing_consent:document.getElementById('consent-mkt').checked
       })
     })
     const d=await r.json()

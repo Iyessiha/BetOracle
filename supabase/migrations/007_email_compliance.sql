@@ -1,11 +1,20 @@
 -- 007 — Conformité emails : consentement marketing, désinscription, anti-doublon
 -- À appliquer dans le SQL Editor Supabase AVANT de brancher /api/send-email.
 
--- 1) Consentement marketing explicite (opt-in). Par défaut FALSE : les comptes existants
---    avaient une case pré-cochée, ce qui ne constitue pas un consentement valable.
+-- 1) Consentement marketing explicite (opt-in) : une case pré-cochée n'est pas un consentement valable.
 alter table public.profiles
   add column if not exists marketing_consent    boolean     not null default false,
   add column if not exists marketing_consent_at timestamptz;
+
+-- La colonne existe déjà (migration 006, défaut TRUE = case pré-cochée, donc sans valeur de consentement).
+-- Les nouveaux comptes doivent être à FALSE tant que l'utilisateur n'a pas coché la case.
+alter table public.profiles alter column marketing_consent set default false;
+
+-- DÉCISION À PRENDRE (non exécutée automatiquement) : les comptes existants ont marketing_consent = true
+-- sans consentement réel. Pour être en règle, les remettre à false et arrêter les relances en attente :
+--   update public.profiles set marketing_consent = false where marketing_consent_at is null;
+--   update public.marketing_sequences set status = 'skipped' where status = 'pending'
+--     and user_id in (select id from public.profiles where marketing_consent = false);
 
 -- 2) Liste de désinscription (emails promotionnels uniquement)
 create table if not exists public.email_suppressions (
