@@ -316,9 +316,15 @@ src="https://www.facebook.com/tr?id=1734737427724152&ev=PageView&noscript=1"
 
       <!-- Consent -->
       <div class="consent">
-        <input type="checkbox" id="consent" checked>
+        <input type="checkbox" id="consent">
         <label for="consent">
-          J'accepte les <a href="/cgu" target="_blank">Conditions d'utilisation</a> et je consens à recevoir les analyses et offres Betoracl Pro
+          J'ai <strong>18 ans ou plus</strong> et j'accepte les <a href="/cgu" target="_blank">Conditions d'utilisation</a>
+        </label>
+      </div>
+      <div class="consent">
+        <input type="checkbox" id="consent-mkt">
+        <label for="consent-mkt">
+          (Facultatif) Je souhaite recevoir par email les analyses, conseils et offres de Betoracl Pro. Je peux me désinscrire à tout moment.
         </label>
       </div>
 
@@ -465,7 +471,7 @@ async function doSignup(){
   if(!prenom)return showMsg('Ton prénom est requis pour personnaliser ton compte.')
   if(!pwd)return showMsg('Crée un mot de passe.')
   if(pwd.length<8)return showMsg('Mot de passe trop court (minimum 8 caractères).')
-  if(!consent)return showMsg('Accepte les conditions pour continuer.')
+  if(!consent)return showMsg('Confirme que tu as 18 ans ou plus et accepte les conditions pour continuer.')
   
   setBtn(true)
   try{
@@ -501,6 +507,15 @@ async function doSignup(){
       const firstName=prenom||email.split('@')[0]
       sessionStorage.setItem('bp_prenom',firstName)
       // bp_plan : source unique dans localStorage — pas de duplication sessionStorage
+    }
+
+    // Email de bienvenue (+ enregistrement du consentement marketing côté serveur)
+    if(d.access_token){
+      fetch('/api/send-email',{
+        method:'POST',keepalive:true,
+        headers:{'Content-Type':'application/json','Authorization':'Bearer '+d.access_token},
+        body:JSON.stringify({type:'welcome',marketing_consent:document.getElementById('consent-mkt').checked})
+      }).catch(()=>{})
     }
 
     if (window.fbq) fbq('track', 'CompleteRegistration', { content_name: 'signup', plan: selectedPlan })
