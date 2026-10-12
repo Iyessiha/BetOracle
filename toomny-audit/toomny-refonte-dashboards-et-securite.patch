@@ -1,0 +1,3518 @@
+diff --git a/.github/workflows/ci.yml b/.github/workflows/ci.yml
+new file mode 100644
+index 0000000..121c6df
+--- /dev/null
++++ b/.github/workflows/ci.yml
+@@ -0,0 +1,48 @@
++name: CI
++
++# La vérification tourne sur chaque poussée et chaque proposition de fusion.
++# Elle n'a besoin d'aucun secret : le typage, le lint et les tests sont purs.
++on:
++  push:
++    branches: [main]
++  pull_request:
++
++# Une seule exécution par branche : une poussée qui en annule une autre évite de
++# payer deux fois la même vérification.
++concurrency:
++  group: ci-${{ github.ref }}
++  cancel-in-progress: true
++
++jobs:
++  verify:
++    runs-on: ubuntu-latest
++    timeout-minutes: 15
++    steps:
++      - uses: actions/checkout@v4
++
++      - uses: actions/setup-node@v4
++        with:
++          node-version: 22
++          cache: npm
++
++      - name: Installer les dépendances
++        run: npm ci
++
++      - name: Vérifier les types
++        run: npm run typecheck
++
++      - name: Lint
++        run: npm run lint
++
++      - name: Tests
++        run: npm test
++
++      - name: Construire l'application
++        run: npm run build
++        env:
++          # Valeurs de façade : le build ne contacte pas Supabase, il vérifie
++          # seulement que tout compile et que les pages se génèrent.
++          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
++          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
++          NEXT_PUBLIC_SITE_URL: https://toomny.com
++          NEXT_PUBLIC_APP_URL: https://toomny.com
+diff --git a/README.md b/README.md
+index 6ba4866..85a06ea 100644
+--- a/README.md
++++ b/README.md
+@@ -2,15 +2,37 @@
+ 
+ Marketplace de talents pour l'Afrique de l'Ouest. Les PME recrutent des prestataires du continent, paient en mobile money, et les fonds restent sécurisés jusqu'à la livraison.
+ 
+-**Domaine** : toomny.com · **Statut** : structure posée, produit en attente de la Phase 0.
++**Domaine** : toomny.com · **Statut** : MVP en construction — parcours complet du catalogue au séquestre, versement aux prestataires non branché (voir « Points ouverts »).
+ 
+ ---
+ 
+ ## État du projet
+ 
+-Le code de ce dépôt est un **squelette d'architecture**, pas un produit. L'étude de marché conclut que cinq hypothèses doivent être validées en entretien avant de construire, dont deux peuvent imposer une conception entièrement différente. Ce qui est posé ici est ce qui ne changera pas quelle qu'en soit l'issue : le modèle monétaire, la machine à états du séquestre, le journal comptable et l'i18n.
++Le dépôt contient le produit : catalogue, fiches de prestation, commandes, séquestre,
++messagerie, litiges, espaces prestataire et administration, en français et en anglais.
++Ce qui est posé depuis le premier commit et ne changera pas : le modèle monétaire
++(entiers, plus petite unité de la devise), la machine à états du séquestre, le journal
++comptable en ajout seul, la limitation des tentatives et l'i18n.
+ 
+-Rien ne doit être développé au-delà avant la fin de la Phase 0.
++### Référentiel de vérification
++
++| Contrôle | Commande | État attendu |
++| --- | --- | --- |
++| Typage | `npm run typecheck` | aucune erreur |
++| Lint | `npm run lint` | 0 erreur |
++| Tests | `npm test` | 61 tests au vert |
++| Build | `npm run build` | pages générées |
++
++La CI (`.github/workflows/ci.yml`) exécute ces quatre contrôles à chaque poussée.
++
++## Points ouverts
++
++- **Versement aux prestataires** : l'API marchand GeniusPay n'expose aucun endpoint de
++  décaissement. `releaseHold` et `refundHold` lèvent volontairement plutôt que de
++  simuler un versement. Voir [`src/lib/payments/geniuspay.ts`](src/lib/payments/geniuspay.ts).
++- **Partenaire agréé** pour porter la rétention de fonds (CinetPay / PayDunya / EME) : à trancher.
++- **Turnstile** : sans `TURNSTILE_SECRET_KEY`, l'inscription et la connexion sont refusées
++  en production (échec fermé). `TURNSTILE_OPTIONAL=1` l'assume explicitement.
+ 
+ ## Les trois règles d'architecture
+ 
+@@ -74,6 +96,7 @@ npm run dev
+ | `npm run build` | build de production |
+ | `npm run lint` | ESLint |
+ | `npm run typecheck` | TypeScript sans émission |
++| `npm test` | tests unitaires (règles d'argent, séquestre, KYC, webhooks, images) |
+ | `npm run db:push` | pousse le schéma vers la base |
+ | `npm run db:generate` | génère les migrations |
+ 
+@@ -82,11 +105,13 @@ npm run dev
+ ```
+ src/
+ ├── app/            routes Next.js (App Router)
++│   ├── dashboard/  espace prestataire (prestations, profil, KYC, versements, compte)
++│   ├── admin/      back-office (comptes, prestations, litiges, KYC, audit)
+ │   ├── services/   catalogue de prestations
+ │   ├── orders/     commandes et séquestre
+ │   ├── messages/   échange lié à une commande
+ │   ├── disputes/   arbitrage de litige
+-│   └── api/        connexion (webhooks paiement et versements : non encore branchés)
++│   └── api/        routes serveur (auth, paiements, webhooks, envois d'images, export RGPD)
+ ├── db/
+ │   ├── schema.ts   schéma Drizzle complet
+ │   └── index.ts    client
+diff --git a/src/app/(fr)/admin/page.tsx b/src/app/(fr)/admin/page.tsx
+index 70f0b82..84364b7 100644
+--- a/src/app/(fr)/admin/page.tsx
++++ b/src/app/(fr)/admin/page.tsx
+@@ -1,11 +1,10 @@
+ import type { Metadata } from "next";
+-import Link from "next/link";
+ import { requireAdmin } from "@/lib/auth";
+-import { getAdminStats } from "@/lib/admin-stats";
++import { getAdminStats, getAttentionQueue } from "@/lib/admin-stats";
+ import { getRecentAdminActions } from "@/lib/admin-audit";
+ import { createAdminClient } from "@/lib/supabase/admin";
+ import { AdminShell } from "@/components/admin/admin-shell";
+-import { StatCard, EmptyState } from "@/components/dashboard/shell";
++import { StatCard, SectionCard, EmptyState, TableWrap, Alert } from "@/components/dashboard/shell";
+ import { OrderTrendChart } from "@/components/admin/order-trend-chart";
+ import { statusTone } from "@/lib/dashboard";
+ import { formatMoney } from "@/lib/money";
+@@ -19,22 +18,38 @@ export async function generateMetadata(): Promise<Metadata> {
+ }
+ export const dynamic = "force-dynamic";
+ 
++/**
++ * Vue d'ensemble de l'administration.
++ *
++ * Ordre de lecture revu : d'abord ce sur quoi l'équipe doit agir (file
++ * d'attente), ensuite les chiffres d'ensemble, enfin l'historique. Un tableau
++ * de bord d'administration sert à décider, pas à contempler — les compteurs
++ * d'action étaient noyés au milieu de six cartes de même poids.
++ */
+ export default async function AdminPage() {
+   const user = await requireAdmin();
+   const locale = user.preferredLocale;
+-  const t = getAdminTexts(locale).overview;
+-  const nav = getAdminTexts(locale).nav;
++  const tAdmin = getAdminTexts(locale);
++  const t = tAdmin.overview;
++  const nav = tAdmin.nav;
+   const statusLabel = getDashboardTexts(locale).status;
+-  const s = await getAdminStats();
+-  const audit = await getRecentAdminActions(createAdminClient());
+ 
+-  const needsAttention = s.openDisputes + s.pendingVerifications;
+-  const plural = (n: number, one: string, many: string) => (n > 1 ? many : one);
++  const [s, queue, audit] = await Promise.all([
++    getAdminStats(),
++    getAttentionQueue(),
++    getRecentAdminActions(createAdminClient()),
++  ]);
++
++  const totalToHandle =
++    queue.pendingVerifications + queue.manualReview + queue.openDisputes + queue.draftServices;
++
++  const completion = s.orders > 0 ? Math.round((s.completedOrders / s.orders) * 100) : null;
+ 
+   return (
+     <AdminShell
+       user={user}
+       locale={locale}
++      width="wide"
+       title={t.title}
+       subtitle={t.subtitle}
+       nav={[
+@@ -48,78 +63,140 @@ export default async function AdminPage() {
+         { href: "/dashboard", label: nav.myDashboard },
+       ]}
+     >
+-      {needsAttention > 0 && (
+-        <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+-          <div>
+-            <p className="font-display text-sm font-bold text-amber-900">
+-              {needsAttention} {plural(needsAttention, t.pendingOne, t.pendingMany)}
+-            </p>
+-            <p className="mt-1 text-sm text-amber-800">
+-              {s.openDisputes} {plural(s.openDisputes, t.disputeOne, t.disputeMany)} · {s.pendingVerifications}{" "}
+-              {plural(s.pendingVerifications, t.verificationOne, t.verificationMany)}
+-            </p>
++      {/* ── À traiter ── */}
++      <section>
++        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">
++          {t.queueTitle}
++        </h2>
++
++        {totalToHandle > 0 ? (
++          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
++            {queue.pendingVerifications + queue.manualReview > 0 && (
++              <StatCard
++                tone="warn"
++                label={t.pendingVerifications}
++                value={String(queue.pendingVerifications + queue.manualReview)}
++                hint={queue.manualReview > 0 ? `${queue.manualReview} · ${t.manualReview}` : t.manualReviewHint}
++                href="/admin/verifications"
++              />
++            )}
++            {queue.openDisputes > 0 && (
++              <StatCard
++                tone="danger"
++                label={t.openDisputes}
++                value={String(queue.openDisputes)}
++                hint={t.disputeMany}
++                href="/admin/disputes"
++              />
++            )}
++            {queue.draftServices > 0 && (
++              <StatCard
++                tone="info"
++                label={t.draftServices}
++                value={String(queue.draftServices)}
++                hint={t.draftServicesHint}
++                href="/admin/services"
++              />
++            )}
++            {queue.stalledOrders + queue.awaitingRelease > 0 && (
++              <StatCard
++                tone="neutral"
++                label={t.stalledOrders}
++                value={String(queue.stalledOrders)}
++                hint={t.stalledOrdersHint}
++              />
++            )}
+           </div>
+-          {s.pendingVerifications > 0 && (
+-            <Link href="/admin/verifications" className="shrink-0 rounded-full bg-amber-900 px-5 py-2 text-center text-sm font-semibold text-white hover:bg-amber-800">
+-              {t.processKyc}
+-            </Link>
+-          )}
+-        </div>
+-      )}
++        ) : (
++          <div className="mt-4">
++            <EmptyState title={t.queueEmpty} body={t.queueEmptyBody} />
++          </div>
++        )}
+ 
+-      <section>
+-        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">{t.volumeTitle}</h2>
+-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+-          <StatCard label={t.volume} value={formatMoney(s.gmvMinor, s.currency, locale)} hint={t.volumeHint} accent />
+-          <StatCard label={t.commission} value={formatMoney(s.commissionMinor, s.currency, locale)} hint={t.commissionHint} />
+-          <StatCard label={t.orders} value={String(s.orders)} hint={`${s.completedOrders} ${t.completed}`} />
+-          <StatCard label={t.completion} value={s.orders > 0 ? `${Math.round((s.completedOrders / s.orders) * 100)} %` : "—"} />
+-        </div>
++        {/* Signal discret mais utile : depuis quand le plus ancien dossier attend. */}
++        {queue.oldestPendingVerification && (
++          <p className="mt-3 text-xs text-[var(--subtle)]">
++            {t.oldestPending} ·{" "}
++            {new Date(queue.oldestPendingVerification).toLocaleString(locale === "fr" ? "fr-FR" : "en-GB", {
++              dateStyle: "short",
++              timeStyle: "short",
++              timeZone: "Africa/Abidjan",
++            })}
++          </p>
++        )}
++
++        {queue.awaitingRelease > 0 && (
++          <div className="mt-4">
++            <Alert
++              tone="info"
++              title={`${queue.awaitingRelease} — ${t.awaitingRelease}`}
++              body={t.awaitingReleaseHint}
++              action={{ href: "/admin/orders", label: t.orders }}
++            />
++          </div>
++        )}
+       </section>
+ 
++      {/* ── Chiffres d'ensemble ── */}
+       <section className="mt-10">
+-        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">{t.offerTitle}</h2>
++        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">
++          {t.kpiTitle}
++        </h2>
+         <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
++          <StatCard
++            label={t.volume}
++            value={formatMoney(s.gmvMinor, s.currency, locale)}
++            hint={t.volumeHint}
++            accent
++          />
++          <StatCard label={t.commission} value={formatMoney(s.commissionMinor, s.currency, locale)} hint={t.commissionHint} />
++          <StatCard
++            label={t.orders}
++            value={String(s.orders)}
++            hint={`${s.completedOrders} ${t.completed}`}
++            delta={completion === null ? undefined : `${completion} %`}
++          />
+           <StatCard label={t.accounts} value={String(s.users)} hint={`${s.providers} ${t.providers}`} />
+-          <StatCard label={t.services} value={String(s.services)} hint={`${s.activeServices} ${t.published}`} />
+-          <StatCard label={t.openDisputes} value={String(s.openDisputes)} />
+-          <StatCard label={t.pendingVerifications} value={String(s.pendingVerifications)} />
+-          <Link href="/admin/services" className="block">
+-            <StatCard label={t.draftServices} value={String(s.draftServices)} hint={t.draftServicesHint} />
+-          </Link>
++          <StatCard
++            label={t.services}
++            value={String(s.services)}
++            hint={`${s.activeServices} ${t.published}`}
++            href="/admin/services"
++          />
++          <StatCard
++            label={t.completion}
++            value={completion === null ? "—" : `${completion} %`}
++            hint={`${s.completedOrders} / ${s.orders}`}
++          />
+         </div>
+       </section>
+ 
+-      {/* Tendance 30 jours + pays */}
++      {/* ── Tendance et pays ── */}
+       <div className="mt-10 grid gap-6 lg:grid-cols-2">
+-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-6">
+-          <OrderTrendChart
+-            data={s.dailyOrders}
+-            label={locale === "en" ? "Orders — last 30 days" : "Commandes — 30 derniers jours"}
+-            emptyLabel={locale === "en" ? "No orders yet" : "Aucune commande encore"}
+-          />
+-        </div>
++        <SectionCard title={t.trendTitle}>
++          <div className="p-6">
++            <OrderTrendChart data={s.dailyOrders} label={t.trendTitle} emptyLabel={t.noOrders} />
++          </div>
++        </SectionCard>
+ 
+-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-6">
+-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--subtle)]">
+-            {locale === "en" ? "Countries" : "Pays"}
+-          </p>
++        <SectionCard title={t.countriesTitle}>
+           {s.countryBreakdown.length === 0 ? (
+-            <p className="mt-4 text-sm text-[var(--subtle)]">{t.noUsers}</p>
++            <p className="p-6 text-sm text-[var(--subtle)]">{t.countriesEmpty}</p>
+           ) : (
+-            <ul className="mt-4 space-y-2">
++            <ul className="space-y-3 p-6">
+               {s.countryBreakdown.map((c) => {
+                 const pct = s.users > 0 ? Math.round((c.total / s.users) * 100) : 0;
+                 return (
+                   <li key={c.country_code} className="flex items-center gap-3">
+                     <span className="w-8 text-sm font-semibold">{c.country_code}</span>
+-                    <div className="flex-1 overflow-hidden rounded-full bg-[var(--surface)] h-2">
+-                      <div
+-                        className="h-full rounded-full bg-[var(--color-brand-400)]"
+-                        style={{ width: `${pct}%` }}
+-                      />
++                    <div
++                      className="h-2 flex-1 overflow-hidden rounded-full bg-[var(--surface)]"
++                      role="img"
++                      aria-label={`${c.country_code} — ${pct} %`}
++                    >
++                      <div className="h-full rounded-full bg-[var(--color-brand-400)]" style={{ width: `${pct}%` }} />
+                     </div>
+-                    <span className="w-16 text-right text-xs text-[var(--subtle)]">
++                    <span className="w-20 text-right text-xs tabular-nums text-[var(--subtle)]">
+                       {c.total} ({pct} %)
+                     </span>
+                   </li>
+@@ -127,94 +204,98 @@ export default async function AdminPage() {
+               })}
+             </ul>
+           )}
+-        </div>
++        </SectionCard>
+       </div>
+ 
++      {/* ── Derniers inscrits / dernières commandes ── */}
+       <div className="mt-6 grid gap-6 lg:grid-cols-2">
+-        <section>
+-          <h2 className="font-display text-base font-bold">{t.recentUsers}</h2>
++        <SectionCard title={t.recentUsers} action={{ href: "/admin/users", label: t.accounts }}>
+           {s.recentUsers.length === 0 ? (
+-            <div className="mt-4"><EmptyState title={t.noUsers} body={t.noUsersBody} /></div>
++            <div className="p-5">
++              <EmptyState title={t.noUsers} body={t.noUsersBody} />
++            </div>
+           ) : (
+-            <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)]">
+-              <table className="w-full text-left text-sm">
+-                <thead className="border-b border-[var(--border)] text-xs uppercase tracking-wide text-[var(--subtle)]">
+-                  <tr>
+-                    <th className="px-5 py-3 font-medium">{t.colName}</th>
+-                    <th className="px-5 py-3 font-medium">{t.colRole}</th>
+-                    <th className="px-5 py-3 font-medium">{t.colCountry}</th>
++            <TableWrap minWidth="28rem">
++              <thead className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase tracking-wide text-[var(--subtle)]">
++                <tr>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colName}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colRole}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colCountry}</th>
++                </tr>
++              </thead>
++              <tbody>
++                {s.recentUsers.map((u) => (
++                  <tr key={u.id} className="border-b border-[var(--border)] last:border-0">
++                    <td className="px-5 py-3.5">
++                      <p className="font-medium">{u.display_name ?? "—"}</p>
++                      <p className="text-xs text-[var(--subtle)]">{u.email}</p>
++                    </td>
++                    <td className="px-5 py-3.5 text-[var(--subtle)]">{tAdmin.roles[u.role] ?? u.role}</td>
++                    <td className="px-5 py-3.5 text-[var(--subtle)]">{u.country_code}</td>
+                   </tr>
+-                </thead>
+-                <tbody>
+-                  {s.recentUsers.map((u, i) => (
+-                    <tr key={u.id} className={i < s.recentUsers.length - 1 ? "border-b border-[var(--border)]" : ""}>
+-                      <td className="px-5 py-3.5">
+-                        <p className="font-medium">{u.display_name ?? "—"}</p>
+-                        <p className="text-xs text-[var(--subtle)]">{u.email}</p>
+-                      </td>
+-                      <td className="px-5 py-3.5 text-[var(--subtle)]">{getAdminTexts(locale).roles[u.role] ?? u.role}</td>
+-                      <td className="px-5 py-3.5 text-[var(--subtle)]">{u.country_code}</td>
+-                    </tr>
+-                  ))}
+-                </tbody>
+-              </table>
+-            </div>
++                ))}
++              </tbody>
++            </TableWrap>
+           )}
+-        </section>
++        </SectionCard>
+ 
+-        <section>
+-          <h2 className="font-display text-base font-bold">{t.recentOrders}</h2>
++        <SectionCard title={t.recentOrders} action={{ href: "/admin/orders", label: t.orders }}>
+           {s.recentOrders.length === 0 ? (
+-            <div className="mt-4"><EmptyState title={t.noOrders} body={t.noOrdersBody} /></div>
++            <div className="p-5">
++              <EmptyState title={t.noOrders} body={t.noOrdersBody} />
++            </div>
+           ) : (
+-            <div className="mt-4 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)]">
+-              <table className="w-full text-left text-sm">
+-                <thead className="border-b border-[var(--border)] text-xs uppercase tracking-wide text-[var(--subtle)]">
+-                  <tr>
+-                    <th className="px-5 py-3 font-medium">{t.colReference}</th>
+-                    <th className="px-5 py-3 font-medium">{t.colStatus}</th>
+-                    <th className="px-5 py-3 text-right font-medium">{t.colAmount}</th>
++            <TableWrap minWidth="28rem">
++              <thead className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase tracking-wide text-[var(--subtle)]">
++                <tr>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colReference}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colStatus}</th>
++                  <th scope="col" className="px-5 py-3 text-right font-medium">{t.colAmount}</th>
++                </tr>
++              </thead>
++              <tbody>
++                {s.recentOrders.map((o) => (
++                  <tr key={o.id} className="border-b border-[var(--border)] last:border-0">
++                    <td className="px-5 py-3.5 font-medium">{o.reference}</td>
++                    <td className="px-5 py-3.5">
++                      <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone(o.status)}`}>
++                        {statusLabel[o.status] ?? o.status}
++                      </span>
++                    </td>
++                    <td className="px-5 py-3.5 text-right font-display font-bold tabular-nums">
++                      {formatMoney(BigInt(o.amount_minor), o.currency, locale)}
++                    </td>
+                   </tr>
+-                </thead>
+-                <tbody>
+-                  {s.recentOrders.map((o, i) => (
+-                    <tr key={o.id} className={i < s.recentOrders.length - 1 ? "border-b border-[var(--border)]" : ""}>
+-                      <td className="px-5 py-3.5 font-medium">{o.reference}</td>
+-                      <td className="px-5 py-3.5">
+-                        <span className={`rounded-full px-2.5 py-1 text-xs font-semibold ${statusTone(o.status)}`}>
+-                          {statusLabel[o.status] ?? o.status}
+-                        </span>
+-                      </td>
+-                      <td className="px-5 py-3.5 text-right font-display font-bold">{formatMoney(BigInt(o.amount_minor), o.currency, locale)}</td>
+-                    </tr>
+-                  ))}
+-                </tbody>
+-              </table>
+-            </div>
++                ))}
++              </tbody>
++            </TableWrap>
+           )}
+-        </section>
++        </SectionCard>
+       </div>
+ 
++      {/* ── Journal d'administration ── */}
+       <section className="mt-10">
+         <h2 className="font-display text-base font-bold">{t.auditTitle}</h2>
+-        <p className="mt-1 text-sm text-[var(--subtle)]">{t.auditBody}</p>
++        <p className="mt-1 text-sm text-[var(--subtle)]">{t.auditHint}</p>
+         {audit.length === 0 ? (
+-          <div className="mt-4"><EmptyState title={t.auditEmpty} body={t.auditEmptyBody} /></div>
++          <div className="mt-4">
++            <EmptyState title={t.auditEmpty} body={t.auditEmptyBody} />
++          </div>
+         ) : (
+-          <div className="mt-4 overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--background)]">
+-            <table className="w-full text-left text-sm">
+-              <thead className="border-b border-[var(--border)] text-xs uppercase tracking-wide text-[var(--subtle)]">
++          <div className="mt-4">
++            <TableWrap minWidth="44rem">
++              <thead className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase tracking-wide text-[var(--subtle)]">
+                 <tr>
+-                  <th className="px-5 py-3 font-medium">{t.colWhen}</th>
+-                  <th className="px-5 py-3 font-medium">{t.colActor}</th>
+-                  <th className="px-5 py-3 font-medium">{t.colAction}</th>
+-                  <th className="px-5 py-3 font-medium">{t.colTarget}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colWhen}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colActor}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colAction}</th>
++                  <th scope="col" className="px-5 py-3 font-medium">{t.colTarget}</th>
+                 </tr>
+               </thead>
+               <tbody>
+-                {audit.map((row, i) => (
+-                  <tr key={row.id} className={i < audit.length - 1 ? "border-b border-[var(--border)]" : ""}>
+-                    <td className="whitespace-nowrap px-5 py-3.5 text-[var(--subtle)]">
++                {audit.map((row) => (
++                  <tr key={row.id} className="border-b border-[var(--border)] last:border-0">
++                    <td className="whitespace-nowrap px-5 py-3.5 tabular-nums text-[var(--subtle)]">
+                       {new Date(row.created_at).toLocaleString(locale === "fr" ? "fr-FR" : "en-GB", {
+                         dateStyle: "short",
+                         timeStyle: "short",
+@@ -229,7 +310,7 @@ export default async function AdminPage() {
+                   </tr>
+                 ))}
+               </tbody>
+-            </table>
++            </TableWrap>
+           </div>
+         )}
+       </section>
+diff --git a/src/app/(fr)/dashboard/page.tsx b/src/app/(fr)/dashboard/page.tsx
+index a7d30e4..774c897 100644
+--- a/src/app/(fr)/dashboard/page.tsx
++++ b/src/app/(fr)/dashboard/page.tsx
+@@ -2,9 +2,18 @@ import Link from "next/link";
+ import type { Metadata } from "next";
+ import { getPublicPageTexts } from "@/i18n/public-pages";
+ import { visitorLocale } from "@/i18n/server-locale";
+-import { requireAuth, isProvider } from "@/lib/auth";
+-import { getDashboardData, statusTone } from "@/lib/dashboard";
+-import { DashboardShell, StatCard, EmptyState } from "@/components/dashboard/shell";
++import { requireAuth, isProvider, type CurrentUser } from "@/lib/auth";
++import { getRecentOrders, statusTone, type RecentOrder } from "@/lib/dashboard";
++import { getProviderStats, getClientStats, type ProviderStats, type ClientStats } from "@/lib/dashboard-stats";
++import {
++  DashboardShell,
++  StatCard,
++  SectionCard,
++  Alert,
++  EmptyState,
++  TableWrap,
++} from "@/components/dashboard/shell";
++import { serviceTone } from "@/lib/order-status";
+ import { formatMoney } from "@/lib/money";
+ import { getDashboardTexts } from "@/i18n/dashboard";
+ import { createClient } from "@/lib/supabase/server";
+@@ -15,46 +24,68 @@ export async function generateMetadata(): Promise<Metadata> {
+ }
+ export const dynamic = "force-dynamic";
+ 
+-type ServicePreview = {
+-  id: string;
+-  title: string;
+-  status: string;
+-  price_minor: number;
+-};
+-
++/**
++ * Vue d'ensemble.
++ *
++ * Deux tableaux distincts selon le rôle. Les montants viennent d'agrégats SQL
++ * sur l'ensemble des commandes (voir src/lib/dashboard-stats.ts) : ce que le
++ * prestataire lit ici correspond à ce qu'il a réellement gagné, quel que soit
++ * son volume. Les commandes listées, elles, restent limitées aux plus récentes.
++ */
+ export default async function DashboardPage() {
+   const user = await requireAuth();
+-  const data = await getDashboardData(user);
+-  const provider = isProvider(user.role);
+ 
+-  if (provider) {
+-    const supabase = await createClient();
+-    const { data: services } = await supabase
+-      .from("services")
+-      .select("id, title, status, price_minor")
+-      .eq("provider_id", user.id)
+-      .order("created_at", { ascending: false })
+-      .limit(5);
+-    return <ProviderDashboard user={user} data={data} services={(services ?? []) as ServicePreview[]} />;
++  if (isProvider(user.role)) {
++    const [stats, orders, services] = await Promise.all([
++      getProviderStats(),
++      getRecentOrders(user.id, 8),
++      recentServices(user.id),
++    ]);
++    return <ProviderDashboard user={user} stats={stats} orders={orders} services={services} />;
+   }
+-  return <ClientDashboard user={user} data={data} />;
++
++  const [stats, orders] = await Promise.all([getClientStats(), getRecentOrders(user.id, 8)]);
++  return <ClientDashboard user={user} stats={stats} orders={orders} />;
+ }
+ 
+-type User = Awaited<ReturnType<typeof requireAuth>>;
+-type Data = Awaited<ReturnType<typeof getDashboardData>>;
++type ServicePreview = { id: string; title: string; status: string; price_minor: number };
++
++async function recentServices(providerId: string): Promise<ServicePreview[]> {
++  const supabase = await createClient();
++  const { data } = await supabase
++    .from("services")
++    .select("id, title, status, price_minor")
++    .eq("provider_id", providerId)
++    .order("created_at", { ascending: false })
++    .limit(5);
++  return (data ?? []) as ServicePreview[];
++}
+ 
+ // ---------------------------------------------------------------------------
+-// Dashboard PRESTATAIRE
++// Tableau de bord PRESTATAIRE
+ // ---------------------------------------------------------------------------
+-function ProviderDashboard({ user, data, services }: { user: User; data: Data; services: ServicePreview[] }) {
+-  const locale: Locale = user.preferredLocale;
++function ProviderDashboard({
++  user,
++  stats,
++  orders,
++  services,
++}: {
++  user: CurrentUser;
++  stats: ProviderStats;
++  orders: RecentOrder[];
++  services: ServicePreview[];
++}) {
++  const locale = user.preferredLocale;
+   const t = getDashboardTexts(locale);
+-  const cur = data.currency;
++  const cur = stats.currency;
+   const kycDone = user.verificationStatus === "verified";
+   const kycPending = user.verificationStatus === "pending" || user.verificationStatus === "manual_review";
+   const kycRejected = user.verificationStatus === "rejected";
+   const firstName = user.firstName ?? user.displayName?.split(" ")[0] ?? "";
+ 
++  const completion = stats.ordersTotal > 0 ? Math.round((stats.ordersCompleted / stats.ordersTotal) * 100) : null;
++  const hasActions = stats.ordersToDeliver > 0 || stats.unreadMessages > 0 || stats.pendingInquiries > 0;
++
+   return (
+     <DashboardShell
+       user={user}
+@@ -64,124 +95,312 @@ function ProviderDashboard({ user, data, services }: { user: User; data: Data; s
+       nav={[
+         { href: "/dashboard", label: t.nav.overview, current: true },
+         { href: "/dashboard/prestations", label: t.nav.services },
++        { href: "/dashboard/versements", label: t.nav.payouts },
+         { href: "/dashboard/profil", label: t.nav.profile },
+         { href: "/dashboard/verification", label: t.nav.kyc },
+         { href: "/orders", label: t.nav.orders },
+         { href: "/messages", label: t.nav.messages },
++        { href: "/dashboard/compte", label: t.nav.account },
+       ]}
+     >
+-      {!kycDone && !kycPending && (
+-        <div className="mb-8 flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+-          <div>
+-            <p className="font-display text-sm font-bold text-amber-900">
+-              {kycRejected ? t.provider.kycRejectedTitle : t.provider.kycBlockedTitle}
+-            </p>
+-            <p className="mt-1 text-sm text-amber-800">
+-              {kycRejected ? t.provider.kycRejectedBody : t.provider.kycBlockedBody}
+-            </p>
+-          </div>
+-          <Link
+-            href="/dashboard/verification"
+-            className="shrink-0 rounded-full bg-amber-900 px-5 py-2.5 text-center text-sm font-semibold text-white hover:bg-amber-800"
+-          >
+-            {kycRejected ? t.provider.kycResubmit : t.provider.kycCta}
+-          </Link>
+-        </div>
++      {/* Ce qui bloque passe avant ce qui informe. */}
++      {kycRejected && (
++        <Alert
++          tone="danger"
++          title={t.provider.kycRejectedTitle}
++          body={t.provider.kycRejectedBody}
++          action={{ href: "/dashboard/verification", label: t.provider.kycResubmit }}
++        />
++      )}
++      {!kycDone && !kycPending && !kycRejected && (
++        <Alert
++          tone="warn"
++          title={t.provider.kycBlockedTitle}
++          body={t.provider.kycBlockedBody}
++          action={{ href: "/dashboard/verification", label: t.provider.kycCta }}
++        />
+       )}
+-
+       {kycPending && (
+-        <div className="mb-8 rounded-2xl border border-blue-200 bg-blue-50 px-5 py-4 text-sm text-blue-800">
+-          <strong>{t.provider.kycPending}</strong> — {t.provider.kycPendingBody}
+-        </div>
++        <Alert
++          tone="info"
++          title={t.provider.kycPending}
++          body={t.provider.kycPendingBody}
++          action={{ href: "/dashboard/verification", label: t.nav.kyc }}
++        />
+       )}
+ 
+-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+-        <StatCard label={t.provider.statEarned} value={formatMoney(data.earnedMinor, cur, locale)} hint={t.provider.statEarnedHint} accent />
+-        <StatCard label={t.provider.statPending} value={formatMoney(data.pendingMinor, cur, locale)} hint={t.provider.statPendingHint} />
+-        <StatCard label={t.provider.statServices} value={String(data.servicesCount)} hint={t.provider.statServicesHint} />
+-        <StatCard label={t.provider.statOrders} value={String(data.orders.length)} hint={t.provider.statOrdersHint} />
+-      </div>
++      {/* Actions attendues — affichées seulement s'il y en a. */}
++      <section className={kycDone || kycPending ? "mt-0" : "mt-8"}>
++        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">
++          {t.overview.actionsTitle}
++        </h2>
+ 
+-      <div className="mt-8 grid gap-4 sm:grid-cols-3">
+-        <div className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5">
+-          <p className="text-xs font-semibold uppercase tracking-wide text-[var(--subtle)]">{t.provider.profileCard}</p>
+-          <p className="mt-2 text-sm font-medium">{user.displayName ?? "—"}</p>
+-          <p className="text-xs text-[var(--subtle)]">{user.city ? `${user.city} · ` : ""}{user.countryCode}</p>
+-          {user.phone && <p className="mt-1 text-xs text-[var(--subtle)]">{user.phone}</p>}
+-          <div className="mt-3 flex items-center gap-2">
+-            <div className={`h-1.5 w-1.5 rounded-full ${kycDone ? "bg-[var(--color-brand-500)]" : "bg-amber-400"}`} />
+-            <span className="text-xs text-[var(--subtle)]">{kycDone ? t.provider.verifiedShort : t.provider.verificationRequired}</span>
++        {hasActions ? (
++          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
++            {stats.ordersToDeliver > 0 && (
++              <StatCard
++                label={t.overview.deliverLabel}
++                value={String(stats.ordersToDeliver)}
++                hint={t.overview.deliverHint}
++                tone="warn"
++                href="/orders"
++              />
++            )}
++            {stats.unreadMessages > 0 && (
++              <StatCard
++                label={t.overview.messagesLabel}
++                value={String(stats.unreadMessages)}
++                hint={t.overview.messagesHint}
++                tone="info"
++                href="/messages"
++              />
++            )}
++            {stats.pendingInquiries > 0 && (
++              <StatCard
++                label={t.overview.inquiriesLabel}
++                value={String(stats.pendingInquiries)}
++                hint={t.overview.inquiriesHint}
++                tone="info"
++                href="/messages"
++              />
++            )}
+           </div>
+-        </div>
++        ) : (
++          <div className="mt-4 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)] px-5 py-6 text-center">
++            <p className="font-display text-sm font-bold">{t.overview.actionsEmpty}</p>
++            <p className="mt-1 text-sm text-[var(--subtle)]">{t.overview.actionsEmptyBody}</p>
++          </div>
++        )}
++      </section>
+ 
+-        <Link
+-          href="/dashboard/prestations"
+-          className="group flex flex-col justify-between rounded-2xl border border-dashed border-[var(--color-brand-300)] bg-[var(--color-brand-50)] p-5 transition-colors hover:bg-[var(--color-brand-100)]"
+-        >
+-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--color-brand-500)] text-white">
+-            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor">
+-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+-            </svg>
++      {/* Revenus */}
++      <SectionCard title={t.provider.revenueTitle} className="mt-10">
++        <div className="grid gap-px bg-[var(--border)] sm:grid-cols-3">
++          <div className="bg-[var(--background)] p-5">
++            <p className="text-xs font-medium uppercase tracking-wide text-[var(--subtle)]">
++              {t.provider.statEarned}
++            </p>
++            <p className="mt-2 font-display text-2xl font-bold tabular-nums text-[var(--color-brand-600)]">
++              {formatMoney(stats.earnedNetMinor, cur, locale)}
++            </p>
++            <p className="mt-1 text-xs text-[var(--subtle)]">{t.provider.statEarnedHint}</p>
+           </div>
+-          <div className="mt-4">
+-            <p className="text-sm font-semibold text-[var(--color-brand-800)]">{t.provider.publishTitle}</p>
+-            <p className="mt-0.5 text-xs text-[var(--color-brand-600)]">{t.provider.publishHint}</p>
++          <div className="bg-[var(--background)] p-5">
++            <p className="text-xs font-medium uppercase tracking-wide text-[var(--subtle)]">
++              {t.provider.revenueEscrow}
++            </p>
++            <p className="mt-2 font-display text-2xl font-bold tabular-nums">
++              {formatMoney(stats.inEscrowMinor, cur, locale)}
++            </p>
++            <p className="mt-1 text-xs text-[var(--subtle)]">{t.provider.revenueEscrowHint}</p>
+           </div>
+-        </Link>
++          <div className="bg-[var(--background)] p-5">
++            <p className="text-xs font-medium uppercase tracking-wide text-[var(--subtle)]">
++              {t.provider.revenueDisputed}
++            </p>
++            <p className="mt-2 font-display text-2xl font-bold tabular-nums">
++              {formatMoney(stats.disputedMinor, cur, locale)}
++            </p>
++            <p className="mt-1 text-xs text-[var(--subtle)]">{t.provider.revenueDisputedHint}</p>
++          </div>
++        </div>
++        <p className="border-t border-[var(--border)] px-5 py-3 text-xs text-[var(--subtle)]">
++          {t.provider.revenueNote}
++        </p>
++      </SectionCard>
+ 
++      {/* Activité */}
++      <div className="mt-6 grid gap-4 sm:grid-cols-3">
++        <StatCard
++          label={t.provider.statOrders}
++          value={String(stats.ordersTotal)}
++          hint={t.provider.ordersReceivedHint}
++        />
++        <StatCard
++          label={t.provider.completionRate}
++          value={completion === null ? "—" : `${completion} %`}
++          hint={t.provider.completionRateHint}
++          delta={`${stats.ordersCompleted} / ${stats.ordersTotal}`}
++        />
++        <StatCard
++          label={t.provider.servicesTitle}
++          value={String(stats.servicesTotal)}
++          hint={t.provider.servicesBreakdown}
++          delta={`${stats.servicesActive} · ${stats.servicesDraft} · ${stats.servicesPaused}`}
++        />
++      </div>
++
++      <ServicesPreviewList services={services} locale={locale} currency={cur} />
++
++      <RecentOrders
++        orders={orders}
++        locale={locale}
++        isProvider
++        title={t.provider.ordersReceived}
++        action={{ href: "/orders", label: t.common.viewAll }}
++        empty={{
++          title: t.provider.noOrdersTitle,
++          body: t.provider.noOrdersBody,
++          action: { href: "/dashboard/prestations", label: t.provider.publishTitle },
++        }}
++      />
++    </DashboardShell>
++  );
++}
++
++// ---------------------------------------------------------------------------
++// Tableau de bord CLIENT
++// ---------------------------------------------------------------------------
++function ClientDashboard({
++  user,
++  stats,
++  orders,
++}: {
++  user: CurrentUser;
++  stats: ClientStats;
++  orders: RecentOrder[];
++}) {
++  const locale = user.preferredLocale;
++  const t = getDashboardTexts(locale);
++  const cur = stats.currency;
++  const firstName = user.firstName ?? user.displayName?.split(" ")[0] ?? "";
++  const hasActions = stats.ordersToPay > 0 || stats.ordersToReview > 0 || stats.unreadMessages > 0;
++
++  return (
++    <DashboardShell
++      user={user}
++      locale={locale}
++      title={`${t.client.greeting} ${firstName} 👋`}
++      subtitle={t.client.subtitle}
++      nav={[
++        { href: "/dashboard", label: t.nav.home, current: true },
++        { href: "/services", label: t.nav.findProvider },
++        { href: "/orders", label: t.nav.myOrders },
++        { href: "/messages", label: t.nav.messages },
++        { href: "/dashboard/compte", label: t.nav.account },
++      ]}
++    >
++      <div className="flex flex-col gap-4 rounded-2xl bg-[var(--color-brand-500)] p-6 text-white sm:flex-row sm:items-center sm:justify-between">
++        <div>
++          <h2 className="font-display text-xl font-bold">{t.client.ctaTitle}</h2>
++          <p className="mt-1 text-sm text-white/80">{t.client.ctaBody}</p>
++        </div>
+         <Link
+-          href="/dashboard/versements"
+-          className="flex flex-col justify-between rounded-2xl border border-[var(--border)] bg-[var(--background)] p-5 transition-colors hover:bg-[var(--surface)]"
++          href="/services"
++          className="shrink-0 rounded-full bg-white px-6 py-3 text-center text-sm font-bold text-[var(--color-brand-700)] hover:bg-white/90"
+         >
+-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[var(--surface)]">
+-            <svg className="h-4 w-4 text-[var(--subtle)]" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+-              <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+-            </svg>
++          {t.client.ctaButton}
++        </Link>
++      </div>
++
++      <section className="mt-8">
++        <h2 className="font-display text-sm font-bold uppercase tracking-wide text-[var(--subtle)]">
++          {t.overview.actionsTitle}
++        </h2>
++
++        {hasActions ? (
++          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
++            {stats.ordersToPay > 0 && (
++              <StatCard
++                label={t.overview.payLabel}
++                value={String(stats.ordersToPay)}
++                hint={t.overview.payHint}
++                tone="warn"
++                href="/orders"
++              />
++            )}
++            {stats.ordersToReview > 0 && (
++              <StatCard
++                label={t.overview.reviewLabel}
++                value={String(stats.ordersToReview)}
++                hint={t.overview.reviewHint}
++                tone="ok"
++                href="/orders"
++              />
++            )}
++            {stats.unreadMessages > 0 && (
++              <StatCard
++                label={t.overview.messagesLabel}
++                value={String(stats.unreadMessages)}
++                hint={t.overview.messagesHint}
++                tone="info"
++                href="/messages"
++              />
++            )}
+           </div>
+-          <div className="mt-4">
+-            <p className="text-sm font-semibold">{t.provider.payoutsTitle}</p>
+-            <p className="mt-0.5 text-xs text-[var(--subtle)]">{t.provider.payoutsHint}</p>
++        ) : (
++          <div className="mt-4 rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)] px-5 py-6 text-center">
++            <p className="font-display text-sm font-bold">{t.overview.actionsEmpty}</p>
++            <p className="mt-1 text-sm text-[var(--subtle)]">{t.overview.actionsEmptyBody}</p>
+           </div>
+-        </Link>
++        )}
++      </section>
++
++      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
++        <StatCard
++          label={t.client.statSpent}
++          value={formatMoney(stats.spentMinor, cur, locale)}
++          hint={t.client.statSpentHint}
++          accent
++        />
++        <StatCard
++          label={t.provider.revenueEscrow}
++          value={formatMoney(stats.inEscrowMinor, cur, locale)}
++          hint={t.provider.revenueEscrowHint}
++        />
++        <StatCard label={t.client.statInProgress} value={String(stats.ordersActive)} hint={t.client.statInProgressHint} />
++        <StatCard label={t.client.statDone} value={String(stats.ordersCompleted)} hint={t.client.statDoneHint} />
+       </div>
+ 
+-      <ServicesPreviewList services={services} locale={locale} t={t} />
++      <RecentOrders
++        orders={orders}
++        locale={locale}
++        isProvider={false}
++        title={t.client.myOrders}
++        action={{ href: "/orders", label: t.common.viewAll }}
++        empty={{
++          title: t.client.noOrdersTitle,
++          body: t.client.noOrdersBody,
++          action: { href: "/services", label: t.client.noOrdersCta },
++        }}
++      />
+ 
+-      <OrdersTable user={user} data={data} locale={locale} title={t.provider.ordersReceived} empty={{ title: t.provider.noOrdersTitle, body: t.provider.noOrdersBody, action: { href: "/dashboard/prestations", label: t.provider.publishTitle } }} />
++      <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
++        <p className="text-sm font-semibold">{t.client.becomeTitle}</p>
++        <p className="mt-1 text-sm text-[var(--subtle)]">{t.client.becomeBody}</p>
++        <Link
++          href="/auth?role=provider"
++          className="mt-4 inline-flex rounded-full border border-[var(--border)] px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--background)]"
++        >
++          {t.client.becomeCta}
++        </Link>
++      </section>
+     </DashboardShell>
+   );
+ }
+ 
+ // ---------------------------------------------------------------------------
+-// Mini-liste prestations (provider dashboard)
++// Prestations récentes (prestataire)
+ // ---------------------------------------------------------------------------
+ function ServicesPreviewList({
+   services,
+   locale,
+-  t,
++  currency,
+ }: {
+   services: ServicePreview[];
+   locale: Locale;
+-  t: ReturnType<typeof getDashboardTexts>;
++  currency: string;
+ }) {
+-  function statusBadge(status: string) {
+-    if (status === "active") return "bg-green-100 text-green-700";
+-    if (status === "paused") return "bg-yellow-100 text-yellow-700";
+-    if (status === "removed") return "bg-red-100 text-red-700";
+-    return "bg-[var(--surface)] text-[var(--subtle)]";
+-  }
++  const t = getDashboardTexts(locale);
+ 
+   return (
+-    <section className="mt-10">
+-      <div className="flex items-center justify-between">
+-        <h2 className="font-display text-lg font-bold">{t.nav.services}</h2>
+-        <Link href="/dashboard/prestations" className="text-sm text-[var(--color-brand-600)] underline underline-offset-4">
+-          {t.common.viewAll}
+-        </Link>
+-      </div>
+-
++    <SectionCard
++      title={t.nav.services}
++      action={{ href: "/dashboard/prestations", label: t.common.viewAll }}
++      className="mt-10"
++    >
+       {services.length === 0 ? (
+-        <div className="mt-5">
++        <div className="p-5">
+           <EmptyState
+             title={t.provider.noServicesTitle}
+             body={t.provider.noServicesBody}
+@@ -189,16 +408,16 @@ function ServicesPreviewList({
+           />
+         </div>
+       ) : (
+-        <ul className="mt-4 divide-y divide-[var(--border)] overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)]">
++        <ul className="divide-y divide-[var(--border)]">
+           {services.map((s) => (
+-            <li key={s.id} className="flex items-center justify-between gap-4 px-5 py-4">
++            <li key={s.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4">
+               <div className="min-w-0 flex-1">
+                 <p className="truncate text-sm font-medium">{s.title}</p>
+                 <p className="mt-0.5 text-xs text-[var(--subtle)]">
+-                  {(s.price_minor / 1).toLocaleString(locale === "en" ? "en-US" : "fr-FR")} FCFA
++                  {formatMoney(BigInt(s.price_minor), currency, locale)}
+                 </p>
+               </div>
+-              <span className={`shrink-0 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${statusBadge(s.status)}`}>
++              <span className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${serviceTone(s.status)}`}>
+                 {t.service[s.status as keyof typeof t.service] ?? s.status}
+               </span>
+               <Link
+@@ -211,129 +430,68 @@ function ServicesPreviewList({
+           ))}
+         </ul>
+       )}
+-    </section>
++    </SectionCard>
+   );
+ }
+ 
+ // ---------------------------------------------------------------------------
+-// Dashboard CLIENT
++// Commandes récentes (commun aux deux rôles)
+ // ---------------------------------------------------------------------------
+-function ClientDashboard({ user, data }: { user: User; data: Data }) {
+-  const locale: Locale = user.preferredLocale;
+-  const t = getDashboardTexts(locale);
+-  const cur = data.currency;
+-  const inProgress = data.orders.filter((o) => !["completed", "cancelled", "refunded"].includes(o.status)).length;
+-  const completed = data.orders.filter((o) => o.status === "completed").length;
+-  const firstName = user.firstName ?? user.displayName?.split(" ")[0] ?? "";
+-
+-  return (
+-    <DashboardShell
+-      user={user}
+-      locale={locale}
+-      title={`${t.client.greeting} ${firstName} 👋`}
+-      subtitle={t.client.subtitle}
+-      nav={[
+-        { href: "/dashboard", label: t.nav.home, current: true },
+-        { href: "/services", label: t.nav.findProvider },
+-        { href: "/orders", label: t.nav.myOrders },
+-        { href: "/messages", label: t.nav.messages },
+-      ]}
+-    >
+-      <div className="mb-8 flex flex-col gap-4 rounded-2xl bg-[var(--color-brand-500)] p-6 text-white sm:flex-row sm:items-center sm:justify-between">
+-        <div>
+-          <h2 className="font-display text-xl font-bold">{t.client.ctaTitle}</h2>
+-          <p className="mt-1 text-sm text-white/80">{t.client.ctaBody}</p>
+-        </div>
+-        <Link href="/services" className="shrink-0 rounded-full bg-white px-6 py-3 text-sm font-bold text-[var(--color-brand-700)] hover:bg-white/90">
+-          {t.client.ctaButton}
+-        </Link>
+-      </div>
+-
+-      <div className="grid gap-4 sm:grid-cols-3">
+-        <StatCard label={t.client.statSpent} value={formatMoney(data.spentMinor, cur, locale)} hint={t.client.statSpentHint} accent />
+-        <StatCard label={t.client.statInProgress} value={String(inProgress)} hint={t.client.statInProgressHint} />
+-        <StatCard label={t.client.statDone} value={String(completed)} hint={t.client.statDoneHint} />
+-      </div>
+-
+-      <OrdersTable user={user} data={data} locale={locale} title={t.client.myOrders} empty={{ title: t.client.noOrdersTitle, body: t.client.noOrdersBody, action: { href: "/services", label: t.client.noOrdersCta } }} />
+-
+-      <section className="mt-8 rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+-        <p className="text-sm font-semibold">{t.client.becomeTitle}</p>
+-        <p className="mt-1 text-sm text-[var(--subtle)]">{t.client.becomeBody}</p>
+-        <Link href="/auth?role=provider" className="mt-4 inline-flex rounded-full border border-[var(--border)] px-5 py-2.5 text-sm font-semibold transition-colors hover:bg-[var(--background)]">
+-          {t.client.becomeCta}
+-        </Link>
+-      </section>
+-    </DashboardShell>
+-  );
+-}
+-
+-// ---------------------------------------------------------------------------
+-// Tableau des commandes récentes (commun aux deux rôles)
+-// ---------------------------------------------------------------------------
+-function OrdersTable({
+-  user,
+-  data,
++function RecentOrders({
++  orders,
+   locale,
++  isProvider: providerView,
+   title,
++  action,
+   empty,
+ }: {
+-  user: User;
+-  data: Data;
++  orders: RecentOrder[];
+   locale: Locale;
++  isProvider: boolean;
+   title: string;
++  action: { href: string; label: string };
+   empty: { title: string; body: string; action: { href: string; label: string } };
+ }) {
+   const t = getDashboardTexts(locale);
+-  const isProvider = isProviderRole(user);
+ 
+   return (
+-    <section className="mt-10">
+-      <div className="flex items-center justify-between">
+-        <h2 className="font-display text-lg font-bold">{title}</h2>
+-        {data.orders.length > 0 && (
+-          <Link href="/orders" className="text-sm text-[var(--color-brand-600)] underline underline-offset-4">{t.common.viewAll}</Link>
+-        )}
+-      </div>
+-
+-      {data.orders.length === 0 ? (
+-        <div className="mt-5">
++    <SectionCard title={title} action={orders.length > 0 ? action : undefined} className="mt-10">
++      {orders.length === 0 ? (
++        <div className="p-5">
+           <EmptyState title={empty.title} body={empty.body} action={empty.action} />
+         </div>
+       ) : (
+-        <div className="mt-5 overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--background)]">
+-          <table className="w-full text-left text-sm">
+-            <thead className="border-b border-[var(--border)] text-xs uppercase tracking-wide text-[var(--subtle)]">
+-              <tr>
+-                <th className="px-5 py-3 font-medium">{t.common.reference}</th>
+-                <th className="px-5 py-3 font-medium">{t.common.status}</th>
+-                <th className="px-5 py-3 text-right font-medium">{isProvider ? t.common.netForYou : t.common.amount}</th>
++        <TableWrap minWidth="34rem">
++          <thead className="border-b border-[var(--border)] bg-[var(--surface)] text-xs uppercase tracking-wide text-[var(--subtle)]">
++            <tr>
++              <th scope="col" className="px-5 py-3 font-medium">{t.common.reference}</th>
++              <th scope="col" className="px-5 py-3 font-medium">{t.common.status}</th>
++              <th scope="col" className="px-5 py-3 text-right font-medium">
++                {providerView ? t.common.netForYou : t.common.amount}
++              </th>
++            </tr>
++          </thead>
++          <tbody>
++            {orders.map((o) => (
++              <tr key={o.id} className="border-b border-[var(--border)] last:border-0">
++                <td className="px-5 py-4 font-medium">
++                  <Link href={`/orders/${o.id}`} className="hover:underline">
++                    {o.reference}
++                  </Link>
++                </td>
++                <td className="px-5 py-4">
++                  <span className={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${statusTone(o.status)}`}>
++                    {t.status[o.status] ?? o.status}
++                  </span>
++                </td>
++                <td className="px-5 py-4 text-right font-display font-bold tabular-nums">
++                  {formatMoney(BigInt(providerView ? o.provider_net_minor : o.amount_minor), o.currency, locale)}
++                </td>
+               </tr>
+-            </thead>
+-            <tbody>
+-              {data.orders.slice(0, 8).map((o, i) => (
+-                <tr key={o.id} className={i < Math.min(data.orders.length, 8) - 1 ? "border-b border-[var(--border)]" : ""}>
+-                  <td className="px-5 py-4 font-medium">
+-                    <Link href={`/orders/${o.id}`} className="hover:underline">{o.reference}</Link>
+-                  </td>
+-                  <td className="px-5 py-4">
+-                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusTone(o.status)}`}>
+-                      {t.status[o.status] ?? o.status}
+-                    </span>
+-                  </td>
+-                  <td className="px-5 py-4 text-right font-display font-bold">
+-                    {formatMoney(BigInt(isProvider ? o.provider_net_minor : o.amount_minor), o.currency, locale)}
+-                  </td>
+-                </tr>
+-              ))}
+-            </tbody>
+-          </table>
+-        </div>
++            ))}
++          </tbody>
++        </TableWrap>
+       )}
+-    </section>
++    </SectionCard>
+   );
+ }
+-
+-function isProviderRole(user: User): boolean {
+-  return isProvider(user.role);
+-}
+diff --git a/src/app/api/auth/login/route.ts b/src/app/api/auth/login/route.ts
+index 4ebbc4e..3e666c4 100644
+--- a/src/app/api/auth/login/route.ts
++++ b/src/app/api/auth/login/route.ts
+@@ -72,7 +72,10 @@ export async function POST(request: NextRequest) {
+   if (error) {
+     if (error.message.includes("Invalid login credentials")) return NextResponse.json({ error: m.invalid }, { status: 401 });
+     if (error.message.includes("Email not confirmed")) return NextResponse.json({ error: m.unconfirmed }, { status: 403 });
+-    return NextResponse.json({ error: error.message }, { status: 400 });
++    // Le message brut du fournisseur d'authentification est journalisé, jamais
++    // renvoyé : il distingue les comptes existants et décrit la configuration interne.
++    console.error("[auth:login]", error.message);
++    return NextResponse.json({ error: m.badRequest }, { status: 400 });
+   }
+   return response;
+ }
+diff --git a/src/app/api/profile/avatar/route.ts b/src/app/api/profile/avatar/route.ts
+index af80c97..37dbb97 100644
+--- a/src/app/api/profile/avatar/route.ts
++++ b/src/app/api/profile/avatar/route.ts
+@@ -1,9 +1,11 @@
+ import { NextResponse } from "next/server";
+ import { randomUUID } from "node:crypto";
+ import { createClient } from "@/lib/supabase/server";
++import { consumeRateLimit } from "@/lib/rate-limit";
++import { checkImageUpload, MAX_AVATAR_BYTES } from "@/lib/image-upload";
+ 
+-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+-const MAX_BYTES = 2 * 1024 * 1024;
++const BUCKET = "avatars";
++const MAX_PER_HOUR = 20;
+ 
+ export async function POST(request: Request): Promise<Response> {
+   const supabase = await createClient();
+@@ -12,6 +14,12 @@ export async function POST(request: Request): Promise<Response> {
+   } = await supabase.auth.getUser();
+   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+ 
++  // Sans compteur, un compte authentifié peut saturer le stockage et la facture.
++  const allowed = await consumeRateLimit(`upload:avatar:${user.id}`, MAX_PER_HOUR, 60 * 60);
++  if (!allowed) {
++    return NextResponse.json({ error: "Trop d'envois. Réessayez plus tard." }, { status: 429 });
++  }
++
+   let file: File;
+   try {
+     const form = await request.formData();
+@@ -22,20 +30,14 @@ export async function POST(request: Request): Promise<Response> {
+     return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
+   }
+ 
+-  if (!ALLOWED_TYPES.has(file.type)) {
+-    return NextResponse.json({ error: "Type non autorisé (jpeg, png, webp)" }, { status: 400 });
+-  }
+-  if (file.size > MAX_BYTES) {
+-    return NextResponse.json({ error: "Fichier trop volumineux (2 Mo max)" }, { status: 400 });
+-  }
++  const check = await checkImageUpload(file, MAX_AVATAR_BYTES);
++  if (!check.ok) return NextResponse.json({ error: check.message }, { status: check.status });
+ 
+-  const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+-  const path = `${user.id}/${randomUUID()}.${ext}`;
++  const path = `${user.id}/${randomUUID()}.${check.ext}`;
+ 
+-  const buffer = await file.arrayBuffer();
+   const { error } = await supabase.storage
+-    .from("avatars")
+-    .upload(path, buffer, { contentType: file.type, upsert: false });
++    .from(BUCKET)
++    .upload(path, check.buffer, { contentType: check.mime, upsert: false });
+ 
+   if (error) {
+     console.error("[profile/avatar] upload:", error.message);
+@@ -44,7 +46,7 @@ export async function POST(request: Request): Promise<Response> {
+ 
+   const {
+     data: { publicUrl },
+-  } = supabase.storage.from("avatars").getPublicUrl(path);
++  } = supabase.storage.from(BUCKET).getPublicUrl(path);
+ 
+   return NextResponse.json({ url: publicUrl });
+ }
+diff --git a/src/app/api/services/cover/route.ts b/src/app/api/services/cover/route.ts
+index c5ee8c4..39822db 100644
+--- a/src/app/api/services/cover/route.ts
++++ b/src/app/api/services/cover/route.ts
+@@ -1,9 +1,11 @@
+ import { NextResponse } from "next/server";
+ import { randomUUID } from "node:crypto";
+ import { createClient } from "@/lib/supabase/server";
++import { consumeRateLimit } from "@/lib/rate-limit";
++import { checkImageUpload, MAX_COVER_BYTES } from "@/lib/image-upload";
+ 
+-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+-const MAX_BYTES = 3 * 1024 * 1024;
++const BUCKET = "service-covers";
++const MAX_PER_HOUR = 30;
+ 
+ export async function POST(request: Request): Promise<Response> {
+   const supabase = await createClient();
+@@ -12,6 +14,11 @@ export async function POST(request: Request): Promise<Response> {
+   } = await supabase.auth.getUser();
+   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+ 
++  const allowed = await consumeRateLimit(`upload:cover:${user.id}`, MAX_PER_HOUR, 60 * 60);
++  if (!allowed) {
++    return NextResponse.json({ error: "Trop d'envois. Réessayez plus tard." }, { status: 429 });
++  }
++
+   let file: File;
+   try {
+     const form = await request.formData();
+@@ -22,20 +29,14 @@ export async function POST(request: Request): Promise<Response> {
+     return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
+   }
+ 
+-  if (!ALLOWED_TYPES.has(file.type)) {
+-    return NextResponse.json({ error: "Type non autorisé (jpeg, png, webp uniquement)" }, { status: 400 });
+-  }
+-  if (file.size > MAX_BYTES) {
+-    return NextResponse.json({ error: "Fichier trop volumineux (3 Mo max)" }, { status: 400 });
+-  }
++  const check = await checkImageUpload(file, MAX_COVER_BYTES);
++  if (!check.ok) return NextResponse.json({ error: check.message }, { status: check.status });
+ 
+-  const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+-  const path = `${user.id}/${randomUUID()}.${ext}`;
++  const path = `${user.id}/${randomUUID()}.${check.ext}`;
+ 
+-  const buffer = await file.arrayBuffer();
+   const { error } = await supabase.storage
+-    .from("service-covers")
+-    .upload(path, buffer, { contentType: file.type, upsert: false });
++    .from(BUCKET)
++    .upload(path, check.buffer, { contentType: check.mime, upsert: false });
+ 
+   if (error) {
+     console.error("[services/cover] upload:", error.message);
+@@ -44,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
+ 
+   const {
+     data: { publicUrl },
+-  } = supabase.storage.from("service-covers").getPublicUrl(path);
++  } = supabase.storage.from(BUCKET).getPublicUrl(path);
+ 
+   return NextResponse.json({ url: publicUrl });
+ }
+diff --git a/src/app/api/services/gallery/route.ts b/src/app/api/services/gallery/route.ts
+index 37832db..09ce76b 100644
+--- a/src/app/api/services/gallery/route.ts
++++ b/src/app/api/services/gallery/route.ts
+@@ -1,9 +1,11 @@
+ import { NextResponse } from "next/server";
+ import { randomUUID } from "node:crypto";
+ import { createClient } from "@/lib/supabase/server";
++import { consumeRateLimit } from "@/lib/rate-limit";
++import { checkImageUpload, MAX_COVER_BYTES } from "@/lib/image-upload";
+ 
+-const ALLOWED_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+-const MAX_BYTES = 3 * 1024 * 1024;
++const BUCKET = "service-covers";
++const MAX_PER_HOUR = 60;
+ 
+ export async function POST(request: Request): Promise<Response> {
+   const supabase = await createClient();
+@@ -12,6 +14,11 @@ export async function POST(request: Request): Promise<Response> {
+   } = await supabase.auth.getUser();
+   if (!user) return NextResponse.json({ error: "Non authentifié" }, { status: 401 });
+ 
++  const allowed = await consumeRateLimit(`upload:gallery:${user.id}`, MAX_PER_HOUR, 60 * 60);
++  if (!allowed) {
++    return NextResponse.json({ error: "Trop d'envois. Réessayez plus tard." }, { status: 429 });
++  }
++
+   let file: File;
+   try {
+     const form = await request.formData();
+@@ -22,20 +29,14 @@ export async function POST(request: Request): Promise<Response> {
+     return NextResponse.json({ error: "Fichier manquant" }, { status: 400 });
+   }
+ 
+-  if (!ALLOWED_TYPES.has(file.type)) {
+-    return NextResponse.json({ error: "Type non autorisé (jpeg, png, webp uniquement)" }, { status: 400 });
+-  }
+-  if (file.size > MAX_BYTES) {
+-    return NextResponse.json({ error: "Fichier trop volumineux (3 Mo max)" }, { status: 400 });
+-  }
++  const check = await checkImageUpload(file, MAX_COVER_BYTES);
++  if (!check.ok) return NextResponse.json({ error: check.message }, { status: check.status });
+ 
+-  const ext = file.type === "image/jpeg" ? "jpg" : file.type.split("/")[1];
+-  const path = `${user.id}/gallery/${randomUUID()}.${ext}`;
++  const path = `${user.id}/gallery/${randomUUID()}.${check.ext}`;
+ 
+-  const buffer = await file.arrayBuffer();
+   const { error } = await supabase.storage
+-    .from("service-covers")
+-    .upload(path, buffer, { contentType: file.type, upsert: false });
++    .from(BUCKET)
++    .upload(path, check.buffer, { contentType: check.mime, upsert: false });
+ 
+   if (error) {
+     console.error("[services/gallery] upload:", error.message);
+@@ -44,7 +45,7 @@ export async function POST(request: Request): Promise<Response> {
+ 
+   const {
+     data: { publicUrl },
+-  } = supabase.storage.from("service-covers").getPublicUrl(path);
++  } = supabase.storage.from(BUCKET).getPublicUrl(path);
+ 
+   return NextResponse.json({ url: publicUrl });
+ }
+diff --git a/src/app/api/webhooks/geniuspay/route.ts b/src/app/api/webhooks/geniuspay/route.ts
+index 223df74..ead2704 100644
+--- a/src/app/api/webhooks/geniuspay/route.ts
++++ b/src/app/api/webhooks/geniuspay/route.ts
+@@ -49,17 +49,50 @@ export async function POST(request: Request): Promise<Response> {
+       .eq("id", hold.order_id)
+       .maybeSingle();
+ 
+-    if (order?.status === "pending_payment") {
++    if (!order) {
++      console.error("[webhook:geniuspay] commande introuvable pour la rétention:", hold.order_id);
++      return NextResponse.json({ ok: true });
++    }
++
++    // Le montant encaissé doit correspondre à celui de la commande. Une signature
++    // valide prouve l'origine du message, pas que la somme attendue a été versée :
++    // un paiement partiel ou sur une autre commande ne doit pas financer celle-ci.
++    if (event.amountMinor !== undefined && BigInt(order.amount_minor) !== event.amountMinor) {
++      console.error(
++        "[webhook:geniuspay] montant incohérent:",
++        { order: order.id, attendu: order.amount_minor, recu: String(event.amountMinor) },
++      );
+       await db
++        .from("escrow_holds")
++        .update({ status: "failed", failure_reason: "Montant encaissé différent du montant de la commande" })
++        .eq("id", hold.id);
++      return NextResponse.json({ ok: true });
++    }
++
++    if (event.currency !== undefined && order.currency !== event.currency) {
++      console.error("[webhook:geniuspay] devise incohérente:", { order: order.id, attendu: order.currency, recu: event.currency });
++      return NextResponse.json({ ok: true });
++    }
++
++    if (order.status === "pending_payment") {
++      // Mise à jour conditionnelle : si deux webhooks arrivent en parallèle, un
++      // seul passe de pending_payment à funded, et l'écriture au journal n'est
++      // donc faite qu'une fois.
++      const { data: funded } = await db
+         .from("orders")
+         .update({ status: "funded" })
+         .eq("id", order.id)
+-        .eq("status", "pending_payment");
++        .eq("status", "pending_payment")
++        .select("id");
+ 
+-      await recordFunding(db, order);
+-      console.info("[webhook:geniuspay] commande financée:", order.id);
++      if (funded && funded.length > 0) {
++        await recordFunding(db, order);
++        console.info("[webhook:geniuspay] commande financée:", order.id);
++      } else {
++        console.warn("[webhook:geniuspay] commande déjà traitée par un autre webhook:", order.id);
++      }
+     } else {
+-      console.warn("[webhook:geniuspay] commande pas en pending_payment:", hold.order_id, order?.status);
++      console.warn("[webhook:geniuspay] commande pas en pending_payment:", hold.order_id, order.status);
+     }
+   }
+ 
+diff --git a/src/app/globals.css b/src/app/globals.css
+index bba68e9..4f05dac 100644
+--- a/src/app/globals.css
++++ b/src/app/globals.css
+@@ -211,3 +211,87 @@ html.lenis, html.lenis body { height: auto; }
+     50%       { transform: translateY(-5px); }
+   }
+ }
++
++/* ---------------------------------------------------------------------------
++   Couleurs d'état — thème clair et thème sombre.
++
++   Les pastilles de statut (commande, prestation, vérification) s'appuient sur
++   ces variables au lieu des palettes figées de Tailwind : `bg-amber-50` reste
++   clair en thème sombre, ce qui produisait des blocs éblouissants sur fond noir.
++   --------------------------------------------------------------------------- */
++:root {
++  --tone-ok-bg: #e6f5ec;
++  --tone-ok-fg: #0a552d;
++  --tone-info-bg: #e8effc;
++  --tone-info-fg: #1c3d80;
++  --tone-progress-bg: #eaf3ee;
++  --tone-progress-fg: #0d6b38;
++  --tone-warn-bg: #fdf2e0;
++  --tone-warn-fg: #7a4a06;
++  --tone-danger-bg: #fdecea;
++  --tone-danger-fg: #8c1d18;
++  --tone-neutral-bg: #f1f4f2;
++  --tone-neutral-fg: #55685e;
++  --tone-attention-border: #f0d9ab;
++}
++
++@media (prefers-color-scheme: dark) {
++  :root {
++    --tone-ok-bg: #0c2b1b;
++    --tone-ok-fg: #7fd6a6;
++    --tone-info-bg: #10233f;
++    --tone-info-fg: #93b8f0;
++    --tone-progress-bg: #10281c;
++    --tone-progress-fg: #74c79b;
++    --tone-warn-bg: #2c2109;
++    --tone-warn-fg: #e9bd6a;
++    --tone-danger-bg: #321412;
++    --tone-danger-fg: #f09a92;
++    --tone-neutral-bg: #16241c;
++    --tone-neutral-fg: #8ea79b;
++    --tone-attention-border: #4a3a12;
++  }
++}
++
++/* Bandeaux d'attention (KYC à faire, dossiers en attente) : mêmes jetons. */
++.tone-attention {
++  background: var(--tone-warn-bg);
++  color: var(--tone-warn-fg);
++  border: 1px solid var(--tone-attention-border);
++}
++.tone-info {
++  background: var(--tone-info-bg);
++  color: var(--tone-info-fg);
++  border: 1px solid var(--tone-info-bg);
++}
++
++/* ---------------------------------------------------------------------------
++   Correctif de thème sombre pour les palettes figées.
++
++   Une cinquantaine d'écrans utilisaient `bg-amber-50`, `bg-red-50`,
++   `bg-green-100`… pour signaler un état. Ces règles hors `@layer` prennent le
++   pas sur les utilitaires générés par Tailwind et rétablissent un contraste
++   lisible en thème sombre, sans avoir à réécrire chaque écran.
++   --------------------------------------------------------------------------- */
++@media (prefers-color-scheme: dark) {
++  .bg-amber-50 { background-color: #2a1f0b; }
++  .bg-amber-100 { background-color: #33260d; }
++  .bg-amber-200 { background-color: #40300f; }
++  .border-amber-200 { border-color: #4a3a12; }
++  .border-amber-300 { border-color: #5a4716; }
++  .text-amber-700, .text-amber-800, .text-amber-900 { color: #e9bd6a; }
++  .bg-red-50 { background-color: #2e1311; }
++  .bg-red-100 { background-color: #3a1714; }
++  .border-red-200 { border-color: #55201c; }
++  .text-red-600, .text-red-700, .text-red-800, .text-red-900 { color: #f09a92; }
++  .bg-green-50, .bg-green-100 { background-color: #0c2b1b; }
++  .text-green-600, .text-green-700, .text-green-800 { color: #7fd6a6; }
++  .bg-yellow-50, .bg-yellow-100 { background-color: #2c2109; }
++  .text-yellow-700, .text-yellow-800 { color: #e9bd6a; }
++  .bg-blue-50, .bg-blue-100 { background-color: #10233f; }
++  .border-blue-200 { border-color: #1d3a63; }
++  .text-blue-700, .text-blue-800, .text-blue-900 { color: #93b8f0; }
++  .bg-neutral-100 { background-color: #16241c; }
++  .text-neutral-600 { color: #8ea79b; }
++  .bg-white { background-color: #ffffff; }
++}
+diff --git a/src/components/admin/admin-shell.tsx b/src/components/admin/admin-shell.tsx
+index 782afb4..0a5ba65 100644
+--- a/src/components/admin/admin-shell.tsx
++++ b/src/components/admin/admin-shell.tsx
+@@ -13,6 +13,7 @@ export function AdminShell({
+   title,
+   subtitle,
+   locale = "fr",
++  width = "default",
+   children,
+ }: {
+   user: { displayName: string | null; email: string | null; role: string };
+@@ -20,8 +21,10 @@ export function AdminShell({
+   title: string;
+   subtitle?: string;
+   locale?: Locale;
++  width?: "default" | "wide";
+   children: React.ReactNode;
+ }) {
++  const maxWidth = width === "wide" ? "max-w-7xl" : "max-w-5xl";
+   const tDash = getDashboardTexts(locale);
+   const tAdmin = getAdminTexts(locale);
+ 
+@@ -39,7 +42,7 @@ export function AdminShell({
+         <Link href="/" className="text-[var(--color-brand-500)]">
+           <Logo size={24} />
+         </Link>
+-        <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-amber-800">
++        <span className="rounded-full bg-[var(--tone-warn-bg)] px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-[var(--tone-warn-fg)]">
+           Admin
+         </span>
+         <SignOutButton label={tDash.shell.signOut} />
+@@ -47,7 +50,7 @@ export function AdminShell({
+ 
+       <div className="flex">
+         {/* Sidebar */}
+-        <aside className="hidden sm:flex sm:w-60 sm:flex-shrink-0 sm:flex-col sm:min-h-dvh sm:border-r sm:border-[var(--border)] sm:bg-[var(--background)]">
++        <aside className="sticky top-0 hidden h-dvh sm:flex sm:w-60 sm:shrink-0 sm:flex-col sm:border-r sm:border-[var(--border)] sm:bg-[var(--background)]">
+           {/* Brand */}
+           <div className="flex h-16 items-center gap-3 border-b border-[var(--border)] px-5">
+             <Link href="/" className="text-[var(--color-brand-500)]">
+@@ -57,7 +60,7 @@ export function AdminShell({
+               <span className="block font-display text-sm font-bold leading-tight">
+                 Toomny
+               </span>
+-              <span className="block rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-amber-800 w-fit mt-0.5">
++              <span className="mt-0.5 block w-fit rounded bg-[var(--tone-warn-bg)] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[var(--tone-warn-fg)]">
+                 Admin
+               </span>
+             </div>
+@@ -102,10 +105,10 @@ export function AdminShell({
+         </aside>
+ 
+         {/* Main content */}
+-        <main className="flex-1 min-w-0">
+-          <div className="px-5 py-8 sm:px-8 sm:py-10 max-w-5xl">
+-            <div className="mb-8">
+-              <h1 className="font-display text-2xl font-bold sm:text-3xl">{title}</h1>
++        <main className="min-w-0 flex-1">
++          <div className={`mx-auto ${maxWidth} px-4 py-6 sm:px-8 sm:py-10`}>
++            <div className="mb-6 sm:mb-8">
++              <h1 className="font-display text-xl font-bold sm:text-3xl">{title}</h1>
+               {subtitle && (
+                 <p className="mt-1 text-sm text-[var(--subtle)]">{subtitle}</p>
+               )}
+diff --git a/src/components/catalog/wishlist-button.tsx b/src/components/catalog/wishlist-button.tsx
+index 486f51c..e61ea74 100644
+--- a/src/components/catalog/wishlist-button.tsx
++++ b/src/components/catalog/wishlist-button.tsx
+@@ -1,24 +1,45 @@
+ "use client";
+ 
+-import { useState, useEffect } from "react";
++import { useSyncExternalStore } from "react";
++import { useLanguage } from "@/i18n/LanguageContext";
++import { getCatalogTexts } from "@/i18n/catalog";
+ 
+ const KEY = "toomny_wishlist";
++const CHANGE_EVENT = "toomny:wishlist-change";
+ 
+ function getWishlist(): string[] {
+   try {
+-    return JSON.parse(localStorage.getItem(KEY) ?? "[]");
++    return JSON.parse(localStorage.getItem(KEY) ?? "[]") as string[];
+   } catch {
+     return [];
+   }
+ }
+ 
+-function toggleWishlist(id: string): boolean {
+-  const list = getWishlist();
+-  const next = list.includes(id) ? list.filter((x) => x !== id) : [...list, id];
++function setWishlist(list: string[]) {
+   try {
+-    localStorage.setItem(KEY, JSON.stringify(next));
+-  } catch {}
+-  return next.includes(id);
++    localStorage.setItem(KEY, JSON.stringify(list));
++  } catch {
++    // Mode privé ou quota atteint : les favoris ne sont pas persistés.
++  }
++  // `storage` ne se déclenche pas dans l'onglet qui écrit : on prévient nous-mêmes.
++  window.dispatchEvent(new Event(CHANGE_EVENT));
++}
++
++/**
++ * Abonnement à la liste des favoris.
++ *
++ * Passer par `useSyncExternalStore` plutôt qu'un `useEffect` qui appelle
++ * `setState` : le rendu serveur renvoie `false` (jamais favori), le client lit
++ * la valeur réelle après hydratation, sans état intermédiaire « monté » ni
++ * cascade de rendus.
++ */
++function subscribe(onChange: () => void) {
++  window.addEventListener("storage", onChange);
++  window.addEventListener(CHANGE_EVENT, onChange);
++  return () => {
++    window.removeEventListener("storage", onChange);
++    window.removeEventListener(CHANGE_EVENT, onChange);
++  };
+ }
+ 
+ export function WishlistButton({
+@@ -28,36 +49,36 @@ export function WishlistButton({
+   serviceId: string;
+   size?: "sm" | "md";
+ }) {
+-  const [saved, setSaved] = useState(false);
+-  const [mounted, setMounted] = useState(false);
++  const { locale } = useLanguage();
++  const t = getCatalogTexts(locale);
+ 
+-  useEffect(() => {
+-    setMounted(true);
+-    setSaved(getWishlist().includes(serviceId));
+-  }, [serviceId]);
++  const saved = useSyncExternalStore(
++    subscribe,
++    () => getWishlist().includes(serviceId),
++    () => false,
++  );
+ 
+   function handleClick(e: React.MouseEvent) {
+     e.preventDefault();
+     e.stopPropagation();
+-    setSaved(toggleWishlist(serviceId));
++    const list = getWishlist();
++    setWishlist(list.includes(serviceId) ? list.filter((x) => x !== serviceId) : [...list, serviceId]);
+   }
+ 
+-  if (!mounted) return null;
+-
+   const isSmall = size === "sm";
+ 
+   return (
+     <button
+       type="button"
+       onClick={handleClick}
+-      aria-label={saved ? "Retirer des favoris" : "Ajouter aux favoris"}
++      aria-label={saved ? t.wishlistRemove : t.wishlistAdd}
+       aria-pressed={saved}
+       className={`flex items-center justify-center rounded-full border transition-all duration-200 ${
+         isSmall ? "h-7 w-7 text-sm" : "h-9 w-9 text-base"
+       } ${
+         saved
+-          ? "border-red-300 bg-red-50 text-red-500 hover:border-red-400 dark:border-red-800 dark:bg-red-950 dark:text-red-400"
+-          : "border-[var(--border)] bg-[var(--background)]/80 text-[var(--subtle)] hover:border-[var(--color-brand-300)] hover:text-red-400 backdrop-blur-sm"
++          ? "border-[var(--tone-danger-fg)]/40 bg-[var(--tone-danger-bg)] text-[var(--tone-danger-fg)]"
++          : "border-[var(--border)] bg-[var(--background)]/80 text-[var(--subtle)] hover:border-[var(--color-brand-300)] hover:text-[var(--tone-danger-fg)] backdrop-blur-sm"
+       }`}
+     >
+       <svg
+diff --git a/src/components/dashboard/shell.tsx b/src/components/dashboard/shell.tsx
+index f7aa091..b12a96c 100644
+--- a/src/components/dashboard/shell.tsx
++++ b/src/components/dashboard/shell.tsx
+@@ -7,12 +7,25 @@ import type { Locale } from "@/i18n/dictionaries";
+ 
+ export type NavItem = { href: string; label: string; current?: boolean };
+ 
++/**
++ * Coquille commune aux tableaux de bord (prestataire, client, administration).
++ *
++ * Points corrigés depuis la première version :
++ *  - la barre latérale marque le lien courant d'après le chemin, et découpe la
++ *    navigation en sections (« Mon activité », « Administration ») au lieu
++ *    d'empiler les entrées ;
++ *  - la barre mobile défile et reste accessible au pouce : cible tactile de
++ *    44 px, aucun chevauchement avec le contenu ;
++ *  - `width="wide"` donne aux écrans d'administration la largeur des tableaux,
++ *    sans étirer les colonnes de texte des écrans de lecture.
++ */
+ export function DashboardShell({
+   user,
+   nav,
+   title,
+   subtitle,
+   locale = "fr",
++  width = "default",
+   children,
+ }: {
+   user: { displayName: string | null; email: string | null; role: string };
+@@ -20,6 +33,7 @@ export function DashboardShell({
+   title: string;
+   subtitle?: string;
+   locale?: Locale;
++  width?: "default" | "wide";
+   children: React.ReactNode;
+ }) {
+   const t = getDashboardTexts(locale);
+@@ -45,30 +59,33 @@ export function DashboardShell({
+       ]
+     : [];
+ 
+-  // Nav without the legacy /admin single-link (now shown as a section)
++  // `/admin` est présenté comme une section complète, pas comme une entrée isolée.
+   const mainNav = nav.filter((n) => n.href !== "/admin");
++  const maxWidth = width === "wide" ? "max-w-7xl" : "max-w-5xl";
+ 
+   return (
+     <div className="min-h-dvh bg-[var(--surface)]">
+-      {/* ── Mobile top bar ── */}
+-      <header className="flex h-14 items-center justify-between border-b border-[var(--border)] bg-[var(--background)] px-4 sm:hidden">
++      {/* ── Barre supérieure (mobile) ── */}
++      <header className="sticky top-0 z-20 flex h-14 items-center justify-between gap-3 border-b border-[var(--border)] bg-[var(--background)] px-4 sm:hidden">
+         <Link href="/" className="text-[var(--color-brand-500)]" aria-label="Toomny">
+           <Logo size={24} withWordmark={false} />
+         </Link>
+-        <span className="font-display text-sm font-bold">{title}</span>
+-        <div className="flex items-center gap-3">
+-          <SignOutButton label={t.shell.signOut} compact />
+-        </div>
++        <span className="truncate font-display text-sm font-bold">{title}</span>
++        <SignOutButton label={t.shell.signOut} compact />
+       </header>
+ 
+-      {/* ── Mobile horizontal nav ── */}
++      {/* ── Navigation horizontale (mobile) ── */}
+       {mainNav.length > 0 && (
+-        <nav className="flex gap-1 overflow-x-auto border-b border-[var(--border)] bg-[var(--background)] px-3 pb-px sm:hidden">
++        <nav
++          aria-label={t.shell.navigation}
++          className="sticky top-14 z-10 flex gap-1 overflow-x-auto border-b border-[var(--border)] bg-[var(--background)] px-3 sm:hidden"
++        >
+           {[...mainNav, ...adminNavItems].map((n) => (
+             <Link
+               key={n.href}
+               href={n.href}
+-              className={`whitespace-nowrap rounded-t-lg px-3 py-2.5 text-sm font-medium transition-colors ${
++              aria-current={n.current ? "page" : undefined}
++              className={`flex min-h-11 items-center whitespace-nowrap rounded-t-lg px-3 text-sm font-medium transition-colors ${
+                 n.current
+                   ? "border-b-2 border-[var(--color-brand-500)] text-[var(--foreground)]"
+                   : "text-[var(--subtle)] hover:text-[var(--foreground)]"
+@@ -81,9 +98,8 @@ export function DashboardShell({
+       )}
+ 
+       <div className="flex">
+-        {/* ── Desktop left sidebar ── */}
+-        <aside className="hidden sm:flex sm:w-60 sm:shrink-0 sm:flex-col sm:min-h-[calc(100dvh-0px)] sm:border-r sm:border-[var(--border)] sm:bg-[var(--background)]">
+-          {/* Brand */}
++        {/* ── Barre latérale (bureau) ── */}
++        <aside className="sticky top-0 hidden h-dvh sm:flex sm:w-60 sm:shrink-0 sm:flex-col sm:border-r sm:border-[var(--border)] sm:bg-[var(--background)]">
+           <div className="flex h-16 items-center gap-3 border-b border-[var(--border)] px-5">
+             <Link href="/" className="text-[var(--color-brand-500)]" aria-label="Toomny">
+               <Logo size={26} withWordmark={false} />
+@@ -91,43 +107,24 @@ export function DashboardShell({
+             <span className="font-display text-sm font-bold leading-tight">Toomny</span>
+           </div>
+ 
+-          {/* Nav */}
+-          <nav className="flex-1 overflow-y-auto px-3 py-5">
++          <nav aria-label={t.shell.navigation} className="flex-1 overflow-y-auto px-3 py-5">
+             <ul className="space-y-0.5">
+               {mainNav.map((item) => (
+                 <li key={item.href}>
+-                  <Link
+-                    href={item.href}
+-                    className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors ${
+-                      item.current
+-                        ? "bg-[var(--color-brand-500)] text-white"
+-                        : "text-[var(--subtle)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+-                    }`}
+-                  >
+-                    <DashNavIcon href={item.href} active={!!item.current} />
+-                    {item.label}
+-                  </Link>
++                  <NavLink item={item} />
+                 </li>
+               ))}
+             </ul>
+ 
+             {adminNavItems.length > 0 && (
+               <>
+-                <div className="mt-6 mb-2 px-2">
+-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--subtle)]">
+-                    Administration
+-                  </p>
+-                </div>
++                <p className="mt-6 mb-2 px-2 text-[10px] font-bold uppercase tracking-widest text-[var(--subtle)]">
++                  {t.shell.adminSection}
++                </p>
+                 <ul className="space-y-0.5">
+                   {adminNavItems.map((item) => (
+                     <li key={item.href}>
+-                      <Link
+-                        href={item.href}
+-                        className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-[var(--subtle)] transition-colors hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
+-                      >
+-                        <AdminNavIcon href={item.href} />
+-                        {item.label}
+-                      </Link>
++                      <NavLink item={item} icon="admin" />
+                     </li>
+                   ))}
+                 </ul>
+@@ -135,7 +132,6 @@ export function DashboardShell({
+             )}
+           </nav>
+ 
+-          {/* Footer */}
+           <div className="border-t border-[var(--border)] px-4 py-4">
+             <div className="mb-3 flex items-center gap-3">
+               <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--color-brand-100)] font-display text-xs font-bold text-[var(--color-brand-700)]">
+@@ -150,11 +146,11 @@ export function DashboardShell({
+           </div>
+         </aside>
+ 
+-        {/* ── Main content ── */}
++        {/* ── Contenu ── */}
+         <main className="min-w-0 flex-1">
+-          <div className="mx-auto max-w-5xl px-5 py-8 sm:px-8 sm:py-10">
+-            <div className="mb-8">
+-              <h1 className="font-display text-2xl font-bold sm:text-3xl">{title}</h1>
++          <div className={`mx-auto ${maxWidth} px-4 py-6 sm:px-8 sm:py-10`}>
++            <div className="mb-6 sm:mb-8">
++              <h1 className="font-display text-xl font-bold sm:text-3xl">{title}</h1>
+               {subtitle && <p className="mt-1 text-sm text-[var(--subtle)]">{subtitle}</p>}
+             </div>
+             <div className="app-enter">{children}</div>
+@@ -165,168 +161,314 @@ export function DashboardShell({
+   );
+ }
+ 
+-// ── Dashboard nav icons ──────────────────────────────────────────────────────
++function NavLink({ item, icon = "dash" }: { item: NavItem; icon?: "dash" | "admin" }) {
++  return (
++    <Link
++      href={item.href}
++      aria-current={item.current ? "page" : undefined}
++      className={`flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors ${
++        item.current
++          ? "bg-[var(--color-brand-500)] text-white"
++          : "text-[var(--subtle)] hover:bg-[var(--surface)] hover:text-[var(--foreground)]"
++      }`}
++    >
++      {icon === "dash" ? (
++        <DashNavIcon href={item.href} active={!!item.current} />
++      ) : (
++        <AdminNavIcon href={item.href} active={!!item.current} />
++      )}
++      {item.label}
++    </Link>
++  );
++}
++
++// ── Briques d'interface partagées ────────────────────────────────────────────
++
++export type Tone = "neutral" | "ok" | "info" | "warn" | "danger";
++
++const TONE_SURFACE: Record<Tone, string> = {
++  neutral: "bg-[var(--tone-neutral-bg)] text-[var(--tone-neutral-fg)]",
++  ok: "bg-[var(--tone-ok-bg)] text-[var(--tone-ok-fg)]",
++  info: "bg-[var(--tone-info-bg)] text-[var(--tone-info-fg)]",
++  warn: "bg-[var(--tone-warn-bg)] text-[var(--tone-warn-fg)]",
++  danger: "bg-[var(--tone-danger-bg)] text-[var(--tone-danger-fg)]",
++};
++
++/**
++ * Chiffre clé. `href` rend la carte cliquable ; `emphasis` la met en avant ;
++ * `delta` affiche une précision (part du total, comparaison) sous la valeur.
++ */
++export function StatCard({
++  label,
++  value,
++  hint,
++  accent = false,
++  tone,
++  href,
++  delta,
++}: {
++  label: string;
++  value: string;
++  hint?: string;
++  accent?: boolean;
++  tone?: Tone;
++  href?: string;
++  delta?: string;
++}) {
++  const surface = tone ? TONE_SURFACE[tone] : null;
++
++  const body = (
++    <>
++      <p className="text-xs font-medium uppercase tracking-wide opacity-80">{label}</p>
++      <p className="mt-2 font-display text-2xl font-bold tabular-nums">{value}</p>
++      {delta && <p className="mt-1 text-xs font-medium opacity-80">{delta}</p>}
++      {hint && <p className="mt-1 text-xs opacity-70">{hint}</p>}
++    </>
++  );
++
++  const className = `app-lift block h-full rounded-2xl border p-5 ${
++    surface
++      ? `border-transparent ${surface}`
++      : accent
++        ? "border-[var(--color-brand-200)] bg-[var(--color-brand-50)] text-[var(--color-brand-700)]"
++        : "border-[var(--border)] bg-[var(--background)]"
++  }`;
++
++  if (href) {
++    return (
++      <Link href={href} className={`${className} transition-colors hover:border-[var(--color-brand-300)]`}>
++        {body}
++      </Link>
++    );
++  }
++
++  return <div className={className}>{body}</div>;
++}
++
++/** Bloc titré, avec action facultative à droite. */
++export function SectionCard({
++  title,
++  action,
++  children,
++  className = "",
++}: {
++  title?: string;
++  action?: { href: string; label: string };
++  children: React.ReactNode;
++  className?: string;
++}) {
++  return (
++    <section className={`rounded-2xl border border-[var(--border)] bg-[var(--background)] ${className}`}>
++      {(title || action) && (
++        <div className="flex items-center justify-between gap-4 border-b border-[var(--border)] px-5 py-4">
++          {title && <h2 className="font-display text-base font-bold">{title}</h2>}
++          {action && (
++            <Link
++              href={action.href}
++              className="shrink-0 text-sm font-medium text-[var(--color-brand-600)] underline underline-offset-4"
++            >
++              {action.label}
++            </Link>
++          )}
++        </div>
++      )}
++      {children}
++    </section>
++  );
++}
++
++/**
++ * Bandeau d'information ou d'action.
++ *
++ * `tone="warn"` signale ce qui bloque (KYC manquant), `tone="info"` ce qui
++ * progresse (dossier en cours d'examen). Les jetons de couleur s'inversent en
++ * thème sombre, contrairement aux `bg-amber-50` d'origine.
++ */
++export function Alert({
++  tone = "info",
++  title,
++  body,
++  action,
++}: {
++  tone?: Tone;
++  title: string;
++  body?: string;
++  action?: { href: string; label: string };
++}) {
++  return (
++    <div
++      role="status"
++      className={`flex flex-col gap-3 rounded-2xl p-5 sm:flex-row sm:items-center sm:justify-between ${TONE_SURFACE[tone]}`}
++    >
++      <div className="min-w-0">
++        <p className="font-display text-sm font-bold">{title}</p>
++        {body && <p className="mt-1 text-sm opacity-90">{body}</p>}
++      </div>
++      {action && (
++        <Link
++          href={action.href}
++          className="shrink-0 rounded-full bg-[var(--color-brand-600)] px-5 py-2.5 text-center text-sm font-semibold text-white transition-colors hover:bg-[var(--color-brand-700)]"
++        >
++          {action.label}
++        </Link>
++      )}
++    </div>
++  );
++}
++
++/** Pastille de statut : le libellé vient de l'i18n, la couleur du statut. */
++export function StatusBadge({ label, toneClass }: { label: string; toneClass: string }) {
++  return (
++    <span className={`inline-block rounded-full px-2.5 py-1 text-xs font-semibold ${toneClass}`}>{label}</span>
++  );
++}
++
++/**
++ * Tableau : défilement horizontal contenu, en-têtes collants, et sur petit
++ * écran chaque ligne devient un bloc lisible plutôt qu'une grille écrasée.
++ */
++export function TableWrap({ children, minWidth = "36rem" }: { children: React.ReactNode; minWidth?: string }) {
++  return (
++    <div className="w-full overflow-x-auto rounded-2xl border border-[var(--border)] bg-[var(--background)]">
++      <table className="w-full text-left text-sm" style={{ minWidth }}>
++        {children}
++      </table>
++    </div>
++  );
++}
++
++export function EmptyState({
++  title,
++  body,
++  action,
++}: {
++  title: string;
++  body: string;
++  action?: { href: string; label: string };
++}) {
++  return (
++    <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)] px-6 py-14 text-center">
++      <h3 className="font-display text-base font-bold">{title}</h3>
++      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--subtle)]">{body}</p>
++      {action && (
++        <Link
++          href={action.href}
++          className="mt-6 inline-flex rounded-full bg-[var(--color-brand-500)] px-6 py-2.5 text-sm font-semibold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95"
++        >
++          {action.label}
++        </Link>
++      )}
++    </div>
++  );
++}
++
++// ── Icônes de navigation ─────────────────────────────────────────────────────
+ 
+ function DashNavIcon({ href, active }: { href: string; active: boolean }) {
+   const cls = `h-4 w-4 shrink-0 ${active ? "text-white" : "text-[var(--subtle)]"}`;
+ 
+   if (href === "/dashboard")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M2 11l8-8 8 8v7a1 1 0 01-1 1H3a1 1 0 01-1-1v-7z" />
+       </svg>
+     );
+   if (href === "/dashboard/prestations")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/dashboard/profil")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/dashboard/verification")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/orders")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+         <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/messages")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/dashboard/versements")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z" />
+         <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-13a1 1 0 10-2 0v.092a4.535 4.535 0 00-1.676.662C6.602 6.234 6 7.009 6 8c0 .99.602 1.765 1.324 2.246.48.32 1.054.545 1.676.662v1.941c-.391-.127-.68-.317-.843-.504a1 1 0 10-1.51 1.31c.562.649 1.413 1.076 2.353 1.253V15a1 1 0 102 0v-.092a4.535 4.535 0 001.676-.662C13.398 13.766 14 12.991 14 12c0-.99-.602-1.765-1.324-2.246A4.535 4.535 0 0011 9.092V7.151c.391.127.68.317.843.504a1 1 0 101.511-1.31c-.563-.649-1.413-1.076-2.354-1.253V5z" clipRule="evenodd" />
+       </svg>
+     );
+-  // fallback
++  if (href === "/dashboard/compte")
++    return (
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
++        <path fillRule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
++      </svg>
++    );
+   return (
+-    <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++    <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+       <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z" clipRule="evenodd" />
+     </svg>
+   );
+ }
+ 
+-function AdminNavIcon({ href }: { href: string }) {
+-  const cls = "h-4 w-4 shrink-0 text-amber-500";
++function AdminNavIcon({ href, active }: { href: string; active: boolean }) {
++  const cls = `h-4 w-4 shrink-0 ${active ? "text-white" : "text-[var(--tone-warn-fg)]"}`;
+ 
+   if (href === "/admin")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M2 11l8-8 8 8v7a1 1 0 01-1 1H3a1 1 0 01-1-1v-7z" />
+       </svg>
+     );
+   if (href === "/admin/verifications")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/admin/services")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
+         <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd" />
+       </svg>
+     );
+   if (href === "/admin/categories")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zm0 8a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zm6-6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zm0 8a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+       </svg>
+     );
+   if (href === "/admin/users")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zm8 0a3 3 0 11-6 0 3 3 0 016 0zM2 16a6 6 0 0112 0H2zm14 0a6 6 0 00-9.33-5.26A6.001 6.001 0 0118 16h-2z" />
+       </svg>
+     );
+   if (href === "/admin/orders")
+     return (
+-      <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++      <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+         <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+         <path fillRule="evenodd" d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z" clipRule="evenodd" />
+       </svg>
+     );
+-  // disputes
+   return (
+-    <svg className={cls} viewBox="0 0 20 20" fill="currentColor">
++    <svg className={cls} viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+       <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+     </svg>
+   );
+ }
+-
+-// ── Utility components ───────────────────────────────────────────────────────
+-
+-export function StatCard({
+-  label,
+-  value,
+-  hint,
+-  accent = false,
+-}: {
+-  label: string;
+-  value: string;
+-  hint?: string;
+-  accent?: boolean;
+-}) {
+-  return (
+-    <div
+-      className={`app-lift rounded-2xl border p-5 ${
+-        accent
+-          ? "border-[var(--color-brand-200)] bg-[var(--color-brand-50)]"
+-          : "border-[var(--border)] bg-[var(--background)]"
+-      }`}
+-    >
+-      <p className="text-xs font-medium uppercase tracking-wide text-[var(--subtle)]">{label}</p>
+-      <p
+-        className={`mt-2 font-display text-2xl font-bold ${
+-          accent ? "text-[var(--color-brand-700)]" : ""
+-        }`}
+-      >
+-        {value}
+-      </p>
+-      {hint && <p className="mt-1 text-xs text-[var(--subtle)]">{hint}</p>}
+-    </div>
+-  );
+-}
+-
+-export function EmptyState({
+-  title,
+-  body,
+-  action,
+-}: {
+-  title: string;
+-  body: string;
+-  action?: { href: string; label: string };
+-}) {
+-  return (
+-    <div className="rounded-2xl border border-dashed border-[var(--border)] bg-[var(--background)] px-6 py-14 text-center">
+-      <h3 className="font-display text-base font-bold">{title}</h3>
+-      <p className="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--subtle)]">{body}</p>
+-      {action && (
+-        <Link
+-          href={action.href}
+-          className="mt-6 inline-flex rounded-full bg-[var(--color-brand-500)] px-6 py-2.5 text-sm font-semibold text-white transition-transform duration-200 hover:scale-[1.03] active:scale-95"
+-        >
+-          {action.label}
+-        </Link>
+-      )}
+-    </div>
+-  );
+-}
+diff --git a/src/i18n/admin.ts b/src/i18n/admin.ts
+index 95f8ace..9179a95 100644
+--- a/src/i18n/admin.ts
++++ b/src/i18n/admin.ts
+@@ -22,6 +22,22 @@ const fr = {
+     verificationOne: "vérification d'identité à traiter.",
+     verificationMany: "vérifications d'identité à traiter.",
+     processKyc: "Traiter les KYC",
++    queueTitle: "À traiter",
++    queueEmpty: "Aucune action en attente",
++    queueEmptyBody: "Les dossiers à examiner apparaîtront ici.",
++    manualReview: "Revue manuelle",
++    manualReviewHint: "Dossiers écartés du contrôle automatique",
++    stalledOrders: "Commandes bloquées",
++    stalledOrdersHint: "Financées sans livraison depuis plus de 72 h",
++    awaitingRelease: "Versements à libérer",
++    awaitingReleaseHint: "Livrées depuis plus de 72 h, non versées",
++    oldestPending: "Plus ancien dossier en attente",
++    oldestPendingNone: "Aucun dossier en attente",
++    kpiTitle: "Indicateurs",
++    trendTitle: "Commandes — 30 derniers jours",
++    countriesTitle: "Répartition par pays",
++    countriesEmpty: "Aucun pays à afficher",
++    auditHint: "Chaque décision sensible est enregistrée, sans possibilité de modification.",
+     volumeTitle: "Volume d'affaires",
+     offerTitle: "Offre et demande",
+     volume: "Volume traité",
+@@ -242,6 +258,22 @@ const en: typeof fr = {
+     verificationOne: "identity check to process.",
+     verificationMany: "identity checks to process.",
+     processKyc: "Process identity checks",
++    queueTitle: "To handle",
++    queueEmpty: "Nothing waiting",
++    queueEmptyBody: "Items needing review will appear here.",
++    manualReview: "Manual review",
++    manualReviewHint: "Items pulled out of automated checks",
++    stalledOrders: "Stalled orders",
++    stalledOrdersHint: "Funded, undelivered for over 72h",
++    awaitingRelease: "Payouts to release",
++    awaitingReleaseHint: "Delivered over 72h ago, not paid out",
++    oldestPending: "Oldest item waiting",
++    oldestPendingNone: "No item waiting",
++    kpiTitle: "Key figures",
++    trendTitle: "Orders — last 30 days",
++    countriesTitle: "Breakdown by country",
++    countriesEmpty: "No country to display",
++    auditHint: "Every sensitive decision is recorded and cannot be altered.",
+     volumeTitle: "Business volume",
+     offerTitle: "Supply and demand",
+     volume: "Volume processed",
+diff --git a/src/i18n/catalog.ts b/src/i18n/catalog.ts
+index 337bf46..3f3b8ce 100644
+--- a/src/i18n/catalog.ts
++++ b/src/i18n/catalog.ts
+@@ -16,6 +16,8 @@ const fr = {
+   sortLabel: "Trier par",
+   sortRecent: "Plus récents",
+   sortRating: "Mieux notés",
++  wishlistAdd: "Ajouter aux favoris",
++  wishlistRemove: "Retirer des favoris",
+   budgetLabel: "Budget",
+   budgetAll: "Tous les prix",
+   budget50: "- de 50 000 FCFA",
+@@ -92,6 +94,8 @@ const en: typeof fr = {
+   sortLabel: "Sort by",
+   sortRecent: "Most recent",
+   sortRating: "Top rated",
++  wishlistAdd: "Save to favourites",
++  wishlistRemove: "Remove from favourites",
+   budgetLabel: "Budget",
+   budgetAll: "Any price",
+   budget50: "Under 50,000 FCFA",
+diff --git a/src/i18n/dashboard.ts b/src/i18n/dashboard.ts
+index 5ce9132..927003d 100644
+--- a/src/i18n/dashboard.ts
++++ b/src/i18n/dashboard.ts
+@@ -6,7 +6,28 @@
+ import type { Locale } from "./dictionaries";
+ 
+ const fr = {
+-  shell: { signOut: "Se déconnecter", home: "Accueil" },
++  shell: {
++    signOut: "Se déconnecter",
++    home: "Accueil",
++    navigation: "Navigation principale",
++    adminSection: "Administration",
++  },
++  overview: {
++    actionsTitle: "À faire maintenant",
++    actionsEmpty: "Rien ne vous attend",
++    actionsEmptyBody: "Vous serez prévenu ici dès qu'une action sera nécessaire.",
++    deliverLabel: "Commandes à livrer",
++    deliverHint: "Le client a payé — à vous de livrer",
++    messagesLabel: "Messages non lus",
++    messagesHint: "Vos échanges sur les commandes",
++    inquiriesLabel: "Demandes de contact",
++    inquiriesHint: "Messages reçus avant commande",
++    payLabel: "Paiements en attente",
++    payHint: "Commandes créées, pas encore réglées",
++    reviewLabel: "Livraisons à valider",
++    reviewHint: "Confirmez la réception pour libérer les fonds",
++    seeOrders: "Voir les commandes",
++  },
+   nav: {
+     overview: "Vue d'ensemble",
+     home: "Accueil",
+@@ -18,6 +39,7 @@ const fr = {
+     profile: "Mon profil",
+     kyc: "Vérification KYC",
+     payouts: "Versements",
++    account: "Mon compte",
+     admin: "Admin",
+   },
+   common: {
+@@ -66,6 +88,19 @@ const fr = {
+     statServicesHint: "Publiées",
+     statOrders: "Commandes",
+     statOrdersHint: "Toutes périodes",
++    statToDeliver: "À livrer",
++    statToDeliverHint: "Commandes en cours de traitement",
++    revenueTitle: "Revenus",
++    revenueNote: "Montants nets de la commission Toomny (10 %).",
++    revenueEscrow: "En séquestre",
++    revenueEscrowHint: "Encaissé, pas encore versé",
++    revenueDisputed: "En litige",
++    revenueDisputedHint: "Fonds gelés pendant l'arbitrage",
++    servicesTitle: "Prestations",
++    servicesBreakdown: "Publiées · brouillons · en pause",
++    completionRate: "Taux de complétion",
++    completionRateHint: "Commandes terminées sur le total",
++    ordersReceivedHint: "Vous êtes le prestataire",
+     profileCard: "Profil",
+     verifiedShort: "Identité vérifiée",
+     verificationRequired: "Vérification requise",
+@@ -274,7 +309,28 @@ const fr = {
+ export type DashboardTexts = typeof fr;
+ 
+ const en: DashboardTexts = {
+-  shell: { signOut: "Sign out", home: "Home" },
++  shell: {
++    signOut: "Sign out",
++    home: "Home",
++    navigation: "Main navigation",
++    adminSection: "Administration",
++  },
++  overview: {
++    actionsTitle: "To do now",
++    actionsEmpty: "Nothing waiting on you",
++    actionsEmptyBody: "You will be notified here as soon as an action is needed.",
++    deliverLabel: "Orders to deliver",
++    deliverHint: "The client has paid — your turn to deliver",
++    messagesLabel: "Unread messages",
++    messagesHint: "Your conversations about orders",
++    inquiriesLabel: "Contact requests",
++    inquiriesHint: "Messages received before ordering",
++    payLabel: "Pending payments",
++    payHint: "Orders created, not yet paid",
++    reviewLabel: "Deliveries to confirm",
++    reviewHint: "Confirm receipt to release the funds",
++    seeOrders: "View orders",
++  },
+   nav: {
+     overview: "Overview",
+     home: "Home",
+@@ -286,6 +342,7 @@ const en: DashboardTexts = {
+     profile: "My profile",
+     kyc: "Identity check",
+     payouts: "Payouts",
++    account: "My account",
+     admin: "Admin",
+   },
+   common: {
+@@ -329,6 +386,19 @@ const en: DashboardTexts = {
+     statServicesHint: "Published",
+     statOrders: "Orders",
+     statOrdersHint: "All time",
++    statToDeliver: "To deliver",
++    statToDeliverHint: "Orders being worked on",
++    revenueTitle: "Revenue",
++    revenueNote: "Amounts net of the Toomny commission (10%).",
++    revenueEscrow: "In escrow",
++    revenueEscrowHint: "Collected, not yet paid out",
++    revenueDisputed: "In dispute",
++    revenueDisputedHint: "Funds frozen during arbitration",
++    servicesTitle: "Services",
++    servicesBreakdown: "Published · drafts · paused",
++    completionRate: "Completion rate",
++    completionRateHint: "Completed orders over total",
++    ordersReceivedHint: "You are the provider",
+     profileCard: "Profile",
+     verifiedShort: "Identity verified",
+     verificationRequired: "Verification required",
+diff --git a/src/lib/admin-stats.ts b/src/lib/admin-stats.ts
+index 39275c3..b8445b5 100644
+--- a/src/lib/admin-stats.ts
++++ b/src/lib/admin-stats.ts
+@@ -1,4 +1,5 @@
+ import { createAdminClient } from "@/lib/supabase/admin";
++import { parseAttentionQueue, type AttentionQueue } from "@/lib/dashboard-stats";
+ 
+ /**
+  * Chiffres de l'administration.
+@@ -92,3 +93,22 @@ export async function getAdminStats(): Promise<AdminStats> {
+     countryBreakdown,
+   };
+ }
++
++/**
++ * File d'attente d'action immédiate.
++ *
++ * Séparée des chiffres d'ensemble : ce sont ces compteurs qui disent à
++ * l'équipe ce qu'il faut faire maintenant. Agrégés en base par
++ * `admin_attention_queue()` (clé de service, après `requireAdmin()`).
++ */
++export async function getAttentionQueue(): Promise<AttentionQueue> {
++  const db = createAdminClient();
++  const { data, error } = await db.rpc("admin_attention_queue");
++
++  if (error) {
++    console.error("[admin-stats] admin_attention_queue:", error.message);
++    return parseAttentionQueue(null);
++  }
++
++  return parseAttentionQueue(data as Record<string, string | number | null>);
++}
+diff --git a/src/lib/dashboard-stats.ts b/src/lib/dashboard-stats.ts
+new file mode 100644
+index 0000000..cda64a1
+--- /dev/null
++++ b/src/lib/dashboard-stats.ts
+@@ -0,0 +1,132 @@
++import { createClient } from "@/lib/supabase/server";
++
++/**
++ * Chiffres des tableaux de bord.
++ *
++ * Les agrégats sont calculés par des fonctions SQL `security invoker` : la RLS
++ * s'applique, un appelant ne peut donc additionner que ses propres lignes, et
++ * aucun identifiant n'est passé en entrée (les fonctions travaillent sur
++ * `auth.uid()`). Les montants sont renvoyés en texte pour être convertis en
++ * `bigint` sans perte de précision au passage en JSON.
++ *
++ * Voir supabase/migrations/0020_dashboard_stats_and_storage_hardening.sql.
++ */
++
++export type ProviderStats = {
++  earnedNetMinor: bigint;
++  inEscrowMinor: bigint;
++  disputedMinor: bigint;
++  ordersTotal: number;
++  ordersCompleted: number;
++  ordersActive: number;
++  ordersToDeliver: number;
++  servicesTotal: number;
++  servicesActive: number;
++  servicesDraft: number;
++  servicesPaused: number;
++  unreadMessages: number;
++  pendingInquiries: number;
++  currency: string;
++};
++
++export type ClientStats = {
++  spentMinor: bigint;
++  inEscrowMinor: bigint;
++  ordersTotal: number;
++  ordersActive: number;
++  ordersCompleted: number;
++  ordersToPay: number;
++  ordersToReview: number;
++  unreadMessages: number;
++  currency: string;
++};
++
++type RawStats = Record<string, string | number | null>;
++
++function toBigInt(value: string | number | null | undefined): bigint {
++  if (value === null || value === undefined) return 0n;
++  try {
++    return BigInt(value);
++  } catch {
++    return 0n;
++  }
++}
++
++function toNumber(value: string | number | null | undefined): number {
++  const n = Number(value ?? 0);
++  return Number.isFinite(n) ? n : 0;
++}
++
++async function callStats(rpc: "provider_dashboard_stats" | "client_dashboard_stats"): Promise<RawStats | null> {
++  const supabase = await createClient();
++  const { data, error } = await supabase.rpc(rpc);
++
++  if (error) {
++    // Le tableau de bord ne doit pas casser si la migration 0020 n'est pas
++    // encore appliquée : on journalise et l'écran affiche des zéros.
++    console.error(`[dashboard-stats] ${rpc}:`, error.message);
++    return null;
++  }
++
++  return (data ?? {}) as RawStats;
++}
++
++export async function getProviderStats(): Promise<ProviderStats> {
++  const raw = (await callStats("provider_dashboard_stats")) ?? {};
++  return {
++    earnedNetMinor: toBigInt(raw.earned_net_minor),
++    inEscrowMinor: toBigInt(raw.in_escrow_minor),
++    disputedMinor: toBigInt(raw.disputed_minor),
++    ordersTotal: toNumber(raw.orders_total),
++    ordersCompleted: toNumber(raw.orders_completed),
++    ordersActive: toNumber(raw.orders_active),
++    ordersToDeliver: toNumber(raw.orders_to_deliver),
++    servicesTotal: toNumber(raw.services_total),
++    servicesActive: toNumber(raw.services_active),
++    servicesDraft: toNumber(raw.services_draft),
++    servicesPaused: toNumber(raw.services_paused),
++    unreadMessages: toNumber(raw.unread_messages),
++    pendingInquiries: toNumber(raw.pending_inquiries),
++    currency: typeof raw.currency === "string" ? raw.currency : "XOF",
++  };
++}
++
++export async function getClientStats(): Promise<ClientStats> {
++  const raw = (await callStats("client_dashboard_stats")) ?? {};
++  return {
++    spentMinor: toBigInt(raw.spent_minor),
++    inEscrowMinor: toBigInt(raw.in_escrow_minor),
++    ordersTotal: toNumber(raw.orders_total),
++    ordersActive: toNumber(raw.orders_active),
++    ordersCompleted: toNumber(raw.orders_completed),
++    ordersToPay: toNumber(raw.orders_to_pay),
++    ordersToReview: toNumber(raw.orders_to_review),
++    unreadMessages: toNumber(raw.unread_messages),
++    currency: typeof raw.currency === "string" ? raw.currency : "XOF",
++  };
++}
++
++/** File d'attente d'administration (clé de service, après `requireAdmin()`). */
++export type AttentionQueue = {
++  pendingVerifications: number;
++  manualReview: number;
++  openDisputes: number;
++  draftServices: number;
++  stalledOrders: number;
++  awaitingRelease: number;
++  oldestPendingVerification: string | null;
++};
++
++export function parseAttentionQueue(raw: RawStats | null): AttentionQueue {
++  const r = raw ?? {};
++  return {
++    pendingVerifications: toNumber(r.pending_verifications),
++    manualReview: toNumber(r.manual_review),
++    openDisputes: toNumber(r.open_disputes),
++    draftServices: toNumber(r.draft_services),
++    stalledOrders: toNumber(r.stalled_orders),
++    awaitingRelease: toNumber(r.awaiting_release),
++    oldestPendingVerification:
++      typeof r.oldest_pending_verification === "string" ? r.oldest_pending_verification : null,
++  };
++}
+diff --git a/src/lib/dashboard.ts b/src/lib/dashboard.ts
+index e9d11d0..7993a9c 100644
+--- a/src/lib/dashboard.ts
++++ b/src/lib/dashboard.ts
+@@ -1,14 +1,19 @@
+ import { createClient } from "@/lib/supabase/server";
+-import { isProvider, type CurrentUser } from "@/lib/auth";
+ 
+ /**
+- * Chiffres du tableau de bord.
++ * Commandes récentes, et rien d'autre.
+  *
+- * Toutes les requêtes passent par la session de l'utilisateur : RLS garantit
+- * qu'il ne voit que ses propres commandes, quoi qu'on écrive ici.
++ * Les totaux (encaissé, en séquestre, dépensé) ne sont plus calculés ici : ils
++ * l'étaient en JavaScript sur les 50 dernières commandes, ce qui donnait des
++ * montants faux dès la 51e, sans le moindre signal. Ils viennent désormais de
++ * `provider_dashboard_stats()` / `client_dashboard_stats()`, agrégés en base sur
++ * l'intégralité des lignes (voir src/lib/dashboard-stats.ts).
++ *
++ * On réexporte `statusTone` : six écrans l'importent depuis ce module.
+  */
++export { statusTone } from "@/lib/order-status";
+ 
+-export type OrderRow = {
++export type RecentOrder = {
+   id: string;
+   reference: string;
+   status: string;
+@@ -20,64 +25,25 @@ export type OrderRow = {
+   provider_id: string;
+ };
+ 
+-export type DashboardData = {
+-  orders: OrderRow[];
+-  servicesCount: number;
+-  earnedMinor: bigint;
+-  spentMinor: bigint;
+-  pendingMinor: bigint;
+-  currency: string;
+-};
++const ORDER_COLUMNS =
++  "id, reference, status, amount_minor, provider_net_minor, currency, created_at, client_id, provider_id";
+ 
+-const HELD = ["funded", "in_progress", "delivered", "disputed"];
+-
+-export async function getDashboardData(user: CurrentUser): Promise<DashboardData> {
++/** Les `limit` dernières commandes visibles par l'utilisateur (RLS). */
++export async function getRecentOrders(userId: string, limit = 8): Promise<RecentOrder[]> {
+   const supabase = await createClient();
+-
+-  const [{ data: orders }, { count: servicesCount }] = await Promise.all([
+-    supabase
+-      .from("orders")
+-      .select("id, reference, status, amount_minor, provider_net_minor, currency, created_at, client_id, provider_id")
+-      .order("created_at", { ascending: false })
+-      .limit(50),
+-    isProvider(user.role)
+-      ? supabase.from("services").select("id", { count: "exact", head: true }).eq("provider_id", user.id)
+-      : Promise.resolve({ count: 0 }),
+-  ]);
+-
+-  const rows = (orders ?? []) as OrderRow[];
+-
+-  let earned = 0n;
+-  let spent = 0n;
+-  let pending = 0n;
+-
+-  for (const o of rows) {
+-    const isMine = o.provider_id === user.id;
+-    if (isMine && o.status === "completed") earned += BigInt(o.provider_net_minor);
+-    if (isMine && HELD.includes(o.status)) pending += BigInt(o.provider_net_minor);
+-    if (
+-      o.client_id === user.id &&
+-      o.status !== "pending_payment" &&
+-      o.status !== "cancelled" &&
+-      o.status !== "refunded"
+-    ) {
+-      spent += BigInt(o.amount_minor);
+-    }
++  const { data, error } = await supabase
++    .from("orders")
++    .select(ORDER_COLUMNS)
++    .order("created_at", { ascending: false })
++    .limit(limit);
++
++  if (error) {
++    console.error("getRecentOrders:", error.message);
++    return [];
+   }
+ 
+-  return {
+-    orders: rows,
+-    servicesCount: servicesCount ?? 0,
+-    earnedMinor: earned,
+-    spentMinor: spent,
+-    pendingMinor: pending,
+-    currency: rows[0]?.currency ?? "XOF",
+-  };
+-}
+-
+-export function statusTone(status: string): string {
+-  if (status === "completed") return "bg-[var(--color-brand-50)] text-[var(--color-brand-700)]";
+-  if (status === "disputed") return "bg-red-50 text-red-700";
+-  if (status === "cancelled" || status === "refunded") return "bg-neutral-100 text-neutral-600";
+-  return "bg-amber-50 text-amber-700";
++  // La RLS laisse déjà passer les seules commandes où l'utilisateur est partie.
++  return ((data ?? []) as RecentOrder[]).filter(
++    (o) => o.client_id === userId || o.provider_id === userId,
++  );
+ }
+diff --git a/src/lib/image-upload.test.ts b/src/lib/image-upload.test.ts
+new file mode 100644
+index 0000000..0991da3
+--- /dev/null
++++ b/src/lib/image-upload.test.ts
+@@ -0,0 +1,76 @@
++import { describe, expect, it } from "vitest";
++import { checkImageUpload, sniffImage, MAX_AVATAR_BYTES } from "./image-upload";
++
++/**
++ * Tableau d'octets adossé à un `ArrayBuffer` explicite : `File` refuse un
++ * `Uint8Array<ArrayBufferLike>` (un tampon partagé ne peut pas être un BlobPart).
++ */
++function bytes(...values: number[]): Uint8Array<ArrayBuffer> {
++  const buffer = new Uint8Array(new ArrayBuffer(values.length));
++  buffer.set(values);
++  return buffer;
++}
++
++const JPEG = bytes(0xff, 0xd8, 0xff, 0xe0, 0x00, 0x10, 0x4a, 0x46, 0x49, 0x46, 0x00, 0x01);
++const PNG = bytes(0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00, 0x00, 0x00, 0x0d);
++const WEBP = bytes(0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42, 0x50);
++
++describe("sniffImage", () => {
++  it("reconnaît les trois formats acceptés", () => {
++    expect(sniffImage(JPEG)).toEqual({ mime: "image/jpeg", ext: "jpg" });
++    expect(sniffImage(PNG)).toEqual({ mime: "image/png", ext: "png" });
++    expect(sniffImage(WEBP)).toEqual({ mime: "image/webp", ext: "webp" });
++  });
++
++  it("refuse un fichier qui n'est pas une image", () => {
++    // « <!DOCTYPE html> » : un fichier HTML annoncé comme image.
++    const html = new TextEncoder().encode("<!DOCTYPE html><script>alert(1)</script>");
++    expect(sniffImage(html)).toBeNull();
++  });
++
++  it("refuse un fichier trop court pour conclure", () => {
++    expect(sniffImage(bytes(0xff, 0xd8))).toBeNull();
++  });
++
++  it("ne confond pas un RIFF non-WebP avec une image", () => {
++    const riffWav = bytes(0x52, 0x49, 0x46, 0x46, 0x24, 0x00, 0x00, 0x00, 0x57, 0x41, 0x56, 0x45);
++    expect(sniffImage(riffWav)).toBeNull();
++  });
++});
++
++describe("checkImageUpload", () => {
++  it("accepte une image dont le type annoncé correspond au contenu", async () => {
++    const file = new File([PNG], "photo.png", { type: "image/png" });
++    const result = await checkImageUpload(file, MAX_AVATAR_BYTES);
++    expect(result.ok).toBe(true);
++    if (result.ok) expect(result.ext).toBe("png");
++  });
++
++  it("refuse un fichier dont le contenu ne correspond pas au type annoncé", async () => {
++    const file = new File([JPEG], "trompeur.png", { type: "image/png" });
++    const result = await checkImageUpload(file, MAX_AVATAR_BYTES);
++    expect(result.ok).toBe(false);
++    if (!result.ok) expect(result.status).toBe(400);
++  });
++
++  it("refuse du HTML déguisé en JPEG", async () => {
++    const html = new TextEncoder().encode("<html><body>bonjour</body></html>");
++    const file = new File([html], "avatar.jpg", { type: "image/jpeg" });
++    const result = await checkImageUpload(file, MAX_AVATAR_BYTES);
++    expect(result.ok).toBe(false);
++  });
++
++  it("refuse un fichier au-delà de la limite, avec un 413", async () => {
++    const file = new File([PNG], "grand.png", { type: "image/png" });
++    Object.defineProperty(file, "size", { value: MAX_AVATAR_BYTES + 1 });
++    const result = await checkImageUpload(file, MAX_AVATAR_BYTES);
++    expect(result.ok).toBe(false);
++    if (!result.ok) expect(result.status).toBe(413);
++  });
++
++  it("refuse un fichier vide", async () => {
++    const file = new File([], "vide.png", { type: "image/png" });
++    const result = await checkImageUpload(file, MAX_AVATAR_BYTES);
++    expect(result.ok).toBe(false);
++  });
++});
+diff --git a/src/lib/image-upload.ts b/src/lib/image-upload.ts
+new file mode 100644
+index 0000000..b4c73e4
+--- /dev/null
++++ b/src/lib/image-upload.ts
+@@ -0,0 +1,79 @@
++/**
++ * Contrôle des images envoyées.
++ *
++ * Le type MIME annoncé par le navigateur (`file.type`) est une donnée du client :
++ * il se falsifie en une ligne. On lit donc les octets d'en-tête du fichier pour
++ * établir son type réel, et on refuse tout ce qui ne correspond pas à l'un des
++ * trois formats acceptés. Sans ce contrôle, n'importe quel contenu — page HTML,
++ * script, archive — se dépose dans un bucket public sous un type image.
++ */
++
++export const MAX_AVATAR_BYTES = 2 * 1024 * 1024;
++export const MAX_COVER_BYTES = 3 * 1024 * 1024;
++
++export type ImageMime = "image/jpeg" | "image/png" | "image/webp";
++
++export type ImageExtension = "jpg" | "png" | "webp";
++
++export type SniffedImage = { mime: ImageMime; ext: ImageExtension };
++
++const SIGNATURES: { mime: ImageMime; ext: ImageExtension; matches: (b: Uint8Array) => boolean }[] = [
++  {
++    mime: "image/jpeg",
++    ext: "jpg",
++    matches: (b) => b[0] === 0xff && b[1] === 0xd8 && b[2] === 0xff,
++  },
++  {
++    mime: "image/png",
++    ext: "png",
++    matches: (b) =>
++      b[0] === 0x89 && b[1] === 0x50 && b[2] === 0x4e && b[3] === 0x47 &&
++      b[4] === 0x0d && b[5] === 0x0a && b[6] === 0x1a && b[7] === 0x0a,
++  },
++  {
++    mime: "image/webp",
++    ext: "webp",
++    // RIFF....WEBP
++    matches: (b) =>
++      b[0] === 0x52 && b[1] === 0x49 && b[2] === 0x46 && b[3] === 0x46 &&
++      b[8] === 0x57 && b[9] === 0x45 && b[10] === 0x42 && b[11] === 0x50,
++  },
++];
++
++/** Type réel déduit des octets d'en-tête, ou null si le format n'est pas accepté. */
++export function sniffImage(bytes: Uint8Array): SniffedImage | null {
++  if (bytes.length < 12) return null;
++  for (const signature of SIGNATURES) {
++    if (signature.matches(bytes)) return { mime: signature.mime, ext: signature.ext };
++  }
++  return null;
++}
++
++export type ImageCheck =
++  | { ok: true; buffer: ArrayBuffer; mime: ImageMime; ext: ImageExtension }
++  | { ok: false; status: 400 | 413; message: string };
++
++/**
++ * Valide un fichier reçu : taille, type réel, cohérence avec le type annoncé.
++ * Le message d'erreur reste volontairement générique côté client.
++ */
++export async function checkImageUpload(file: File, maxBytes: number): Promise<ImageCheck> {
++  if (file.size > maxBytes) {
++    return { ok: false, status: 413, message: `Fichier trop volumineux (${Math.round(maxBytes / 1024 / 1024)} Mo max)` };
++  }
++  if (file.size === 0) {
++    return { ok: false, status: 400, message: "Fichier vide" };
++  }
++
++  const buffer = await file.arrayBuffer();
++  const sniffed = sniffImage(new Uint8Array(buffer.slice(0, 16)));
++
++  if (!sniffed) {
++    return { ok: false, status: 400, message: "Format non reconnu (JPEG, PNG ou WebP attendu)" };
++  }
++  if (file.type && file.type !== sniffed.mime) {
++    return { ok: false, status: 400, message: "Le contenu du fichier ne correspond pas à son type annoncé" };
++  }
++
++  return { ok: true, buffer, mime: sniffed.mime, ext: sniffed.ext };
++}
+diff --git a/src/lib/order-status.test.ts b/src/lib/order-status.test.ts
+new file mode 100644
+index 0000000..b846408
+--- /dev/null
++++ b/src/lib/order-status.test.ts
+@@ -0,0 +1,96 @@
++import { describe, expect, it } from "vitest";
++import {
++  CLOSED,
++  CLIENT_TODO,
++  DISPUTED,
++  IN_ESCROW,
++  ORDER_STATUSES,
++  PROVIDER_TODO,
++  isClosed,
++  isInEscrow,
++  isOrderStatus,
++  serviceTone,
++  statusTone,
++  verificationTone,
++} from "./order-status";
++
++describe("regroupements de statuts", () => {
++  it("aucun statut terminé n'apparaît dans une liste d'action", () => {
++    // Un statut fermé ne peut être ni en séquestre, ni à livrer, ni à payer.
++    for (const status of CLOSED) {
++      expect(IN_ESCROW.includes(status)).toBe(false);
++      expect(PROVIDER_TODO.includes(status)).toBe(false);
++      expect(CLIENT_TODO.includes(status)).toBe(false);
++      expect(DISPUTED.includes(status)).toBe(false);
++    }
++  });
++
++  it("un litige n'est ni un séquestre libérable ni une action ordinaire", () => {
++    for (const status of DISPUTED) {
++      expect(IN_ESCROW.includes(status)).toBe(false);
++      expect(PROVIDER_TODO.includes(status)).toBe(false);
++      expect(CLIENT_TODO.includes(status)).toBe(false);
++    }
++  });
++
++  it("les commandes financées attendent bien une action du prestataire", () => {
++    // Ce recouvrement est voulu : l'argent est retenu ET le prestataire doit agir.
++    expect(PROVIDER_TODO).toContain("funded");
++    expect(IN_ESCROW).toContain("funded");
++  });
++
++  it("tout statut de l'énumération est classé explicitement", () => {
++    // Filet de sécurité : ajouter un statut à l'enum sans le classer ici fait
++    // échouer ce test, plutôt que de produire un tableau de bord silencieusement faux.
++    const classes = new Set<string>([
++      ...IN_ESCROW,
++      ...DISPUTED,
++      ...CLOSED,
++      ...PROVIDER_TODO,
++      ...CLIENT_TODO,
++      "pending_payment",
++    ]);
++    for (const status of ORDER_STATUSES) {
++      expect(classes.has(status), `${status} non classé`).toBe(true);
++    }
++  });
++
++  it("tout statut des listes est un statut connu", () => {
++    for (const status of [...IN_ESCROW, ...PROVIDER_TODO, ...CLIENT_TODO, ...CLOSED]) {
++      expect(isOrderStatus(status)).toBe(true);
++    }
++  });
++
++  it("reconnaît les états terminaux et le séquestre", () => {
++    expect(isInEscrow("delivered")).toBe(true);
++    expect(isInEscrow("completed")).toBe(false);
++    expect(isClosed("refunded")).toBe(true);
++    expect(isClosed("disputed")).toBe(false);
++  });
++});
++
++describe("couleurs d'état", () => {
++  it("donne des classes distinctes à des états de nature différente", () => {
++    const done = statusTone("completed");
++    const blocked = statusTone("disputed");
++    const waiting = statusTone("pending_payment");
++    expect(new Set([done, blocked, waiting]).size).toBe(3);
++  });
++
++  it("s'appuie sur les jetons de thème, jamais sur une couleur figée", () => {
++    for (const status of ORDER_STATUSES) {
++      expect(statusTone(status)).toContain("var(--tone-");
++    }
++    for (const status of ["active", "draft", "paused", "removed", "inconnu"]) {
++      expect(serviceTone(status)).toContain("var(--tone-");
++    }
++    for (const status of ["verified", "pending", "manual_review", "rejected", "none"]) {
++      expect(verificationTone(status)).toContain("var(--tone-");
++    }
++  });
++
++  it("ne laisse pas une couleur claire figée qui casserait le thème sombre", () => {
++    expect(statusTone("completed")).not.toMatch(/bg-(amber|red|green|blue|neutral)-\d/);
++    expect(statusTone("disputed")).not.toMatch(/bg-(amber|red|green|blue|neutral)-\d/);
++  });
++});
+diff --git a/src/lib/order-status.ts b/src/lib/order-status.ts
+new file mode 100644
+index 0000000..294d0d0
+--- /dev/null
++++ b/src/lib/order-status.ts
+@@ -0,0 +1,113 @@
++/**
++ * Machine à états des commandes, côté affichage.
++ *
++ * Une seule définition des regroupements de statuts pour toute l'application :
++ * les tableaux de bord, les listes de commandes et la messagerie doivent
++ * compter la même chose. Deux listes divergentes, et le total affiché au
++ * prestataire cesse de correspondre à ses commandes.
++ */
++
++export const ORDER_STATUSES = [
++  "pending_payment",
++  "funded",
++  "in_progress",
++  "delivered",
++  "completed",
++  "disputed",
++  "cancelled",
++  "refunded",
++] as const;
++
++export type OrderStatus = (typeof ORDER_STATUSES)[number];
++
++/** Paiement encaissé, argent retenu chez le partenaire, pas encore versé. */
++export const IN_ESCROW: readonly OrderStatus[] = ["funded", "in_progress", "delivered"];
++
++/** La commande attend une action du prestataire : livrer, ou démarrer. */
++export const PROVIDER_TODO: readonly OrderStatus[] = ["funded", "in_progress"];
++
++/** La commande attend une action du client : payer, ou valider la livraison. */
++export const CLIENT_TODO: readonly OrderStatus[] = ["pending_payment", "delivered"];
++
++/**
++ * Litige ouvert. Les fonds sont toujours chez le partenaire, mais gelés :
++ * on ne les compte ni comme séquestre libérable, ni comme revenu du
++ * prestataire. Le tableau de bord les isole pour cette raison.
++ */
++export const DISPUTED: readonly OrderStatus[] = ["disputed"];
++
++/** États terminaux : plus rien n'en sort. */
++export const CLOSED: readonly OrderStatus[] = ["completed", "cancelled", "refunded"];
++
++export function isOrderStatus(value: string): value is OrderStatus {
++  return (ORDER_STATUSES as readonly string[]).includes(value);
++}
++
++export function isInEscrow(status: string): boolean {
++  return IN_ESCROW.includes(status as OrderStatus);
++}
++
++export function isClosed(status: string): boolean {
++  return CLOSED.includes(status as OrderStatus);
++}
++
++/**
++ * Classes de couleur d'un statut.
++ *
++ * Elles passent par les variables sémantiques de `globals.css`, qui basculent
++ * en thème sombre. Les couleurs figées de la palette Tailwind (`bg-amber-50`,
++ * `text-amber-700`) ne s'inversent pas : sur un écran sombre, elles produisaient
++ * des pavés clairs illisibles.
++ */
++export function statusTone(status: string): string {
++  switch (status) {
++    case "completed":
++      return "bg-[var(--tone-ok-bg)] text-[var(--tone-ok-fg)]";
++    case "funded":
++      return "bg-[var(--tone-info-bg)] text-[var(--tone-info-fg)]";
++    case "in_progress":
++      return "bg-[var(--tone-progress-bg)] text-[var(--tone-progress-fg)]";
++    case "delivered":
++      return "bg-[var(--tone-info-bg)] text-[var(--tone-info-fg)]";
++    case "pending_payment":
++      return "bg-[var(--tone-warn-bg)] text-[var(--tone-warn-fg)]";
++    case "disputed":
++      return "bg-[var(--tone-danger-bg)] text-[var(--tone-danger-fg)]";
++    case "cancelled":
++    case "refunded":
++      return "bg-[var(--tone-neutral-bg)] text-[var(--tone-neutral-fg)]";
++    default:
++      return "bg-[var(--tone-neutral-bg)] text-[var(--tone-neutral-fg)]";
++  }
++}
++
++/** Classes de couleur d'une prestation selon son statut de publication. */
++export function serviceTone(status: string): string {
++  switch (status) {
++    case "active":
++      return "bg-[var(--tone-ok-bg)] text-[var(--tone-ok-fg)]";
++    case "draft":
++      return "bg-[var(--tone-warn-bg)] text-[var(--tone-warn-fg)]";
++    case "paused":
++      return "bg-[var(--tone-progress-bg)] text-[var(--tone-progress-fg)]";
++    case "removed":
++      return "bg-[var(--tone-danger-bg)] text-[var(--tone-danger-fg)]";
++    default:
++      return "bg-[var(--tone-neutral-bg)] text-[var(--tone-neutral-fg)]";
++  }
++}
++
++/** Classes de la pastille d'identité vérifiée. */
++export function verificationTone(status: string): string {
++  switch (status) {
++    case "verified":
++      return "bg-[var(--tone-ok-bg)] text-[var(--tone-ok-fg)]";
++    case "pending":
++    case "manual_review":
++      return "bg-[var(--tone-progress-bg)] text-[var(--tone-progress-fg)]";
++    case "rejected":
++      return "bg-[var(--tone-danger-bg)] text-[var(--tone-danger-fg)]";
++    default:
++      return "bg-[var(--tone-warn-bg)] text-[var(--tone-warn-fg)]";
++  }
++}
+diff --git a/src/lib/rate-limit.ts b/src/lib/rate-limit.ts
+index 2109b48..82f456d 100644
+--- a/src/lib/rate-limit.ts
++++ b/src/lib/rate-limit.ts
+@@ -1,21 +1,34 @@
+ import { createAdminClient } from "@/lib/supabase/admin";
+ 
++type FailMode = "closed" | "open";
++
+ /**
+  * Compteur de tentatives partagé entre toutes les instances (stockage en base :
+  * les fonctions serverless ne partagent pas la mémoire). Une clé = une fenêtre.
+- * En cas d'erreur de la base, on laisse passer et on journalise : la disponibilité
+- * de la connexion prime sur le compteur.
++ *
++ * Échec fermé par défaut : si la base ne répond pas, on refuse la tentative.
++ * Laisser passer « pour la disponibilité » transforme une panne de base en
++ * ouverture totale des compteurs, et une panne provoquée devient un outil de
++ * contournement. Les rares routes où la disponibilité prime peuvent demander
++ * explicitement `"open"`.
+  */
+-export async function consumeRateLimit(key: string, max: number, windowSeconds: number): Promise<boolean> {
++export async function consumeRateLimit(
++  key: string,
++  max: number,
++  windowSeconds: number,
++  failMode: FailMode = "closed",
++): Promise<boolean> {
+   const db = createAdminClient();
+   const { data, error } = await db.rpc("consume_rate_limit", {
+     p_key: key,
+     p_max: max,
+     p_window_seconds: windowSeconds,
+   });
++
+   if (error) {
+-    console.error("consumeRateLimit:", error.message);
+-    return true;
++    console.error("consumeRateLimit:", error.message, "→", failMode === "closed" ? "refus" : "passage");
++    return failMode === "open";
+   }
++
+   return data === true;
+ }
+diff --git a/src/lib/request-security.ts b/src/lib/request-security.ts
+index b96ee12..b8a54e6 100644
+--- a/src/lib/request-security.ts
++++ b/src/lib/request-security.ts
+@@ -1,10 +1,29 @@
+ import { createHash } from "node:crypto";
+ 
+-/** Adresse IP du client derrière le proxy Vercel. */
++/**
++ * Adresse IP du client.
++ *
++ * On ne lit jamais la première valeur de `x-forwarded-for` : un client peut la
++ * fournir lui-même, et il suffirait alors d'envoyer un en-tête différent à
++ * chaque requête pour contourner les compteurs de tentatives. On privilégie les
++ * en-têtes posés par la plateforme (`x-vercel-forwarded-for`, `x-real-ip`), et à
++ * défaut le DERNIER maillon de `x-forwarded-for`, celui ajouté par le proxy.
++ */
+ export function clientIp(request: Request): string {
++  for (const header of ["x-vercel-forwarded-for", "x-real-ip"]) {
++    const value = request.headers.get(header);
++    const first = value?.split(",")[0]?.trim();
++    if (first) return first;
++  }
++
+   const forwarded = request.headers.get("x-forwarded-for");
+-  if (forwarded) return forwarded.split(",")[0].trim();
+-  return request.headers.get("x-real-ip") ?? "unknown";
++  if (forwarded) {
++    const hops = forwarded.split(",").map((h) => h.trim()).filter(Boolean);
++    const last = hops[hops.length - 1];
++    if (last) return last;
++  }
++
++  return "unknown";
+ }
+ 
+ /** Empreinte d'un e-mail pour les compteurs : la base ne stocke jamais l'adresse en clair. */
+@@ -15,12 +34,27 @@ export function emailFingerprint(email: string): string {
+ const VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+ 
+ /**
+- * Vérification Cloudflare Turnstile. Sans TURNSTILE_SECRET_KEY, le contrôle est
+- * désactivé : à configurer en production (voir .env.example).
++ * Vérification Cloudflare Turnstile.
++ *
++ * Échec fermé : si la clé secrète manque en production, on refuse au lieu de
++ * laisser passer. Un CAPTCHA silencieusement désactivé est pire qu'une panne
++ * visible — il ouvre l'inscription et la connexion au bourrage d'identifiants.
++ * `TURNSTILE_OPTIONAL=1` reste possible pour un déploiement de recette.
+  */
+ export async function verifyTurnstile(token: string | null, ip: string): Promise<boolean> {
+   const secret = process.env.TURNSTILE_SECRET_KEY;
+-  if (!secret) return true;
++
++  if (!secret) {
++    if (process.env.NODE_ENV === "production" && process.env.TURNSTILE_OPTIONAL !== "1") {
++      console.error(
++        "[security] TURNSTILE_SECRET_KEY absente en production : inscription et connexion refusées. " +
++          "Configurez la clé, ou posez TURNSTILE_OPTIONAL=1 pour l'assumer explicitement.",
++      );
++      return false;
++    }
++    return true;
++  }
++
+   if (!token) return false;
+ 
+   const body = new URLSearchParams({ secret, response: token, remoteip: ip });
+diff --git a/supabase/migrations/0020_dashboard_stats_and_storage_hardening.sql b/supabase/migrations/0020_dashboard_stats_and_storage_hardening.sql
+new file mode 100644
+index 0000000..868d1bc
+--- /dev/null
++++ b/supabase/migrations/0020_dashboard_stats_and_storage_hardening.sql
+@@ -0,0 +1,183 @@
++-- ---------------------------------------------------------------------------
++-- 0020 — Chiffres exacts des tableaux de bord, et durcissement du stockage.
++--
++-- Deux problèmes distincts, corrigés ici :
++--
++-- 1. Les tableaux de bord calculaient leurs totaux en JavaScript sur les 50
++--    dernières commandes (`limit(50)`). Un prestataire ayant dépassé 50
++--    commandes voyait donc des montants faux, sans aucun signe d'erreur. Les
++--    agrégats sont désormais faits en base, sur l'ensemble des lignes, et
++--    filtrés par la RLS puisque les fonctions sont `security invoker`.
++--
++-- 2. Les buckets publics (`avatars`, `service-covers`) n'acceptaient que
++--    l'extension par préfixe de dossier. Une personne authentifiée pouvait y
++--    déposer n'importe quel fichier directement depuis le navigateur, en
++--    contournant les contrôles des routes d'API. Les types et la taille sont
++--    maintenant imposés par le bucket lui-même.
++-- ---------------------------------------------------------------------------
++
++-- 1. Buckets : types MIME et taille maximale imposés côté stockage -----------
++
++update storage.buckets
++set file_size_limit = 3145728, -- 3 Mo
++    allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp']
++where id = 'service-covers';
++
++update storage.buckets
++set file_size_limit = 2097152, -- 2 Mo
++    allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp']
++where id = 'avatars';
++
++-- Les politiques d'écriture vérifient en plus les métadonnées annoncées, pour
++-- que le refus soit explicite même si le réglage du bucket venait à sauter.
++drop policy if exists service_covers_insert on storage.objects;
++create policy service_covers_insert on storage.objects
++  for insert to authenticated with check (
++    bucket_id = 'service-covers'
++    and (storage.foldername(name))[1] = auth.uid()::text
++    and coalesce(metadata->>'mimetype', '') in ('image/jpeg', 'image/png', 'image/webp')
++    and coalesce((metadata->>'size')::bigint, 0) between 1 and 3145728
++  );
++
++drop policy if exists avatars_insert on storage.objects;
++create policy avatars_insert on storage.objects
++  for insert to authenticated with check (
++    bucket_id = 'avatars'
++    and (storage.foldername(name))[1] = auth.uid()::text
++    and coalesce(metadata->>'mimetype', '') in ('image/jpeg', 'image/png', 'image/webp')
++    and coalesce((metadata->>'size')::bigint, 0) between 1 and 2097152
++  );
++
++-- 2. Annuaire des prestataires ----------------------------------------------
++--
++-- La vue reste volontairement en SECURITY DEFINER (comportement par défaut) :
++-- c'est la projection publique contrôlée de `profiles`, limitée à quatre
++-- colonnes non sensibles. En `security invoker`, elle deviendrait vide pour un
++-- visiteur anonyme, faute de politique de lecture publique sur `profiles` — et
++-- l'ouvrir obligerait à exposer téléphone et e-mail. Le verrou est donc le
++-- choix des colonnes, pas la RLS. `security_barrier` empêche en plus qu'un
++-- opérateur « leakproof » fasse fuiter des lignes non retenues par le filtre.
++alter view public.provider_directory set (security_barrier = on);
++
++-- 3. Chiffres du tableau de bord prestataire ---------------------------------
++--
++-- `security invoker` : la RLS s'applique, un appelant ne peut donc agréger que
++-- ses propres lignes. Aucun paramètre n'est accepté — les statistiques portent
++-- toujours sur l'utilisateur de la session, ce qui supprime toute question
++-- d'identifiant passé en entrée.
++
++create or replace function public.provider_dashboard_stats()
++returns jsonb
++language sql
++stable
++security invoker
++set search_path = public
++as $$
++  with me as (select auth.uid() as id),
++  o as (
++    select status, provider_net_minor
++    from public.orders, me
++    where orders.provider_id = me.id
++  )
++  select jsonb_build_object(
++    'earned_net_minor',   coalesce((select sum(provider_net_minor) from o where status = 'completed'), 0)::text,
++    'in_escrow_minor',    coalesce((select sum(provider_net_minor) from o where status in ('funded', 'in_progress', 'delivered')), 0)::text,
++    'disputed_minor',     coalesce((select sum(provider_net_minor) from o where status = 'disputed'), 0)::text,
++    'orders_total',       (select count(*) from o),
++    'orders_completed',   (select count(*) from o where status = 'completed'),
++    'orders_active',      (select count(*) from o where status in ('funded', 'in_progress', 'delivered')),
++    'orders_to_deliver',  (select count(*) from o where status in ('funded', 'in_progress')),
++    'services_total',     (select count(*) from public.services, me where services.provider_id = me.id),
++    'services_active',    (select count(*) from public.services, me where services.provider_id = me.id and services.status = 'active'),
++    'services_draft',     (select count(*) from public.services, me where services.provider_id = me.id and services.status = 'draft'),
++    'services_paused',    (select count(*) from public.services, me where services.provider_id = me.id and services.status = 'paused'),
++    'unread_messages',    (select count(*) from public.messages m
++                            where m.read_at is null
++                              and m.sender_id <> me.id
++                              and exists (select 1 from public.orders ord
++                                          where ord.id = m.order_id and ord.provider_id = me.id)),
++    'pending_inquiries',  (select count(*) from public.inquiries i, me
++                            where i.to_id = me.id and i.read_at is null),
++    'currency',           coalesce((select currency from o limit 1), 'XOF')
++  );
++$$;
++
++-- 4. Chiffres du tableau de bord client --------------------------------------
++
++create or replace function public.client_dashboard_stats()
++returns jsonb
++language sql
++stable
++security invoker
++set search_path = public
++as $$
++  with me as (select auth.uid() as id),
++  o as (
++    select status, amount_minor, currency
++    from public.orders, me
++    where orders.client_id = me.id
++  )
++  select jsonb_build_object(
++    'spent_minor',       coalesce((select sum(amount_minor) from o
++                                   where status not in ('pending_payment', 'cancelled', 'refunded')), 0)::text,
++    'in_escrow_minor',   coalesce((select sum(amount_minor) from o
++                                   where status in ('funded', 'in_progress', 'delivered')), 0)::text,
++    'orders_total',      (select count(*) from o),
++    'orders_active',     (select count(*) from o where status in ('funded', 'in_progress', 'delivered', 'disputed')),
++    'orders_completed',  (select count(*) from o where status = 'completed'),
++    'orders_to_pay',     (select count(*) from o where status = 'pending_payment'),
++    'orders_to_review',  (select count(*) from o
++                           where status = 'delivered'
++                             and not exists (select 1 from public.reviews r
++                                             where r.order_id = orders.id)),
++    'unread_messages',   (select count(*) from public.messages m
++                            where m.read_at is null
++                              and m.sender_id <> me.id
++                              and exists (select 1 from public.orders ord
++                                          where ord.id = m.order_id and ord.client_id = me.id)),
++    'currency',          coalesce((select currency from o limit 1), 'XOF')
++  );
++$$;
++
++grant execute on function public.provider_dashboard_stats() to authenticated;
++grant execute on function public.client_dashboard_stats() to authenticated;
++
++-- 5. File d'attente de l'administration --------------------------------------
++--
++-- Compteurs d'action immédiate, en une requête, pour la clé de service.
++revoke execute on function public.admin_attention_queue() from public, anon, authenticated;
++
++create or replace function public.admin_attention_queue()
++returns jsonb
++language sql
++stable
++set search_path = public
++as $$
++  select jsonb_build_object(
++    'pending_verifications', (select count(*) from public.verifications where status = 'pending'),
++    'manual_review',         (select count(*) from public.verifications where status = 'manual_review'),
++    'open_disputes',         (select count(*) from public.disputes where status = 'open'),
++    'draft_services',        (select count(*) from public.services where status = 'draft'),
++    'stalled_orders',        (select count(*) from public.orders
++                               where status = 'funded' and created_at < now() - interval '72 hours'),
++    'awaiting_release',      (select count(*) from public.orders
++                               where status = 'delivered' and delivered_at < now() - interval '72 hours'),
++    'oldest_pending_verification', (select min(created_at) from public.verifications where status = 'pending')
++  );
++$$;
++
++grant execute on function public.admin_attention_queue() to service_role;
++
++-- 6. Demandes de contact : droits explicites ---------------------------------
++-- La table a été créée après la révocation globale de 0003 : on fixe ici des
++-- droits lisibles, plutôt que de dépendre des privilèges par défaut du projet.
++grant select, insert on public.inquiries to authenticated;
++grant update (read_at) on public.inquiries to authenticated;
++
++-- 7. Index manquants pour les agrégats ci-dessus ------------------------------
++create index if not exists messages_unread_idx
++  on public.messages (order_id) where read_at is null;
++create index if not exists inquiries_unread_idx
++  on public.inquiries (to_id) where read_at is null;
++create index if not exists orders_delivered_idx
++  on public.orders (delivered_at) where status = 'delivered';
