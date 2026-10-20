@@ -282,6 +282,15 @@ async function checkPayment() {
         sessionStorage.setItem('bp_plan', d.plan)
       }
 
+      // Email "plan actif + comment activer Telegram" (idempotent côté serveur : 1 seul envoi par abonnement)
+      if (token) {
+        fetch('/api/send-email', {
+          method: 'POST', keepalive: true,
+          headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+          body: JSON.stringify({ type: 'payment_activated' })
+        }).catch(() => {})
+      }
+
       showState('s-success')
       startCountdown()   // ← REDIRECTION AUTO 3s
       return
