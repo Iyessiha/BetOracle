@@ -513,6 +513,9 @@ button { cursor: pointer; font-family: var(--fb); }
 
     <div class="sb-section">
       <div class="sb-label">Système</div>
+      <div class="sb-item" onclick="nav('tracking')">
+        <i class="ti ti-radar-2"></i><span>Pixels & balises</span>
+      </div>
       <div class="sb-item" onclick="nav('settings')">
         <i class="ti ti-settings"></i><span>Configuration</span>
       </div>
@@ -976,6 +979,62 @@ button { cursor: pointer; font-family: var(--fb); }
       </div>
 
       <!-- ── PAGE : SETTINGS ── -->
+      <!-- ── PAGE : PIXELS & BALISES ── -->
+      <div class="page" id="page-tracking">
+        <div class="ph"><h1>Pixels & balises</h1><p>Ajoute Meta, TikTok, Google ou ta propre balise : elle est injectée sur le site sans toucher au code</p></div>
+        <div class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><i class="ti ti-radar-2"></i> Pixels actifs</div>
+            <button class="btn-outline-sm" onclick="trkLoad()">↻</button>
+          </div>
+          <div class="panel-body" id="trk-list"><div class="loader"><div class="loader-ring"></div></div></div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="panel-head"><div class="panel-title"><i class="ti ti-plus"></i> <span id="trk-form-title">Ajouter un pixel ou une balise</span></div></div>
+          <div style="padding:20px">
+            <input type="hidden" id="trk-id">
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="trk-name" maxlength="80" placeholder="Ex : Pixel Meta campagne CI"></div>
+              <div class="form-group"><label class="form-label">Type</label>
+                <select class="form-select" id="trk-kind" onchange="trkKindChanged()">
+                  <option value="meta_pixel">Pixel Meta (Facebook / Instagram)</option>
+                  <option value="tiktok_pixel">Pixel TikTok</option>
+                  <option value="ga4">Google Analytics 4</option>
+                  <option value="google_ads">Google Ads (balise de conversion)</option>
+                  <option value="gtm">Google Tag Manager</option>
+                  <option value="custom">Autre balise (code libre)</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group" id="trk-id-wrap">
+              <label class="form-label" id="trk-id-label">Identifiant du pixel</label>
+              <input class="form-input" id="trk-tagid" maxlength="40" autocomplete="off" spellcheck="false">
+              <div id="trk-hint" style="font-size:11px;color:var(--muted);margin-top:5px"></div>
+            </div>
+            <div class="form-group" id="trk-custom-wrap" style="display:none">
+              <label class="form-label">Code de la balise</label>
+              <textarea class="form-input" id="trk-html" rows="7" spellcheck="false" style="font-family:monospace;font-size:12px" placeholder="&lt;script&gt;…&lt;/script&gt;"></textarea>
+              <div style="font-size:11px;color:#F5C842;margin-top:5px">⚠ Ce code s'exécute sur toutes les pages choisies, chez tous les visiteurs. Ne colle que du code provenant d'un service de confiance.</div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Pages concernées</label>
+                <input class="form-input" id="trk-pages" value="*" maxlength="300" placeholder="* ou /signup,/payment-success">
+                <div style="font-size:11px;color:var(--muted);margin-top:5px"><b>*</b> = tout le site · séparer les chemins par des virgules · <b>/blog/*</b> = préfixe</div>
+              </div>
+              <div class="form-group" id="trk-place-wrap"><label class="form-label">Emplacement</label>
+                <select class="form-select" id="trk-place"><option value="head">Dans le &lt;head&gt;</option><option value="body_end">Fin du &lt;body&gt;</option></select>
+              </div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;font-size:13px;margin:4px 0 16px;cursor:pointer"><input type="checkbox" id="trk-enabled" checked> Actif</label>
+            <div style="display:flex;gap:10px">
+              <button class="btn-primary" id="trk-save" onclick="trkSave()">Enregistrer</button>
+              <button class="btn-outline-sm" onclick="trkReset()">Annuler</button>
+            </div>
+            <div style="font-size:11px;color:var(--muted);margin-top:14px">Les changements sont visibles sur le site sous ~1 minute (mise en cache). Le pixel Meta déjà codé en dur dans les pages (1734737427724152) n'a pas besoin d'être ajouté ici.</div>
+          </div>
+        </div>
+      </div>
+
       <div class="page" id="page-settings">
         <div class="ph">
           <h1>Configuration</h1>
@@ -1101,7 +1160,7 @@ function logout() {
 // ══════════════════════════════════════════════════
 // NAVIGATION
 // ══════════════════════════════════════════════════
-const PAGES = { overview:'Vue globale', users:'Utilisateurs', subscriptions:'Abonnements', coupons:'Coupons', analyses:'Analyses Oracle', activite:'Activité', marketing:'Marketing', parrainages:'Parrainages', bankroll:'Bankroll & Paris', config:'Configuration App', actions:'Actions rapides', notifications:'Notifications', settings:'Paramètres' }
+const PAGES = { overview:'Vue globale', users:'Utilisateurs', subscriptions:'Abonnements', coupons:'Coupons', analyses:'Analyses Oracle', activite:'Activité', marketing:'Marketing', parrainages:'Parrainages', bankroll:'Bankroll & Paris', config:'Configuration App', actions:'Actions rapides', notifications:'Notifications', tracking:'Pixels & balises', settings:'Paramètres' }
 let currentPage = 'overview'
 
 function nav(page) {
@@ -1221,10 +1280,114 @@ async function loadPage(page) {
     config:        () => Promise.all([loadAppConfig(), loadRateLimits()]),
     notifications: loadNotifsTable,
     actions:       () => {},
+    tracking:      trkLoad,
     settings:      () => {}
   }
   if (loaders[page]) await loaders[page]()
 }
+
+// ── PIXELS & BALISES ──
+let trkTags = []
+const TRK_KINDS = {
+  meta_pixel:   { label: 'Pixel Meta',         idLabel: 'ID du pixel Meta',        hint: 'Chiffres uniquement, ex : 1234567890123456 (Events Manager → Sources de données)' },
+  tiktok_pixel: { label: 'Pixel TikTok',       idLabel: 'ID du pixel TikTok',      hint: 'Lettres majuscules et chiffres, ex : C1ABCDEF2GHIJK3LMNOP (TikTok Events Manager)' },
+  ga4:          { label: 'Google Analytics 4', idLabel: 'ID de mesure GA4',        hint: 'Format G-XXXXXXXXXX' },
+  google_ads:   { label: 'Google Ads',         idLabel: 'ID de conversion Google', hint: 'Format AW-123456789' },
+  gtm:          { label: 'Google Tag Manager', idLabel: 'ID du conteneur',         hint: 'Format GTM-XXXXXXX' },
+  custom:       { label: 'Code libre' }
+}
+function trkEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])) }
+async function trkApi(method, body, query = '') {
+  const r = await fetch('/api/admin-tracking' + query, {
+    method,
+    headers: { 'Authorization': 'Bearer ' + getToken(), 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  })
+  const d = await r.json().catch(() => ({}))
+  if (!r.ok) throw new Error(d.error || ('Erreur ' + r.status))
+  return d
+}
+async function trkLoad() {
+  const box = document.getElementById('trk-list')
+  try {
+    trkTags = (await trkApi('GET')).tags || []
+    if (!trkTags.length) { box.innerHTML = '<div style="padding:24px;color:var(--muted);font-size:13px">Aucun pixel ajouté pour l\'instant.</div>'; return }
+    box.innerHTML = '<table class="tbl"><thead><tr><th>Nom</th><th>Type</th><th>Identifiant</th><th>Pages</th><th>Statut</th><th></th></tr></thead><tbody>' +
+      trkTags.map(t => `<tr>
+        <td>${trkEsc(t.name)}</td>
+        <td>${trkEsc((TRK_KINDS[t.kind] || {}).label || t.kind)}</td>
+        <td style="font-family:monospace;font-size:12px">${t.kind === 'custom' ? 'code libre' : trkEsc(t.tag_id)}</td>
+        <td style="font-size:12px;color:var(--muted)">${trkEsc(t.pages)}</td>
+        <td><button class="btn-outline-sm" onclick="trkToggle('${trkEsc(t.id)}')">${t.enabled ? '🟢 Actif' : '⚪ Inactif'}</button></td>
+        <td style="white-space:nowrap"><button class="btn-outline-sm" onclick="trkEdit('${trkEsc(t.id)}')">Modifier</button> <button class="btn-outline-sm" style="color:#ef4444" onclick="trkDelete('${trkEsc(t.id)}')">Supprimer</button></td>
+      </tr>`).join('') + '</tbody></table>'
+  } catch (e) {
+    box.innerHTML = '<div style="padding:24px;color:#ef4444;font-size:13px">' + trkEsc(e.message) + ' — la migration 008 est-elle appliquée ?</div>'
+  }
+}
+function trkKindChanged() {
+  const k = document.getElementById('trk-kind').value
+  const custom = k === 'custom'
+  document.getElementById('trk-id-wrap').style.display = custom ? 'none' : ''
+  document.getElementById('trk-custom-wrap').style.display = custom ? '' : 'none'
+  document.getElementById('trk-place-wrap').style.display = custom ? '' : 'none'
+  if (!custom) {
+    document.getElementById('trk-id-label').textContent = TRK_KINDS[k].idLabel
+    document.getElementById('trk-hint').textContent = TRK_KINDS[k].hint
+  }
+}
+function trkReset() {
+  ;['trk-id', 'trk-name', 'trk-tagid', 'trk-html'].forEach(i => document.getElementById(i).value = '')
+  document.getElementById('trk-kind').value = 'meta_pixel'
+  document.getElementById('trk-pages').value = '*'
+  document.getElementById('trk-place').value = 'head'
+  document.getElementById('trk-enabled').checked = true
+  document.getElementById('trk-form-title').textContent = 'Ajouter un pixel ou une balise'
+  trkKindChanged()
+}
+function trkEdit(id) {
+  const t = trkTags.find(x => x.id === id); if (!t) return
+  trkReset()
+  document.getElementById('trk-id').value = t.id
+  document.getElementById('trk-name').value = t.name
+  document.getElementById('trk-kind').value = t.kind
+  document.getElementById('trk-tagid').value = t.tag_id || ''
+  document.getElementById('trk-html').value = t.custom_html || ''
+  document.getElementById('trk-pages').value = t.pages
+  document.getElementById('trk-place').value = t.placement
+  document.getElementById('trk-enabled').checked = !!t.enabled
+  document.getElementById('trk-form-title').textContent = 'Modifier : ' + t.name
+  trkKindChanged()
+  document.getElementById('trk-name').scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
+async function trkSave() {
+  const btn = document.getElementById('trk-save')
+  const kind = document.getElementById('trk-kind').value
+  const body = {
+    id: document.getElementById('trk-id').value || undefined,
+    name: document.getElementById('trk-name').value,
+    kind,
+    tag_id: kind === 'custom' ? undefined : document.getElementById('trk-tagid').value.trim(),
+    custom_html: kind === 'custom' ? document.getElementById('trk-html').value : undefined,
+    placement: kind === 'custom' ? document.getElementById('trk-place').value : 'head',
+    pages: document.getElementById('trk-pages').value || '*',
+    enabled: document.getElementById('trk-enabled').checked
+  }
+  btn.disabled = true
+  try { await trkApi('POST', body); showToast('Enregistré ✓'); trkReset(); await trkLoad() }
+  catch (e) { alert(e.message) }
+  finally { btn.disabled = false }
+}
+async function trkToggle(id) {
+  const t = trkTags.find(x => x.id === id); if (!t) return
+  try { await trkApi('POST', { ...t, enabled: !t.enabled }); await trkLoad() } catch (e) { alert(e.message) }
+}
+async function trkDelete(id) {
+  const t = trkTags.find(x => x.id === id); if (!t) return
+  if (!confirm('Supprimer « ' + t.name + ' » ?')) return
+  try { await trkApi('DELETE', null, '?id=' + encodeURIComponent(id)); showToast('Supprimé'); await trkLoad() } catch (e) { alert(e.message) }
+}
+document.addEventListener('DOMContentLoaded', trkKindChanged)
 
 // ── KPIs ──
 async function loadKPIs() {
